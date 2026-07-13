@@ -12,9 +12,11 @@
       --ink: #1f2a2e;
       --muted: #617178;
       --line: #d9e0dc;
-      --accent: #0f766e;
-      --accent-dark: #115e59;
-      --soft: #e8f3f1;
+      --accent: #6fcff1;
+      --accent-dark: #154a8b;
+      --accent-soft: rgba(111, 207, 241, 0.18);
+      --accent-soft-strong: rgba(111, 207, 241, 0.30);
+      --soft: rgba(111, 207, 241, 0.16);
       --warn-bg: #fff7df;
       --warn-line: #f0d98c;
       --diagnostic: #87c7df;
@@ -57,6 +59,19 @@
       align-items: center;
     }
 
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 138px;
+      height: auto;
+      flex: 0 0 auto;
+    }
+
     h1, h2, h3, p { margin-top: 0; }
     h1 {
       margin-bottom: 2px;
@@ -91,9 +106,12 @@
       cursor: pointer;
     }
 
-    button:hover { border-color: var(--accent); }
+    button:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
     button.active {
-      background: var(--soft);
+      background: var(--accent-soft-strong);
       border-color: var(--accent);
       color: var(--accent-dark);
       font-weight: 700;
@@ -132,6 +150,11 @@
       color: var(--ink);
       padding: 9px 10px;
       min-height: 40px;
+    }
+
+    select:focus, input[type="search"]:focus {
+      outline: 2px solid var(--accent-soft-strong);
+      border-color: var(--accent);
     }
 
     .layout {
@@ -183,13 +206,13 @@
     .status-chip {
       display: inline-flex;
       align-items: center;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(111, 207, 241, 0.70);
       border-radius: 999px;
       padding: 4px 8px;
-      color: var(--muted);
+      color: var(--accent-dark);
       font-size: 12px;
       white-space: nowrap;
-      background: var(--panel-soft);
+      background: var(--accent-soft);
     }
 
     .map-wrap {
@@ -456,7 +479,7 @@
 
     .activity-row.active {
       border-color: var(--accent);
-      background: var(--soft);
+      background: var(--accent-soft);
     }
 
     .activity-name {
@@ -520,6 +543,10 @@
         justify-content: flex-start;
       }
 
+      .brand-logo {
+        width: 124px;
+      }
+
       .layout, .filters, .method-note {
         grid-template-columns: 1fr;
       }
@@ -528,6 +555,12 @@
     @media (max-width: 620px) {
       main { padding: 12px; }
       .topbar { padding: 12px; }
+      .brand-lockup {
+        align-items: flex-start;
+      }
+      .brand-logo {
+        width: 108px;
+      }
       .panel-heading, .activity-toolbar {
         display: grid;
       }
@@ -545,9 +578,12 @@
 <body>
   <header>
     <div class="topbar">
-      <div>
-        <h1>ECO-PATH Pathway Activity Explorer</h1>
-        <p class="subtitle">MIBC protocol-to-activity view for guideline logic and local operational workflow.</p>
+      <div class="brand-lockup">
+        <img class="brand-logo" src="assets/erasmusmc_logo.png" alt="Erasmus MC logo">
+        <div>
+          <h1>ECO-PATH Pathway Activity Explorer</h1>
+          <p class="subtitle">MIBC protocol-to-activity view for guideline logic and local operational workflow.</p>
+        </div>
       </div>
       <div class="source-switch" id="sourceSwitch" aria-label="Pathway source"></div>
     </div>

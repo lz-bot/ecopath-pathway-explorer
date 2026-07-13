@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ECO-PATH Pathway Activity Explorer</title>
+  <style>
+    :root {
+      --bg: #f7f8f5;
+      --panel: #ffffff;
+      --panel-soft: #fbfcfa;
+      --ink: #1f2a2e;
+      --muted: #617178;
+      --line: #d9e0dc;
+      --accent: #0f766e;
+      --accent-dark: #115e59;
+      --soft: #e8f3f1;
+      --warn-bg: #fff7df;
+      --warn-line: #f0d98c;
+      --diagnostic: #87c7df;
+      --treatment: #db7f67;
+      --followup: #e4bc4e;
+      --return: #aab3b6;
+      --module: #8a78bd;
+      --shadow: 0 8px 22px rgba(28, 48, 45, 0.08);
+      --radius: 8px;
+      --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.45;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(247, 248, 245, 0.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      margin-bottom: 2px;
+      font-size: 22px;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .source-switch {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button, select, input {
+      font: inherit;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--accent); }
+    button.active {
+      background: var(--soft);
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(170px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    select, input[type="search"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 9px 10px;
+      min-height: 40px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.66fr) minmax(320px, 0.34fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .map-panel {
+      padding: 12px;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .panel h2 {
+      font-size: 18px;
+      margin-bottom: 3px;
+      letter-spacing: 0;
+    }
+
+    .panel h3 {
+      font-size: 15px;
+      margin: 15px 0 8px;
+      letter-spacing: 0;
+    }
+
+    .scope-note {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+      max-width: 800px;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      background: var(--panel-soft);
+    }
+
+    .map-wrap {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      overflow: hidden;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 420px;
+    }
+
+    .map-edge {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.82;
+    }
+
+    .map-edge.return {
+      stroke-dasharray: 8 8;
+    }
+
+    .map-node {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .node-shape {
+      fill: var(--panel);
+      stroke: var(--line);
+      stroke-width: 3;
+      filter: drop-shadow(0 2px 3px rgba(28, 48, 45, 0.10));
+    }
+
+    .node-shape.activity.diagnostic { stroke: var(--diagnostic); }
+    .node-shape.activity.treatment { stroke: var(--treatment); }
+    .node-shape.activity.followup { stroke: var(--followup); }
+    .node-shape.activity.return { stroke: var(--return); }
+    .node-shape.decision.diagnostic { stroke: var(--diagnostic); }
+    .node-shape.decision.treatment { stroke: var(--treatment); }
+    .node-shape.decision.followup { stroke: var(--followup); }
+    .node-shape.decision.return { stroke: var(--return); }
+    .node-shape.selected {
+      stroke: var(--accent);
+      stroke-width: 4;
+    }
+
+    .node-code {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      fill: var(--ink);
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .station-code-line {
+      text-anchor: middle;
+    }
+
+    .station-label-text {
+      font-size: 11px;
+      fill: var(--ink);
+      dominant-baseline: text-before-edge;
+      pointer-events: none;
+    }
+
+    .lane-label {
+      font-size: 12px;
+      fill: var(--muted);
+      font-weight: 700;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .code-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .code-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .prefix-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 2px 5px;
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--panel-soft);
+    }
+
+    .swatch {
+      width: 26px;
+      height: 4px;
+      border-radius: 99px;
+      background: var(--line);
+      display: inline-block;
+    }
+
+    .swatch.diagnostic { background: var(--diagnostic); }
+    .swatch.treatment { background: var(--treatment); }
+    .swatch.followup { background: var(--followup); }
+    .swatch.return {
+      background: repeating-linear-gradient(90deg, var(--return), var(--return) 7px, transparent 7px, transparent 12px);
+      border: 1px solid var(--return);
+    }
+
+    .detail-title {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .code-pill {
+      font-family: var(--mono);
+      font-weight: 700;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 7px 9px;
+      background: var(--panel-soft);
+      min-width: 58px;
+      text-align: center;
+    }
+
+    .detail-title h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--panel-soft);
+    }
+
+    .tag.module {
+      border-color: rgba(138, 120, 189, 0.55);
+      background: rgba(138, 120, 189, 0.12);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-weight: 700;
+    }
+
+    .tag.oncology {
+      border-color: rgba(138, 120, 189, 0.75);
+      color: var(--ink);
+      background: rgba(138, 120, 189, 0.16);
+    }
+
+    .detail-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .detail-block {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .detail-block strong {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .detail-block p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .resource-list, .question-list {
+      padding-left: 18px;
+      margin: 4px 0 0;
+      font-size: 14px;
+    }
+
+    .resource-list li, .question-list li { margin: 4px 0; }
+
+    .activity-panel {
+      margin-top: 14px;
+    }
+
+    .activity-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .activity-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .activity-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      text-align: left;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .activity-row.active {
+      border-color: var(--accent);
+      background: var(--soft);
+    }
+
+    .activity-name {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .activity-name strong {
+      font-size: 14px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .activity-name span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      padding: 14px;
+      background: var(--panel-soft);
+    }
+
+    .method-note {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .note-cell {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: var(--panel-soft);
+    }
+
+    .note-cell strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .note-cell p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 960px) {
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .source-switch {
+        justify-content: flex-start;
+      }
+
+      .layout, .filters, .method-note {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      main { padding: 12px; }
+      .topbar { padding: 12px; }
+      .panel-heading, .activity-toolbar {
+        display: grid;
+      }
+      .activity-row {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+      .activity-row .tag {
+        grid-column: 2;
+        justify-self: start;
+      }
+      svg { min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>ECO-PATH Pathway Activity Explorer</h1>
+        <p class="subtitle">MIBC protocol-to-activity view for guideline logic and local operational workflow.</p>
+      </div>
+      <div class="source-switch" id="sourceSwitch" aria-label="Pathway source"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="filters" aria-label="Activity filters">
+      <div class="field">
+        <label for="domainFilter">Domain</label>
+        <select id="domainFilter"></select>
+      </div>
+      <div class="field">
+        <label for="moduleFilter">ECO-PATH module</label>
+        <select id="moduleFilter"></select>
+      </div>
+      <div class="field">
+        <label for="typeFilter">Element type</label>
+        <select id="typeFilter">
+          <option value="all">All elements</option>
+          <option value="activity">Activities</option>
+          <option value="decision">Decision points</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="searchBox">Search</label>
+        <input id="searchBox" type="search" placeholder="activity, module, oncology, imaging">
+      </div>
+    </section>
+
+    <section class="layout">
+      <div>
+        <section class="panel map-panel">
+          <div class="panel-heading">
+            <div>
+              <h2 id="pathwayTitle"></h2>
+              <p class="scope-note" id="pathwayScope"></p>
+            </div>
+            <span class="status-chip" id="pathwayStatus"></span>
+          </div>
+          <div class="map-wrap">
+            <svg id="pathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="svgTitle svgDesc">
+              <title id="svgTitle">Pathway activity map</title>
+              <desc id="svgDesc">Interactive pathway map with coded activities and ECO-PATH modules.</desc>
+            </svg>
+          </div>
+          <div class="legend" aria-label="Route legend">
+            <span class="legend-item"><span class="swatch diagnostic"></span>Diagnostic and access route</span>
+            <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
+            <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
+            <span class="legend-item"><span class="swatch return"></span>Conditional or return route</span>
+          </div>
+          <div class="code-legend" aria-label="Station code prefixes">
+            <span class="code-legend-item"><span class="prefix-chip">AC</span>Access</span>
+            <span class="code-legend-item"><span class="prefix-chip">DX</span>Diagnostics</span>
+            <span class="code-legend-item"><span class="prefix-chip">JM</span>Joint clinic / MDT</span>
+            <span class="code-legend-item"><span class="prefix-chip">TX</span>Treatment</span>
+            <span class="code-legend-item"><span class="prefix-chip">FU</span>Follow-up</span>
+          </div>
+        </section>
+
+        <section class="panel activity-panel">
+          <div class="activity-toolbar">
+            <h2>Activities</h2>
+            <span class="count" id="activityCount"></span>
+          </div>
+          <div class="activity-list" id="activityList"></div>
+        </section>
+
+        <section class="method-note" aria-label="Method notes">
+          <div class="note-cell">
+            <strong>Protocol step</strong>
+            <p>Clinical or organizational instruction from a guideline, protocol, or workflow diagram.</p>
+          </div>
+          <div class="note-cell">
+            <strong>Healthcare activity</strong>
+            <p>Operational action or decision node that can be placed in the pathway and reviewed by experts.</p>
+          </div>
+          <div class="note-cell">
+            <strong>Resource flow</strong>
+            <p>Measurable input or output for LCA, such as travel, equipment time, medicines, energy, or waste.</p>
+          </div>
+        </section>
+      </div>
+
+      <aside class="panel" aria-live="polite">
+        <div id="activityDetail"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const moduleRegistry = {
+      EM01: {
+        name: "Access",
+        definition: "Referral, triage, intake, administrative coordination, and return-to-referrer activities.",
+        resourceFlows: ["Patient travel", "Staff time", "EHR and administrative ICT", "Referral communication"]
+      },
+      EM02: {
+        name: "Pathology",
+        definition: "Pathology review, sample-related assessment, paper review, and diagnostic reassessment decisions.",
+        resourceFlows: ["Pathology staff time", "Sample handling", "Microscopy or digital pathology", "Report generation"]
+      },
+      EM03: {
+        name: "Imaging and endoscopy",
+        definition: "Radiology, CT reassessment, MRI, PET-CT, cystoscopy, colonoscopy, or other pathway-specific diagnostic procedures.",
+        resourceFlows: ["Equipment electricity", "Contrast media or procedure materials", "Clinical staff time", "Patient travel"]
+      },
+      EM04: {
+        name: "Joint clinic and MDT",
+        definition: "Joint clinic, multidisciplinary team review, and cross-specialty decision review.",
+        resourceFlows: ["Clinician time", "Meeting room use", "EHR and imaging display", "Patient travel for clinic attendance"]
+      },
+      EM05: {
+        name: "Treatment planning",
+        definition: "Treatment intent, eligibility, modality choice, and treatment planning decisions.",
+        resourceFlows: ["Consultation time", "Treatment planning ICT", "Scheduling", "Patient-facing communication"]
+      },
+      EM06: {
+        name: "Systemic therapy and oncology",
+        definition: "Medical oncology review, chemotherapy, systemic treatment, pharmacy preparation, response assessment, and progression assessment.",
+        resourceFlows: ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Day-care chair time", "Laboratory monitoring", "Cytotoxic waste"]
+      },
+      EM07: {
+        name: "Surgery",
+        definition: "Surgical procedure, anesthesia, operating room use, perioperative care, ward stay, and procedure-related waste.",
+        resourceFlows: ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Ward or ICU stay", "Surgical waste"]
+      },
+      EM08: {
+        name: "Radiotherapy",
+        definition: "Radiotherapy decision, planning, treatment fractions, chemoradiation, immobilization, and radiotherapy-related travel.",
+        resourceFlows: ["Linear accelerator electricity", "Treatment planning", "Immobilization materials", "Fraction count", "Patient travel"]
+      },
+      EM09: {
+        name: "Follow-up",
+        definition: "Surveillance, outpatient review, follow-up tests, recurrence monitoring, and return-route contacts.",
+        resourceFlows: ["Outpatient visit", "Surveillance tests", "Staff time", "Patient travel", "EHR use"]
+      }
+    };
+
+    const pathwayData = {
+      eau: {
+        label: "EAU guideline",
+        title: "EAU MIBC Guideline Reference Pathway",
+        status: "Clinical reference, local execution not assumed",
+        scope: "Guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. Local Erasmus MC activity execution must be confirmed before LCA use.",
+        defaultSelected: "EAU-DX04",
+        lanes: [
+          { y: 112, label: "Diagnosis and staging" },
+          { y: 292, label: "Decision and treatment" },
+          { y: 472, label: "Follow-up and advanced care" }
+        ],
+        nodes: [
+          activity("EAU-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 80, 112, "Entry to the guideline-level MIBC workup after suspected bladder cancer or referral.", "This is a guideline reference entry point. It does not specify which hospital performs the first contact.", ["Patient travel", "Administrative ICT", "Referral communication"], ["Should ECO-PATH start at first presentation, first cystoscopy, confirmed MIBC, or referral to a tertiary center?"]),
+          activity("EAU-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 220, 112, "Clinical assessment before definitive staging and treatment selection.", "Included because health status and baseline assessment affect treatment eligibility and downstream route selection.", ["Outpatient room use", "Clinician time", "Patient travel"], ["Which elements are repeated locally after referral?"]),
+          activity("EAU-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM03", "diagnostic", 360, 112, "Laboratory and urine-based diagnostic information used in the diagnostic pathway.", "This may be relevant for upstream pathway scope, but may fall outside a post-referral Erasmus MC boundary.", ["Laboratory materials", "Specimen transport", "Staff time"], ["Are these tests repeated at Erasmus MC or only reviewed from referring hospitals?"]),
+          activity("EAU-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 500, 112, "Endoscopic visualization used in bladder cancer diagnosis and surveillance logic.", "Included in the guideline pathway. It should not be added to the EMC local map unless local experts confirm it occurs in the selected boundary.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy a pre-pathway activity for the current MIBC case?"]),
+          activity("EAU-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 640, 112, "Transurethral resection provides tissue diagnosis and staging information.", "Important guideline activity, but likely upstream of the current EMC Bladder Cancer Center workflow unless repeated or reviewed.", ["Operating room time", "Anesthesia", "Instruments", "Pathology sample", "Waste"], ["Does the ECO-PATH MIBC model include TURBT or only pathology review after referral?"]),
+          activity("EAU-DX05", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 780, 112, "Pathological confirmation and staging information used for treatment selection.", "This can map to pathology review in the local pathway if Erasmus MC performs revision or reassessment.", ["Pathology staff time", "Slides or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
+          activity("EAU-DX06", "Staging imaging", "Diagnostics", "activity", "EM03", "diagnostic", 920, 112, "Imaging for staging and assessment of treatment options.", "Guideline-level staging imaging can overlap with EMC radiology and CT reassessment nodes.", ["CT or MRI scan", "Contrast media", "Scanner electricity", "Patient travel"], ["Which imaging is new, repeated, or reviewed only?"]),
+          activity("EAU-DX07", "Fitness and health status assessment", "Diagnostics", "decision", "EM05", "diagnostic", 1060, 112, "Assessment of whether radical treatment, systemic therapy, bladder-sparing treatment, or palliative care is clinically appropriate.", "Retained as a decision node because it controls downstream resource demand.", ["Clinical staff time", "Assessment tools", "EHR documentation"], ["Which fitness variables are available from local records?"]),
+          activity("EAU-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1060, 292, "Multidisciplinary review before treatment initiation and treatment route selection.", "This is both clinically central and reusable as an ECO-PATH module.", ["Clinician time", "Meeting room use", "Imaging display", "EHR access"], ["Which disciplines attend, and how often are cases re-discussed?"]),
+          activity("EAU-TX01", "Treatment intent decision", "Treatment planning", "decision", "EM05", "treatment", 920, 292, "Definition of curative, organ-sparing, systemic, or palliative intent.", "Kept separate from treatment delivery because it determines pathway topology.", ["Consultation time", "Shared decision documentation", "Scheduling"], ["Which alternatives are clinically comparable for environmental comparison?"]),
+          activity("EAU-TX02", "Perioperative systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 780, 292, "Eligibility assessment for neoadjuvant, adjuvant, or other systemic therapy.", "Oncology should appear here as systemic therapy decision logic, not only as a professional label.", ["Medical oncology review", "Laboratory monitoring", "Pharmacy planning"], ["Which regimens, cycles, and dose assumptions are in scope?"]),
+          activity("EAU-TX03", "Neoadjuvant or adjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 640, 292, "Systemic therapy delivered before or after local treatment when clinically indicated.", "This is the main oncology-related LCA activity because drugs, infusion materials, pharmacy preparation, and waste are concentrated here.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Day-care chair time", "Cytotoxic waste"], ["Which drug regimens are used locally for the target population?"]),
+          activity("EAU-TX04", "Radical cystectomy and urinary diversion", "Surgery", "activity", "EM07", "treatment", 500, 292, "Surgical treatment route including cystectomy and urinary diversion.", "A high-resource treatment module that should not be environmentally compared with alternatives unless clinical comparability is established.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "ICU stay if applicable", "Waste"], ["Which surgical episode boundary should be used?"]),
+          activity("EAU-TX05", "Bladder-sparing or trimodality pathway", "Radiotherapy", "decision", "EM08", "treatment", 500, 472, "Organ-sparing treatment route that may include TURBT, chemotherapy, radiotherapy, and long-term surveillance.", "This is a pathway configuration, not a single procedure. It needs a defined time horizon.", ["Radiotherapy planning", "Chemotherapy co-treatment", "Repeated surveillance", "Patient travel"], ["What clinical equivalence or outcome context is required?"]),
+          activity("EAU-TX06", "External beam radiotherapy or chemoradiation", "Radiotherapy", "activity", "EM08", "treatment", 640, 472, "Radiotherapy-based treatment delivery, with or without systemic co-treatment.", "Should be modeled through radiotherapy fractions, planning, immobilization, and co-treatment where applicable.", ["Fraction count", "Machine electricity", "Immobilization materials", "Treatment planning", "Patient travel"], ["Which fractionation schedules are used locally?"]),
+          activity("EAU-TX07", "Palliative or advanced disease route", "Treatment planning", "decision", "EM05", "return", 780, 472, "Route for non-curative treatment, advanced disease, or symptom-oriented management.", "Included to preserve guideline logic. This may need a separate ECO-PATH scope if treatment intent differs from the curative case.", ["Consultation time", "Systemic therapy if used", "Supportive care", "Travel"], ["Should palliative routes be inside the same model or a separate scenario?"]),
+          activity("EAU-FU01", "Follow-up and surveillance", "Follow-up", "activity", "EM09", "followup", 1060, 472, "Follow-up after primary treatment, including surveillance contacts and tests.", "Follow-up intensity can strongly affect pathway-level environmental results over longer time horizons.", ["Outpatient visits", "Surveillance imaging or cystoscopy", "Laboratory tests", "Patient travel"], ["What time horizon is required: 30 days, 90 days, one year, or long-term follow-up?"])
+        ],
+        edges: [
+          edge("EAU-AC01", "EAU-DX01", "diagnostic"),
+          edge("EAU-DX01", "EAU-DX02", "diagnostic"),
+          edge("EAU-DX02", "EAU-DX03", "diagnostic"),
+          edge("EAU-DX03", "EAU-DX04", "diagnostic"),
+          edge("EAU-DX04", "EAU-DX05", "diagnostic"),
+          edge("EAU-DX05", "EAU-DX06", "diagnostic"),
+          edge("EAU-DX06", "EAU-DX07", "diagnostic"),
+          edge("EAU-DX07", "EAU-JM01", "diagnostic"),
+          edge("EAU-JM01", "EAU-TX01", "treatment"),
+          edge("EAU-TX01", "EAU-TX02", "treatment"),
+          edge("EAU-TX02", "EAU-TX03", "treatment"),
+          edge("EAU-TX03", "EAU-TX04", "treatment"),
+          edge("EAU-TX01", "EAU-TX05", "treatment"),
+          edge("EAU-TX05", "EAU-TX06", "treatment"),
+          edge("EAU-TX01", "EAU-TX07", "return"),
+          edge("EAU-TX04", "EAU-FU01", "followup"),
+          edge("EAU-TX06", "EAU-FU01", "followup"),
+          edge("EAU-TX07", "EAU-FU01", "return")
+        ]
+      },
+      emc: {
+        label: "EMC local pathway",
+        title: "Erasmus MC Local MIBC Workflow",
+        status: "Operational pathway, expert confirmation required",
+        scope: "Local Bladder Cancer Center workflow after referral or triage. Upstream cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway unless they are repeated or reviewed locally.",
+        defaultSelected: "EMC-TX05",
+        lanes: [
+          { y: 96, label: "Referral, diagnostics, and MDT" },
+          { y: 278, label: "Systemic therapy and assessment" },
+          { y: 460, label: "Treatment choices, delivery, and follow-up" }
+        ],
+        nodes: [
+          activity("EMC-AC01", "Referral", "Access", "activity", "EM01", "diagnostic", 70, 96, "Referral into the Erasmus MC Bladder Cancer Center pathway.", "This is the practical local start point in the current EMC workflow map.", ["Referral communication", "Administrative ICT", "Patient travel if visit occurs"], ["Which referring hospitals are included in the pathway boundary?"]),
+          activity("EMC-AC02", "Triage", "Access", "decision", "EM01", "diagnostic", 190, 96, "Initial triage of referral information and pathway eligibility.", "A decision node that may determine invite, paper assessment, return, or additional diagnostic review.", ["Staff time", "EHR review", "Referral documentation"], ["Which triage rules determine route selection?"]),
+          activity("EMC-AC03", "Invite decision", "Access", "decision", "EM01", "diagnostic", 310, 96, "Decision whether the patient is invited to the Bladder Cancer Center route.", "Controls movement into the local pathway and should be validated with pathway coordinators.", ["Staff time", "Scheduling", "Patient communication"], ["How often does triage lead to return without clinic visit?"]),
+          activity("EMC-AC04", "Return to referrer", "Access", "activity", "EM01", "return", 310, 246, "Return route to the referring hospital when Erasmus MC pathway continuation is not needed.", "Retained because return routes affect organizational boundary and patient travel assumptions.", ["Administrative communication", "Patient travel if applicable", "EHR documentation"], ["Is return-to-referrer counted as an endpoint or a transfer?"]),
+          activity("EMC-DX01", "Pathology review", "Diagnostics", "activity", "EM02", "diagnostic", 430, 96, "Local pathology revision or review of available diagnostic material.", "This is the local counterpart of guideline histopathological confirmation when samples are reviewed at Erasmus MC.", ["Pathology staff time", "Slide handling", "Digital pathology", "Report generation"], ["Which specimens are reviewed, and which are only accepted from referring hospitals?"]),
+          activity("EMC-DX02", "Repeat CT decision", "Diagnostics", "decision", "EM03", "diagnostic", 550, 96, "Decision whether imaging should be repeated or reassessed.", "Important because repeat imaging can materially affect environmental burden.", ["Clinician review", "Radiology review", "EHR documentation"], ["What criteria trigger repeat CT?"]),
+          activity("EMC-DX03", "Radiology", "Diagnostics", "activity", "EM03", "diagnostic", 670, 58, "Radiology activity within the local workflow.", "Included as an operational imaging node. The exact modality and protocol require source confirmation.", ["Scanner electricity", "Contrast media if used", "Radiology staff time", "Patient travel"], ["Which scans are performed locally versus reviewed externally?"]),
+          activity("EMC-DX04", "CT reassessment", "Diagnostics", "activity", "EM03", "diagnostic", 670, 134, "CT repeat or reassessment after the repeat CT decision.", "This activity should be parameterized separately from guideline staging imaging if it is a local repeat.", ["CT scan or image review", "Contrast media if repeated", "Radiology report", "Patient travel"], ["Is this a new scan, image reread, or both?"]),
+          activity("EMC-JM01", "Joint clinic", "Joint clinic and MDT", "activity", "EM04", "diagnostic", 805, 96, "Bladder Cancer Center joint clinic with urology, medical oncology, radiotherapy, and oncology nursing input.", "Oncology should appear here as part of the care team, but major oncology resource flows belong in systemic therapy.", ["Clinician time", "Oncology nurse time", "Room use", "Patient travel"], ["Which disciplines attend each visit, and is the patient always present?"]),
+          activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 940, 96, "Multidisciplinary tumor board review for route selection and treatment planning.", "Core activity for expert validation because it controls treatment branches.", ["Clinician time", "Meeting room use", "Imaging display", "EHR use"], ["How many MDT discussions per patient are typical?"]),
+          activity("EMC-TX01", "Direct local therapy", "Treatment planning", "decision", "EM05", "treatment", 430, 278, "Route toward direct local therapy as shown in the local workflow.", "The clinical meaning is not sufficiently explicit and should be clarified with experts.", ["Consultation time", "Scheduling", "Treatment planning"], ["What exact local therapy is meant by this node?"]),
+          activity("EMC-TX02", "Paper assessment", "Treatment planning", "activity", "EM05", "return", 550, 278, "Paper assessment route, often relevant for palliative or non-standard cases in the local diagram.", "Kept separate because it can avoid patient-facing clinic resource flows and still affect downstream decisions.", ["Clinician time", "EHR review", "Administrative communication"], ["Which patients follow paper assessment, and where do they go next?"]),
+          activity("EMC-TX03", "Neoadjuvant chemotherapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 670, 248, "Neoadjuvant chemotherapy before local treatment when selected.", "This is a core oncology LCA activity due to drug, pharmacy, infusion, monitoring, and waste flows.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Day-care chair time", "Cytotoxic waste"], ["Which NAC regimens and cycle counts should be modeled?"]),
+          activity("EMC-TX04", "Induction chemotherapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 670, 342, "Induction chemotherapy route in the local workflow.", "Should remain in EM06, but may need a separate scenario if regimens and intent differ from NAC.", ["Drug dose and regimen", "Infusion materials", "Laboratory monitoring", "Day-care chair time"], ["How does induction chemotherapy differ operationally from NAC?"]),
+          activity("EMC-TX05", "Medical oncology management", "Systemic therapy and oncology", "activity", "EM06", "treatment", 805, 294, "Internal oncology or medical oncology management after systemic therapy or for systemic treatment decisions.", "This is where oncology should be represented as a healthcare activity. The larger resource burden remains tied to EM06 systemic therapy delivery.", ["Medical oncology consultation", "Treatment monitoring", "EHR use", "Patient travel"], ["Should palliative systemic therapy be split into a separate node?"]),
+          activity("EMC-TX06", "Progression assessment", "Systemic therapy and oncology", "activity", "EM06", "treatment", 940, 248, "Assessment of progression after systemic therapy or during route reassessment.", "Treated as an assessment activity because it can change downstream route and resource use.", ["Imaging review", "Clinical consultation", "Laboratory results", "EHR documentation"], ["Which tests define progression in this local pathway?"]),
+          activity("EMC-TX07", "Response assessment", "Systemic therapy and oncology", "activity", "EM06", "treatment", 940, 342, "Assessment of response after systemic therapy or induction chemotherapy.", "This may affect surgery, radiotherapy, bladder-sparing treatment, or palliative route selection.", ["Imaging review", "Clinical consultation", "Laboratory results", "Patient travel"], ["Is response assessment performed after every systemic therapy route?"]),
+          activity("EMC-TX08", "Curative treatment decision", "Treatment planning", "decision", "EM05", "treatment", 1075, 294, "Decision point for curative treatment route selection.", "Should not imply clinical equivalence between alternatives. Comparability must be externally confirmed.", ["Shared decision consultation", "Treatment planning", "EHR documentation"], ["Which alternatives are clinically comparable in the intended ECO-PATH decision context?"]),
+          activity("EMC-TX09", "Palliative treatment decision", "Treatment planning", "decision", "EM05", "return", 430, 460, "Decision point for palliative treatment route selection.", "May require a separate scenario or pathway scope because intent and time horizon differ from curative routes.", ["Consultation time", "Shared decision documentation", "Supportive care planning"], ["Is palliative treatment inside the same ECO-PATH model?"]),
+          activity("EMC-TX10", "Systemic therapy decision", "Systemic therapy and oncology", "decision", "EM06", "treatment", 550, 460, "Decision whether systemic therapy is part of the selected route.", "This is oncology as decision logic and should link to EM06 treatment delivery parameters.", ["Medical oncology review", "Laboratory review", "Scheduling"], ["Which systemic therapy options are used in the local palliative or curative context?"]),
+          activity("EMC-TX11", "Radiotherapy decision", "Radiotherapy", "decision", "EM08", "treatment", 670, 460, "Decision whether radiotherapy is selected.", "Retained separately from radiotherapy delivery because it defines route topology.", ["Radiotherapy consultation", "Planning review", "EHR documentation"], ["Which radiotherapy indications belong to this node?"]),
+          activity("EMC-TX12", "Radical surgery choice", "Surgery", "decision", "EM07", "treatment", 805, 460, "Decision or route toward radical surgical treatment.", "Should link to surgery delivery only after clinical comparability and boundary are specified.", ["Surgical consultation", "Preoperative planning", "Patient travel"], ["Does this node include preoperative assessment?"]),
+          activity("EMC-TX13", "Bladder-sparing choice", "Radiotherapy", "decision", "EM08", "treatment", 940, 460, "Decision or route toward bladder-sparing treatment.", "This may imply radiotherapy, chemoradiation, and longer surveillance. It should be defined as a pathway configuration.", ["Radiotherapy planning", "Systemic co-treatment if used", "Surveillance planning"], ["What time horizon captures bladder-sparing surveillance fairly?"]),
+          activity("EMC-TX14", "Urology surgery", "Surgery", "activity", "EM07", "treatment", 805, 548, "Surgical treatment episode in the local urology pathway.", "A core high-resource module requiring OR, anesthesia, sterile instruments, ward stay, and waste data.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Which surgical procedures and admission days are included?"]),
+          activity("EMC-TX15", "Chemoradiation", "Radiotherapy", "activity", "EM08", "treatment", 940, 548, "Combined chemotherapy and radiotherapy route.", "This links EM08 radiotherapy with EM06 systemic therapy inputs. Co-treatment should not be hidden inside one aggregate value.", ["Radiotherapy fractions", "Chemotherapy co-treatment", "Immobilization", "Patient travel", "Cytotoxic waste"], ["Which components are assigned to EM06 versus EM08?"]),
+          activity("EMC-TX16", "Radiotherapy treatment", "Radiotherapy", "activity", "EM08", "treatment", 1075, 548, "Radiotherapy delivery, including EBRT, brachytherapy, or CyberKnife where applicable in the local pathway.", "Must be parameterized by treatment modality and fraction or session count.", ["Machine electricity", "Treatment planning", "Fraction count", "Immobilization materials", "Patient travel"], ["Which radiotherapy modalities are actually used for the selected population?"]),
+          activity("EMC-FU01", "Follow-up", "Follow-up", "activity", "EM09", "followup", 1075, 96, "Follow-up after treatment or return route.", "Follow-up endpoint and time horizon remain major modeling choices.", ["Outpatient visits", "Surveillance tests", "Patient travel", "EHR use"], ["Does the pathway end at primary treatment, 90 days, one year, or long-term surveillance?"]),
+          activity("EMC-FU02", "Return to referring hospital", "Follow-up", "activity", "EM09", "return", 940, 26, "Return to referring hospital where relevant.", "Important for multi-hospital boundary definition and patient travel assumptions.", ["Administrative communication", "Transfer documentation", "Patient travel if applicable"], ["Which follow-up activities occur at Erasmus MC versus referring hospitals?"])
+        ],
+        edges: [
+          edge("EMC-AC01", "EMC-AC02", "diagnostic"),
+          edge("EMC-AC02", "EMC-AC03", "diagnostic"),
+          edge("EMC-AC03", "EMC-AC04", "return"),
+          edge("EMC-AC03", "EMC-DX01", "diagnostic"),
+          edge("EMC-DX01", "EMC-DX02", "diagnostic"),
+          edge("EMC-DX02", "EMC-DX03", "diagnostic"),
+          edge("EMC-DX02", "EMC-DX04", "diagnostic"),
+          edge("EMC-DX03", "EMC-JM01", "diagnostic"),
+          edge("EMC-DX04", "EMC-JM01", "diagnostic"),
+          edge("EMC-JM01", "EMC-JM02", "diagnostic"),
+          edge("EMC-JM02", "EMC-TX01", "treatment"),
+          edge("EMC-JM02", "EMC-TX02", "return"),
+          edge("EMC-JM02", "EMC-TX03", "treatment"),
+          edge("EMC-JM02", "EMC-TX04", "treatment"),
+          edge("EMC-TX03", "EMC-TX05", "treatment"),
+          edge("EMC-TX04", "EMC-TX05", "treatment"),
+          edge("EMC-TX05", "EMC-TX06", "treatment"),
+          edge("EMC-TX05", "EMC-TX07", "treatment"),
+          edge("EMC-TX06", "EMC-TX08", "treatment"),
+          edge("EMC-TX07", "EMC-TX08", "treatment"),
+          edge("EMC-TX02", "EMC-TX09", "return"),
+          edge("EMC-TX09", "EMC-TX10", "treatment"),
+          edge("EMC-TX10", "EMC-TX05", "treatment"),
+          edge("EMC-TX08", "EMC-TX11", "treatment"),
+          edge("EMC-TX08", "EMC-TX12", "treatment"),
+          edge("EMC-TX08", "EMC-TX13", "treatment"),
+          edge("EMC-TX12", "EMC-TX14", "treatment"),
+          edge("EMC-TX13", "EMC-TX15", "treatment"),
+          edge("EMC-TX11", "EMC-TX16", "treatment"),
+          edge("EMC-TX14", "EMC-FU01", "followup"),
+          edge("EMC-TX15", "EMC-FU01", "followup"),
+          edge("EMC-TX16", "EMC-FU01", "followup"),
+          edge("EMC-FU01", "EMC-FU02", "return")
+        ]
+      }
+    };
+
+    const state = {
+      pathway: "emc",
+      selected: null,
+      domain: "all",
+      module: "all",
+      type: "all",
+      query: ""
+    };
+
+    function activity(id, label, domain, type, module, route, x, y, protocolStep, rationale, resourceFlows, openQuestions) {
+      return {
+        id,
+        label,
+        domain,
+        type,
+        module,
+        route,
+        x,
+        y,
+        protocolStep,
+        rationale,
+        resourceFlows,
+        openQuestions,
+        oncology: domain === "Systemic therapy and oncology" || label.toLowerCase().includes("oncology") || label.toLowerCase().includes("chemotherapy")
+      };
+    }
+
+    function edge(from, to, route) {
+      return { from, to, route };
+    }
+
+    function currentPathway() {
+      return pathwayData[state.pathway];
+    }
+
+    function nodeById(pathway, id) {
+      return pathway.nodes.find((node) => node.id === id);
+    }
+
+    function filteredNodes() {
+      const pathway = currentPathway();
+      const query = state.query.trim().toLowerCase();
+      return pathway.nodes.filter((node) => {
+        const module = moduleRegistry[node.module];
+        const text = [
+          node.id,
+          node.label,
+          node.domain,
+          node.type,
+          node.module,
+          module ? module.name : "",
+          node.protocolStep,
+          node.rationale,
+          node.resourceFlows.join(" "),
+          node.openQuestions.join(" "),
+          node.oncology ? "oncology systemic therapy chemotherapy" : ""
+        ].join(" ").toLowerCase();
+        return (state.domain === "all" || node.domain === state.domain)
+          && (state.module === "all" || node.module === state.module)
+          && (state.type === "all" || node.type === state.type)
+          && (!query || text.includes(query));
+      });
+    }
+
+    function createSvgElement(name, attrs = {}) {
+      const element = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+      return element;
+    }
+
+    function clear(element) {
+      while (element.firstChild) element.removeChild(element.firstChild);
+    }
+
+    function routeColor(route) {
+      if (route === "diagnostic") return "var(--diagnostic)";
+      if (route === "treatment") return "var(--treatment)";
+      if (route === "followup") return "var(--followup)";
+      return "var(--return)";
+    }
+
+    function pathForEdge(from, to) {
+      const dx = Math.abs(to.x - from.x);
+      const dy = Math.abs(to.y - from.y);
+      if (dx < 8 || dy < 8) {
+        return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+      }
+      const midX = (from.x + to.x) / 2;
+      return `M ${from.x} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${to.x} ${to.y}`;
+    }
+
+    function renderSourceSwitch() {
+      const container = document.getElementById("sourceSwitch");
+      clear(container);
+      Object.entries(pathwayData).forEach(([id, pathway]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = pathway.label;
+        button.className = id === state.pathway ? "active" : "";
+        button.addEventListener("click", () => {
+          state.pathway = id;
+          state.selected = pathwayData[id].defaultSelected;
+          state.domain = "all";
+          state.module = "all";
+          state.type = "all";
+          state.query = "";
+          document.getElementById("typeFilter").value = "all";
+          document.getElementById("searchBox").value = "";
+          render();
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function renderFilterOptions() {
+      const nodes = currentPathway().nodes;
+      const domains = ["all", ...Array.from(new Set(nodes.map((node) => node.domain)))];
+      const modules = ["all", ...Array.from(new Set(nodes.map((node) => node.module)))];
+      const domainFilter = document.getElementById("domainFilter");
+      const moduleFilter = document.getElementById("moduleFilter");
+
+      const previousDomain = state.domain;
+      const previousModule = state.module;
+      clear(domainFilter);
+      clear(moduleFilter);
+
+      domains.forEach((domain) => {
+        const option = document.createElement("option");
+        option.value = domain;
+        option.textContent = domain === "all" ? "All domains" : domain;
+        domainFilter.appendChild(option);
+      });
+
+      modules.forEach((moduleId) => {
+        const option = document.createElement("option");
+        option.value = moduleId;
+        option.textContent = moduleId === "all" ? "All modules" : `${moduleId} ${moduleRegistry[moduleId].name}`;
+        moduleFilter.appendChild(option);
+      });
+
+      state.domain = domains.includes(previousDomain) ? previousDomain : "all";
+      state.module = modules.includes(previousModule) ? previousModule : "all";
+      domainFilter.value = state.domain;
+      moduleFilter.value = state.module;
+    }
+
+    function renderHeader() {
+      const pathway = currentPathway();
+      document.getElementById("pathwayTitle").textContent = pathway.title;
+      document.getElementById("pathwayScope").textContent = pathway.scope;
+      document.getElementById("pathwayStatus").textContent = pathway.status;
+    }
+
+    function renderMap() {
+      const svg = document.getElementById("pathwaySvg");
+      const pathway = currentPathway();
+      const visibleIds = new Set(filteredNodes().map((node) => node.id));
+      clear(svg);
+      svg.appendChild(createSvgElement("title", { id: "svgTitle" })).textContent = pathway.title;
+      svg.appendChild(createSvgElement("desc", { id: "svgDesc" })).textContent = pathway.scope;
+
+      pathway.lanes.forEach((lane) => {
+        const line = createSvgElement("line", {
+          x1: 36,
+          x2: 1164,
+          y1: lane.y,
+          y2: lane.y,
+          stroke: "var(--line)",
+          "stroke-width": 1
+        });
+        line.setAttribute("opacity", "0.65");
+        svg.appendChild(line);
+        const label = createSvgElement("text", {
+          x: 38,
+          y: Math.max(22, lane.y - 42),
+          class: "lane-label"
+        });
+        label.textContent = lane.label;
+        svg.appendChild(label);
+      });
+
+      pathway.edges.forEach((edgeItem) => {
+        const from = nodeById(pathway, edgeItem.from);
+        const to = nodeById(pathway, edgeItem.to);
+        if (!from || !to) return;
+        const path = createSvgElement("path", {
+          d: pathForEdge(from, to),
+          class: `map-edge ${edgeItem.route === "return" ? "return" : ""}`,
+          stroke: routeColor(edgeItem.route),
+          "stroke-width": edgeItem.route === "diagnostic" ? 7 : 6
+        });
+        if (!visibleIds.has(from.id) || !visibleIds.has(to.id)) {
+          path.setAttribute("opacity", "0.16");
+        }
+        svg.appendChild(path);
+      });
+
+      const placedLabels = [];
+      const markerBoxes = pathway.nodes.map((node) => markerBounds(node));
+      pathway.nodes.forEach((node) => {
+        const visible = visibleIds.has(node.id);
+        const labelLines = splitLabel(shortStationLabel(node), 18);
+        const labelLayout = stationLabelLayout(node, labelLines, placedLabels, markerBoxes);
+        placedLabels.push({
+          x: labelLayout.x,
+          y: labelLayout.y,
+          width: labelLayout.width,
+          height: labelLayout.height
+        });
+        const group = createSvgElement("g", {
+          class: "map-node",
+          role: "button",
+          "aria-label": `${node.id} ${node.label}`,
+          tabindex: "0"
+        });
+        group.addEventListener("click", () => {
+          state.selected = node.id;
+          render();
+        });
+        group.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            state.selected = node.id;
+            render();
+          }
+        });
+        if (!visible) group.setAttribute("opacity", "0.24");
+
+        const labelText = createSvgElement("text", {
+          x: labelLayout.textX,
+          y: labelLayout.y,
+          class: "station-label-text"
+        });
+        labelText.setAttribute("text-anchor", labelLayout.anchor);
+        labelLines.forEach((line, index) => {
+          const tspan = createSvgElement("tspan", {
+            x: labelLayout.textX,
+            dy: index === 0 ? 0 : 14
+          });
+          tspan.textContent = line;
+          labelText.appendChild(tspan);
+        });
+        group.appendChild(labelText);
+
+        svg.appendChild(group);
+      });
+
+      pathway.nodes.forEach((node) => {
+        const visible = visibleIds.has(node.id);
+        const selected = state.selected === node.id;
+        const group = createSvgElement("g", {
+          class: "map-node",
+          role: "button",
+          "aria-label": `${node.id} ${node.label}`,
+          tabindex: "0"
+        });
+        group.addEventListener("click", () => {
+          state.selected = node.id;
+          render();
+        });
+        group.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            state.selected = node.id;
+            render();
+          }
+        });
+        if (!visible) group.setAttribute("opacity", "0.24");
+
+        if (node.type === "decision") {
+          const diamond = createSvgElement("polygon", {
+            points: `${node.x},${node.y - 30} ${node.x + 38},${node.y} ${node.x},${node.y + 30} ${node.x - 38},${node.y}`,
+            class: `node-shape decision ${node.route} ${selected ? "selected" : ""}`
+          });
+          group.appendChild(diamond);
+        } else {
+          const circle = createSvgElement("circle", {
+            cx: node.x,
+            cy: node.y,
+            r: 24,
+            class: `node-shape activity ${node.route} ${selected ? "selected" : ""}`
+          });
+          group.appendChild(circle);
+        }
+
+        const [codePrefix, codeNumber] = stationCodeParts(node);
+        const code = createSvgElement("text", {
+          x: node.x,
+          y: node.y,
+          class: "node-code"
+        });
+        const prefixLine = createSvgElement("tspan", {
+          x: node.x,
+          y: node.y - 7,
+          class: "station-code-line"
+        });
+        prefixLine.textContent = codePrefix;
+        code.appendChild(prefixLine);
+        const numberLine = createSvgElement("tspan", {
+          x: node.x,
+          y: node.y + 8,
+          class: "station-code-line"
+        });
+        numberLine.textContent = codeNumber;
+        code.appendChild(numberLine);
+        group.appendChild(code);
+
+        svg.appendChild(group);
+      });
+    }
+
+    function stationCodeParts(node) {
+      const code = node.id.replace("EAU-", "").replace("EMC-", "");
+      const match = code.match(/^([A-Z]+)([0-9]+)$/);
+      return match ? [match[1], match[2]] : [code, ""];
+    }
+
+    function markerBounds(node) {
+      if (node.type === "decision") {
+        return { x: node.x - 38, y: node.y - 30, width: 76, height: 60 };
+      }
+      return { x: node.x - 24, y: node.y - 24, width: 48, height: 48 };
+    }
+
+    function shortStationLabel(node) {
+      const replacements = {
+        "Referral or presentation": "Referral / presentation",
+        "History and physical assessment": "History + exam",
+        "Urine cytology and laboratory workup": "Urine + lab workup",
+        "TURBT for diagnosis and staging": "TURBT staging",
+        "Histopathological confirmation": "Pathology confirmation",
+        "Fitness and health status assessment": "Fitness assessment",
+        "Treatment intent decision": "Treatment intent",
+        "Perioperative systemic therapy eligibility": "Systemic eligibility",
+        "Neoadjuvant or adjuvant systemic therapy": "Systemic therapy",
+        "Radical cystectomy and urinary diversion": "Cystectomy + diversion",
+        "Bladder-sparing or trimodality pathway": "Bladder-sparing",
+        "External beam radiotherapy or chemoradiation": "EBRT / chemoradiation",
+        "Palliative or advanced disease route": "Palliative route",
+        "Follow-up and surveillance": "Follow-up",
+        "Return to referrer": "Return",
+        "Repeat CT decision": "Repeat CT?",
+        "CT reassessment": "CT reassessment",
+        "Urological tumor MDT": "Tumor MDT",
+        "Direct local therapy": "Local therapy",
+        "Neoadjuvant chemotherapy": "NAC",
+        "Induction chemotherapy": "Induction chemo",
+        "Medical oncology management": "Medical oncology",
+        "Progression assessment": "Progression",
+        "Response assessment": "Response",
+        "Curative treatment decision": "Curative decision",
+        "Palliative treatment decision": "Palliative decision",
+        "Systemic therapy decision": "Systemic therapy?",
+        "Radiotherapy decision": "Radiotherapy?",
+        "Radical surgery choice": "Surgery choice",
+        "Bladder-sparing choice": "Bladder-sparing",
+        "Radiotherapy treatment": "Radiotherapy",
+        "Return to referring hospital": "Return hospital"
+      };
+      return replacements[node.label] || node.label;
+    }
+
+    function stationLabelLayout(node, lines, placedLabels, markerBoxes) {
+      const labelWidth = estimateLabelWidth(lines);
+      const labelHeight = lines.length * 14;
+      const candidates = [
+        { x: node.x + 34, y: node.y + 34, dx: 1 },
+        { x: node.x - 34 - labelWidth, y: node.y + 34, dx: -1 },
+        { x: node.x - labelWidth / 2, y: node.y + 42, dx: 0 },
+        { x: node.x + 34, y: node.y - 58, dx: 1 },
+        { x: node.x - 34 - labelWidth, y: node.y - 58, dx: -1 },
+        { x: node.x - labelWidth / 2, y: node.y - 64, dx: 0 },
+        { x: node.x + 34, y: node.y - labelHeight / 2, dx: 1 },
+        { x: node.x - 34 - labelWidth, y: node.y - labelHeight / 2, dx: -1 }
+      ];
+
+      let best = null;
+      candidates.forEach((candidate, index) => {
+        const unclamped = { ...candidate, width: labelWidth, height: labelHeight };
+        const x = Math.max(14, Math.min(1186 - labelWidth, candidate.x));
+        const y = Math.max(14, Math.min(650 - labelHeight, candidate.y));
+        const box = { x, y, width: labelWidth, height: labelHeight };
+        const clampPenalty = Math.abs(x - candidate.x) * 2 + Math.abs(y - candidate.y) * 2;
+        const labelPenalty = placedLabels.reduce((total, placed) => total + overlapArea(box, placed) * 4, 0);
+        const markerPenalty = markerBoxes.reduce((total, marker) => total + overlapArea(box, marker) * 8, 0);
+        const distancePenalty = Math.hypot(box.x + box.width / 2 - node.x, box.y + box.height / 2 - node.y) * 0.08;
+        const preferencePenalty = index * 0.2 + (unclamped.x < 14 || unclamped.x + labelWidth > 1186 ? 80 : 0);
+        const penalty = clampPenalty + labelPenalty + markerPenalty + distancePenalty + preferencePenalty;
+        if (!best || penalty < best.penalty) {
+          best = { ...box, dx: candidate.dx, penalty };
+        }
+      });
+
+      let textX = best.x;
+      let anchor = "start";
+      if (best.dx < 0) {
+        textX = best.x + best.width;
+        anchor = "end";
+      } else if (best.dx === 0) {
+        textX = best.x + best.width / 2;
+        anchor = "middle";
+      }
+      return {
+        x: best.x,
+        y: best.y,
+        width: best.width,
+        height: best.height,
+        textX,
+        anchor
+      };
+    }
+
+    function overlapArea(a, b) {
+      const width = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
+      const height = Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+      return width * height;
+    }
+
+    function estimateLabelWidth(lines) {
+      const maxLength = Math.max(...lines.map((line) => line.length), 8);
+      return Math.max(54, Math.min(132, maxLength * 6.1));
+    }
+
+    function splitLabel(label, maxLength) {
+      const words = label.split(" ");
+      const lines = [];
+      let current = "";
+      words.forEach((word) => {
+        const next = current ? `${current} ${word}` : word;
+        if (next.length > maxLength && current) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = next;
+        }
+      });
+      if (current) lines.push(current);
+      return lines.slice(0, 3);
+    }
+
+    function renderDetail() {
+      const detail = document.getElementById("activityDetail");
+      const pathway = currentPathway();
+      let node = nodeById(pathway, state.selected);
+      if (!node) {
+        node = filteredNodes()[0] || pathway.nodes[0];
+        state.selected = node ? node.id : null;
+      }
+      if (!node) {
+        detail.innerHTML = '<div class="empty">No activity selected.</div>';
+        return;
+      }
+      const module = moduleRegistry[node.module];
+      detail.innerHTML = `
+        <div class="detail-title">
+          <div class="code-pill">${escapeHtml(node.id.replace("EAU-", "").replace("EMC-", ""))}</div>
+          <div>
+            <h2>${escapeHtml(node.label)}</h2>
+            <div class="meta-row">
+              <span class="tag">${escapeHtml(node.domain)}</span>
+              <span class="tag">${escapeHtml(node.type === "decision" ? "Decision point" : "Activity")}</span>
+              <span class="tag module">${escapeHtml(node.module)}</span>
+              ${node.oncology ? '<span class="tag oncology">Oncology relevant</span>' : ""}
+            </div>
+          </div>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-block">
+            <strong>Protocol-to-activity interpretation</strong>
+            <p>${escapeHtml(node.protocolStep)}</p>
+          </div>
+          <div class="detail-block">
+            <strong>Why this element is kept</strong>
+            <p>${escapeHtml(node.rationale)}</p>
+          </div>
+          <div class="detail-block">
+            <strong>ECO-PATH module</strong>
+            <p>${escapeHtml(node.module)} ${escapeHtml(module.name)}. ${escapeHtml(module.definition)}</p>
+          </div>
+          <div class="detail-block">
+            <strong>Candidate resource flows</strong>
+            <ul class="resource-list">${node.resourceFlows.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </div>
+          <div class="detail-block">
+            <strong>Expert confirmation needed</strong>
+            <ul class="question-list">${node.openQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderActivityList() {
+      const list = document.getElementById("activityList");
+      const nodes = filteredNodes();
+      clear(list);
+      document.getElementById("activityCount").textContent = `${nodes.length} of ${currentPathway().nodes.length} elements shown`;
+
+      if (!nodes.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No activities match the current filters.";
+        list.appendChild(empty);
+        return;
+      }
+
+      nodes.forEach((node) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `activity-row ${state.selected === node.id ? "active" : ""}`;
+        button.addEventListener("click", () => {
+          state.selected = node.id;
+          render();
+          document.getElementById("activityDetail").scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+        const module = moduleRegistry[node.module];
+        button.innerHTML = `
+          <span class="code-pill">${escapeHtml(node.id.replace("EAU-", "").replace("EMC-", ""))}</span>
+          <span class="activity-name">
+            <strong>${escapeHtml(node.label)}</strong>
+            <span>${escapeHtml(node.domain)} · ${escapeHtml(node.type === "decision" ? "Decision point" : "Activity")}</span>
+          </span>
+          <span class="tag module">${escapeHtml(node.module)} ${escapeHtml(module.name)}</span>
+        `;
+        list.appendChild(button);
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function bindControls() {
+      document.getElementById("domainFilter").addEventListener("change", (event) => {
+        state.domain = event.target.value;
+        render();
+      });
+      document.getElementById("moduleFilter").addEventListener("change", (event) => {
+        state.module = event.target.value;
+        render();
+      });
+      document.getElementById("typeFilter").addEventListener("change", (event) => {
+        state.type = event.target.value;
+        render();
+      });
+      document.getElementById("searchBox").addEventListener("input", (event) => {
+        state.query = event.target.value;
+        render();
+      });
+    }
+
+    function render() {
+      renderSourceSwitch();
+      renderFilterOptions();
+      renderHeader();
+      renderMap();
+      renderDetail();
+      renderActivityList();
+    }
+
+    bindControls();
+    state.selected = currentPathway().defaultSelected;
+    render();
+  </script>
+</body>
+</html>

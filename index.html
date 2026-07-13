@@ -582,7 +582,7 @@
         <img class="brand-logo" src="assets/erasmusmc_logo.png" alt="Erasmus MC logo">
         <div>
           <h1>ECO-PATH Pathway Activity Explorer</h1>
-          <p class="subtitle">MIBC protocol-to-activity view for guideline logic and local operational workflow.</p>
+          <p class="subtitle">MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.</p>
         </div>
       </div>
       <div class="source-switch" id="sourceSwitch" aria-label="Pathway source"></div>
@@ -725,7 +725,7 @@
 
     const pathwayData = {
       eau: {
-        label: "EAU guideline",
+        label: "Urology: EAU MIBC",
         title: "EAU MIBC Guideline Reference Pathway",
         status: "Clinical reference, local execution not assumed",
         scope: "Guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. Local Erasmus MC activity execution must be confirmed before LCA use.",
@@ -776,7 +776,7 @@
         ]
       },
       emc: {
-        label: "EMC local pathway",
+        label: "Urology: EMC MIBC",
         title: "Erasmus MC Local MIBC Workflow",
         status: "Operational pathway, expert confirmation required",
         scope: "Local Bladder Cancer Center workflow after referral or triage. Upstream cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway unless they are repeated or reviewed locally.",
@@ -850,6 +850,107 @@
           edge("EMC-TX15", "EMC-FU01", "followup"),
           edge("EMC-TX16", "EMC-FU01", "followup"),
           edge("EMC-FU01", "EMC-FU02", "return")
+        ]
+      },
+      crcGuideline: {
+        label: "Gastro: EU/ESMO CRC",
+        title: "European CRC Guideline Reference Pathway",
+        status: "Clinical reference, local execution not assumed",
+        scope: "Guideline-level colorectal cancer logic combining ECICC prevention, screening, and diagnosis guidance with ESMO colon, rectal, and metastatic CRC treatment guidance. This is an ECO-PATH scoping abstraction, not a clinical treatment recommendation.",
+        defaultSelected: "CRC-GUIDE-JM01",
+        lanes: [
+          { y: 104, label: "Screening, diagnosis, and staging" },
+          { y: 292, label: "Localized colon and rectal treatment" },
+          { y: 484, label: "Advanced disease, local therapy, and follow-up" }
+        ],
+        nodes: [
+          activity("CRC-GUIDE-AC01", "Screening or referral entry", "Access", "activity", "EM01", "diagnostic", 70, 104, "Entry through population screening, symptomatic presentation, or referral into a colorectal cancer diagnostic pathway.", "Retained because CRC can enter through screening or clinical referral, and the entry route affects colonoscopy demand, travel, and administrative contacts.", ["Invitation or referral communication", "Administrative ICT", "Patient travel if clinic attendance occurs"], ["Should the ECO-PATH CRC scope start at FIT-positive screening, symptoms, referral, confirmed diagnosis, or MDT?"]),
+          activity("CRC-GUIDE-DX01", "FIT-positive or symptoms", "Diagnostics", "decision", "EM03", "diagnostic", 190, 104, "Decision-relevant trigger for diagnostic colonoscopy after positive screening or clinical suspicion.", "This keeps the screening-to-diagnosis transition visible for pathway-level modeling.", ["Screening test logistics", "Clinical assessment", "Patient communication"], ["Is population screening inside the modeled boundary or a pre-pathway activity?"]),
+          activity("CRC-GUIDE-DX02", "Colonoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 310, 104, "Endoscopic examination for diagnosis, lesion assessment, biopsy, and possible polypectomy.", "Colonoscopy is a reusable ECO-PATH module candidate with equipment, sedation, disposables, reprocessing, and pathology links.", ["Endoscopy room time", "Scope reprocessing", "Sedation if used", "Biopsy tools", "Patient travel"], ["Which colonoscopy setting and sedation assumptions apply locally?"]),
+          activity("CRC-GUIDE-DX03", "Biopsy and pathology", "Diagnostics", "activity", "EM02", "diagnostic", 430, 104, "Histopathological confirmation and biomarker-related review where relevant.", "Pathology is needed to connect diagnosis, staging, molecular characterization, and treatment planning.", ["Sample handling", "Pathology staff time", "Digital or microscopy review", "Molecular testing if used"], ["Which pathology and molecular tests are routine for the target CRC subgroup?"]),
+          activity("CRC-GUIDE-DX04", "CT staging and CEA workup", "Diagnostics", "activity", "EM03", "diagnostic", 550, 104, "Staging workup with cross-sectional imaging and laboratory assessment such as CEA where relevant.", "Staging separates localized colon, localized rectal, and metastatic pathways, which have different LCA drivers.", ["CT scanner electricity", "Contrast media", "Laboratory testing", "Radiology reporting"], ["Which staging tests are repeated after referral versus reviewed from another hospital?"]),
+          activity("CRC-GUIDE-DX05", "Rectal MRI if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 670, 58, "Pelvic MRI or rectal-specific staging when the tumor location requires rectal cancer risk assessment.", "Rectal cancer staging can trigger neoadjuvant therapy, chemoradiation, or organ-preservation scenarios.", ["MRI scanner electricity", "Radiology staff time", "Patient travel", "Report generation"], ["Should colon and rectal cancer be separate ECO-PATH case examples?"]),
+          activity("CRC-GUIDE-JM01", "CRC MDT review", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 790, 104, "Multidisciplinary review of diagnosis, staging, operability, treatment intent, and sequence.", "A central decision node that links diagnostic information to surgery, systemic therapy, radiotherapy, and follow-up.", ["Clinician time", "Meeting room or digital meeting", "EHR and imaging display"], ["Which specialties attend the local colorectal MDT, and how often are cases re-discussed?"]),
+          activity("CRC-GUIDE-TX01", "Colon or rectal route decision", "Treatment planning", "decision", "EM05", "treatment", 910, 104, "Decision split between localized colon cancer, localized rectal cancer, metastatic disease, or other route-specific planning.", "Kept separate from treatment delivery because it controls downstream module selection and clinical comparability.", ["Consultation time", "Treatment planning", "Shared decision documentation"], ["Which decision comparison is intended for ECO-PATH: surgery, neoadjuvant treatment, surveillance, or pathway redesign?"]),
+          activity("CRC-GUIDE-TX02", "Colon surgery", "Surgery", "activity", "EM07", "treatment", 550, 292, "Surgical resection route for localized colon cancer where clinically indicated.", "Surgery is likely a high-impact module because of operating room time, anesthesia, instruments, admission, and waste.", ["Operating room time", "Anesthesia", "Sterile instruments", "Ward stay", "Surgical waste"], ["Which colectomy procedures and admission boundaries should be modeled?"]),
+          activity("CRC-GUIDE-TX03", "Adjuvant chemotherapy decision", "Systemic therapy and oncology", "decision", "EM06", "treatment", 670, 292, "Eligibility and indication assessment for adjuvant systemic therapy after localized colon surgery.", "Oncology appears as route decision logic and should connect to regimen, cycle, and monitoring assumptions.", ["Medical oncology review", "Laboratory monitoring", "Treatment scheduling"], ["Which stage, risk, and regimen assumptions are in scope?"]),
+          activity("CRC-GUIDE-TX04", "Adjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 790, 292, "Systemic therapy delivery after surgery where indicated.", "Drug dose, cycles, infusion or oral therapy, pharmacy preparation, and waste are core LCA drivers.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Day-care chair time", "Cytotoxic waste"], ["Which regimens and cycle counts are used locally?"]),
+          activity("CRC-GUIDE-TX05", "Neoadjuvant rectal therapy decision", "Treatment planning", "decision", "EM05", "treatment", 910, 292, "Decision on neoadjuvant therapy or upfront surgery for localized rectal cancer based on staging and risk.", "This node is essential because rectal cancer can change treatment sequence and time horizon.", ["Radiology review", "MDT decision time", "Patient consultation", "Scheduling"], ["Which rectal risk groups should be represented in the pathway?"]),
+          activity("CRC-GUIDE-TX06", "Chemoradiation or TNT", "Radiotherapy", "activity", "EM08", "treatment", 1030, 292, "Radiotherapy-based or total neoadjuvant treatment pathway for selected rectal cancer cases.", "This links radiotherapy, systemic therapy, repeated response assessment, and potential organ-preservation decisions.", ["Radiotherapy fractions", "Treatment planning", "Chemotherapy co-treatment", "Patient travel", "Response assessment"], ["How should EM06 systemic therapy inputs be separated from EM08 radiotherapy inputs?"]),
+          activity("CRC-GUIDE-TX07", "Rectal surgery", "Surgery", "activity", "EM07", "treatment", 1030, 404, "Rectal cancer surgery after upfront surgery or neoadjuvant treatment where indicated.", "A separate surgery node is useful because rectal operations, stoma care, admission, and perioperative pathways differ from colon surgery.", ["Operating room time", "Anesthesia", "Stoma materials if used", "Ward stay", "Surgical waste"], ["Which rectal surgery types and stoma assumptions apply?"]),
+          activity("CRC-GUIDE-TX08", "Metastatic disease decision", "Treatment planning", "decision", "EM05", "treatment", 790, 484, "Decision on systemic therapy, local treatment of metastases, cytoreductive surgery, HIPEC, or palliative route where relevant.", "Metastatic CRC should usually be a separate ECO-PATH scenario because intent, time horizon, and comparability differ from localized disease.", ["MDT review", "Medical oncology consultation", "Interventional planning"], ["Should metastatic CRC be included in the same page as localized CRC or treated as a separate case?"]),
+          activity("CRC-GUIDE-TX09", "Systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 910, 484, "Systemic treatment route for metastatic or advanced colorectal cancer.", "This is a major oncology resource-flow module with drug, pharmacy, monitoring, and waste inputs.", ["Drug dose and regimen", "Infusion or oral treatment", "Pharmacy preparation", "Monitoring tests", "Cytotoxic waste"], ["Which line of therapy and biomarker-defined subgroup is relevant?"]),
+          activity("CRC-GUIDE-TX10", "Metastasis local therapy or HIPEC", "Surgery", "activity", "EM07", "treatment", 1030, 484, "Selected local treatment options for metastases or peritoneal disease, including surgery or HIPEC where clinically relevant.", "Kept as a distinct advanced-disease node because the resource profile differs strongly from standard colectomy.", ["Operating room time", "Perfusion equipment if HIPEC", "Medicines", "ICU or ward stay", "Waste"], ["Which advanced-disease interventions are actually performed in the selected local boundary?"]),
+          activity("CRC-GUIDE-FU01", "Follow-up and surveillance", "Follow-up", "activity", "EM09", "followup", 1130, 484, "Post-treatment surveillance and follow-up after localized or advanced CRC pathways.", "Follow-up can drive repeated visits, CEA testing, imaging, colonoscopy, and travel over a multi-year time horizon.", ["Outpatient visits", "CEA tests", "Surveillance imaging", "Colonoscopy", "Patient travel"], ["What time horizon should be modeled: 90 days, one year, five years, or another interval?"])
+        ],
+        edges: [
+          edge("CRC-GUIDE-AC01", "CRC-GUIDE-DX01", "diagnostic"),
+          edge("CRC-GUIDE-DX01", "CRC-GUIDE-DX02", "diagnostic"),
+          edge("CRC-GUIDE-DX02", "CRC-GUIDE-DX03", "diagnostic"),
+          edge("CRC-GUIDE-DX03", "CRC-GUIDE-DX04", "diagnostic"),
+          edge("CRC-GUIDE-DX04", "CRC-GUIDE-DX05", "diagnostic"),
+          edge("CRC-GUIDE-DX04", "CRC-GUIDE-JM01", "diagnostic"),
+          edge("CRC-GUIDE-DX05", "CRC-GUIDE-JM01", "diagnostic"),
+          edge("CRC-GUIDE-JM01", "CRC-GUIDE-TX01", "treatment"),
+          edge("CRC-GUIDE-TX01", "CRC-GUIDE-TX02", "treatment"),
+          edge("CRC-GUIDE-TX02", "CRC-GUIDE-TX03", "treatment"),
+          edge("CRC-GUIDE-TX03", "CRC-GUIDE-TX04", "treatment"),
+          edge("CRC-GUIDE-TX04", "CRC-GUIDE-FU01", "followup"),
+          edge("CRC-GUIDE-TX01", "CRC-GUIDE-TX05", "treatment"),
+          edge("CRC-GUIDE-TX05", "CRC-GUIDE-TX06", "treatment"),
+          edge("CRC-GUIDE-TX06", "CRC-GUIDE-TX07", "treatment"),
+          edge("CRC-GUIDE-TX07", "CRC-GUIDE-FU01", "followup"),
+          edge("CRC-GUIDE-TX01", "CRC-GUIDE-TX08", "treatment"),
+          edge("CRC-GUIDE-TX08", "CRC-GUIDE-TX09", "treatment"),
+          edge("CRC-GUIDE-TX08", "CRC-GUIDE-TX10", "treatment"),
+          edge("CRC-GUIDE-TX09", "CRC-GUIDE-FU01", "followup"),
+          edge("CRC-GUIDE-TX10", "CRC-GUIDE-FU01", "followup")
+        ]
+      },
+      crcEmc: {
+        label: "Gastro: EMC CRC",
+        title: "Erasmus MC Public CRC Care Route",
+        status: "Public-facing route, internal workflow not found",
+        scope: "Erasmus MC public pages describe CRC diagnosis tests, MDL-oncology consultation, weekly MDO, treatment planning, colectomy and other surgery, radiotherapy, chemotherapy, metastasis treatment, HIPEC, and follow-up options. This public route requires expert confirmation before it is treated as a local operational workflow.",
+        defaultSelected: "CRC-EMC-JM01",
+        lanes: [
+          { y: 104, label: "Referral, investigations, and MDO" },
+          { y: 292, label: "Treatment options" },
+          { y: 484, label: "Advanced care and follow-up" }
+        ],
+        nodes: [
+          activity("CRC-EMC-AC01", "Referral to MDL-oncology", "Access", "activity", "EM01", "diagnostic", 80, 104, "Public Erasmus MC pages state that a first visit to an outpatient clinic requires written referral, and MDL-oncology sees patients with bowel cancer or increased gastrointestinal cancer risk.", "This is a plausible public-facing local entry point, but it is not a substitute for an internal referral workflow.", ["Referral communication", "Scheduling", "Administrative ICT", "Patient travel"], ["Which referring hospitals and referral routes are inside the local CRC boundary?"]),
+          activity("CRC-EMC-DX01", "Diagnostic investigations", "Diagnostics", "activity", "EM03", "diagnostic", 220, 104, "The public Darmkanker page lists bowel cleansing, endoscopy, blood tests, CT scan, MRI scan, and liver ultrasound under investigation and diagnosis.", "Kept as an aggregate public node until local records define which tests occur in which sequence.", ["Endoscopy or imaging resources", "Laboratory testing", "Patient preparation", "Patient travel"], ["Can local experts split this into colonoscopy, CT, MRI, ultrasound, and blood-test nodes?"]),
+          activity("CRC-EMC-DX02", "Colonoscopy or endoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 360, 64, "Erasmus MC patient information describes colonoscopy for the bowel cancer screening pathway and notes that interventions can be performed during the examination.", "Colonoscopy should become a reusable gastroenterology module if CRC is selected for ECO-PATH.", ["Endoscopy room time", "Scope reprocessing", "Procedure materials", "Sedation if used"], ["Does the modeled EMC route include screening colonoscopy, diagnostic colonoscopy, or both?"]),
+          activity("CRC-EMC-DX03", "Pathology and staging results", "Diagnostics", "activity", "EM02", "diagnostic", 360, 144, "Public pages list staging and diagnosis-related tests, but the internal pathology sequence was not found publicly.", "This node preserves the diagnosis-to-MDO bridge without inventing an internal pathology workflow.", ["Pathology review", "Report generation", "Molecular testing if used", "EHR review"], ["Which pathology activities are performed at Erasmus MC versus reviewed from referring hospitals?"]),
+          activity("CRC-EMC-JM01", "Weekly colorectal MDO", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 520, 104, "Erasmus MC public information states that investigation results are discussed in a multidisciplinary meeting with specialists involved in colorectal cancer care.", "This is the strongest publicly visible local workflow anchor for the CRC route.", ["Clinician time", "Meeting room or digital meeting", "EHR and imaging display"], ["Which specialties attend, and are all CRC cases discussed in the same MDO?"]),
+          activity("CRC-EMC-TX01", "Treatment plan discussion", "Treatment planning", "activity", "EM05", "treatment", 660, 104, "The MDL-oncology page states that the team aims to arrive at a definitive treatment plan within one week after investigations and that the treating physician discusses the treatment and possible side effects with the patient.", "This is a patient-facing planning node that links MDO output to treatment delivery options.", ["Consultation time", "Patient communication", "Scheduling", "EHR documentation"], ["Who discusses the plan locally: MDL physician, surgeon, oncologist, radiotherapist, or a combination?"]),
+          activity("CRC-EMC-TX02", "Colon surgery or colectomy", "Surgery", "activity", "EM07", "treatment", 660, 292, "Erasmus MC describes colectomy as removal of the affected colon segment with associated lymph nodes and vessels.", "Surgery is a high-resource module and should be parameterized with operation type, duration, admission, and waste data.", ["Operating room time", "Anesthesia", "Sterile instruments", "Ward stay", "Surgical waste"], ["Which colectomy procedures are relevant for the selected CRC population?"]),
+          activity("CRC-EMC-TX03", "Rectal surgery", "Surgery", "activity", "EM07", "treatment", 800, 292, "The public Darmkanker page links rectal cancer procedures such as low anterior resection and abdominoperineal resection.", "Rectal surgery should be separated from colon surgery if the case includes rectal cancer because procedure, stoma, and admission profiles differ.", ["Operating room time", "Anesthesia", "Stoma materials if used", "Ward stay"], ["Should colon and rectal surgery be separate ECO-PATH scenarios?"]),
+          activity("CRC-EMC-TX04", "Radiotherapy", "Radiotherapy", "activity", "EM08", "treatment", 940, 214, "The public Darmkanker page lists radiotherapy as a treatment option, especially relevant for rectal cancer pathways.", "Radiotherapy has a distinct LCA structure based on planning, fractions, machine time, and patient travel.", ["Treatment planning", "Fraction count", "Machine electricity", "Immobilization materials", "Patient travel"], ["Which CRC subgroup receives radiotherapy at Erasmus MC?"]),
+          activity("CRC-EMC-TX05", "Chemotherapy or oncology", "Systemic therapy and oncology", "activity", "EM06", "treatment", 940, 370, "The public Darmkanker page lists chemotherapy, and the MDL-oncology page identifies internist-oncologists as part of the multidisciplinary team.", "Systemic therapy should be modeled through EM06 because drugs, infusion materials, pharmacy preparation, monitoring, and waste are central.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring", "Cytotoxic waste"], ["Which regimens and cycles are used in the local CRC target group?"]),
+          activity("CRC-EMC-TX06", "Metastasis treatment or HIPEC", "Surgery", "activity", "EM07", "treatment", 800, 484, "Erasmus MC public pages include treatment for metastases and a HIPEC treatment page for colon cancer with metastases.", "This should remain a separate advanced-disease branch unless clinical experts confirm it belongs in the same functional unit and time horizon.", ["Operating room time", "Perfusion equipment if HIPEC", "Medicines", "ICU or ward stay", "Waste"], ["Is HIPEC or metastasis treatment in scope for the gastroenterology example?"]),
+          activity("CRC-EMC-FU01", "Follow-up after treatment", "Follow-up", "activity", "EM09", "followup", 1080, 292, "Public Erasmus MC material describes follow-up after CRC surgery and surveillance-related care.", "Follow-up affects pathway-level results through repeated visits, blood tests, imaging, colonoscopy, and travel.", ["Outpatient visits", "CEA testing", "Surveillance imaging", "Colonoscopy", "Patient travel"], ["What follow-up time horizon should ECO-PATH use for CRC?"]),
+          activity("CRC-EMC-FU02", "Home-based follow-up option", "Follow-up", "activity", "EM09", "return", 1080, 484, "The PROMISE study explores home-based follow-up after surgery for colon or rectal cancer, using tools such as home CEA sampling in a research setting.", "This is not assumed to be standard care. It is useful as a future pathway redesign scenario.", ["Home sampling kit", "Digital app use", "Laboratory shipping", "Reduced hospital travel"], ["Should home-based follow-up be modeled only as a scenario, not as the baseline?"])
+        ],
+        edges: [
+          edge("CRC-EMC-AC01", "CRC-EMC-DX01", "diagnostic"),
+          edge("CRC-EMC-DX01", "CRC-EMC-DX02", "diagnostic"),
+          edge("CRC-EMC-DX01", "CRC-EMC-DX03", "diagnostic"),
+          edge("CRC-EMC-DX02", "CRC-EMC-JM01", "diagnostic"),
+          edge("CRC-EMC-DX03", "CRC-EMC-JM01", "diagnostic"),
+          edge("CRC-EMC-JM01", "CRC-EMC-TX01", "treatment"),
+          edge("CRC-EMC-TX01", "CRC-EMC-TX02", "treatment"),
+          edge("CRC-EMC-TX01", "CRC-EMC-TX03", "treatment"),
+          edge("CRC-EMC-TX01", "CRC-EMC-TX04", "treatment"),
+          edge("CRC-EMC-TX01", "CRC-EMC-TX05", "treatment"),
+          edge("CRC-EMC-TX01", "CRC-EMC-TX06", "treatment"),
+          edge("CRC-EMC-TX02", "CRC-EMC-FU01", "followup"),
+          edge("CRC-EMC-TX03", "CRC-EMC-FU01", "followup"),
+          edge("CRC-EMC-TX04", "CRC-EMC-FU01", "followup"),
+          edge("CRC-EMC-TX05", "CRC-EMC-FU01", "followup"),
+          edge("CRC-EMC-TX06", "CRC-EMC-FU01", "followup"),
+          edge("CRC-EMC-FU01", "CRC-EMC-FU02", "return")
         ]
       }
     };
@@ -1166,9 +1267,14 @@
     }
 
     function stationCodeParts(node) {
-      const code = node.id.replace("EAU-", "").replace("EMC-", "");
+      const code = displayCode(node);
       const match = code.match(/^([A-Z]+)([0-9]+)$/);
       return match ? [match[1], match[2]] : [code, ""];
+    }
+
+    function displayCode(node) {
+      const match = node.id.match(/([A-Z]{2}[0-9]{2,})$/);
+      return match ? match[1] : node.id;
     }
 
     function markerBounds(node) {
@@ -1211,7 +1317,31 @@
         "Radical surgery choice": "Surgery choice",
         "Bladder-sparing choice": "Bladder-sparing",
         "Radiotherapy treatment": "Radiotherapy",
-        "Return to referring hospital": "Return hospital"
+        "Return to referring hospital": "Return hospital",
+        "Screening or referral entry": "Screening / referral",
+        "FIT-positive or symptoms": "FIT+ / symptoms",
+        "Biopsy and pathology": "Biopsy + pathology",
+        "CT staging and CEA workup": "CT staging + CEA",
+        "Rectal MRI if indicated": "Rectal MRI",
+        "CRC MDT review": "CRC MDT",
+        "Colon or rectal route decision": "Route decision",
+        "Adjuvant chemotherapy decision": "Adjuvant chemo?",
+        "Adjuvant systemic therapy": "Adjuvant therapy",
+        "Neoadjuvant rectal therapy decision": "Rectal neoadjuvant?",
+        "Chemoradiation or TNT": "CRT / TNT",
+        "Metastatic disease decision": "Metastatic route?",
+        "Metastasis local therapy or HIPEC": "Local therapy / HIPEC",
+        "Referral to MDL-oncology": "MDL referral",
+        "Diagnostic investigations": "Investigations",
+        "Colonoscopy or endoscopy": "Colonoscopy",
+        "Pathology and staging results": "Pathology + staging",
+        "Weekly colorectal MDO": "Colorectal MDO",
+        "Treatment plan discussion": "Treatment plan",
+        "Colon surgery or colectomy": "Colectomy",
+        "Chemotherapy or oncology": "Chemo / oncology",
+        "Metastasis treatment or HIPEC": "Metastasis / HIPEC",
+        "Follow-up after treatment": "Follow-up",
+        "Home-based follow-up option": "Home follow-up"
       };
       return replacements[node.label] || node.label;
     }
@@ -1309,7 +1439,7 @@
       const module = moduleRegistry[node.module];
       detail.innerHTML = `
         <div class="detail-title">
-          <div class="code-pill">${escapeHtml(node.id.replace("EAU-", "").replace("EMC-", ""))}</div>
+          <div class="code-pill">${escapeHtml(displayCode(node))}</div>
           <div>
             <h2>${escapeHtml(node.label)}</h2>
             <div class="meta-row">
@@ -1370,7 +1500,7 @@
         });
         const module = moduleRegistry[node.module];
         button.innerHTML = `
-          <span class="code-pill">${escapeHtml(node.id.replace("EAU-", "").replace("EMC-", ""))}</span>
+          <span class="code-pill">${escapeHtml(displayCode(node))}</span>
           <span class="activity-name">
             <strong>${escapeHtml(node.label)}</strong>
             <span>${escapeHtml(node.domain)} · ${escapeHtml(node.type === "decision" ? "Decision point" : "Activity")}</span>

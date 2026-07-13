@@ -8,10 +8,12 @@ Live page: https://lz-bot.github.io/ecopath-pathway-explorer/
 
 ECO-PATH is a pathway-level framework for environmental assessment of healthcare. The explorer shows how clinical pathway documents can be decomposed into coded activities, decision points, route structures, and candidate life cycle assessment modules.
 
-The current prototype focuses on muscle-invasive bladder cancer. It includes two views:
+The current prototype includes urology and gastroenterology examples:
 
-- EAU guideline reference pathway
-- Erasmus MC local operational pathway
+- Urology: EAU MIBC guideline reference pathway
+- Urology: Erasmus MC local MIBC operational pathway
+- Gastroenterology: European colorectal cancer guideline reference pathway
+- Gastroenterology: Erasmus MC public colorectal cancer care route
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
 
@@ -29,9 +31,11 @@ Route colors distinguish diagnostic and access movement, treatment movement, fol
 
 ## Methodological Scope
 
-The EAU view represents guideline-level clinical logic. It should be treated as clinical reference material, not as evidence that all activities occur at Erasmus MC.
+The guideline views represent clinical reference logic. They should be treated as clinical reference material, not as evidence that all activities occur at Erasmus MC.
 
-The Erasmus MC view represents a local operational pathway after referral or triage into the bladder cancer center. Upstream activities such as first cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway activities unless local experts confirm that they are repeated or performed within the selected Erasmus MC boundary.
+The Erasmus MC MIBC view represents a local operational pathway after referral or triage into the bladder cancer center. Upstream activities such as first cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway activities unless local experts confirm that they are repeated or performed within the selected Erasmus MC boundary.
+
+The Erasmus MC colorectal cancer view is based on public patient-facing pages. It is useful for early gastroenterology scoping, but it should not be treated as an internal local workflow until confirmed with Erasmus MC clinical experts.
 
 The explorer does not provide clinical advice and does not rank treatment options. Environmental comparison requires a confirmed patient population, pathway boundary, clinical decision context, time horizon, and clinical comparability of alternatives.
 

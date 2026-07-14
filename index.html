@@ -562,11 +562,53 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel-soft);
-      padding: 10px;
-      font-family: var(--mono);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      color: var(--ink);
+    }
+
+    .formula-line {
+      display: grid;
+      grid-template-columns: minmax(120px, 0.42fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    .formula-line:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .formula-label {
+      color: var(--muted);
       font-size: 12px;
+      font-weight: 700;
+    }
+
+    .formula-expression {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 17px;
       color: var(--ink);
       overflow-wrap: anywhere;
+    }
+
+    .formula-expression sub {
+      font-size: 70%;
+      line-height: 0;
+    }
+
+    .formula-expression .operator {
+      padding: 0 4px;
+    }
+
+    .formula-note {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
     }
 
     .lca-results {
@@ -641,6 +683,10 @@
       font-size: 12px;
       background: var(--panel-soft);
       font-weight: 700;
+      position: sticky;
+      top: 86px;
+      z-index: 8;
+      box-shadow: 0 1px 0 var(--line), 0 5px 12px rgba(28, 48, 45, 0.08);
     }
 
     .lca-table tr:last-child td {
@@ -699,6 +745,10 @@
       .detail-panel {
         margin-top: 0 !important;
       }
+
+      .lca-table th {
+        top: 132px;
+      }
     }
 
     @media (max-width: 620px) {
@@ -719,6 +769,16 @@
       .activity-row .tag {
         grid-column: 2;
         justify-self: start;
+      }
+      .formula-line {
+        grid-template-columns: 1fr;
+        gap: 3px;
+      }
+      .formula-expression {
+        font-size: 15px;
+      }
+      .lca-table th {
+        top: 122px;
       }
       svg { min-height: 300px; }
     }
@@ -1956,8 +2016,35 @@
         if (element) element.textContent = formatKg(rowImpact(row, "base"));
       });
 
-      document.getElementById("lcaFormula").textContent =
-        "I_row = quantity x emission factor. I_low/high = I_row x (1 +/- uncertainty). I_expected = I_common + p_adenoma x I_adenoma_add-on + p_cancer x I_cancer_add-on. I_cohort = cohort size x I_expected.";
+      document.getElementById("lcaFormula").innerHTML = `
+        <div class="formula-line">
+          <span class="formula-label">Resource flow</span>
+          <span class="formula-expression">
+            I<sub>i</sub> = q<sub>i</sub><span class="operator">&middot;</span>EF<sub>i</sub>
+          </span>
+        </div>
+        <div class="formula-line">
+          <span class="formula-label">Uncertainty range</span>
+          <span class="formula-expression">
+            I<sub>i</sub><sup>low/high</sup> = I<sub>i</sub><span class="operator">&middot;</span>(1 &plusmn; u<sub>i</sub>)
+          </span>
+        </div>
+        <div class="formula-line">
+          <span class="formula-label">Expected pathway impact</span>
+          <span class="formula-expression">
+            I<sub>expected</sub> = I<sub>common</sub> + p<sub>adenoma</sub><span class="operator">&middot;</span>I<sub>adenoma</sub> + p<sub>cancer</sub><span class="operator">&middot;</span>I<sub>cancer</sub>
+          </span>
+        </div>
+        <div class="formula-line">
+          <span class="formula-label">Cohort impact</span>
+          <span>
+            <span class="formula-expression">
+              I<sub>cohort</sub> = N<span class="operator">&middot;</span>I<sub>expected</sub>
+            </span>
+            <span class="formula-note">q = quantity, EF = emission factor, u = relative uncertainty, p = branch probability, N = cohort size.</span>
+          </span>
+        </div>
+      `;
 
       const warning = [
         "All default quantities and emission factors are illustrative dummy values. Replace them with hospital activity data, local LCI measurements, or documented proxy factors before using the result as evidence."

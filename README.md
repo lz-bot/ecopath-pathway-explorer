@@ -2,8 +2,6 @@
 
 This repository hosts a public prototype of the ECO-PATH Pathway Activity Explorer.
 
-Live page: https://lz-bot.github.io/ecopath-pathway-explorer/
-
 ## Purpose
 
 ECO-PATH is a pathway-level framework for environmental assessment of healthcare. The explorer shows how clinical pathway documents can be decomposed into coded activities, decision points, route structures, and candidate life cycle assessment modules.

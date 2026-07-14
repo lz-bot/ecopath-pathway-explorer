@@ -725,6 +725,29 @@
       scroll-margin-top: 116px;
     }
 
+    .lca-header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      align-items: center;
+      min-width: 220px;
+    }
+
+    .lca-header-actions .status-chip {
+      max-width: 320px;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+
+    .export-status {
+      flex-basis: 100%;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: right;
+      min-height: 15px;
+    }
+
     .lca-summary-grid {
       display: grid;
       grid-template-columns: 0.95fr 1.05fr;
@@ -1037,6 +1060,14 @@
         grid-template-columns: 1fr;
       }
 
+      .lca-header-actions {
+        justify-content: flex-start;
+      }
+
+      .export-status {
+        text-align: left;
+      }
+
       .lca-module-total {
         text-align: left;
       }
@@ -1199,7 +1230,11 @@
           <h2>Modular LCA calculation demo</h2>
           <p class="scope-note">Editable calculation rows for all candidate building blocks. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
         </div>
-        <span class="status-chip" id="lcaPathwayStatus"></span>
+        <div class="lca-header-actions">
+          <span class="status-chip" id="lcaPathwayStatus"></span>
+          <button type="button" id="lcaExportReport">Export LCA report</button>
+          <span class="export-status" id="lcaExportStatus" aria-live="polite"></span>
+        </div>
       </div>
 
       <div class="lca-module-map" aria-label="LCA building block map">
@@ -2437,7 +2472,7 @@
                     <td><span class="lca-block-cell">${escapeHtml(row.block)}</span></td>
                     <td>${escapeHtml(row.flow)}</td>
                     <td>${escapeHtml(row.unit)}</td>
-                    <td><input type="number" min="0" step="0.01" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.block)} base quantity"${disabledAttr}></td>
+                    <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.block)} base quantity"${disabledAttr}></td>
                     <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.block)} uncertainty percent"${disabledAttr}></td>
                     <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.block)} impact coefficient"${disabledAttr}></td>
                     <td class="lca-source-cell">${escapeHtml(row.gap)}</td>
@@ -2662,6 +2697,12 @@
       return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
     }
 
+    function formatDecimal(value, maximumFractionDigits = 2) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return "0";
+      return number.toLocaleString("en-US", { maximumFractionDigits });
+    }
+
     function escapeHtml(value) {
       return String(value)
         .replaceAll("&", "&amp;")
@@ -2669,6 +2710,367 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    function amsterdamDateParts() {
+      const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Europe/Amsterdam",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).formatToParts(new Date());
+      return Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    }
+
+    function reportGeneratedAt() {
+      const parts = amsterdamDateParts();
+      return `${parts.day}/${parts.month}/${parts.year}, ${parts.hour}:${parts.minute} Europe/Amsterdam`;
+    }
+
+    function reportDateStamp() {
+      const parts = amsterdamDateParts();
+      return `${parts.year}-${parts.month}-${parts.day}`;
+    }
+
+    function collectLcaReportData() {
+      const pathway = currentPathway();
+      const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
+      const moduleIds = lcaCalculationModuleIds();
+      const rows = lcaRows
+        .filter((row) => moduleIds.includes(row.module))
+        .map((row) => {
+          const included = isLcaModuleIncluded(row.module);
+          return {
+            ...row,
+            moduleName: moduleRegistry[row.module] ? moduleRegistry[row.module].name : "",
+            included,
+            baseContribution: included ? rowImpact(row, "base") : 0
+          };
+        });
+      const modules = moduleIds.map((moduleId) => {
+        const moduleRows = rows.filter((row) => row.module === moduleId);
+        const included = isLcaModuleIncluded(moduleId);
+        const subtotal = included
+          ? moduleRows.reduce((sum, row) => sum + rowImpact(row, "base"), 0)
+          : 0;
+        return {
+          id: moduleId,
+          name: moduleRegistry[moduleId] ? moduleRegistry[moduleId].name : "",
+          role: lcaModuleRole(moduleId),
+          included,
+          subtotal,
+          rowCount: moduleRows.length
+        };
+      });
+      const totals = {
+        low: lcaScenarioValues("low", caseCount),
+        base: lcaScenarioValues("base", caseCount),
+        high: lcaScenarioValues("high", caseCount)
+      };
+      const topRows = rows
+        .filter((row) => row.included)
+        .sort((a, b) => b.baseContribution - a.baseContribution)
+        .slice(0, 8);
+      return {
+        pathwayLabel: pathway.label,
+        pathwayTitle: pathway.title,
+        pathwayScope: pathway.scope,
+        pathwayStatus: pathway.status,
+        generatedAt: reportGeneratedAt(),
+        caseCount,
+        moduleCount: moduleIds.length,
+        includedModuleCount: modules.filter((module) => module.included).length,
+        rows,
+        modules,
+        totals,
+        topRows
+      };
+    }
+
+    function buildLcaReportHtml() {
+      const data = collectLcaReportData();
+      const reportTitle = `ECO-PATH LCA report: ${data.pathwayLabel}`;
+      const logoUrl = new URL("assets/erasmusmc_logo.png", window.location.href).href;
+      const resultCards = [
+        ["Low scenario", data.totals.low],
+        ["Base scenario", data.totals.base],
+        ["High scenario", data.totals.high]
+      ].map(([label, values]) => `
+        <div class="metric">
+          <strong>${escapeHtml(label)}</strong>
+          <span>${escapeHtml(formatKg(values.cohortExpected))}</span>
+          <small>${escapeHtml(formatKg(values.perPathway))} per pathway instance</small>
+        </div>
+      `).join("");
+      const moduleRows = data.modules.map((module) => `
+        <tr class="${module.included ? "" : "excluded"}">
+          <td>${escapeHtml(module.id)}</td>
+          <td>${escapeHtml(module.name)}</td>
+          <td>${escapeHtml(module.role)}</td>
+          <td>${module.included ? "Included" : "Excluded"}</td>
+          <td>${escapeHtml(formatNumber(module.rowCount))}</td>
+          <td>${module.included ? escapeHtml(formatKg(module.subtotal)) : "Excluded"}</td>
+        </tr>
+      `).join("");
+      const topRows = data.topRows.length
+        ? data.topRows.map((row) => `
+          <tr>
+            <td>${escapeHtml(row.module)} ${escapeHtml(row.moduleName)}</td>
+            <td>${escapeHtml(row.block)}</td>
+            <td>${escapeHtml(formatKg(row.baseContribution))}</td>
+            <td>${escapeHtml(row.gap)}</td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="4">No checked modules are currently included in the LCA total.</td></tr>`;
+      const calculationRows = data.rows.map((row) => `
+        <tr class="${row.included ? "" : "excluded"}">
+          <td>${escapeHtml(row.module)}</td>
+          <td>${escapeHtml(row.block)}</td>
+          <td>${escapeHtml(row.flow)}</td>
+          <td>${escapeHtml(row.unit)}</td>
+          <td>${escapeHtml(formatDecimal(row.quantity, 3))}</td>
+          <td>${escapeHtml(formatDecimal(row.uncertainty, 1))}%</td>
+          <td>${escapeHtml(formatDecimal(row.factor, 4))}</td>
+          <td>${row.included ? escapeHtml(formatKg(row.baseContribution)) : "Excluded"}</td>
+        </tr>
+      `).join("");
+      return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${escapeHtml(reportTitle)}</title>
+  <style>
+    :root {
+      --blue: #005aa0;
+      --blue-dark: #003f74;
+      --sky: #6fcff1;
+      --sky-soft: #e9f8fe;
+      --line: #cfe4ea;
+      --ink: #1f2d33;
+      --muted: #5b6f78;
+      --panel: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f7fbfd;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+    header {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 20px;
+      align-items: center;
+      border-bottom: 4px solid var(--sky);
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+    }
+    img.logo {
+      width: 170px;
+      height: auto;
+    }
+    h1 {
+      margin: 0;
+      color: var(--blue-dark);
+      font-size: 28px;
+      line-height: 1.15;
+    }
+    h2 {
+      color: var(--blue-dark);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+      margin: 28px 0 12px;
+      font-size: 20px;
+    }
+    p { margin: 0 0 10px; }
+    .muted { color: var(--muted); }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+    .metric, .note {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .metric strong, .metric span, .metric small {
+      display: block;
+    }
+    .metric strong {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .metric span {
+      color: var(--blue);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 2px 0;
+    }
+    .metric small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      margin: 8px 0 18px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--sky-soft);
+      color: var(--blue-dark);
+      font-weight: 700;
+    }
+    tr.excluded td {
+      color: var(--muted);
+      background: #f2f6f8;
+    }
+    .config {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .config div {
+      border-left: 4px solid var(--sky);
+      background: var(--sky-soft);
+      padding: 10px 12px;
+    }
+    .formula {
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--blue-dark);
+      font-size: 17px;
+    }
+    footer {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    @media (max-width: 720px) {
+      main { padding: 18px; }
+      header, .metrics, .config { grid-template-columns: 1fr; }
+      img.logo { width: 140px; }
+    }
+    @media print {
+      body { background: #ffffff; }
+      main { max-width: none; padding: 12mm; }
+      .metric, .note, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img class="logo" src="${escapeHtml(logoUrl)}" alt="Erasmus MC logo">
+      <div>
+        <h1>${escapeHtml(reportTitle)}</h1>
+        <p class="muted">Generated ${escapeHtml(data.generatedAt)} from the interactive ECO-PATH pathway explorer.</p>
+      </div>
+    </header>
+
+    <section>
+      <h2>Scope and current configuration</h2>
+      <p><strong>${escapeHtml(data.pathwayTitle)}</strong></p>
+      <p>${escapeHtml(data.pathwayScope)}</p>
+      <div class="config">
+        <div><strong>Pathway status</strong><br>${escapeHtml(data.pathwayStatus)}</div>
+        <div><strong>Cohort size</strong><br>${escapeHtml(formatNumber(data.caseCount))} pathway instances</div>
+        <div><strong>Checked modules</strong><br>${escapeHtml(formatNumber(data.includedModuleCount))} of ${escapeHtml(formatNumber(data.moduleCount))}</div>
+        <div><strong>Rows counted</strong><br>${escapeHtml(formatNumber(data.rows.filter((row) => row.included).length))} of ${escapeHtml(formatNumber(data.rows.length))}</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Scenario results</h2>
+      <div class="metrics">${resultCards}</div>
+      <p class="muted">These values are calculated from current browser inputs. The default occurrence counts and impact coefficients are dummy values until replaced with hospital LCI data and documented LCIA mappings.</p>
+    </section>
+
+    <section>
+      <h2>Calculation formula</h2>
+      <p class="formula">I<sub>i,j</sub> = q<sub>i</sub> &middot; c<sub>i,j</sub>; I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>; I<sub>cohort,j</sub> = N &middot; I<sub>library,j</sub></p>
+      <p class="muted">S is the set of building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. N is cohort size.</p>
+    </section>
+
+    <section>
+      <h2>Module boundary and subtotals</h2>
+      <table>
+        <thead>
+          <tr><th>Module</th><th>Name</th><th>Role</th><th>Status</th><th>Rows</th><th>Base subtotal</th></tr>
+        </thead>
+        <tbody>${moduleRows}</tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Priority data to collect</h2>
+      <table>
+        <thead>
+          <tr><th>Module</th><th>Building block</th><th>Base contribution</th><th>Current data gap</th></tr>
+        </thead>
+        <tbody>${topRows}</tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Full building block calculation rows</h2>
+      <table>
+        <thead>
+          <tr><th>Module</th><th>Building block</th><th>Resource flows</th><th>Unit</th><th>Base quantity</th><th>Uncertainty</th><th>Impact coefficient</th><th>Base contribution</th></tr>
+        </thead>
+        <tbody>${calculationRows}</tbody>
+      </table>
+    </section>
+
+    <section class="note">
+      <h2>Method note and limitations</h2>
+      <p>This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. Use it to review pathway scope, checked modules, candidate building blocks, data gaps, and parameter sensitivity before formal data collection and model validation.</p>
+    </section>
+
+    <footer>
+      ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser.
+    </footer>
+  </main>
+</body>
+</html>`;
+    }
+
+    function exportLcaReport() {
+      const reportHtml = buildLcaReportHtml();
+      const filename = `ecopath-lca-report-${slugify(currentPathway().label)}-${reportDateStamp()}.html`;
+      const blob = new Blob([reportHtml], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      const status = document.getElementById("lcaExportStatus");
+      if (status) status.textContent = `Report exported: ${filename}`;
     }
 
     function bindControls() {
@@ -2692,6 +3094,7 @@
         state.oncologyLens = event.target.checked;
         render();
       });
+      document.getElementById("lcaExportReport").addEventListener("click", exportLcaReport);
     }
 
     function render() {

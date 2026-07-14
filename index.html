@@ -516,7 +516,7 @@
     .method-note {
       margin-top: 14px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 10px;
     }
 
@@ -854,15 +854,23 @@
         <section class="method-note" aria-label="Method notes">
           <div class="note-cell">
             <strong>Protocol step</strong>
-            <p>Clinical or organizational instruction from a guideline, protocol, or workflow diagram.</p>
+            <p>Source instruction from a guideline, protocol, or workflow diagram.</p>
           </div>
           <div class="note-cell">
-            <strong>Healthcare activity</strong>
-            <p>Operational action or decision node that can be placed in the pathway and reviewed by experts.</p>
+            <strong>Activity / station</strong>
+            <p>Clinical or operational action placed on the pathway map and reviewed by experts.</p>
+          </div>
+          <div class="note-cell">
+            <strong>Module / building block</strong>
+            <p>Reusable LCA calculation template assigned to activities. It is not another clinical activity.</p>
           </div>
           <div class="note-cell">
             <strong>Resource flow</strong>
-            <p>Measurable input or output for LCA, such as travel, equipment time, medicines, energy, or waste.</p>
+            <p>Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.</p>
+          </div>
+          <div class="note-cell">
+            <strong>LCI / LCIA link</strong>
+            <p>Resource flows are mapped to inventory data and impact coefficients for calculation.</p>
           </div>
         </section>
       </div>
@@ -876,7 +884,7 @@
       <div class="panel-heading">
         <div>
           <h2>Modular LCA calculation demo</h2>
-          <p class="scope-note">CRC screening-positive fragment using two reusable building blocks: colonoscopy and pathology. The default values are illustrative dummy data and placeholder impact coefficients only.</p>
+          <p class="scope-note">CRC screening-positive fragment using two reusable modules/building blocks: colonoscopy and pathology. Each building block connects pathway activities to resource flows and placeholder impact coefficients. The default values are illustrative dummy data only.</p>
         </div>
         <span class="status-chip">Screening prototype, not an ISO-compliant LCA result</span>
       </div>
@@ -912,7 +920,7 @@
         <table class="lca-table">
           <thead>
             <tr>
-              <th>Building block</th>
+              <th>Building block / module</th>
               <th>Resource flow</th>
               <th>Unit</th>
               <th>Base quantity</th>
@@ -1881,8 +1889,8 @@
             <p>${escapeHtml(node.rationale)}</p>
           </div>
           <div class="detail-block">
-            <strong>ECO-PATH module</strong>
-            <p>${escapeHtml(node.module)} ${escapeHtml(module.name)}. ${escapeHtml(module.definition)}</p>
+            <strong>ECO-PATH module / building block</strong>
+            <p>${escapeHtml(node.module)} ${escapeHtml(module.name)}. This is the reusable LCA calculation template assigned to the selected activity, not a separate clinical activity. ${escapeHtml(module.definition)}</p>
           </div>
           <div class="detail-block">
             <strong>Candidate resource flows</strong>

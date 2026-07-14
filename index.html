@@ -17,11 +17,6 @@
       --accent-soft: rgba(111, 207, 241, 0.18);
       --accent-soft-strong: rgba(111, 207, 241, 0.30);
       --soft: rgba(111, 207, 241, 0.16);
-      --reuse-module: #2f8f5b;
-      --reuse-module-soft: rgba(47, 143, 91, 0.14);
-      --reuse-block: #dff5e7;
-      --reuse-block-line: #9ed7b6;
-      --reuse-block-ink: #245c3d;
       --warn-bg: #fff7df;
       --warn-line: #f0d98c;
       --diagnostic: #87c7df;
@@ -407,17 +402,17 @@
     }
 
     .tag.module {
-      border-color: rgba(47, 143, 91, 0.62);
-      background: var(--reuse-module-soft);
-      color: var(--reuse-module);
+      border-color: rgba(138, 120, 189, 0.55);
+      background: rgba(138, 120, 189, 0.12);
+      color: var(--ink);
       font-family: var(--mono);
       font-weight: 700;
     }
 
     .tag.block {
-      border-color: var(--reuse-block-line);
-      background: var(--reuse-block);
-      color: var(--reuse-block-ink);
+      border-color: var(--line);
+      background: var(--panel-soft);
+      color: var(--muted);
     }
 
     .tag.oncology {
@@ -474,14 +469,13 @@
     }
 
     .module-zone {
-      border: 1px solid rgba(47, 143, 91, 0.36);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel-soft);
       padding: 11px;
       display: grid;
       gap: 8px;
       align-content: start;
-      box-shadow: inset 3px 0 0 var(--reuse-module);
     }
 
     .module-zone.active {
@@ -504,7 +498,6 @@
       display: block;
       font-size: 14px;
       line-height: 1.25;
-      color: var(--reuse-module);
     }
 
     .module-zone-title span {
@@ -531,13 +524,13 @@
       gap: 4px;
       text-align: left;
       padding: 7px;
-      background: var(--reuse-block);
-      border: 1px solid var(--reuse-block-line);
+      background: var(--panel);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
     }
 
     .building-block-chip strong {
-      color: var(--reuse-block-ink);
+      color: var(--ink);
       font-size: 13px;
       line-height: 1.25;
       overflow-wrap: anywhere;
@@ -549,7 +542,7 @@
       overflow-wrap: anywhere;
     }
 
-    .reuse-legend {
+    .candidate-legend {
       display: flex;
       flex-wrap: wrap;
       gap: 8px 12px;
@@ -558,29 +551,27 @@
       font-size: 12px;
     }
 
-    .reuse-legend span {
+    .candidate-legend span {
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
 
-    .reuse-swatch {
+    .candidate-swatch {
       width: 18px;
       height: 12px;
       border-radius: 4px;
       border: 1px solid var(--line);
       display: inline-block;
+      background: var(--panel-soft);
     }
 
-    .reuse-swatch.module {
-      background: var(--reuse-module-soft);
-      border-color: var(--reuse-module);
-      box-shadow: inset 3px 0 0 var(--reuse-module);
+    .candidate-swatch.module {
+      box-shadow: inset 3px 0 0 var(--line);
     }
 
-    .reuse-swatch.block {
-      background: var(--reuse-block);
-      border-color: var(--reuse-block-line);
+    .candidate-swatch.block {
+      background: var(--panel);
     }
 
     .activity-toolbar {
@@ -829,12 +820,12 @@
 
     .lca-module-cell {
       font-weight: 700;
-      color: var(--reuse-module);
+      color: var(--ink);
     }
 
     .lca-block-cell {
       font-weight: 700;
-      color: var(--reuse-block-ink);
+      color: var(--ink);
     }
 
     .lca-source-cell {
@@ -1020,22 +1011,22 @@
       <div class="panel-heading">
         <div>
           <h2>Modular LCA calculation demo</h2>
-          <p class="scope-note">Editable calculation rows for all candidate reusable building blocks. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
+          <p class="scope-note">Editable calculation rows for all candidate building blocks. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
         </div>
-        <span class="status-chip">Reusable block library prototype, not an ISO-compliant LCA result</span>
+        <span class="status-chip">Candidate block library prototype, not an ISO-compliant LCA result</span>
       </div>
 
       <div class="lca-module-map" aria-label="LCA building block map">
         <div class="panel-heading">
           <div>
             <h3>Candidate building blocks by LCA module</h3>
-            <p class="scope-note">Reusable ECO-PATH building blocks grouped by module. A building block is a calculation unit with a defined unit, resource flows, data needs, and LCI/LCIA mapping. It is not the same thing as a pathway activity.</p>
+            <p class="scope-note">Candidate ECO-PATH building blocks grouped by module. A building block is a calculation unit with a defined unit, resource flows, data needs, and LCI/LCIA mapping. It is not the same thing as a pathway activity. Reusability still needs cross-pathway validation.</p>
           </div>
           <span class="status-chip" id="buildingBlockCount"></span>
         </div>
-        <div class="reuse-legend" aria-label="Reusable component legend">
-          <span><i class="reuse-swatch module" aria-hidden="true"></i>Reusable module</span>
-          <span><i class="reuse-swatch block" aria-hidden="true"></i>Reusable building block</span>
+        <div class="candidate-legend" aria-label="Candidate component legend">
+          <span><i class="candidate-swatch module" aria-hidden="true"></i>Module zone</span>
+          <span><i class="candidate-swatch block" aria-hidden="true"></i>Candidate building block</span>
         </div>
         <div class="module-map-grid" id="buildingBlockMap"></div>
       </div>
@@ -1063,7 +1054,7 @@
         <table class="lca-table">
           <thead>
             <tr>
-              <th>Reusable module</th>
+              <th>ECO-PATH module</th>
               <th>Building block</th>
               <th>Resource flows to model</th>
               <th>Unit</th>
@@ -1257,7 +1248,7 @@
           activity("EAU-DX05", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 780, 112, "Pathological confirmation and staging information used for treatment selection.", "This can map to pathology review in the local pathway if Erasmus MC performs revision or reassessment.", ["Pathology staff time", "Slides or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
           activity("EAU-DX06", "Staging imaging", "Diagnostics", "activity", "EM03", "diagnostic", 920, 112, "Imaging for staging and assessment of treatment options.", "Guideline-level staging imaging can overlap with EMC radiology and CT reassessment nodes.", ["CT or MRI scan", "Contrast media", "Scanner electricity", "Patient travel"], ["Which imaging is new, repeated, or reviewed only?"]),
           activity("EAU-DX07", "Fitness and health status assessment", "Diagnostics", "decision", "EM05", "diagnostic", 1060, 112, "Assessment of whether radical treatment, systemic therapy, bladder-sparing treatment, or palliative care is clinically appropriate.", "Retained as a decision node because it controls downstream resource demand.", ["Clinical staff time", "Assessment tools", "EHR documentation"], ["Which fitness variables are available from local records?"]),
-          activity("EAU-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1060, 292, "Multidisciplinary review before treatment initiation and treatment route selection.", "This is both clinically central and reusable as an ECO-PATH module.", ["Clinician time", "Meeting room use", "Imaging display", "EHR access"], ["Which disciplines attend, and how often are cases re-discussed?"]),
+          activity("EAU-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1060, 292, "Multidisciplinary review before treatment initiation and treatment route selection.", "This is clinically central and a candidate ECO-PATH module across oncology pathways.", ["Clinician time", "Meeting room use", "Imaging display", "EHR access"], ["Which disciplines attend, and how often are cases re-discussed?"]),
           activity("EAU-TX01", "Treatment intent decision", "Treatment planning", "decision", "EM05", "treatment", 920, 292, "Definition of curative, organ-sparing, systemic, or palliative intent.", "Kept separate from treatment delivery because it determines pathway topology.", ["Consultation time", "Shared decision documentation", "Scheduling"], ["Which alternatives are clinically comparable for environmental comparison?"]),
           activity("EAU-TX02", "Perioperative systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 780, 292, "Eligibility assessment for neoadjuvant, adjuvant, or other systemic therapy.", "Oncology should appear here as systemic therapy decision logic, not only as a professional label.", ["Medical oncology review", "Laboratory monitoring", "Pharmacy planning"], ["Which regimens, cycles, and dose assumptions are in scope?"]),
           activity("EAU-TX03", "Neoadjuvant or adjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 640, 292, "Systemic therapy delivered before or after local treatment when clinically indicated.", "This is the main oncology-related LCA activity because drugs, infusion materials, pharmacy preparation, and waste are concentrated here.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Day-care chair time", "Cytotoxic waste"], ["Which drug regimens are used locally for the target population?"]),
@@ -1379,7 +1370,7 @@
         nodes: [
           activity("CRC-GUIDE-AC01", "Screening or referral entry", "Access", "activity", "EM01", "diagnostic", 70, 104, "Entry through population screening, symptomatic presentation, or referral into a colorectal cancer diagnostic pathway.", "Retained because CRC can enter through screening or clinical referral, and the entry route affects colonoscopy demand, travel, and administrative contacts.", ["Invitation or referral communication", "Administrative ICT", "Patient travel if clinic attendance occurs"], ["Should the ECO-PATH CRC scope start at FIT-positive screening, symptoms, referral, confirmed diagnosis, or MDT?"]),
           activity("CRC-GUIDE-DX01", "FIT-positive or symptoms", "Diagnostics", "decision", "EM03", "diagnostic", 190, 104, "Decision-relevant trigger for diagnostic colonoscopy after positive screening or clinical suspicion.", "This keeps the screening-to-diagnosis transition visible for pathway-level modeling.", ["Screening test logistics", "Clinical assessment", "Patient communication"], ["Is population screening inside the modeled boundary or a pre-pathway activity?"]),
-          activity("CRC-GUIDE-DX02", "Colonoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 310, 104, "Endoscopic examination for diagnosis, lesion assessment, biopsy, and possible polypectomy.", "Colonoscopy is a reusable ECO-PATH module candidate with equipment, sedation, disposables, reprocessing, and pathology links.", ["Endoscopy room time", "Scope reprocessing", "Sedation if used", "Biopsy tools", "Patient travel"], ["Which colonoscopy setting and sedation assumptions apply locally?"]),
+          activity("CRC-GUIDE-DX02", "Colonoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 310, 104, "Endoscopic examination for diagnosis, lesion assessment, biopsy, and possible polypectomy.", "Colonoscopy is a candidate ECO-PATH building block with equipment, sedation, disposables, reprocessing, and pathology links.", ["Endoscopy room time", "Scope reprocessing", "Sedation if used", "Biopsy tools", "Patient travel"], ["Which colonoscopy setting and sedation assumptions apply locally?"]),
           activity("CRC-GUIDE-DX03", "Biopsy and pathology", "Diagnostics", "activity", "EM02", "diagnostic", 430, 104, "Histopathological confirmation and biomarker-related review where relevant.", "Pathology is needed to connect diagnosis, staging, molecular characterization, and treatment planning.", ["Sample handling", "Pathology staff time", "Digital or microscopy review", "Molecular testing if used"], ["Which pathology and molecular tests are routine for the target CRC subgroup?"]),
           activity("CRC-GUIDE-DX04", "CT staging and CEA workup", "Diagnostics", "activity", "EM03", "diagnostic", 550, 104, "Staging workup with cross-sectional imaging and laboratory assessment such as CEA where relevant.", "Staging separates localized colon, localized rectal, and metastatic pathways, which have different LCA drivers.", ["CT scanner electricity", "Contrast media", "Laboratory testing", "Radiology reporting"], ["Which staging tests are repeated after referral versus reviewed from another hospital?"]),
           activity("CRC-GUIDE-DX05", "Rectal MRI if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 670, 58, "Pelvic MRI or rectal-specific staging when the tumor location requires rectal cancer risk assessment.", "Rectal cancer staging can trigger neoadjuvant therapy, chemoradiation, or organ-preservation scenarios.", ["MRI scanner electricity", "Radiology staff time", "Patient travel", "Report generation"], ["Should colon and rectal cancer be separate ECO-PATH case examples?"]),
@@ -1434,7 +1425,7 @@
         nodes: [
           activity("CRC-EMC-AC01", "Referral to MDL-oncology", "Access", "activity", "EM01", "diagnostic", 80, 104, "Public Erasmus MC pages state that a first visit to an outpatient clinic requires written referral, and MDL-oncology sees patients with bowel cancer or increased gastrointestinal cancer risk.", "This is a plausible public-facing local entry point, but it is not a substitute for an internal referral workflow.", ["Referral communication", "Scheduling", "Administrative ICT", "Patient travel"], ["Which referring hospitals and referral routes are inside the local CRC boundary?"]),
           activity("CRC-EMC-DX01", "Diagnostic investigations", "Diagnostics", "activity", "EM03", "diagnostic", 220, 104, "The public Darmkanker page lists bowel cleansing, endoscopy, blood tests, CT scan, MRI scan, and liver ultrasound under investigation and diagnosis.", "Kept as an aggregate public node until local records define which tests occur in which sequence.", ["Endoscopy or imaging resources", "Laboratory testing", "Patient preparation", "Patient travel"], ["Can local experts split this into colonoscopy, CT, MRI, ultrasound, and blood-test nodes?"]),
-          activity("CRC-EMC-DX02", "Colonoscopy or endoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 360, 64, "Erasmus MC patient information describes colonoscopy for the bowel cancer screening pathway and notes that interventions can be performed during the examination.", "Colonoscopy should become a reusable gastroenterology module if CRC is selected for ECO-PATH.", ["Endoscopy room time", "Scope reprocessing", "Procedure materials", "Sedation if used"], ["Does the modeled EMC route include screening colonoscopy, diagnostic colonoscopy, or both?"]),
+          activity("CRC-EMC-DX02", "Colonoscopy or endoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 360, 64, "Erasmus MC patient information describes colonoscopy for the bowel cancer screening pathway and notes that interventions can be performed during the examination.", "Colonoscopy should be tested as a candidate gastroenterology building block if CRC is selected for ECO-PATH.", ["Endoscopy room time", "Scope reprocessing", "Procedure materials", "Sedation if used"], ["Does the modeled EMC route include screening colonoscopy, diagnostic colonoscopy, or both?"]),
           activity("CRC-EMC-DX03", "Pathology and staging results", "Diagnostics", "activity", "EM02", "diagnostic", 360, 144, "Public pages list staging and diagnosis-related tests, but the internal pathology sequence was not found publicly.", "This node preserves the diagnosis-to-MDO bridge without inventing an internal pathology workflow.", ["Pathology review", "Report generation", "Molecular testing if used", "EHR review"], ["Which pathology activities are performed at Erasmus MC versus reviewed from referring hospitals?"]),
           activity("CRC-EMC-JM01", "Weekly colorectal MDO", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 520, 104, "Erasmus MC public information states that investigation results are discussed in a multidisciplinary meeting with specialists involved in colorectal cancer care.", "This is the strongest publicly visible local workflow anchor for the CRC route.", ["Clinician time", "Meeting room or digital meeting", "EHR and imaging display"], ["Which specialties attend, and are all CRC cases discussed in the same MDO?"]),
           activity("CRC-EMC-TX01", "Treatment plan discussion", "Treatment planning", "activity", "EM05", "treatment", 660, 104, "The MDL-oncology page states that the team aims to arrive at a definitive treatment plan within one week after investigations and that the treating physician discusses the treatment and possible side effects with the patient.", "This is a patient-facing planning node that links MDO output to treatment delivery options.", ["Consultation time", "Patient communication", "Scheduling", "EHR documentation"], ["Who discusses the plan locally: MDL physician, surgeon, oncologist, radiotherapist, or a combination?"]),
@@ -2121,7 +2112,7 @@
           </td>
           <td>
             <span class="lca-block-cell">${escapeHtml(row.block)}</span><br>
-            <span class="tag block">Reusable building block</span>
+            <span class="tag block">Candidate building block</span>
           </td>
           <td>${escapeHtml(row.flow)}</td>
           <td>${escapeHtml(row.unit)}</td>
@@ -2162,7 +2153,7 @@
             <span>${formatKg(values.cohortExpected)}</span>
             <small>Demo library total for ${formatNumber(caseCount)} pathway instances</small>
             <small>Per pathway instance: ${formatKg(values.perPathway)}</small>
-            <small>Editable rows: ${formatNumber(lcaRows.length)} building blocks</small>
+            <small>Editable rows: ${formatNumber(lcaRows.length)} candidate building blocks</small>
           </div>
         `;
       }).join("");
@@ -2198,13 +2189,13 @@
             <span class="formula-expression">
               I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>library,j</sub>
             </span>
-            <span class="formula-note">q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a reusable block library demo, not a finalized pathway scenario.</span>
+            <span class="formula-note">q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.</span>
           </span>
         </div>
       `;
 
       const warning = [
-        "All default quantities and impact coefficients are illustrative dummy values. Each row is a candidate reusable building block. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
+        "All default quantities and impact coefficients are illustrative dummy values. Each row is a candidate building block. Reusability should be assessed through cross-pathway recurrence, data availability, parameter stability, and expert review. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
       ];
       document.getElementById("lcaDataWarning").textContent = warning.join(" ");
       renderLcaPriorityList();

@@ -778,6 +778,21 @@
       margin-top: 14px;
     }
 
+    .lca-module-group-heading {
+      margin: 2px 0 -4px;
+    }
+
+    .lca-module-group-heading h3 {
+      margin-bottom: 2px;
+      font-size: 15px;
+    }
+
+    .lca-module-group-heading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .lca-module-calculation {
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -1098,14 +1113,14 @@
           <h2>Modular LCA calculation demo</h2>
           <p class="scope-note">Editable calculation rows for all candidate building blocks. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
         </div>
-        <span class="status-chip">Candidate block library prototype, not an ISO-compliant LCA result</span>
+        <span class="status-chip" id="lcaPathwayStatus"></span>
       </div>
 
       <div class="lca-module-map" aria-label="LCA building block map">
         <div class="panel-heading">
           <div>
             <h3>Candidate building blocks by LCA module</h3>
-            <p class="scope-note">Candidate ECO-PATH building blocks grouped by module. A building block is a calculation unit with a defined unit, resource flows, data needs, and LCI/LCIA mapping. It is not the same thing as a pathway activity. Reusability still needs cross-pathway validation.</p>
+            <p class="scope-note">Candidate ECO-PATH building blocks grouped by module. The pathway-linked modules match the currently selected pathway. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
           </div>
           <span class="status-chip" id="buildingBlockCount"></span>
         </div>
@@ -1294,10 +1309,9 @@
     });
 
     let lcaRows = lcaDefaultRows.map((row) => ({ ...row }));
-    const lcaModuleIds = Object.keys(moduleRegistry)
-      .filter((moduleId) => lcaRows.some((row) => row.module === moduleId));
+    const crossCuttingModuleIds = ["EM10", "EM11"];
     const lcaModuleIncluded = Object.fromEntries(
-      lcaModuleIds.map((moduleId) => [moduleId, true])
+      Object.keys(moduleRegistry).map((moduleId) => [moduleId, true])
     );
 
     const pathwayData = {
@@ -1595,6 +1609,33 @@
       return pathwayData[state.pathway];
     }
 
+    function moduleRegistryIds() {
+      return Object.keys(moduleRegistry);
+    }
+
+    function pathwayModuleIds(pathway = currentPathway()) {
+      const present = new Set(pathway.nodes.map((node) => node.module));
+      return moduleRegistryIds().filter((moduleId) => present.has(moduleId));
+    }
+
+    function lcaPathwayModuleIds() {
+      return pathwayModuleIds();
+    }
+
+    function lcaSupportModuleIds() {
+      return crossCuttingModuleIds
+        .filter((moduleId) => moduleRegistry[moduleId])
+        .filter((moduleId) => lcaRows.some((row) => row.module === moduleId));
+    }
+
+    function lcaCalculationModuleIds() {
+      return [...lcaPathwayModuleIds(), ...lcaSupportModuleIds()];
+    }
+
+    function lcaModuleRole(moduleId) {
+      return crossCuttingModuleIds.includes(moduleId) ? "Cross-cutting support" : "Pathway-linked";
+    }
+
     function nodeById(pathway, id) {
       return pathway.nodes.find((node) => node.id === id);
     }
@@ -1678,7 +1719,7 @@
     function renderFilterOptions() {
       const nodes = currentPathway().nodes;
       const domains = ["all", ...Array.from(new Set(nodes.map((node) => node.domain)))];
-      const modules = ["all", ...Array.from(new Set(nodes.map((node) => node.module)))];
+      const modules = ["all", ...pathwayModuleIds()];
       const domainFilter = document.getElementById("domainFilter");
       const moduleFilter = document.getElementById("moduleFilter");
 
@@ -2130,9 +2171,14 @@
       const count = document.getElementById("buildingBlockCount");
       clear(container);
 
-      const moduleIds = Object.keys(moduleRegistry)
+      const pathwayModuleIdsForLca = lcaPathwayModuleIds();
+      const supportModuleIdsForLca = lcaSupportModuleIds();
+      const moduleIds = lcaCalculationModuleIds()
         .filter((moduleId) => buildingBlockRegistry.some((item) => item.module === moduleId));
-      count.textContent = `${buildingBlockRegistry.length} candidate building blocks across ${moduleIds.length} modules`;
+      const blockCount = buildingBlockRegistry
+        .filter((item) => moduleIds.includes(item.module))
+        .length;
+      count.textContent = `${blockCount} candidate building blocks: ${pathwayModuleIdsForLca.length} pathway modules + ${supportModuleIdsForLca.length} support modules`;
 
       moduleIds.forEach((moduleId) => {
         const module = moduleRegistry[moduleId];
@@ -2145,7 +2191,7 @@
             <span class="tag module">${escapeHtml(moduleId)}</span>
             <span class="module-zone-title">
               <strong>${escapeHtml(module.name)}</strong>
-              <span>${blocks.length} candidate building block${blocks.length === 1 ? "" : "s"}</span>
+              <span>${lcaModuleRole(moduleId)} · ${blocks.length} candidate building block${blocks.length === 1 ? "" : "s"}</span>
             </span>
           </div>
           <p>${escapeHtml(module.definition)}</p>
@@ -2175,7 +2221,29 @@
     function renderLcaTable() {
       const container = document.getElementById("lcaModuleCalculations");
       clear(container);
-      lcaModuleIds.forEach((moduleId) => {
+      const groups = [
+        {
+          title: "Pathway-linked modules from current map",
+          description: "These modules are used by the selected pathway's activity map and match the top ECO-PATH module filter.",
+          moduleIds: lcaPathwayModuleIds()
+        },
+        {
+          title: "Optional cross-cutting support modules",
+          description: "These modules are not stations on the pathway map. Use them for patient support and shared hospital support if they are inside the LCA boundary.",
+          moduleIds: lcaSupportModuleIds()
+        }
+      ];
+
+      groups.forEach((group) => {
+        const heading = document.createElement("div");
+        heading.className = "lca-module-group-heading";
+        heading.innerHTML = `
+          <h3>${escapeHtml(group.title)}</h3>
+          <p>${escapeHtml(group.description)}</p>
+        `;
+        container.appendChild(heading);
+
+        group.moduleIds.forEach((moduleId) => {
         const module = moduleRegistry[moduleId];
         const moduleRows = lcaRows
           .map((row, index) => ({ row, index }))
@@ -2229,6 +2297,7 @@
           </div>
         `;
         container.appendChild(section);
+        });
       });
     }
 
@@ -2255,8 +2324,9 @@
 
     function renderLcaOutputs() {
       const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
-      const includedRows = lcaRows.filter((row) => isLcaModuleIncluded(row.module)).length;
-      const includedModules = lcaModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
+      const calculationModuleIds = lcaCalculationModuleIds();
+      const includedRows = lcaRows.filter((row) => calculationModuleIds.includes(row.module) && isLcaModuleIncluded(row.module)).length;
+      const includedModules = calculationModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
       const scenarios = [
         { id: "low", label: "Low" },
         { id: "base", label: "Base" },
@@ -2270,18 +2340,19 @@
             <span>${formatKg(values.cohortExpected)}</span>
             <small>Demo library total for ${formatNumber(caseCount)} pathway instances</small>
             <small>Per pathway instance: ${formatKg(values.perPathway)}</small>
-            <small>Included modules: ${includedModules} of ${lcaModuleIds.length}; rows: ${formatNumber(includedRows)} of ${formatNumber(lcaRows.length)}</small>
+            <small>Included modules: ${includedModules} of ${calculationModuleIds.length}; rows: ${formatNumber(includedRows)} of ${formatNumber(lcaVisibleRows().length)}</small>
           </div>
         `;
       }).join("");
       document.getElementById("lcaResults").innerHTML = resultCards;
+      document.getElementById("lcaPathwayStatus").textContent = `${currentPathway().label}: ${lcaPathwayModuleIds().length} pathway modules + ${lcaSupportModuleIds().length} support modules`;
 
       lcaRows.forEach((row) => {
         const element = document.getElementById(`lcaContribution-${row.id}`);
-        if (element) element.textContent = isLcaModuleIncluded(row.module) ? formatKg(rowImpact(row, "base")) : "Excluded";
+        if (element) element.textContent = calculationModuleIds.includes(row.module) && isLcaModuleIncluded(row.module) ? formatKg(rowImpact(row, "base")) : "Excluded";
       });
 
-      lcaModuleIds.forEach((moduleId) => {
+      calculationModuleIds.forEach((moduleId) => {
         const element = document.getElementById(`lcaModuleTotal-${moduleId}`);
         if (!element) return;
         if (!isLcaModuleIncluded(moduleId)) {
@@ -2325,7 +2396,7 @@
       `;
 
       const warning = [
-        "Only checked modules are editable and counted in the totals. All default quantities and impact coefficients are illustrative dummy values. Each row is a candidate building block. Reusability should be assessed through cross-pathway recurrence, data availability, parameter stability, and expert review. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
+        "Only checked modules are editable and counted in the totals. Pathway-linked modules follow the currently selected pathway; cross-cutting support modules are optional boundary additions. All default quantities and impact coefficients are illustrative dummy values. Each row is a candidate building block. Cross-pathway reuse value should be assessed through recurrence, data availability, parameter stability, and expert review. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
       ];
       document.getElementById("lcaDataWarning").textContent = warning.join(" ");
       renderLcaPriorityList();
@@ -2333,7 +2404,7 @@
 
     function renderLcaPriorityList() {
       const priorityRows = lcaRows
-        .filter((row) => isLcaModuleIncluded(row.module))
+        .filter((row) => lcaCalculationModuleIds().includes(row.module) && isLcaModuleIncluded(row.module))
         .map((row) => ({
           ...row,
           weightedImpact: rowImpact(row, "base")
@@ -2399,13 +2470,18 @@
 
     function lcaScenarioValues(scenario, caseCount) {
       const perPathway = lcaRows.reduce((sum, row) => {
-        if (!isLcaModuleIncluded(row.module)) return sum;
+        if (!lcaCalculationModuleIds().includes(row.module) || !isLcaModuleIncluded(row.module)) return sum;
         return sum + rowImpact(row, scenario);
       }, 0);
       return {
         perPathway,
         cohortExpected: perPathway * caseCount
       };
+    }
+
+    function lcaVisibleRows() {
+      const moduleIds = lcaCalculationModuleIds();
+      return lcaRows.filter((row) => moduleIds.includes(row.module));
     }
 
     function isLcaModuleIncluded(moduleId) {
@@ -2470,17 +2546,17 @@
       renderDetail();
       renderBuildingBlockMap();
       renderActivityList();
+      renderLcaTable();
+      renderLcaOutputs();
       scheduleDetailPanelSync();
     }
 
     bindControls();
     window.addEventListener("scroll", scheduleDetailPanelSync, { passive: true });
     window.addEventListener("resize", scheduleDetailPanelSync);
-    renderLcaTable();
     bindLcaControls();
     state.selected = currentPathway().defaultSelected;
     render();
-    renderLcaOutputs();
   </script>
 </body>
 </html>

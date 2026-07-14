@@ -451,6 +451,91 @@
       margin-top: 14px;
     }
 
+    .lca-module-map {
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+
+    .module-map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+    }
+
+    .module-zone {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      padding: 11px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .module-zone.active {
+      border-color: rgba(111, 207, 241, 0.85);
+      background: var(--accent-soft);
+    }
+
+    .module-zone-header {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+    }
+
+    .module-zone-title {
+      min-width: 0;
+    }
+
+    .module-zone-title strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .module-zone-title span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .module-zone p {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .building-block-grid {
+      display: grid;
+      gap: 6px;
+    }
+
+    .building-block-chip {
+      width: 100%;
+      display: grid;
+      gap: 4px;
+      text-align: left;
+      padding: 7px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .building-block-chip strong {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .building-block-chip span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
     .activity-toolbar {
       display: flex;
       align-items: center;
@@ -861,8 +946,8 @@
             <p>Clinical or operational action placed on the pathway map and reviewed by experts.</p>
           </div>
           <div class="note-cell">
-            <strong>Module / building block</strong>
-            <p>Reusable LCA calculation template assigned to activities. It is not another clinical activity.</p>
+            <strong>ECO-PATH module</strong>
+            <p>LCA modeling zone assigned to pathway activities. It is not another clinical activity.</p>
           </div>
           <div class="note-cell">
             <strong>Resource flow</strong>
@@ -884,9 +969,20 @@
       <div class="panel-heading">
         <div>
           <h2>Modular LCA calculation demo</h2>
-          <p class="scope-note">CRC screening-positive fragment using two reusable modules/building blocks: colonoscopy and pathology. Each building block connects pathway activities to resource flows and placeholder impact coefficients. The default values are illustrative dummy data only.</p>
+          <p class="scope-note">CRC screening-positive fragment using two example building blocks: colonoscopy procedure and pathology specimen processing. Each building block connects pathway activities to resource flows and placeholder impact coefficients. The default values are illustrative dummy data only.</p>
         </div>
         <span class="status-chip">Screening prototype, not an ISO-compliant LCA result</span>
+      </div>
+
+      <div class="lca-module-map" aria-label="LCA building block map">
+        <div class="panel-heading">
+          <div>
+            <h3>Candidate building blocks by LCA module</h3>
+            <p class="scope-note">Reusable ECO-PATH building blocks grouped by module. A building block is a calculation unit with a defined unit, resource flows, data needs, and LCI/LCIA mapping. It is not the same thing as a pathway activity.</p>
+          </div>
+          <span class="status-chip" id="buildingBlockCount"></span>
+        </div>
+        <div class="module-map-grid" id="buildingBlockMap"></div>
       </div>
 
       <div class="lca-summary-grid">
@@ -920,7 +1016,7 @@
         <table class="lca-table">
           <thead>
             <tr>
-              <th>Building block / module</th>
+              <th>Building block</th>
               <th>Resource flow</th>
               <th>Unit</th>
               <th>Base quantity</th>
@@ -982,8 +1078,82 @@
         name: "Follow-up",
         definition: "Surveillance, outpatient review, follow-up tests, recurrence monitoring, and return-route contacts.",
         resourceFlows: ["Outpatient visit", "Surveillance tests", "Staff time", "Patient travel", "EHR use"]
+      },
+      EM10: {
+        name: "Patient support",
+        definition: "Patient-facing support processes that can occur across several activities and need transparent allocation.",
+        resourceFlows: ["Patient travel", "Caregiver travel", "Patient food", "Home sampling", "Digital support"]
+      },
+      EM11: {
+        name: "Shared hospital support",
+        definition: "Shared services and overhead processes that support multiple pathway activities and require allocation rules.",
+        resourceFlows: ["Building energy", "Cleaning", "Laundry", "ICT", "Waste handling", "Sterilization support"]
       }
     };
+
+    const buildingBlockRegistry = [
+      block("EM01", "Referral processing", "per referral", ["Staff time", "EHR use", "Referral communication"]),
+      block("EM01", "Triage review", "per triage decision", ["Clinician time", "Record review", "Scheduling"]),
+      block("EM01", "Intake scheduling", "per appointment", ["Administrative time", "Patient communication", "ICT"]),
+      block("EM01", "Return-to-referrer handover", "per transfer", ["Clinical letter", "EHR transfer", "Administrative time"]),
+
+      block("EM02", "Pathology slide review", "per review", ["Pathologist time", "Microscopy or digital pathology", "Report generation"]),
+      block("EM02", "Specimen processing", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
+      block("EM02", "Biopsy or polyp pathology", "per specimen", ["Container", "Slides", "Staining reagents", "Pathology waste"]),
+      block("EM02", "IHC or molecular pathology add-on", "per test", ["Reagents", "Equipment time", "Consumables", "Hazardous waste"]),
+
+      block("EM03", "CT scan", "per scan", ["Scanner electricity", "Contrast media", "Disposables", "Radiology reporting"]),
+      block("EM03", "MRI scan", "per scan", ["Scanner electricity", "Room time", "Radiology reporting", "Patient travel"]),
+      block("EM03", "PET-CT scan", "per scan", ["Radiotracer", "Scanner electricity", "Uptake room time", "Waste"]),
+      block("EM03", "Colonoscopy", "per procedure", ["Procedure materials", "Sedation", "Endoscope reprocessing", "Water", "Waste"]),
+      block("EM03", "Cystoscopy", "per procedure", ["Scope use", "Consumables", "Reprocessing", "Procedure room time"]),
+      block("EM03", "Ultrasound", "per scan", ["Equipment electricity", "Gel and covers", "Clinical staff time"]),
+
+      block("EM04", "MDT case discussion", "per case discussed", ["Clinician time", "Meeting room or digital platform", "Image display", "EHR use"]),
+      block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use", "Patient travel", "EHR use"]),
+      block("EM04", "Digital case review", "per review", ["Clinician time", "ICT", "Image access"]),
+
+      block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
+      block("EM05", "Shared decision-making session", "per session", ["Clinician time", "Decision aid material", "Patient communication"]),
+      block("EM05", "Fitness or pre-treatment assessment", "per assessment", ["Assessment time", "Laboratory review", "EHR documentation"]),
+      block("EM05", "Response or progression assessment", "per assessment", ["Clinical review", "Imaging review", "Laboratory review"]),
+
+      block("EM06", "Medical oncology consultation", "per visit", ["Oncologist time", "Room use", "Patient travel", "EHR use"]),
+      block("EM06", "Chemotherapy infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Day-care chair time", "Cytotoxic waste"]),
+      block("EM06", "Oral systemic therapy cycle", "per cycle", ["Drug dose", "Dispensing", "Monitoring", "Packaging"]),
+      block("EM06", "Pharmacy preparation", "per preparation", ["Pharmacy staff time", "PPE", "Syringes or bags", "Cytotoxic waste"]),
+      block("EM06", "Therapy monitoring laboratory set", "per monitoring set", ["Blood draw", "Lab reagents", "Analyzer electricity", "Reporting"]),
+
+      block("EM07", "Operating room time", "per OR hour", ["OR electricity", "Ventilation", "Lighting", "Equipment use"]),
+      block("EM07", "Anesthesia episode", "per anesthesia", ["Anesthetic medicines", "Airway materials", "Monitoring consumables"]),
+      block("EM07", "Sterile instrument set", "per set", ["CSSD processing", "Sterilization energy", "Packaging", "Transport"]),
+      block("EM07", "Surgical consumable pack", "per procedure", ["Drapes", "Gowns", "Gloves", "Single-use instruments"]),
+      block("EM07", "Ward admission day", "per bed-day", ["Ward energy", "Nursing time", "Meals", "Linen", "Waste"]),
+      block("EM07", "ICU admission day", "per ICU day", ["ICU energy", "Monitoring equipment", "Consumables", "Medicines"]),
+      block("EM07", "Procedure-related clinical waste", "per kg waste", ["Waste mass", "Waste segregation", "Treatment route"]),
+
+      block("EM08", "Radiotherapy planning", "per treatment plan", ["Planning CT", "Treatment planning workstation", "Staff time"]),
+      block("EM08", "Radiotherapy fraction", "per fraction", ["Linear accelerator electricity", "Machine time", "Patient travel"]),
+      block("EM08", "Immobilization device", "per device", ["Thermoplastic mask or mold", "Setup materials", "Waste"]),
+      block("EM08", "Chemoradiation co-treatment add-on", "per cycle or fraction set", ["Systemic therapy inputs", "Extra monitoring", "Combined visits"]),
+
+      block("EM09", "Outpatient follow-up visit", "per visit", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
+      block("EM09", "Surveillance test set", "per surveillance round", ["Blood test", "Imaging or endoscopy", "Reporting"]),
+      block("EM09", "Home-based follow-up kit", "per kit", ["Sampling material", "Shipping", "Laboratory processing", "Digital app use"]),
+      block("EM09", "Return-route follow-up handover", "per handover", ["Clinical letter", "Administrative time", "EHR transfer"]),
+
+      block("EM10", "Patient travel", "per round trip", ["Distance", "Mode share", "Companion travel if included"]),
+      block("EM10", "Caregiver travel", "per round trip", ["Distance", "Mode share", "Attendance assumptions"]),
+      block("EM10", "Patient food or accommodation", "per visit or day", ["Meals", "Accommodation", "Allocation rule"]),
+      block("EM10", "Digital patient support", "per episode", ["App use", "Portal messages", "Home monitoring device if used"]),
+
+      block("EM11", "Building energy allocation", "per room-hour or m2-hour", ["Electricity", "Heating", "Cooling", "Allocation key"]),
+      block("EM11", "Cleaning service", "per room turnover", ["Cleaning materials", "Staff time", "Water", "Wastewater"]),
+      block("EM11", "Laundry service", "per kg textile", ["Washing energy", "Water", "Detergent", "Transport"]),
+      block("EM11", "ICT and EHR use", "per activity or case", ["Device use", "Server allocation", "Network use"]),
+      block("EM11", "General waste handling", "per kg waste", ["Waste mass", "Treatment route", "Transport"]),
+      block("EM11", "Shared sterilization support", "per sterilization cycle", ["Autoclave energy", "Water", "Packaging", "CSSD allocation"])
+    ];
 
     const lcaDefaultRows = [
       {
@@ -1387,6 +1557,10 @@
     };
 
     let detailSyncQueued = false;
+
+    function block(module, name, unit, resourceFlows) {
+      return { module, name, unit, resourceFlows };
+    }
 
     function activity(id, label, domain, type, module, route, x, y, protocolStep, rationale, resourceFlows, openQuestions) {
       return {
@@ -1889,8 +2063,8 @@
             <p>${escapeHtml(node.rationale)}</p>
           </div>
           <div class="detail-block">
-            <strong>ECO-PATH module / building block</strong>
-            <p>${escapeHtml(node.module)} ${escapeHtml(module.name)}. This is the reusable LCA calculation template assigned to the selected activity, not a separate clinical activity. ${escapeHtml(module.definition)}</p>
+            <strong>ECO-PATH module</strong>
+            <p>${escapeHtml(node.module)} ${escapeHtml(module.name)}. This is the LCA modeling zone assigned to the selected activity, not a separate clinical activity. Candidate building blocks are shown in the LCA section. ${escapeHtml(module.definition)}</p>
           </div>
           <div class="detail-block">
             <strong>Candidate resource flows</strong>
@@ -1941,6 +2115,47 @@
           <span class="tag module">${escapeHtml(node.module)} ${escapeHtml(module.name)}</span>
         `;
         list.appendChild(button);
+      });
+    }
+
+    function renderBuildingBlockMap() {
+      const container = document.getElementById("buildingBlockMap");
+      const count = document.getElementById("buildingBlockCount");
+      clear(container);
+
+      const moduleIds = Object.keys(moduleRegistry)
+        .filter((moduleId) => buildingBlockRegistry.some((item) => item.module === moduleId));
+      count.textContent = `${buildingBlockRegistry.length} candidate building blocks across ${moduleIds.length} modules`;
+
+      moduleIds.forEach((moduleId) => {
+        const module = moduleRegistry[moduleId];
+        const blocks = buildingBlockRegistry.filter((item) => item.module === moduleId);
+        const zone = document.createElement("div");
+        zone.className = "module-zone";
+        zone.dataset.moduleId = moduleId;
+        zone.innerHTML = `
+          <div class="module-zone-header">
+            <span class="tag module">${escapeHtml(moduleId)}</span>
+            <span class="module-zone-title">
+              <strong>${escapeHtml(module.name)}</strong>
+              <span>${blocks.length} candidate building block${blocks.length === 1 ? "" : "s"}</span>
+            </span>
+          </div>
+          <p>${escapeHtml(module.definition)}</p>
+          <div class="building-block-grid"></div>
+        `;
+        const blockGrid = zone.querySelector(".building-block-grid");
+        blocks.forEach((item) => {
+          const blockCard = document.createElement("div");
+          blockCard.className = "building-block-chip";
+          blockCard.innerHTML = `
+            <strong>${escapeHtml(item.name)}</strong>
+            <span>Unit: ${escapeHtml(item.unit)}</span>
+            <span>Resource flows: ${escapeHtml(item.resourceFlows.join("; "))}</span>
+          `;
+          blockGrid.appendChild(blockCard);
+        });
+        container.appendChild(zone);
       });
     }
 
@@ -2190,6 +2405,7 @@
       renderHeader();
       renderMap();
       renderDetail();
+      renderBuildingBlockMap();
       renderActivityList();
       scheduleDetailPanelSync();
     }

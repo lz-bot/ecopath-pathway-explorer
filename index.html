@@ -409,12 +409,6 @@
       font-weight: 700;
     }
 
-    .tag.block {
-      border-color: var(--line);
-      background: var(--panel-soft);
-      color: var(--muted);
-    }
-
     .tag.oncology {
       border-color: rgba(138, 120, 189, 0.75);
       color: var(--ink);
@@ -778,6 +772,81 @@
       font-size: 13px;
     }
 
+    .lca-module-calculations {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .lca-module-calculation {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .lca-module-calculation.excluded {
+      background: var(--panel-soft);
+    }
+
+    .lca-module-calculation.excluded .lca-table-wrap {
+      opacity: 0.62;
+    }
+
+    .lca-module-calculation-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .lca-module-toggle {
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      cursor: pointer;
+    }
+
+    .lca-module-toggle input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      margin: 2px 0 0;
+      accent-color: var(--accent-dark);
+    }
+
+    .lca-module-code {
+      margin-top: 1px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .lca-module-title {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .lca-module-title strong {
+      line-height: 1.25;
+    }
+
+    .lca-module-title small,
+    .lca-module-total {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .lca-module-total {
+      text-align: right;
+      min-width: 160px;
+    }
+
     .lca-table-wrap {
       margin-top: 14px;
       overflow-x: auto;
@@ -785,9 +854,15 @@
       border-radius: var(--radius);
     }
 
+    .lca-module-calculation .lca-table-wrap {
+      margin-top: 0;
+      border: 0;
+      border-radius: 0;
+    }
+
     .lca-table {
       width: 100%;
-      min-width: 1180px;
+      min-width: 1050px;
       border-collapse: collapse;
       background: var(--panel);
       font-size: 13px;
@@ -816,6 +891,12 @@
       min-width: 86px;
       padding: 7px 8px;
       min-height: 34px;
+    }
+
+    .lca-table input[type="number"]:disabled {
+      cursor: not-allowed;
+      background: var(--panel-soft);
+      color: var(--muted);
     }
 
     .lca-module-cell {
@@ -857,12 +938,16 @@
         width: 124px;
       }
 
-      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid {
+      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .lca-module-calculation-header {
         grid-template-columns: 1fr;
       }
 
       .lca-results {
         grid-template-columns: 1fr;
+      }
+
+      .lca-module-total {
+        text-align: left;
       }
 
       .detail-panel {
@@ -1050,24 +1135,7 @@
         </div>
       </div>
 
-      <div class="lca-table-wrap">
-        <table class="lca-table">
-          <thead>
-            <tr>
-              <th>ECO-PATH module</th>
-              <th>Building block</th>
-              <th>Resource flows to model</th>
-              <th>Unit</th>
-              <th>Base quantity</th>
-              <th>Uncertainty, +/- %</th>
-              <th>Impact coefficient, kg CO2-eq/unit</th>
-              <th>Default status / data gap</th>
-              <th>Base contribution</th>
-            </tr>
-          </thead>
-          <tbody id="lcaRows"></tbody>
-        </table>
-      </div>
+      <div class="lca-module-calculations" id="lcaModuleCalculations"></div>
     </section>
   </main>
 
@@ -1226,6 +1294,11 @@
     });
 
     let lcaRows = lcaDefaultRows.map((row) => ({ ...row }));
+    const lcaModuleIds = Object.keys(moduleRegistry)
+      .filter((moduleId) => lcaRows.some((row) => row.module === moduleId));
+    const lcaModuleIncluded = Object.fromEntries(
+      lcaModuleIds.map((moduleId) => [moduleId, true])
+    );
 
     const pathwayData = {
       eau: {
@@ -2100,35 +2173,69 @@
     }
 
     function renderLcaTable() {
-      const body = document.getElementById("lcaRows");
-      clear(body);
-      lcaRows.forEach((row, index) => {
-        const tr = document.createElement("tr");
-        const module = moduleRegistry[row.module];
-        tr.innerHTML = `
-          <td>
-            <span class="tag module">${escapeHtml(row.module)}</span><br>
-            <span class="lca-module-cell">${escapeHtml(module.name)}</span>
-          </td>
-          <td>
-            <span class="lca-block-cell">${escapeHtml(row.block)}</span><br>
-            <span class="tag block">Candidate building block</span>
-          </td>
-          <td>${escapeHtml(row.flow)}</td>
-          <td>${escapeHtml(row.unit)}</td>
-          <td><input type="number" min="0" step="0.01" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.flow)} base quantity"></td>
-          <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.flow)} uncertainty percent"></td>
-          <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.flow)} impact coefficient"></td>
-          <td class="lca-source-cell">${escapeHtml(row.gap)}</td>
-          <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
+      const container = document.getElementById("lcaModuleCalculations");
+      clear(container);
+      lcaModuleIds.forEach((moduleId) => {
+        const module = moduleRegistry[moduleId];
+        const moduleRows = lcaRows
+          .map((row, index) => ({ row, index }))
+          .filter((item) => item.row.module === moduleId);
+        const included = isLcaModuleIncluded(moduleId);
+        const disabledAttr = included ? "" : " disabled";
+        const section = document.createElement("section");
+        section.className = `lca-module-calculation${included ? "" : " excluded"}`;
+        section.dataset.lcaModule = moduleId;
+        section.innerHTML = `
+          <div class="lca-module-calculation-header">
+            <label class="lca-module-toggle">
+              <input type="checkbox" data-lca-module-toggle="${escapeHtml(moduleId)}" ${included ? "checked" : ""} aria-label="Include ${escapeHtml(moduleId)} ${escapeHtml(module.name)} in the LCA calculation">
+              <span class="lca-module-code">${escapeHtml(moduleId)}</span>
+              <span class="lca-module-title">
+                <strong>${escapeHtml(module.name)}</strong>
+                <small>${moduleRows.length} candidate building block${moduleRows.length === 1 ? "" : "s"} ${included ? "included in total" : "excluded from total"}</small>
+              </span>
+            </label>
+            <span class="lca-module-total" id="lcaModuleTotal-${escapeHtml(moduleId)}"></span>
+          </div>
+          <div class="lca-table-wrap">
+            <table class="lca-table">
+              <thead>
+                <tr>
+                  <th>Building block</th>
+                  <th>Resource flows to model</th>
+                  <th>Unit</th>
+                  <th>Base quantity</th>
+                  <th>Uncertainty, +/- %</th>
+                  <th>Impact coefficient, kg CO2-eq/unit</th>
+                  <th>Default status / data gap</th>
+                  <th>Base contribution</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${moduleRows.map(({ row, index }) => `
+                  <tr>
+                    <td><span class="lca-block-cell">${escapeHtml(row.block)}</span></td>
+                    <td>${escapeHtml(row.flow)}</td>
+                    <td>${escapeHtml(row.unit)}</td>
+                    <td><input type="number" min="0" step="0.01" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.block)} base quantity"${disabledAttr}></td>
+                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.block)} uncertainty percent"${disabledAttr}></td>
+                    <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.block)} impact coefficient"${disabledAttr}></td>
+                    <td class="lca-source-cell">${escapeHtml(row.gap)}</td>
+                    <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
         `;
-        body.appendChild(tr);
+        container.appendChild(section);
       });
     }
 
     function bindLcaControls() {
+      const moduleCalculations = document.getElementById("lcaModuleCalculations");
       document.getElementById("lcaCaseCount").addEventListener("input", renderLcaOutputs);
-      document.getElementById("lcaRows").addEventListener("input", (event) => {
+      moduleCalculations.addEventListener("input", (event) => {
         const input = event.target;
         const rowIndex = Number(input.dataset.lcaRow);
         const field = input.dataset.lcaField;
@@ -2136,10 +2243,20 @@
         lcaRows[rowIndex][field] = Math.max(0, Number(input.value) || 0);
         renderLcaOutputs();
       });
+      moduleCalculations.addEventListener("change", (event) => {
+        const checkbox = event.target;
+        const moduleId = checkbox.dataset.lcaModuleToggle;
+        if (!moduleId || !(moduleId in lcaModuleIncluded)) return;
+        lcaModuleIncluded[moduleId] = checkbox.checked;
+        renderLcaTable();
+        renderLcaOutputs();
+      });
     }
 
     function renderLcaOutputs() {
       const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
+      const includedRows = lcaRows.filter((row) => isLcaModuleIncluded(row.module)).length;
+      const includedModules = lcaModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
       const scenarios = [
         { id: "low", label: "Low" },
         { id: "base", label: "Base" },
@@ -2153,7 +2270,7 @@
             <span>${formatKg(values.cohortExpected)}</span>
             <small>Demo library total for ${formatNumber(caseCount)} pathway instances</small>
             <small>Per pathway instance: ${formatKg(values.perPathway)}</small>
-            <small>Editable rows: ${formatNumber(lcaRows.length)} candidate building blocks</small>
+            <small>Included modules: ${includedModules} of ${lcaModuleIds.length}; rows: ${formatNumber(includedRows)} of ${formatNumber(lcaRows.length)}</small>
           </div>
         `;
       }).join("");
@@ -2161,7 +2278,20 @@
 
       lcaRows.forEach((row) => {
         const element = document.getElementById(`lcaContribution-${row.id}`);
-        if (element) element.textContent = formatKg(rowImpact(row, "base"));
+        if (element) element.textContent = isLcaModuleIncluded(row.module) ? formatKg(rowImpact(row, "base")) : "Excluded";
+      });
+
+      lcaModuleIds.forEach((moduleId) => {
+        const element = document.getElementById(`lcaModuleTotal-${moduleId}`);
+        if (!element) return;
+        if (!isLcaModuleIncluded(moduleId)) {
+          element.textContent = "Excluded from total";
+          return;
+        }
+        const moduleTotal = lcaRows
+          .filter((row) => row.module === moduleId)
+          .reduce((sum, row) => sum + rowImpact(row, "base"), 0);
+        element.textContent = `Module subtotal: ${formatKg(moduleTotal)}`;
       });
 
       document.getElementById("lcaFormula").innerHTML = `
@@ -2180,7 +2310,7 @@
         <div class="formula-line">
           <span class="formula-label">Building block library</span>
           <span class="formula-expression">
-            I<sub>library,j</sub> = &Sigma;<sub>i=1</sub><sup>n</sup>I<sub>i,j</sub>
+            I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>
           </span>
         </div>
         <div class="formula-line">
@@ -2189,13 +2319,13 @@
             <span class="formula-expression">
               I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>library,j</sub>
             </span>
-            <span class="formula-note">q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.</span>
+            <span class="formula-note">S = building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.</span>
           </span>
         </div>
       `;
 
       const warning = [
-        "All default quantities and impact coefficients are illustrative dummy values. Each row is a candidate building block. Reusability should be assessed through cross-pathway recurrence, data availability, parameter stability, and expert review. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
+        "Only checked modules are editable and counted in the totals. All default quantities and impact coefficients are illustrative dummy values. Each row is a candidate building block. Reusability should be assessed through cross-pathway recurrence, data availability, parameter stability, and expert review. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
       ];
       document.getElementById("lcaDataWarning").textContent = warning.join(" ");
       renderLcaPriorityList();
@@ -2203,6 +2333,7 @@
 
     function renderLcaPriorityList() {
       const priorityRows = lcaRows
+        .filter((row) => isLcaModuleIncluded(row.module))
         .map((row) => ({
           ...row,
           weightedImpact: rowImpact(row, "base")
@@ -2211,6 +2342,12 @@
         .slice(0, 5);
       const list = document.getElementById("lcaPriorityList");
       clear(list);
+      if (priorityRows.length === 0) {
+        const item = document.createElement("li");
+        item.textContent = "No module is selected. Check at least one module to include it in the calculation.";
+        list.appendChild(item);
+        return;
+      }
       priorityRows.forEach((row) => {
         const item = document.createElement("li");
         item.textContent = `${row.module} ${row.block}: ${formatKg(row.weightedImpact)} per demo pathway instance. ${row.gap}`;
@@ -2261,11 +2398,18 @@
     }
 
     function lcaScenarioValues(scenario, caseCount) {
-      const perPathway = lcaRows.reduce((sum, row) => sum + rowImpact(row, scenario), 0);
+      const perPathway = lcaRows.reduce((sum, row) => {
+        if (!isLcaModuleIncluded(row.module)) return sum;
+        return sum + rowImpact(row, scenario);
+      }, 0);
       return {
         perPathway,
         cohortExpected: perPathway * caseCount
       };
+    }
+
+    function isLcaModuleIncluded(moduleId) {
+      return lcaModuleIncluded[moduleId] !== false;
     }
 
     function rowImpact(row, scenario) {

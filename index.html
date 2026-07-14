@@ -142,7 +142,7 @@
       font-weight: 700;
     }
 
-    select, input[type="search"] {
+    select, input[type="search"], input[type="number"] {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -152,7 +152,7 @@
       min-height: 40px;
     }
 
-    select:focus, input[type="search"]:focus {
+    select:focus, input[type="search"]:focus, input[type="number"]:focus {
       outline: 2px solid var(--accent-soft-strong);
       border-color: var(--accent);
     }
@@ -534,6 +534,142 @@
       font-size: 13px;
     }
 
+    .lca-panel {
+      margin-top: 14px;
+      scroll-margin-top: 116px;
+    }
+
+    .lca-summary-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .lca-control-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .lca-formula {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      padding: 10px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .lca-results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .lca-result-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--panel-soft);
+    }
+
+    .lca-result-card strong {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .lca-result-card span {
+      display: block;
+      color: var(--accent-dark);
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .lca-result-card small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .lca-warning {
+      margin-top: 10px;
+      border: 1px solid var(--warn-line);
+      border-radius: var(--radius);
+      background: var(--warn-bg);
+      padding: 10px;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .lca-table-wrap {
+      margin-top: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .lca-table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: collapse;
+      background: var(--panel);
+      font-size: 13px;
+    }
+
+    .lca-table th,
+    .lca-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .lca-table th {
+      color: var(--muted);
+      font-size: 12px;
+      background: var(--panel-soft);
+      font-weight: 700;
+    }
+
+    .lca-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lca-table input[type="number"] {
+      min-width: 86px;
+      padding: 7px 8px;
+      min-height: 34px;
+    }
+
+    .lca-module-cell {
+      font-weight: 700;
+      color: var(--accent-dark);
+      white-space: nowrap;
+    }
+
+    .lca-source-cell {
+      color: var(--muted);
+      min-width: 210px;
+    }
+
+    .lca-priority-list {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .lca-priority-list li {
+      margin: 4px 0;
+    }
+
     @media (max-width: 960px) {
       .topbar {
         grid-template-columns: 1fr;
@@ -547,7 +683,11 @@
         width: 124px;
       }
 
-      .layout, .filters, .method-note {
+      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lca-results {
         grid-template-columns: 1fr;
       }
     }
@@ -672,6 +812,61 @@
         <div id="activityDetail"></div>
       </aside>
     </section>
+
+    <section class="panel lca-panel" id="lcaCalculator" aria-label="LCA building block calculator">
+      <div class="panel-heading">
+        <div>
+          <h2>LCA building block demo</h2>
+          <p class="scope-note">CRC screening-positive fragment using two reusable building blocks: colonoscopy and pathology. The default values are illustrative dummy data only.</p>
+        </div>
+        <span class="status-chip">Formula prototype, not a validated LCA result</span>
+      </div>
+
+      <div class="lca-summary-grid">
+        <div>
+          <div class="lca-control-grid" aria-label="LCA scenario inputs">
+            <div class="field">
+              <label for="lcaCaseCount">Cohort size, patients</label>
+              <input id="lcaCaseCount" type="number" min="1" step="1" value="100">
+            </div>
+            <div class="field">
+              <label for="lcaAdenomaProbability">Adenoma branch, %</label>
+              <input id="lcaAdenomaProbability" type="number" min="0" max="100" step="1" value="35">
+            </div>
+            <div class="field">
+              <label for="lcaCancerProbability">Cancer branch, %</label>
+              <input id="lcaCancerProbability" type="number" min="0" max="100" step="1" value="5">
+            </div>
+          </div>
+          <div class="lca-formula" id="lcaFormula"></div>
+          <div class="lca-warning" id="lcaDataWarning"></div>
+        </div>
+
+        <div>
+          <div class="lca-results" id="lcaResults"></div>
+          <h3>Data to collect next</h3>
+          <ul class="lca-priority-list" id="lcaPriorityList"></ul>
+        </div>
+      </div>
+
+      <div class="lca-table-wrap">
+        <table class="lca-table">
+          <thead>
+            <tr>
+              <th>Building block</th>
+              <th>Resource flow</th>
+              <th>Unit</th>
+              <th>Base quantity</th>
+              <th>Uncertainty, +/- %</th>
+              <th>Emission factor, kg CO2-eq/unit</th>
+              <th>Default status / data gap</th>
+              <th>Base contribution</th>
+            </tr>
+          </thead>
+          <tbody id="lcaRows"></tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -722,6 +917,165 @@
         resourceFlows: ["Outpatient visit", "Surveillance tests", "Staff time", "Patient travel", "EHR use"]
       }
     };
+
+    const lcaDefaultRows = [
+      {
+        id: "scope-reprocessing",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Endoscope reprocessing cycle",
+        unit: "cycle",
+        quantity: 1,
+        uncertainty: 35,
+        factor: 2.8,
+        gap: "Dummy. Replace with local washer-disinfector cycle, chemicals, water, electricity, and drying data."
+      },
+      {
+        id: "disposable-set",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Disposable procedure set",
+        unit: "set",
+        quantity: 1,
+        uncertainty: 40,
+        factor: 3.5,
+        gap: "Dummy. Replace with local endoscopy consumable list and LCI mapping."
+      },
+      {
+        id: "bowel-prep",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Bowel preparation",
+        unit: "package",
+        quantity: 1,
+        uncertainty: 50,
+        factor: 0.8,
+        gap: "Dummy. Replace with actual product, dose, packaging, and pharmacy data."
+      },
+      {
+        id: "sedation",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Sedation medication",
+        unit: "dose",
+        quantity: 1,
+        uncertainty: 60,
+        factor: 0.3,
+        gap: "Dummy. Replace with medication type, dose, syringe, and disposal assumptions."
+      },
+      {
+        id: "room-electricity",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Endoscopy room electricity",
+        unit: "kWh",
+        quantity: 2,
+        uncertainty: 50,
+        factor: 0.35,
+        gap: "Dummy. Replace with room energy or procedure-duration allocation."
+      },
+      {
+        id: "water-use",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Water use",
+        unit: "L",
+        quantity: 25,
+        uncertainty: 50,
+        factor: 0.0004,
+        gap: "Dummy. Replace with local water use for procedure and reprocessing."
+      },
+      {
+        id: "clinical-waste",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Clinical waste",
+        unit: "kg",
+        quantity: 0.6,
+        uncertainty: 50,
+        factor: 1.2,
+        gap: "Dummy. Replace with local waste mass and treatment route."
+      },
+      {
+        id: "patient-travel",
+        block: "Colonoscopy",
+        branch: "common",
+        flow: "Patient round-trip travel",
+        unit: "km",
+        quantity: 30,
+        uncertainty: 70,
+        factor: 0.18,
+        gap: "Dummy. Replace with postcode distance, mode share, and visit count."
+      },
+      {
+        id: "polypectomy",
+        block: "Colonoscopy add-on",
+        branch: "adenoma",
+        flow: "Polypectomy consumables",
+        unit: "set",
+        quantity: 1,
+        uncertainty: 50,
+        factor: 1.5,
+        gap: "Dummy. Replace with snare, forceps, clip, retrieval, and local practice data."
+      },
+      {
+        id: "pathology-base",
+        block: "Pathology",
+        branch: "adenoma",
+        flow: "Base specimen processing",
+        unit: "specimen",
+        quantity: 1,
+        uncertainty: 45,
+        factor: 2.5,
+        gap: "Dummy. Replace with local pathology process, cassette, embedding, staining, reporting."
+      },
+      {
+        id: "slides",
+        block: "Pathology",
+        branch: "adenoma",
+        flow: "Glass slides",
+        unit: "slide",
+        quantity: 4,
+        uncertainty: 40,
+        factor: 0.08,
+        gap: "Dummy. Replace with slide count by lesion type and local slide LCI."
+      },
+      {
+        id: "staining",
+        block: "Pathology",
+        branch: "adenoma",
+        flow: "Staining reagents",
+        unit: "mL",
+        quantity: 20,
+        uncertainty: 60,
+        factor: 0.02,
+        gap: "Dummy. Replace with stain type, reagent volume, and waste route."
+      },
+      {
+        id: "pathology-waste",
+        block: "Pathology",
+        branch: "adenoma",
+        flow: "Pathology lab waste",
+        unit: "kg",
+        quantity: 0.2,
+        uncertainty: 60,
+        factor: 1.2,
+        gap: "Dummy. Replace with local waste mass and hazardous waste classification."
+      },
+      {
+        id: "cancer-extra-pathology",
+        block: "Pathology add-on",
+        branch: "cancer",
+        flow: "Additional cancer pathology workup",
+        unit: "case",
+        quantity: 1,
+        uncertainty: 70,
+        factor: 6,
+        gap: "Dummy placeholder. Replace with IHC, molecular testing, extra slides, and reporting data."
+      }
+    ];
+
+    let lcaRows = lcaDefaultRows.map((row) => ({ ...row }));
 
     const pathwayData = {
       eau: {
@@ -1511,6 +1865,143 @@
       });
     }
 
+    function renderLcaTable() {
+      const body = document.getElementById("lcaRows");
+      clear(body);
+      lcaRows.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>
+            <span class="lca-module-cell">${escapeHtml(row.block)}</span><br>
+            <span class="tag">${escapeHtml(branchLabel(row.branch))}</span>
+          </td>
+          <td>${escapeHtml(row.flow)}</td>
+          <td>${escapeHtml(row.unit)}</td>
+          <td><input type="number" min="0" step="0.01" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.flow)} base quantity"></td>
+          <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.flow)} uncertainty percent"></td>
+          <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.flow)} emission factor"></td>
+          <td class="lca-source-cell">${escapeHtml(row.gap)}</td>
+          <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function bindLcaControls() {
+      ["lcaCaseCount", "lcaAdenomaProbability", "lcaCancerProbability"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", renderLcaOutputs);
+      });
+      document.getElementById("lcaRows").addEventListener("input", (event) => {
+        const input = event.target;
+        const rowIndex = Number(input.dataset.lcaRow);
+        const field = input.dataset.lcaField;
+        if (!Number.isInteger(rowIndex) || !field || !lcaRows[rowIndex]) return;
+        lcaRows[rowIndex][field] = Math.max(0, Number(input.value) || 0);
+        renderLcaOutputs();
+      });
+    }
+
+    function renderLcaOutputs() {
+      const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
+      const pAdenoma = Math.max(0, readNumber("lcaAdenomaProbability", 35)) / 100;
+      const pCancer = Math.max(0, readNumber("lcaCancerProbability", 5)) / 100;
+      const scenarios = [
+        { id: "low", label: "Low" },
+        { id: "base", label: "Base" },
+        { id: "high", label: "High" }
+      ];
+      const resultCards = scenarios.map((scenario) => {
+        const values = lcaScenarioValues(scenario.id, caseCount, pAdenoma, pCancer);
+        return `
+          <div class="lca-result-card">
+            <strong>${scenario.label} scenario</strong>
+            <span>${formatKg(values.cohortExpected)}</span>
+            <small>Cohort expected impact for ${formatNumber(caseCount)} patients</small>
+            <small>Per expected patient: ${formatKg(values.expectedPatient)}</small>
+            <small>Adenoma case: ${formatKg(values.adenomaCase)}</small>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("lcaResults").innerHTML = resultCards;
+
+      lcaRows.forEach((row) => {
+        const element = document.getElementById(`lcaContribution-${row.id}`);
+        if (element) element.textContent = formatKg(rowImpact(row, "base"));
+      });
+
+      document.getElementById("lcaFormula").textContent =
+        "I_row = quantity x emission factor. I_low/high = I_row x (1 +/- uncertainty). I_expected = I_common + p_adenoma x I_adenoma_add-on + p_cancer x I_cancer_add-on. I_cohort = cohort size x I_expected.";
+
+      const warning = [
+        "All default quantities and emission factors are illustrative dummy values. Replace them with hospital activity data, local LCI measurements, or documented proxy factors before using the result as evidence."
+      ];
+      if (pAdenoma + pCancer > 1) {
+        warning.push("The adenoma and cancer branch probabilities currently exceed 100%. This is allowed for testing the interface, but it is not a coherent pathway scenario.");
+      }
+      document.getElementById("lcaDataWarning").textContent = warning.join(" ");
+      renderLcaPriorityList(pAdenoma, pCancer);
+    }
+
+    function renderLcaPriorityList(pAdenoma, pCancer) {
+      const weights = { common: 1, adenoma: pAdenoma, cancer: pCancer };
+      const priorityRows = lcaRows
+        .map((row) => ({
+          ...row,
+          weightedImpact: rowImpact(row, "base") * (weights[row.branch] || 0)
+        }))
+        .sort((a, b) => b.weightedImpact - a.weightedImpact)
+        .slice(0, 5);
+      const list = document.getElementById("lcaPriorityList");
+      clear(list);
+      priorityRows.forEach((row) => {
+        const item = document.createElement("li");
+        item.textContent = `${row.flow}: ${formatKg(row.weightedImpact)} per expected patient. ${row.gap}`;
+        list.appendChild(item);
+      });
+    }
+
+    function lcaScenarioValues(scenario, caseCount, pAdenoma, pCancer) {
+      const branchTotals = { common: 0, adenoma: 0, cancer: 0 };
+      lcaRows.forEach((row) => {
+        branchTotals[row.branch] += rowImpact(row, scenario);
+      });
+      const adenomaCase = branchTotals.common + branchTotals.adenoma;
+      const expectedPatient = branchTotals.common + pAdenoma * branchTotals.adenoma + pCancer * branchTotals.cancer;
+      return {
+        adenomaCase,
+        expectedPatient,
+        cohortExpected: expectedPatient * caseCount
+      };
+    }
+
+    function rowImpact(row, scenario) {
+      const base = Math.max(0, row.quantity) * Math.max(0, row.factor);
+      const uncertainty = Math.max(0, row.uncertainty) / 100;
+      if (scenario === "low") return Math.max(0, base * (1 - uncertainty));
+      if (scenario === "high") return base * (1 + uncertainty);
+      return base;
+    }
+
+    function branchLabel(branch) {
+      if (branch === "common") return "Common colonoscopy";
+      if (branch === "adenoma") return "Adenoma add-on";
+      return "Cancer add-on";
+    }
+
+    function readNumber(id, fallback) {
+      const value = Number(document.getElementById(id).value);
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+    function formatKg(value) {
+      const digits = value >= 100 ? 0 : value >= 10 ? 1 : 2;
+      return `${value.toFixed(digits)} kg CO2-eq`;
+    }
+
+    function formatNumber(value) {
+      return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+    }
+
     function escapeHtml(value) {
       return String(value)
         .replaceAll("&", "&amp;")
@@ -1549,8 +2040,11 @@
     }
 
     bindControls();
+    renderLcaTable();
+    bindLcaControls();
     state.selected = currentPathway().defaultSelected;
     render();
+    renderLcaOutputs();
   </script>
 </body>
 </html>

@@ -15,6 +15,8 @@ The current prototype includes urology and gastroenterology examples:
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
 
+The page also includes a small interactive LCA building-block calculator for a colorectal screening-positive fragment. It demonstrates the calculation logic for colonoscopy and pathology modules using editable dummy quantities, emission factors, branch probabilities, and low/base/high uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
+
 ## What The Explorer Shows
 
 The interactive map represents pathway elements as metro-style stations:
@@ -26,6 +28,8 @@ The interactive map represents pathway elements as metro-style stations:
 - `FU`: follow-up activities
 
 Route colors distinguish diagnostic and access movement, treatment movement, follow-up movement, and conditional or return routes. Selecting a station opens its activity interpretation, ECO-PATH module assignment, candidate resource flows, and open questions for expert confirmation.
+
+The LCA calculator uses the prototype formula `impact = quantity x emission factor`, then applies an uncertainty range and simple branch weighting for adenoma and cancer add-ons.
 
 ## Methodological Scope
 

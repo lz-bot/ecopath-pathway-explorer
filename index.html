@@ -125,7 +125,7 @@
 
     .filters {
       display: grid;
-      grid-template-columns: repeat(4, minmax(170px, 1fr));
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
       gap: 10px;
       margin-bottom: 14px;
       align-items: end;
@@ -155,6 +155,43 @@
     select:focus, input[type="search"]:focus, input[type="number"]:focus {
       outline: 2px solid var(--accent-soft-strong);
       border-color: var(--accent);
+    }
+
+    .toggle-field {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .toggle-field input {
+      width: 17px;
+      height: 17px;
+      margin: 0;
+      accent-color: var(--accent-dark);
+    }
+
+    .toggle-field span {
+      display: grid;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .toggle-field strong {
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .toggle-field small {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
     }
 
     .layout {
@@ -269,6 +306,13 @@
     .node-shape.selected {
       stroke: var(--accent);
       stroke-width: 4;
+    }
+
+    .oncology-halo {
+      fill: rgba(138, 120, 189, 0.14);
+      stroke: rgba(138, 120, 189, 0.62);
+      stroke-width: 2;
+      pointer-events: none;
     }
 
     .node-code {
@@ -477,6 +521,11 @@
       background: var(--accent-soft);
     }
 
+    .module-zone.oncology-highlight {
+      border-color: rgba(138, 120, 189, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(138, 120, 189, 0.12);
+    }
+
     .module-zone-header {
       display: grid;
       grid-template-columns: auto minmax(0, 1fr);
@@ -521,6 +570,11 @@
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
+    }
+
+    .building-block-chip.oncology-highlight {
+      border-color: rgba(138, 120, 189, 0.45);
+      background: rgba(138, 120, 189, 0.07);
     }
 
     .building-block-chip strong {
@@ -600,6 +654,16 @@
     }
 
     .activity-row.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .activity-row.oncology-highlight {
+      border-color: rgba(138, 120, 189, 0.50);
+      box-shadow: inset 3px 0 0 rgba(138, 120, 189, 0.45);
+    }
+
+    .activity-row.active.oncology-highlight {
       border-color: var(--accent);
       background: var(--accent-soft);
     }
@@ -808,6 +872,14 @@
       opacity: 0.62;
     }
 
+    .lca-module-calculation.oncology-highlight {
+      border-color: rgba(138, 120, 189, 0.42);
+    }
+
+    .lca-module-calculation.oncology-highlight .lca-module-calculation-header {
+      background: rgba(138, 120, 189, 0.08);
+    }
+
     .lca-module-calculation-header {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -900,6 +972,10 @@
 
     .lca-table tr:last-child td {
       border-bottom: 0;
+    }
+
+    .lca-table tr.oncology-highlight td {
+      background: rgba(138, 120, 189, 0.045);
     }
 
     .lca-table input[type="number"] {
@@ -1036,6 +1112,16 @@
       <div class="field">
         <label for="searchBox">Search</label>
         <input id="searchBox" type="search" placeholder="activity, module, oncology, imaging">
+      </div>
+      <div class="field">
+        <label for="oncologyLens">Oncology lens</label>
+        <label class="toggle-field" for="oncologyLens">
+          <input id="oncologyLens" type="checkbox">
+          <span>
+            <strong>Highlight oncology</strong>
+            <small>Activities and LCA blocks</small>
+          </span>
+        </label>
       </div>
     </section>
 
@@ -1553,7 +1639,8 @@
       domain: "all",
       module: "all",
       type: "all",
-      query: ""
+      query: "",
+      oncologyLens: false
     };
 
     let detailSyncQueued = false;
@@ -1584,6 +1671,14 @@
     }
 
     function activity(id, label, domain, type, module, route, x, y, protocolStep, rationale, resourceFlows, openQuestions) {
+      const oncologyText = [
+        label,
+        domain,
+        protocolStep,
+        rationale,
+        resourceFlows.join(" "),
+        openQuestions.join(" ")
+      ].join(" ").toLowerCase();
       return {
         id,
         label,
@@ -1597,7 +1692,8 @@
         rationale,
         resourceFlows,
         openQuestions,
-        oncology: domain === "Systemic therapy and oncology" || label.toLowerCase().includes("oncology") || label.toLowerCase().includes("chemotherapy")
+        oncology: isOncologyModule(module)
+          || /oncology|chemo|chemoradiation|systemic therapy|radiotherapy|radiation|cytotoxic/.test(oncologyText)
       };
     }
 
@@ -1634,6 +1730,30 @@
 
     function lcaModuleRole(moduleId) {
       return crossCuttingModuleIds.includes(moduleId) ? "Cross-cutting support" : "Pathway-linked";
+    }
+
+    function isOncologyModule(moduleId) {
+      return ["EM04", "EM06", "EM08"].includes(moduleId);
+    }
+
+    function isOncologyBuildingBlock(item) {
+      const text = [
+        item.module,
+        moduleRegistry[item.module] ? moduleRegistry[item.module].name : "",
+        item.name,
+        item.resourceFlows.join(" ")
+      ].join(" ").toLowerCase();
+      return isOncologyModule(item.module)
+        || /oncology|chemo|chemoradiation|systemic therapy|radiotherapy|radiation|cytotoxic|pharmacy/.test(text);
+    }
+
+    function isOncologyLcaRow(row) {
+      const item = {
+        module: row.module,
+        name: row.block,
+        resourceFlows: [row.flow, row.gap]
+      };
+      return isOncologyBuildingBlock(item);
     }
 
     function nodeById(pathway, id) {
@@ -1746,6 +1866,7 @@
       state.module = modules.includes(previousModule) ? previousModule : "all";
       domainFilter.value = state.domain;
       moduleFilter.value = state.module;
+      document.getElementById("oncologyLens").checked = state.oncologyLens;
     }
 
     function renderHeader() {
@@ -1874,6 +1995,21 @@
           }
         });
         if (!visible) group.setAttribute("opacity", "0.24");
+
+        const showOncologyHalo = state.oncologyLens && node.oncology;
+        if (showOncologyHalo && node.type === "decision") {
+          group.appendChild(createSvgElement("polygon", {
+            points: `${node.x},${node.y - 37} ${node.x + 46},${node.y} ${node.x},${node.y + 37} ${node.x - 46},${node.y}`,
+            class: "oncology-halo"
+          }));
+        } else if (showOncologyHalo) {
+          group.appendChild(createSvgElement("circle", {
+            cx: node.x,
+            cy: node.y,
+            r: 31,
+            class: "oncology-halo"
+          }));
+        }
 
         if (node.type === "decision") {
           const diamond = createSvgElement("polygon", {
@@ -2143,7 +2279,11 @@
       nodes.forEach((node) => {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = `activity-row ${state.selected === node.id ? "active" : ""}`;
+        button.className = [
+          "activity-row",
+          state.selected === node.id ? "active" : "",
+          state.oncologyLens && node.oncology ? "oncology-highlight" : ""
+        ].filter(Boolean).join(" ");
         button.dataset.nodeId = node.id;
         button.addEventListener("click", () => {
           state.selected = node.id;
@@ -2184,7 +2324,11 @@
         const module = moduleRegistry[moduleId];
         const blocks = buildingBlockRegistry.filter((item) => item.module === moduleId);
         const zone = document.createElement("div");
-        zone.className = "module-zone";
+        const hasOncologyBlock = blocks.some((item) => isOncologyBuildingBlock(item));
+        zone.className = [
+          "module-zone",
+          state.oncologyLens && hasOncologyBlock ? "oncology-highlight" : ""
+        ].filter(Boolean).join(" ");
         zone.dataset.moduleId = moduleId;
         zone.innerHTML = `
           <div class="module-zone-header">
@@ -2200,7 +2344,10 @@
         const blockGrid = zone.querySelector(".building-block-grid");
         blocks.forEach((item) => {
           const blockCard = document.createElement("div");
-          blockCard.className = "building-block-chip";
+          blockCard.className = [
+            "building-block-chip",
+            state.oncologyLens && isOncologyBuildingBlock(item) ? "oncology-highlight" : ""
+          ].filter(Boolean).join(" ");
           blockCard.innerHTML = `
             <strong>${escapeHtml(item.name)}</strong>
             <span>Unit: ${escapeHtml(item.unit)}</span>
@@ -2244,16 +2391,21 @@
         container.appendChild(heading);
 
         group.moduleIds.forEach((moduleId) => {
-        const module = moduleRegistry[moduleId];
-        const moduleRows = lcaRows
-          .map((row, index) => ({ row, index }))
-          .filter((item) => item.row.module === moduleId);
-        const included = isLcaModuleIncluded(moduleId);
-        const disabledAttr = included ? "" : " disabled";
-        const section = document.createElement("section");
-        section.className = `lca-module-calculation${included ? "" : " excluded"}`;
-        section.dataset.lcaModule = moduleId;
-        section.innerHTML = `
+          const module = moduleRegistry[moduleId];
+          const moduleRows = lcaRows
+            .map((row, index) => ({ row, index }))
+            .filter((item) => item.row.module === moduleId);
+          const included = isLcaModuleIncluded(moduleId);
+          const disabledAttr = included ? "" : " disabled";
+          const hasOncologyRows = moduleRows.some(({ row }) => isOncologyLcaRow(row));
+          const section = document.createElement("section");
+          section.className = [
+            "lca-module-calculation",
+            included ? "" : "excluded",
+            state.oncologyLens && hasOncologyRows ? "oncology-highlight" : ""
+          ].filter(Boolean).join(" ");
+          section.dataset.lcaModule = moduleId;
+          section.innerHTML = `
           <div class="lca-module-calculation-header">
             <label class="lca-module-toggle">
               <input type="checkbox" data-lca-module-toggle="${escapeHtml(moduleId)}" ${included ? "checked" : ""} aria-label="Include ${escapeHtml(moduleId)} ${escapeHtml(module.name)} in the LCA calculation">
@@ -2281,7 +2433,7 @@
               </thead>
               <tbody>
                 ${moduleRows.map(({ row, index }) => `
-                  <tr>
+                  <tr class="${state.oncologyLens && isOncologyLcaRow(row) ? "oncology-highlight" : ""}">
                     <td><span class="lca-block-cell">${escapeHtml(row.block)}</span></td>
                     <td>${escapeHtml(row.flow)}</td>
                     <td>${escapeHtml(row.unit)}</td>
@@ -2534,6 +2686,10 @@
       });
       document.getElementById("searchBox").addEventListener("input", (event) => {
         state.query = event.target.value;
+        render();
+      });
+      document.getElementById("oncologyLens").addEventListener("change", (event) => {
+        state.oncologyLens = event.target.checked;
         render();
       });
     }

@@ -875,10 +875,10 @@
     <section class="panel lca-panel" id="lcaCalculator" aria-label="LCA building block calculator">
       <div class="panel-heading">
         <div>
-          <h2>LCA building block demo</h2>
-          <p class="scope-note">CRC screening-positive fragment using two reusable building blocks: colonoscopy and pathology. The default values are illustrative dummy data only.</p>
+          <h2>Modular LCA calculation demo</h2>
+          <p class="scope-note">CRC screening-positive fragment using two reusable building blocks: colonoscopy and pathology. The default values are illustrative dummy data and placeholder impact coefficients only.</p>
         </div>
-        <span class="status-chip">Formula prototype, not a validated LCA result</span>
+        <span class="status-chip">Screening prototype, not an ISO-compliant LCA result</span>
       </div>
 
       <div class="lca-summary-grid">
@@ -917,7 +917,7 @@
               <th>Unit</th>
               <th>Base quantity</th>
               <th>Uncertainty, +/- %</th>
-              <th>Emission factor, kg CO2-eq/unit</th>
+              <th>Impact coefficient, kg CO2-eq/unit</th>
               <th>Default status / data gap</th>
               <th>Base contribution</th>
             </tr>
@@ -1956,7 +1956,7 @@
           <td>${escapeHtml(row.unit)}</td>
           <td><input type="number" min="0" step="0.01" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.flow)} base quantity"></td>
           <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.flow)} uncertainty percent"></td>
-          <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.flow)} emission factor"></td>
+          <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.flow)} impact coefficient"></td>
           <td class="lca-source-cell">${escapeHtml(row.gap)}</td>
           <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
         `;
@@ -2010,7 +2010,7 @@
         <div class="formula-line">
           <span class="formula-label">Resource flow</span>
           <span class="formula-expression">
-            I<sub>i</sub> = q<sub>i</sub><span class="operator">&middot;</span>EF<sub>i</sub>
+            I<sub>i,j</sub> = q<sub>i</sub><span class="operator">&middot;</span>c<sub>i,j</sub>
           </span>
         </div>
         <div class="formula-line">
@@ -2022,22 +2022,22 @@
         <div class="formula-line">
           <span class="formula-label">Expected pathway impact</span>
           <span class="formula-expression">
-            I<sub>expected</sub> = I<sub>common</sub> + p<sub>adenoma</sub><span class="operator">&middot;</span>I<sub>adenoma</sub> + p<sub>cancer</sub><span class="operator">&middot;</span>I<sub>cancer</sub>
+            I<sub>expected,j</sub> = I<sub>common,j</sub> + p<sub>adenoma</sub><span class="operator">&middot;</span>I<sub>adenoma,j</sub> + p<sub>cancer</sub><span class="operator">&middot;</span>I<sub>cancer,j</sub>
           </span>
         </div>
         <div class="formula-line">
           <span class="formula-label">Cohort impact</span>
           <span>
             <span class="formula-expression">
-              I<sub>cohort</sub> = N<span class="operator">&middot;</span>I<sub>expected</sub>
+              I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>expected,j</sub>
             </span>
-            <span class="formula-note">q = quantity, EF = emission factor, u = relative uncertainty, p = branch probability, N = cohort size.</span>
+            <span class="formula-note">q = quantity, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, p = branch probability, N = cohort size.</span>
           </span>
         </div>
       `;
 
       const warning = [
-        "All default quantities and emission factors are illustrative dummy values. Replace them with hospital activity data, local LCI measurements, or documented proxy factors before using the result as evidence."
+        "All default quantities and impact coefficients are illustrative dummy values. Replace them with hospital activity data, local LCI measurements, background database mappings, and documented LCIA coefficients before using the result as evidence."
       ];
       if (pAdenoma + pCancer > 1) {
         warning.push("The adenoma and cancer branch probabilities currently exceed 100%. This is allowed for testing the interface, but it is not a coherent pathway scenario.");

@@ -86,6 +86,79 @@
       font-size: 14px;
     }
 
+    .topbar-actions {
+      display: grid;
+      gap: 8px;
+      justify-items: end;
+      align-items: center;
+    }
+
+    .language-selector {
+      position: relative;
+      justify-self: end;
+    }
+
+    .language-selector summary {
+      min-width: 156px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 8px 12px;
+      cursor: pointer;
+      list-style: none;
+      font-weight: 700;
+    }
+
+    .language-selector summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .language-selector summary::after {
+      content: "▾";
+      float: right;
+      color: var(--muted);
+      font-weight: 700;
+      margin-left: 12px;
+    }
+
+    .language-selector[open] summary {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .language-options {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 50;
+      display: grid;
+      gap: 4px;
+      min-width: 190px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .language-option {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      text-align: left;
+      border-color: transparent;
+      padding: 8px 10px;
+    }
+
+    .language-option.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
     .source-switch {
       display: flex;
       gap: 8px;
@@ -1204,6 +1277,12 @@
         grid-template-columns: 1fr;
       }
 
+      .topbar-actions,
+      .language-selector {
+        justify-items: start;
+        justify-self: start;
+      }
+
       .source-switch {
         justify-content: flex-start;
       }
@@ -1255,6 +1334,9 @@
     @media (max-width: 620px) {
       main { padding: 12px; }
       .topbar { padding: 12px; }
+      .language-selector summary {
+        min-width: 140px;
+      }
       .brand-lockup {
         align-items: flex-start;
       }
@@ -1292,7 +1374,13 @@
           <p class="subtitle">MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.</p>
         </div>
       </div>
-      <div class="source-switch" id="sourceSwitch" aria-label="Pathway source"></div>
+      <div class="topbar-actions">
+        <details class="language-selector" id="languageSelector">
+          <summary id="languageSummary">Language · English</summary>
+          <div class="language-options" id="languageOptions" aria-label="Language options"></div>
+        </details>
+        <div class="source-switch" id="sourceSwitch" aria-label="Pathway source"></div>
+      </div>
     </div>
   </header>
 
@@ -1897,6 +1985,34 @@
       }
     };
 
+    const languageOptions = [
+      { id: "en", label: "English", htmlLang: "en" },
+      { id: "nl", label: "Nederlands", htmlLang: "nl" },
+      { id: "zh", label: "中文", htmlLang: "zh" },
+      { id: "ja", label: "日本語", htmlLang: "ja" },
+      { id: "es", label: "Español", htmlLang: "es" }
+    ];
+
+    function normaliseLanguage(value) {
+      return languageOptions.some((item) => item.id === value) ? value : "en";
+    }
+
+    function readStoredLanguage() {
+      try {
+        return normaliseLanguage(window.localStorage.getItem("ecopath-language"));
+      } catch {
+        return "en";
+      }
+    }
+
+    function storeLanguage(value) {
+      try {
+        window.localStorage.setItem("ecopath-language", value);
+      } catch {
+        // Local storage can be unavailable in strict browser modes.
+      }
+    }
+
     const state = {
       pathway: "emc",
       selected: null,
@@ -1906,6 +2022,7 @@
       type: "all",
       query: "",
       oncologyLens: false,
+      language: readStoredLanguage(),
       scenarioBuildMode: true,
       scenarioNodes: {},
       mapFullscreenOpen: false
@@ -2111,6 +2228,38 @@
       if (route === "treatment") return "var(--treatment)";
       if (route === "followup") return "var(--followup)";
       return "var(--return)";
+    }
+
+    function renderLanguageSelector() {
+      const language = languageOptions.find((item) => item.id === state.language) || languageOptions[0];
+      const selector = document.getElementById("languageSelector");
+      const summary = document.getElementById("languageSummary");
+      const options = document.getElementById("languageOptions");
+      if (!summary || !options) return;
+      document.documentElement.lang = language.htmlLang;
+      summary.textContent = `Language · ${language.label}`;
+      clear(options);
+
+      languageOptions.forEach((item) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = ["language-option", item.id === language.id ? "active" : ""]
+          .filter(Boolean)
+          .join(" ");
+        button.dataset.language = item.id;
+        button.setAttribute("aria-pressed", item.id === language.id ? "true" : "false");
+        button.innerHTML = `
+          <span>${escapeHtml(item.label)}</span>
+          <span aria-hidden="true">${item.id === language.id ? "✓" : ""}</span>
+        `;
+        button.addEventListener("click", () => {
+          state.language = item.id;
+          storeLanguage(item.id);
+          renderLanguageSelector();
+          if (selector) selector.removeAttribute("open");
+        });
+        options.appendChild(button);
+      });
     }
 
     function pathForEdge(from, to) {
@@ -3573,6 +3722,7 @@
     }
 
     function render() {
+      renderLanguageSelector();
       renderSourceSwitch();
       renderFilterOptions();
       renderHeader();

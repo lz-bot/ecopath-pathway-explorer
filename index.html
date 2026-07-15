@@ -4535,7 +4535,9 @@
     function stationLabelLayout(node, lines, placedLabels, markerBoxes) {
       const labelWidth = estimateLabelWidth(lines);
       const labelHeight = lines.length * 14;
+      const forcedCandidate = forcedStationLabelCandidate(node, labelWidth);
       const candidates = [
+        ...(forcedCandidate ? [forcedCandidate] : []),
         { x: node.x + 34, y: node.y + 34, dx: 1 },
         { x: node.x - 34 - labelWidth, y: node.y + 34, dx: -1 },
         { x: node.x - labelWidth / 2, y: node.y + 42, dx: 0 },
@@ -4580,6 +4582,13 @@
         textX,
         anchor
       };
+    }
+
+    function forcedStationLabelCandidate(node, labelWidth) {
+      if (node.id === "EMC-DX03") {
+        return { x: node.x - labelWidth / 2, y: node.y + 34, dx: 0 };
+      }
+      return null;
     }
 
     function overlapArea(a, b) {

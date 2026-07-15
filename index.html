@@ -1065,7 +1065,7 @@
 
     .lca-table {
       width: 100%;
-      min-width: 1050px;
+      min-width: 1120px;
       border-collapse: collapse;
       background: var(--panel);
       font-size: 13px;
@@ -1092,6 +1092,22 @@
 
     .lca-table tr.oncology-highlight td {
       background: rgba(138, 120, 189, 0.045);
+    }
+
+    .lca-table tr.excluded td {
+      color: var(--muted);
+      background: var(--panel-soft);
+    }
+
+    .lca-table input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 2px 0 0;
+      accent-color: var(--accent-dark);
+    }
+
+    .lca-table input[type="checkbox"]:disabled {
+      cursor: not-allowed;
     }
 
     .lca-table input[type="number"] {
@@ -1338,7 +1354,7 @@
       <div class="panel-heading">
         <div>
           <h2>Modular LCA calculation demo</h2>
-          <p class="scope-note">Editable calculation rows for all candidate building blocks. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
+          <p class="scope-note">Editable calculation rows for candidate building blocks. Modules define the LCA boundary; row checkboxes define which building blocks are active in the current scenario. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
         </div>
         <div class="lca-header-actions">
           <span class="status-chip" id="lcaPathwayStatus"></span>
@@ -1351,7 +1367,7 @@
         <div class="panel-heading">
           <div>
             <h3>Candidate building blocks by LCA module</h3>
-            <p class="scope-note">Candidate ECO-PATH building blocks grouped by module. The pathway-linked modules match the currently selected pathway. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
+            <p class="scope-note">Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
           </div>
           <span class="status-chip" id="buildingBlockCount"></span>
         </div>
@@ -1574,6 +1590,7 @@
         quantity,
         uncertainty: defaults.uncertainty,
         factor,
+        included: true,
         gap: `Dummy aggregate coefficient. Replace with foreground LCI for ${item.resourceFlows.join(", ")} and documented LCIA mapping.`
       };
     });
@@ -2659,7 +2676,8 @@
             .map((row, index) => ({ row, index }))
             .filter((item) => item.row.module === moduleId);
           const included = isLcaModuleIncluded(moduleId);
-          const disabledAttr = included ? "" : " disabled";
+          const activeRows = moduleRows.filter(({ row }) => isLcaRowIncluded(row)).length;
+          const moduleDisabledAttr = included ? "" : " disabled";
           const hasOncologyRows = moduleRows.some(({ row }) => isOncologyLcaRow(row));
           const section = document.createElement("section");
           section.className = [
@@ -2675,7 +2693,7 @@
               <span class="lca-module-code">${escapeHtml(moduleId)}</span>
               <span class="lca-module-title">
                 <strong>${escapeHtml(module.name)}</strong>
-                <small>${moduleRows.length} candidate building block${moduleRows.length === 1 ? "" : "s"} ${included ? "included in total" : "excluded from total"}</small>
+                <small>${activeRows} active of ${moduleRows.length} candidate building block${moduleRows.length === 1 ? "" : "s"} in scenario${included ? "" : "; module outside boundary"}</small>
               </span>
             </label>
             <span class="lca-module-total" id="lcaModuleTotal-${escapeHtml(moduleId)}"></span>
@@ -2684,6 +2702,7 @@
             <table class="lca-table">
               <thead>
                 <tr>
+                  <th>Use</th>
                   <th>Building block</th>
                   <th>Resource flows to model</th>
                   <th>Unit</th>
@@ -2695,18 +2714,30 @@
                 </tr>
               </thead>
               <tbody>
-                ${moduleRows.map(({ row, index }) => `
-                  <tr class="${state.oncologyLens && isOncologyLcaRow(row) ? "oncology-highlight" : ""}">
+                ${moduleRows.map(({ row, index }) => {
+                  const rowIncluded = isLcaRowIncluded(row);
+                  const rowActive = included && rowIncluded;
+                  const rowDisabledAttr = rowActive ? "" : " disabled";
+                  const rowClass = [
+                    state.oncologyLens && isOncologyLcaRow(row) ? "oncology-highlight" : "",
+                    rowActive ? "" : "excluded"
+                  ].filter(Boolean).join(" ");
+                  return `
+                  <tr class="${rowClass}">
+                    <td>
+                      <input type="checkbox" data-lca-row-toggle="${index}" ${rowIncluded ? "checked" : ""} aria-label="Use ${escapeHtml(row.block)} in the LCA scenario"${moduleDisabledAttr}>
+                    </td>
                     <td><span class="lca-block-cell">${escapeHtml(row.block)}</span></td>
                     <td>${escapeHtml(row.flow)}</td>
                     <td>${escapeHtml(row.unit)}</td>
-                    <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.block)} base quantity"${disabledAttr}></td>
-                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.block)} uncertainty percent"${disabledAttr}></td>
-                    <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.block)} impact coefficient"${disabledAttr}></td>
+                    <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.block)} base quantity"${rowDisabledAttr}></td>
+                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.block)} uncertainty percent"${rowDisabledAttr}></td>
+                    <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.block)} impact coefficient"${rowDisabledAttr}></td>
                     <td class="lca-source-cell">${escapeHtml(row.gap)}</td>
                     <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
                   </tr>
-                `).join("")}
+                `;
+                }).join("")}
               </tbody>
             </table>
           </div>
@@ -2729,6 +2760,13 @@
       });
       moduleCalculations.addEventListener("change", (event) => {
         const checkbox = event.target;
+        const rowIndex = Number(checkbox.dataset.lcaRowToggle);
+        if (Number.isInteger(rowIndex) && lcaRows[rowIndex]) {
+          lcaRows[rowIndex].included = checkbox.checked;
+          renderLcaTable();
+          renderLcaOutputs();
+          return;
+        }
         const moduleId = checkbox.dataset.lcaModuleToggle;
         if (!moduleId || !(moduleId in lcaModuleIncluded)) return;
         lcaModuleIncluded[moduleId] = checkbox.checked;
@@ -2740,7 +2778,7 @@
     function renderLcaOutputs() {
       const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
       const calculationModuleIds = lcaCalculationModuleIds();
-      const includedRows = lcaRows.filter((row) => calculationModuleIds.includes(row.module) && isLcaModuleIncluded(row.module)).length;
+      const activeRows = lcaRows.filter((row) => isLcaRowActive(row)).length;
       const includedModules = calculationModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
       const scenarios = [
         { id: "low", label: "Low" },
@@ -2755,7 +2793,7 @@
             <span>${formatKg(values.cohortExpected)}</span>
             <small>Demo library total for ${formatNumber(caseCount)} pathway instances</small>
             <small>Per pathway instance: ${formatKg(values.perPathway)}</small>
-            <small>Included modules: ${includedModules} of ${calculationModuleIds.length}; rows: ${formatNumber(includedRows)} of ${formatNumber(lcaVisibleRows().length)}</small>
+            <small>Included modules: ${includedModules} of ${calculationModuleIds.length}; active rows: ${formatNumber(activeRows)} of ${formatNumber(lcaVisibleRows().length)}</small>
           </div>
         `;
       }).join("");
@@ -2764,7 +2802,7 @@
 
       lcaRows.forEach((row) => {
         const element = document.getElementById(`lcaContribution-${row.id}`);
-        if (element) element.textContent = calculationModuleIds.includes(row.module) && isLcaModuleIncluded(row.module) ? formatKg(rowImpact(row, "base")) : "Excluded";
+        if (element) element.textContent = isLcaRowActive(row) ? formatKg(rowImpact(row, "base")) : "Excluded";
       });
 
       calculationModuleIds.forEach((moduleId) => {
@@ -2775,9 +2813,10 @@
           return;
         }
         const moduleTotal = lcaRows
-          .filter((row) => row.module === moduleId)
+          .filter((row) => row.module === moduleId && isLcaRowIncluded(row))
           .reduce((sum, row) => sum + rowImpact(row, "base"), 0);
-        element.textContent = `Module subtotal: ${formatKg(moduleTotal)}`;
+        const moduleActiveRows = lcaRows.filter((row) => row.module === moduleId && isLcaRowIncluded(row)).length;
+        element.textContent = `Module subtotal: ${formatKg(moduleTotal)} (${moduleActiveRows} active rows)`;
       });
 
       document.getElementById("lcaFormula").innerHTML = `
@@ -2805,13 +2844,13 @@
             <span class="formula-expression">
               I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>library,j</sub>
             </span>
-            <span class="formula-note">S = building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.</span>
+            <span class="formula-note">S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.</span>
           </span>
         </div>
       `;
 
       const warning = [
-        "Only checked modules are editable and counted in the totals. Pathway-linked modules follow the currently selected pathway; cross-cutting support modules are optional boundary additions. All default quantities and impact coefficients are illustrative dummy values. Each row is a candidate building block. Cross-pathway reuse value should be assessed through recurrence, data availability, parameter stability, and expert review. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
+        "Only checked modules and checked building block rows are editable and counted in the totals. Module checkboxes define the LCA system boundary. Row checkboxes define which candidate building blocks are active in the current scenario, because a guideline or local pathway may use only part of a module such as EM06. Pathway-linked modules follow the currently selected pathway; cross-cutting support modules are optional boundary additions. All default quantities and impact coefficients are illustrative dummy values. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
       ];
       document.getElementById("lcaDataWarning").textContent = warning.join(" ");
       renderLcaPriorityList();
@@ -2819,7 +2858,7 @@
 
     function renderLcaPriorityList() {
       const priorityRows = lcaRows
-        .filter((row) => lcaCalculationModuleIds().includes(row.module) && isLcaModuleIncluded(row.module))
+        .filter((row) => isLcaRowActive(row))
         .map((row) => ({
           ...row,
           weightedImpact: rowImpact(row, "base")
@@ -2830,7 +2869,7 @@
       clear(list);
       if (priorityRows.length === 0) {
         const item = document.createElement("li");
-        item.textContent = "No module is selected. Check at least one module to include it in the calculation.";
+        item.textContent = "No building block row is active. Check at least one module and one building block row to include it in the calculation.";
         list.appendChild(item);
         return;
       }
@@ -2885,7 +2924,7 @@
 
     function lcaScenarioValues(scenario, caseCount) {
       const perPathway = lcaRows.reduce((sum, row) => {
-        if (!lcaCalculationModuleIds().includes(row.module) || !isLcaModuleIncluded(row.module)) return sum;
+        if (!isLcaRowActive(row)) return sum;
         return sum + rowImpact(row, scenario);
       }, 0);
       return {
@@ -2901,6 +2940,16 @@
 
     function isLcaModuleIncluded(moduleId) {
       return lcaModuleIncluded[moduleId] !== false;
+    }
+
+    function isLcaRowIncluded(row) {
+      return row.included !== false;
+    }
+
+    function isLcaRowActive(row) {
+      return lcaCalculationModuleIds().includes(row.module) &&
+        isLcaModuleIncluded(row.module) &&
+        isLcaRowIncluded(row);
     }
 
     function rowImpact(row, scenario) {
@@ -2969,10 +3018,14 @@
       const rows = lcaRows
         .filter((row) => moduleIds.includes(row.module))
         .map((row) => {
-          const included = isLcaModuleIncluded(row.module);
+          const moduleIncluded = isLcaModuleIncluded(row.module);
+          const rowIncluded = isLcaRowIncluded(row);
+          const included = moduleIncluded && rowIncluded;
           return {
             ...row,
             moduleName: moduleRegistry[row.module] ? moduleRegistry[row.module].name : "",
+            moduleIncluded,
+            rowIncluded,
             included,
             baseContribution: included ? rowImpact(row, "base") : 0
           };
@@ -2980,8 +3033,11 @@
       const modules = moduleIds.map((moduleId) => {
         const moduleRows = rows.filter((row) => row.module === moduleId);
         const included = isLcaModuleIncluded(moduleId);
+        const activeRowCount = included
+          ? moduleRows.filter((row) => row.rowIncluded).length
+          : 0;
         const subtotal = included
-          ? moduleRows.reduce((sum, row) => sum + rowImpact(row, "base"), 0)
+          ? moduleRows.filter((row) => row.rowIncluded).reduce((sum, row) => sum + rowImpact(row, "base"), 0)
           : 0;
         return {
           id: moduleId,
@@ -2989,7 +3045,8 @@
           role: lcaModuleRole(moduleId),
           included,
           subtotal,
-          rowCount: moduleRows.length
+          rowCount: moduleRows.length,
+          activeRowCount
         };
       });
       const totals = {
@@ -3038,7 +3095,7 @@
           <td>${escapeHtml(module.name)}</td>
           <td>${escapeHtml(module.role)}</td>
           <td>${module.included ? "Included" : "Excluded"}</td>
-          <td>${escapeHtml(formatNumber(module.rowCount))}</td>
+          <td>${escapeHtml(formatNumber(module.activeRowCount))} active of ${escapeHtml(formatNumber(module.rowCount))}</td>
           <td>${module.included ? escapeHtml(formatKg(module.subtotal)) : "Excluded"}</td>
         </tr>
       `).join("");
@@ -3051,11 +3108,12 @@
             <td>${escapeHtml(row.gap)}</td>
           </tr>
         `).join("")
-        : `<tr><td colspan="4">No checked modules are currently included in the LCA total.</td></tr>`;
+        : `<tr><td colspan="4">No checked module and building block row combination is currently included in the LCA total.</td></tr>`;
       const calculationRows = data.rows.map((row) => `
         <tr class="${row.included ? "" : "excluded"}">
           <td>${escapeHtml(row.module)}</td>
           <td>${escapeHtml(row.block)}</td>
+          <td>${row.included ? "Counted" : row.moduleIncluded ? "Building block off" : "Module off"}</td>
           <td>${escapeHtml(row.flow)}</td>
           <td>${escapeHtml(row.unit)}</td>
           <td>${escapeHtml(formatDecimal(row.quantity, 3))}</td>
@@ -3239,14 +3297,14 @@
     <section>
       <h2>Calculation formula</h2>
       <p class="formula">I<sub>i,j</sub> = q<sub>i</sub> &middot; c<sub>i,j</sub>; I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>; I<sub>cohort,j</sub> = N &middot; I<sub>library,j</sub></p>
-      <p class="muted">S is the set of building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. N is cohort size.</p>
+      <p class="muted">S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. N is cohort size.</p>
     </section>
 
     <section>
       <h2>Module boundary and subtotals</h2>
       <table>
         <thead>
-          <tr><th>Module</th><th>Name</th><th>Role</th><th>Status</th><th>Rows</th><th>Base subtotal</th></tr>
+          <tr><th>Module</th><th>Name</th><th>Role</th><th>Status</th><th>Active rows</th><th>Base subtotal</th></tr>
         </thead>
         <tbody>${moduleRows}</tbody>
       </table>
@@ -3266,7 +3324,7 @@
       <h2>Full building block calculation rows</h2>
       <table>
         <thead>
-          <tr><th>Module</th><th>Building block</th><th>Resource flows</th><th>Unit</th><th>Base quantity</th><th>Uncertainty</th><th>Impact coefficient</th><th>Base contribution</th></tr>
+          <tr><th>Module</th><th>Building block</th><th>Status</th><th>Resource flows</th><th>Unit</th><th>Base quantity</th><th>Uncertainty</th><th>Impact coefficient</th><th>Base contribution</th></tr>
         </thead>
         <tbody>${calculationRows}</tbody>
       </table>

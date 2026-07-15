@@ -762,6 +762,10 @@
       margin-top: 14px;
     }
 
+    .activity-panel.collapsed {
+      padding-bottom: 12px;
+    }
+
     .lca-module-map {
       margin-top: 14px;
       margin-bottom: 14px;
@@ -895,6 +899,36 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 10px;
+    }
+
+    .activity-toolbar h2 {
+      margin: 0;
+    }
+
+    .activity-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .collapse-toggle {
+      border: 1px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .collapse-toggle:hover {
+      background: rgba(111, 207, 241, 0.24);
+    }
+
+    .activity-panel.collapsed .activity-list {
+      display: none;
     }
 
     .count {
@@ -1524,10 +1558,13 @@
           </div>
         </section>
 
-        <section class="panel activity-panel">
+        <section class="panel activity-panel" id="activitiesPanel">
           <div class="activity-toolbar">
             <h2 id="activitiesHeading">Activities</h2>
-            <span class="count" id="activityCount"></span>
+            <div class="activity-toolbar-actions">
+              <span class="count" id="activityCount"></span>
+              <button class="collapse-toggle" type="button" id="toggleActivities" aria-expanded="true">Collapse</button>
+            </div>
           </div>
           <div class="activity-list" id="activityList"></div>
         </section>
@@ -2100,7 +2137,14 @@
         jointMdt: "Joint clinic / MDT",
         treatment: "Treatment",
         followup: "Follow-up",
+        treatmentPlanning: "Treatment planning",
+        systemicTherapyOncology: "Systemic therapy and oncology",
+        surgery: "Surgery",
+        radiotherapy: "Radiotherapy",
+        advancedDisease: "Advanced disease",
         activitiesHeading: "Activities",
+        collapseActivities: "Collapse",
+        expandActivities: "Expand",
         elementsShown: "{shown} of {total} elements shown",
         noActivities: "No activities match the current filters.",
         activity: "Activity",
@@ -2131,6 +2175,7 @@
         buildingBlockMapIntro: "Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.",
         moduleZone: "Module zone",
         candidateBuildingBlock: "Candidate building block",
+        candidateBuildingBlockCount: "{count} candidate building blocks",
         cohortSize: "Cohort size, patients",
         dataToCollect: "Data to collect next",
         pathwayStatus: "{pathway}: {pathwayModules} pathway modules + {supportModules} support modules",
@@ -2141,6 +2186,8 @@
         pathwayLinkedDescription: "These modules are available in the current activity map. Selecting pathway activities on the map automatically checks the corresponding module.",
         supportModulesTitle: "Optional cross-cutting support modules",
         supportModulesDescription: "These modules are not stations on the pathway map. Use them for patient support and shared hospital support if they are inside the LCA boundary.",
+        rolePathwayLinked: "Pathway-linked",
+        roleCrossCuttingSupport: "Cross-cutting support",
         activeRowSummary: "{active} active of {total} candidate building blocks; {selected} selected activities{boundary}",
         moduleOutsideBoundary: "; module outside boundary",
         use: "Use",
@@ -2200,7 +2247,8 @@
         noCheckedTotal: "No checked module and building block row combination is currently included in the LCA total.",
         methodLimitations: "Method note and limitations",
         methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. Use it to review pathway scope, checked modules, candidate building blocks, data gaps, and parameter sensitivity before formal data collection and model validation.",
-        reportFooter: "ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser."
+        reportFooter: "ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser.",
+        reportExported: "Report exported: {filename}"
       },
       nl: {
         appTitle: "ECO-PATH Verkenner voor zorgpadactiviteiten",
@@ -2239,7 +2287,14 @@
         jointMdt: "Joint clinic / MDO",
         treatment: "Behandeling",
         followup: "Follow-up",
+        treatmentPlanning: "Behandelplanning",
+        systemicTherapyOncology: "Systemische therapie en oncologie",
+        surgery: "Chirurgie",
+        radiotherapy: "Radiotherapie",
+        advancedDisease: "Gevorderde ziekte",
         activitiesHeading: "Activiteiten",
+        collapseActivities: "Inklappen",
+        expandActivities: "Uitklappen",
         elementsShown: "{shown} van {total} elementen getoond",
         noActivities: "Geen activiteiten passen bij de huidige filters.",
         activity: "Activiteit",
@@ -2270,6 +2325,7 @@
         buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken, bijvoorbeeld alleen consultatie en monitoring binnen EM06. EM10 en EM11 zijn optionele ondersteunende modules, geen stations op de zorgpadkaart.",
         moduleZone: "Modulezone",
         candidateBuildingBlock: "Kandidaatbouwsteen",
+        candidateBuildingBlockCount: "{count} kandidaatbouwstenen",
         cohortSize: "Cohortgrootte, patiënten",
         dataToCollect: "Volgende data om te verzamelen",
         pathwayStatus: "{pathway}: {pathwayModules} zorgpadmodules + {supportModules} ondersteunende modules",
@@ -2280,6 +2336,8 @@
         pathwayLinkedDescription: "Deze modules zijn beschikbaar in de huidige activiteitenkaart. Geselecteerde zorgpadactiviteiten zetten automatisch de bijbehorende module aan.",
         supportModulesTitle: "Optionele overkoepelende ondersteunende modules",
         supportModulesDescription: "Deze modules zijn geen stations op de zorgpadkaart. Gebruik ze voor patiëntondersteuning en gedeelde ziekenhuisondersteuning als ze binnen de LCA-grens vallen.",
+        rolePathwayLinked: "Zorgpadgebonden",
+        roleCrossCuttingSupport: "Overkoepelende ondersteuning",
         activeRowSummary: "{active} actief van {total} kandidaatbouwstenen; {selected} geselecteerde activiteiten{boundary}",
         moduleOutsideBoundary: "; module buiten grens",
         use: "Gebruik",
@@ -2339,7 +2397,8 @@
         noCheckedTotal: "Er is momenteel geen combinatie van aangevinkte module en bouwsteenrij opgenomen in het LCA-totaal.",
         methodLimitations: "Methodenotitie en beperkingen",
         methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport.",
-        reportFooter: "ECO-PATH demo voor zorgpadniveau milieubeoordeling. Rapport lokaal in de browser gegenereerd."
+        reportFooter: "ECO-PATH demo voor zorgpadniveau milieubeoordeling. Rapport lokaal in de browser gegenereerd.",
+        reportExported: "Rapport geexporteerd: {filename}"
       }
     };
 
@@ -2383,7 +2442,14 @@
           jointMdt: "联合门诊 / MDT",
           treatment: "治疗",
           followup: "随访",
+          treatmentPlanning: "治疗规划",
+          systemicTherapyOncology: "系统治疗和肿瘤学",
+          surgery: "手术",
+          radiotherapy: "放射治疗",
+          advancedDisease: "晚期疾病",
           activitiesHeading: "活动",
+          collapseActivities: "折叠",
+          expandActivities: "展开",
           elementsShown: "显示 {shown} / {total} 个元素",
           noActivities: "没有活动符合当前筛选条件。",
           activity: "活动",
@@ -2399,10 +2465,20 @@
           lcaHeading: "模块化 LCA 计算演示",
           exportReport: "导出 LCA 报告",
           buildingBlockMapHeading: "按 LCA 模块分组的候选 building blocks",
+          buildingBlockMapIntro: "按模块分组显示候选 ECO-PATH building blocks。一个已选路径可能只使用某个模块的一部分，例如 EM06 中的会诊和监测。EM10 与 EM11 是可选的跨活动支持模块，不是路径图上的站点模块。",
           moduleZone: "模块区域",
           candidateBuildingBlock: "候选 building block",
+          candidateBuildingBlockCount: "{count} 个候选 building blocks",
           cohortSize: "队列规模，患者数",
           dataToCollect: "下一步需要收集的数据",
+          pathwayLinkedTitle: "当前路径图中的 pathway-linked modules",
+          pathwayLinkedDescription: "这些模块来自当前活动图。用户在图中选择活动后，对应模块会自动勾选。",
+          supportModulesTitle: "可选的跨活动支持模块",
+          supportModulesDescription: "这些模块不是路径图上的站点。若患者支持或医院共享支持处于 LCA 边界内，可以在这里选择。",
+          rolePathwayLinked: "路径关联",
+          roleCrossCuttingSupport: "跨活动支持",
+          activeRowSummary: "{active} / {total} 个候选 building blocks 已启用；已选 {selected} 个活动{boundary}",
+          moduleOutsideBoundary: "；模块在边界外",
           use: "使用",
           buildingBlock: "Building block",
           resourceFlowsToModel: "需要建模的资源流",
@@ -2411,24 +2487,57 @@
           impactCoefficient: "影响系数，kg CO2-eq/单位",
           defaultStatusGap: "默认状态 / 数据缺口",
           baseContribution: "基础贡献",
+          excludedFromTotal: "未计入总量",
+          moduleSubtotal: "模块小计：{value}（{rows} 个启用行）",
           low: "低",
           base: "基准",
           high: "高",
           scenario: "情景",
+          demoLibraryTotal: "{count} 个路径实例的演示库总量",
+          perPathway: "每个路径实例：{value}",
+          includedModulesRows: "纳入模块：{modules} / {moduleTotal}；启用行：{rows} / {rowTotal}",
+          formulaBlockRow: "Building block 行",
+          formulaUncertainty: "不确定性范围",
+          formulaLibrary: "Building block 库",
+          formulaCohort: "队列影响",
+          formulaNote: "S = 已勾选模块内的已勾选 building block 行。q = 发生次数或资源数量，c = LCIA 影响系数，j = 影响类别，u = 相对不确定性，N = 队列规模。这里是候选 block 库演示，不是最终路径情景。",
+          lcaWarning: "只有已勾选模块和已勾选 building block 行可以编辑并计入总结果。图中选择的路径情景会自动勾选 pathway-linked modules；EM10 和 EM11 仍是 LCA 边界中的可选支持模块。行复选框决定当前情景中哪些候选 building blocks 启用。所有默认数量和影响系数都是示例 dummy values，正式使用前需要替换为医院活动数据、本地 LCI 测量、背景数据库映射、分配规则和已记录的 LCIA 系数。",
+          noActiveRows: "当前没有启用的 building block 行。请至少勾选一个模块和一个 building block 行。",
+          priorityRow: "{module} {block}：每个演示路径实例 {impact}。{gap}",
           reportTitle: "ECO-PATH LCA 报告：{pathway}",
           generatedFrom: "由交互式 ECO-PATH 路径探索器于 {date} 生成。",
           scopeConfig: "范围和当前配置",
+          pathwayStatusLabel: "路径状态",
+          checkedModules: "已勾选模块",
+          rowsCounted: "计入行数",
+          selectedPathwayActivities: "已选路径活动",
           scenarioResults: "情景结果",
+          valuesDummyNote: "这些数值由当前浏览器输入计算得到。在替换为医院 LCI 数据和已记录的 LCIA 映射之前，默认发生次数和影响系数均为 dummy values。",
           selectedPathwayScenario: "已选路径情景",
+          code: "代码",
+          assignedModule: "分配模块",
+          noSelectedReport: "当前未选择路径活动。除非手动勾选，否则 pathway-linked modules 不进入 LCA 边界。",
           calculationFormula: "计算公式",
+          formulaReportNote: "S 是已勾选模块内已勾选 building block 行的集合。q 是发生次数或资源数量。c 是影响系数。N 是队列规模。",
           moduleBoundary: "模块边界和小计",
+          name: "名称",
+          role: "角色",
+          status: "状态",
+          activeRows: "启用行",
+          baseSubtotal: "基准小计",
           priorityData: "优先收集的数据",
+          currentDataGap: "当前数据缺口",
           fullCalculationRows: "完整 building block 计算行",
           counted: "计入",
           blockOff: "Building block 关闭",
           moduleOff: "模块关闭",
           included: "纳入",
-          excluded: "排除"
+          excluded: "排除",
+          noCheckedTotal: "当前没有任何已勾选模块和 building block 行组合计入 LCA 总量。",
+          methodLimitations: "方法说明和局限性",
+          methodLimitationsText: "本报告是 ECO-PATH 方法开发阶段的模块化 LCA 计算演示，不是最终的 ISO 14040 或 ISO 14044 合规 LCA 报告。它用于检查路径范围、已勾选模块、候选 building blocks、数据缺口和参数敏感性，然后再进入正式数据收集和模型验证。",
+          reportFooter: "ECO-PATH 路径层级环境评估演示。报告在浏览器本地生成。",
+          reportExported: "报告已导出：{filename}"
         } : languageId === "ja" ? {
           appTitle: "ECO-PATH パスウェイ活動エクスプローラー",
           appSubtitle: "MIBC と大腸がんの protocol-to-activity ビュー。ガイドラインロジックとローカルワークフローのスコーピング用。",
@@ -2462,15 +2571,30 @@
           diagnostics: "診断",
           treatment: "治療",
           followup: "フォローアップ",
+          treatmentPlanning: "治療計画",
+          systemicTherapyOncology: "全身療法と腫瘍内科",
+          surgery: "手術",
+          radiotherapy: "放射線治療",
+          advancedDisease: "進行疾患",
           activitiesHeading: "活動",
+          collapseActivities: "折りたたむ",
+          expandActivities: "展開",
+          elementsShown: "{shown} / {total} 件を表示",
           activity: "活動",
           decisionPoint: "意思決定点",
           selectedPathway: "選択済みパスウェイ",
           oncologyRelevant: "オンコロジー関連",
           lcaHeading: "モジュール型 LCA 計算デモ",
           exportReport: "LCA レポートを出力",
+          buildingBlockMapHeading: "LCA モジュール別の候補 building blocks",
+          buildingBlockMapIntro: "候補 ECO-PATH building blocks をモジュール別に表示します。選択したパスウェイは、EM06 の診察とモニタリングなど、モジュールの一部だけを使用する場合があります。",
+          moduleZone: "モジュール領域",
+          candidateBuildingBlock: "候補 building block",
+          candidateBuildingBlockCount: "{count} 件の候補 building blocks",
           cohortSize: "コホートサイズ、患者数",
           dataToCollect: "次に収集するデータ",
+          rolePathwayLinked: "パスウェイ連動",
+          roleCrossCuttingSupport: "横断的支援",
           use: "使用",
           buildingBlock: "Building block",
           baseQuantity: "基準数量",
@@ -2491,7 +2615,8 @@
           blockOff: "Building block オフ",
           moduleOff: "モジュールオフ",
           included: "含む",
-          excluded: "除外"
+          excluded: "除外",
+          reportExported: "レポートを出力しました：{filename}"
         } : {
           appTitle: "Explorador de actividades ECO-PATH",
           appSubtitle: "Vistas protocol-to-activity para MIBC y cáncer colorrectal para lógica de guías y delimitación de flujos locales.",
@@ -2525,15 +2650,30 @@
           diagnostics: "Diagnóstico",
           treatment: "Tratamiento",
           followup: "Seguimiento",
+          treatmentPlanning: "Planificación del tratamiento",
+          systemicTherapyOncology: "Terapia sistémica y oncología",
+          surgery: "Cirugía",
+          radiotherapy: "Radioterapia",
+          advancedDisease: "Enfermedad avanzada",
           activitiesHeading: "Actividades",
+          collapseActivities: "Contraer",
+          expandActivities: "Expandir",
+          elementsShown: "{shown} de {total} elementos mostrados",
           activity: "Actividad",
           decisionPoint: "Punto de decisión",
           selectedPathway: "Vía seleccionada",
           oncologyRelevant: "Relevante para oncología",
           lcaHeading: "Demostración de cálculo LCA modular",
           exportReport: "Exportar informe LCA",
+          buildingBlockMapHeading: "Building blocks candidatos por módulo LCA",
+          buildingBlockMapIntro: "Building blocks ECO-PATH candidatos agrupados por módulo. Una vía seleccionada puede usar solo parte de un módulo, por ejemplo consulta y monitorización dentro de EM06.",
+          moduleZone: "Zona de módulo",
+          candidateBuildingBlock: "Building block candidato",
+          candidateBuildingBlockCount: "{count} building blocks candidatos",
           cohortSize: "Tamaño de cohorte, pacientes",
           dataToCollect: "Datos a recopilar después",
+          rolePathwayLinked: "Vinculado a la vía",
+          roleCrossCuttingSupport: "Soporte transversal",
           use: "Usar",
           buildingBlock: "Building block",
           baseQuantity: "Cantidad base",
@@ -2554,10 +2694,200 @@
           blockOff: "Building block desactivado",
           moduleOff: "Módulo desactivado",
           included: "Incluido",
-          excluded: "Excluido"
+          excluded: "Excluido",
+          reportExported: "Informe exportado: {filename}"
         })
       };
     });
+
+    const pathwayText = {
+      en: {
+        eau: {
+          label: "Urology: EAU MIBC",
+          title: "EAU MIBC Guideline Reference Pathway",
+          status: "Clinical reference, local execution not assumed",
+          scope: "Guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. Local Erasmus MC activity execution must be confirmed before LCA use."
+        },
+        emc: {
+          label: "Urology: EMC MIBC",
+          title: "Erasmus MC Local MIBC Workflow",
+          status: "Operational pathway, expert confirmation required",
+          scope: "Local Bladder Cancer Center workflow after referral or triage. Upstream cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway unless they are repeated or reviewed locally."
+        },
+        crcGuideline: {
+          label: "Gastro: EU/ESMO CRC",
+          title: "European CRC Guideline Reference Pathway",
+          status: "Clinical reference, local execution not assumed",
+          scope: "Guideline-level colorectal cancer logic combining ECICC prevention, screening, and diagnosis guidance with ESMO colon, rectal, and metastatic CRC treatment guidance. This is an ECO-PATH scoping abstraction, not a clinical treatment recommendation."
+        },
+        crcEmc: {
+          label: "Gastro: EMC CRC",
+          title: "Erasmus MC Public CRC Care Route",
+          status: "Public-facing route, internal workflow not found",
+          scope: "Erasmus MC public pages describe CRC diagnosis tests, MDL-oncology consultation, weekly MDO, treatment planning, colectomy and other surgery, radiotherapy, chemotherapy, metastasis treatment, HIPEC, and follow-up options. This public route requires expert confirmation before it is treated as a local operational workflow."
+        }
+      },
+      nl: {
+        eau: {
+          label: "Urologie: EAU MIBC",
+          title: "EAU MIBC-richtlijnreferentieroute",
+          status: "Klinische referentie, lokale uitvoering niet verondersteld",
+          scope: "Richtlijnlogica voor MIBC vanaf diagnose en stadiering tot behandelbesluit, primaire behandeling en follow-up. Lokale uitvoering binnen Erasmus MC moet worden bevestigd voordat de route voor LCA wordt gebruikt."
+        },
+        emc: {
+          label: "Urologie: EMC MIBC",
+          title: "Erasmus MC lokaal MIBC-zorgpad",
+          status: "Operationeel zorgpad, expertbevestiging nodig",
+          scope: "Lokaal workflowbeeld van het Blaaskankercentrum na verwijzing of triage. Upstream cystoscopie, TURBT en eerste pathologische bevestiging gelden als pre-pathway, tenzij ze lokaal worden herhaald of beoordeeld."
+        },
+        crcGuideline: {
+          label: "Gastro: EU/ESMO CRC",
+          title: "Europese CRC-richtlijnreferentieroute",
+          status: "Klinische referentie, lokale uitvoering niet verondersteld",
+          scope: "Richtlijnlogica voor colorectale kanker, gecombineerd uit ECICC-preventie, screening en diagnose en ESMO-richtlijnen voor colon-, rectum- en gemetastaseerde CRC. Dit is een ECO-PATH-scopingabstractie, geen klinisch behandeladvies."
+        },
+        crcEmc: {
+          label: "Gastro: EMC CRC",
+          title: "Erasmus MC publieke CRC-zorgroute",
+          status: "Publieke route, interne workflow niet gevonden",
+          scope: "Publieke Erasmus MC-pagina's beschrijven diagnostiek, MDL-oncologieconsultatie, wekelijks MDO, behandelplanning, colectomie en andere chirurgie, radiotherapie, chemotherapie, metastasebehandeling, HIPEC en follow-upopties. Expertbevestiging is nodig voordat dit als lokale operationele workflow wordt gebruikt."
+        }
+      },
+      zh: {
+        eau: {
+          label: "泌尿外科：EAU MIBC",
+          title: "EAU MIBC 指南参考路径",
+          status: "临床参考路径，未假定本地执行",
+          scope: "指南层面的 MIBC 逻辑，覆盖诊断和分期、治疗决策、初始治疗和随访。用于 LCA 前，需要确认 Erasmus MC 本地实际执行情况。"
+        },
+        emc: {
+          label: "泌尿外科：EMC MIBC",
+          title: "Erasmus MC 本地 MIBC 工作流",
+          status: "本地运营路径，需要专家确认",
+          scope: "Erasmus MC 膀胱癌中心在转诊或分诊后的本地工作流。上游膀胱镜、TURBT 和初始病理确认视为路径前活动，除非这些活动在本地重复或复核。"
+        },
+        crcGuideline: {
+          label: "胃肠病学：EU/ESMO CRC",
+          title: "欧洲 CRC 指南参考路径",
+          status: "临床参考路径，未假定本地执行",
+          scope: "指南层面的结直肠癌逻辑，结合 ECICC 预防、筛查和诊断建议，以及 ESMO 结肠癌、直肠癌和转移性 CRC 治疗指南。这是 ECO-PATH 的范围抽象，不是临床治疗建议。"
+        },
+        crcEmc: {
+          label: "胃肠病学：EMC CRC",
+          title: "Erasmus MC 公开 CRC 照护路线",
+          status: "公开患者信息路线，尚未找到内部工作流",
+          scope: "Erasmus MC 公开页面描述了 CRC 诊断检查、MDL-oncology 会诊、每周 MDO、治疗规划、结肠切除和其他手术、放疗、化疗、转移灶治疗、HIPEC 和随访选项。作为本地运营工作流使用前需要专家确认。"
+        }
+      },
+      ja: {
+        eau: {
+          label: "泌尿器科：EAU MIBC",
+          title: "EAU MIBC ガイドライン参照パスウェイ",
+          status: "臨床参照であり、ローカル実施は仮定していません",
+          scope: "MIBC の診断、病期分類、治療決定、初回治療、フォローアップに関するガイドラインレベルのロジックです。LCA に使用する前に、Erasmus MC での実施を確認する必要があります。"
+        },
+        emc: {
+          label: "泌尿器科：EMC MIBC",
+          title: "Erasmus MC ローカル MIBC ワークフロー",
+          status: "運用パスウェイ、専門家確認が必要",
+          scope: "紹介またはトリアージ後の膀胱がんセンターのローカルワークフローです。上流の膀胱鏡、TURBT、初回病理確認は、ローカルで反復またはレビューされる場合を除き、パスウェイ前活動として扱います。"
+        },
+        crcGuideline: {
+          label: "消化器科：EU/ESMO CRC",
+          title: "欧州 CRC ガイドライン参照パスウェイ",
+          status: "臨床参照であり、ローカル実施は仮定していません",
+          scope: "ECICC の予防、スクリーニング、診断ガイダンスと、ESMO の結腸、直腸、転移性 CRC 治療ガイダンスを組み合わせたガイドラインレベルのロジックです。これは ECO-PATH のスコーピング抽象であり、臨床治療推奨ではありません。"
+        },
+        crcEmc: {
+          label: "消化器科：EMC CRC",
+          title: "Erasmus MC 公開 CRC ケアルート",
+          status: "公開情報に基づくルート、内部ワークフローは未確認",
+          scope: "Erasmus MC の公開ページには、CRC 診断検査、MDL-oncology 診察、週次 MDO、治療計画、手術、放射線治療、化学療法、転移治療、HIPEC、フォローアップが記載されています。ローカル運用ワークフローとして扱う前に専門家確認が必要です。"
+        }
+      },
+      es: {
+        eau: {
+          label: "Urología: EAU MIBC",
+          title: "Vía de referencia EAU MIBC",
+          status: "Referencia clínica, no se asume ejecución local",
+          scope: "Lógica de guía para MIBC desde diagnóstico y estadificación hasta decisión terapéutica, tratamiento primario y seguimiento. La ejecución local en Erasmus MC debe confirmarse antes de usarla para LCA."
+        },
+        emc: {
+          label: "Urología: EMC MIBC",
+          title: "Flujo local MIBC de Erasmus MC",
+          status: "Vía operativa, requiere confirmación experta",
+          scope: "Flujo local del Bladder Cancer Center después de referencia o triaje. Cistoscopia, TURBT y confirmación patológica inicial se tratan como actividades previas a la vía salvo que se repitan o revisen localmente."
+        },
+        crcGuideline: {
+          label: "Gastro: EU/ESMO CRC",
+          title: "Vía europea de referencia para CRC",
+          status: "Referencia clínica, no se asume ejecución local",
+          scope: "Lógica de guía para cáncer colorrectal que combina prevención, cribado y diagnóstico ECICC con guías ESMO para cáncer de colon, recto y CRC metastásico. Es una abstracción de alcance ECO-PATH, no una recomendación clínica."
+        },
+        crcEmc: {
+          label: "Gastro: EMC CRC",
+          title: "Ruta pública CRC de Erasmus MC",
+          status: "Ruta pública, flujo interno no encontrado",
+          scope: "Las páginas públicas de Erasmus MC describen pruebas diagnósticas CRC, consulta MDL-oncology, MDO semanal, planificación del tratamiento, colectomía y otras cirugías, radioterapia, quimioterapia, tratamiento de metástasis, HIPEC y opciones de seguimiento. Requiere confirmación experta antes de tratarse como flujo operativo local."
+        }
+      }
+    };
+
+    const moduleText = {
+      en: Object.fromEntries(Object.entries(moduleRegistry).map(([id, item]) => [id, { name: item.name, definition: item.definition }])),
+      nl: {
+        EM01: { name: "Toegang", definition: "Verwijzing, triage, intake, administratieve coordinatie en retour naar verwijzer." },
+        EM02: { name: "Pathologie", definition: "Pathologiebeoordeling, monstergerelateerde beoordeling, papieren beoordeling en diagnostische herbeoordeling." },
+        EM03: { name: "Beeldvorming en endoscopie", definition: "Radiologie, CT-herbeoordeling, MRI, PET-CT, cystoscopie, colonoscopie of andere pathwayspecifieke diagnostiek." },
+        EM04: { name: "Joint clinic en MDO", definition: "Joint clinic, multidisciplinaire bespreking en interdisciplinaire besluitvorming." },
+        EM05: { name: "Behandelplanning", definition: "Behandelintentie, geschiktheid, modaliteitskeuze en behandelplanningsbesluiten." },
+        EM06: { name: "Systemische therapie en oncologie", definition: "Medisch-oncologische beoordeling, chemotherapie, systemische behandeling, apotheekbereiding, responsbeoordeling en progressiebeoordeling." },
+        EM07: { name: "Chirurgie", definition: "Operatie, anesthesie, OK-gebruik, perioperatieve zorg, opname en proceduregerelateerd afval." },
+        EM08: { name: "Radiotherapie", definition: "Radiotherapiebesluit, planning, fracties, chemoradiatie, immobilisatie en radiotherapiegerelateerd reizen." },
+        EM09: { name: "Follow-up", definition: "Surveillance, poliklinische controle, follow-uptesten, recidiefmonitoring en retourcontacten." },
+        EM10: { name: "Patientondersteuning", definition: "Patientgerichte ondersteunende processen die over meerdere activiteiten kunnen voorkomen en transparante allocatie vereisen." },
+        EM11: { name: "Gedeelde ziekenhuisondersteuning", definition: "Gedeelde diensten en overheadprocessen die meerdere pathwayactiviteiten ondersteunen en allocatieregels vereisen." }
+      },
+      zh: {
+        EM01: { name: "准入", definition: "转诊、分诊、接收、行政协调和返回转诊方等活动。" },
+        EM02: { name: "病理", definition: "病理复核、样本相关评估、纸面评估和诊断复评。" },
+        EM03: { name: "影像和内镜", definition: "放射影像、CT 复评、MRI、PET-CT、膀胱镜、结肠镜或其他路径特异性诊断程序。" },
+        EM04: { name: "联合门诊和 MDT", definition: "联合门诊、多学科团队讨论和跨专科决策复核。" },
+        EM05: { name: "治疗规划", definition: "治疗意图、适应性、治疗方式选择和治疗规划决策。" },
+        EM06: { name: "系统治疗和肿瘤学", definition: "肿瘤内科复核、化疗、系统治疗、药房配制、疗效评估和进展评估。" },
+        EM07: { name: "手术", definition: "外科手术、麻醉、手术室使用、围手术期照护、住院和手术相关废弃物。" },
+        EM08: { name: "放射治疗", definition: "放疗决策、计划、治疗分次、同步放化疗、固定装置和放疗相关出行。" },
+        EM09: { name: "随访", definition: "监测、门诊复查、随访检查、复发监测和返回路径联系。" },
+        EM10: { name: "患者支持", definition: "可能跨多个活动出现的患者支持过程，需要透明分配规则。" },
+        EM11: { name: "医院共享支持", definition: "支持多个路径活动的共享服务和管理过程，需要分配规则。" }
+      },
+      ja: {
+        EM01: { name: "アクセス", definition: "紹介、トリアージ、受付、事務調整、紹介元への返送に関する活動。" },
+        EM02: { name: "病理", definition: "病理レビュー、検体関連評価、書類レビュー、診断再評価。" },
+        EM03: { name: "画像診断と内視鏡", definition: "放射線画像、CT 再評価、MRI、PET-CT、膀胱鏡、 colonoscopy、その他のパスウェイ特異的診断手順。" },
+        EM04: { name: "合同外来と MDT", definition: "合同外来、多職種チームレビュー、診療科横断の意思決定レビュー。" },
+        EM05: { name: "治療計画", definition: "治療意図、適格性、治療モダリティ選択、治療計画の意思決定。" },
+        EM06: { name: "全身療法と腫瘍内科", definition: "腫瘍内科レビュー、化学療法、全身治療、薬剤調製、奏効評価、進行評価。" },
+        EM07: { name: "手術", definition: "手術、麻酔、手術室使用、周術期ケア、病棟滞在、処置関連廃棄物。" },
+        EM08: { name: "放射線治療", definition: "放射線治療の意思決定、計画、分割照射、化学放射線療法、固定具、通院。" },
+        EM09: { name: "フォローアップ", definition: "サーベイランス、外来レビュー、フォローアップ検査、再発モニタリング、返送連絡。" },
+        EM10: { name: "患者支援", definition: "複数の活動にまたがる患者向け支援プロセスで、透明な配分が必要です。" },
+        EM11: { name: "病院共通支援", definition: "複数のパスウェイ活動を支える共通サービスと間接プロセスで、配分ルールが必要です。" }
+      },
+      es: {
+        EM01: { name: "Acceso", definition: "Referencia, triaje, admision, coordinacion administrativa y retorno al referente." },
+        EM02: { name: "Patologia", definition: "Revision patologica, evaluacion de muestras, revision documental y reevaluacion diagnostica." },
+        EM03: { name: "Imagen y endoscopia", definition: "Radiologia, reevaluacion CT, MRI, PET-CT, cistoscopia, colonoscopia u otros procedimientos diagnosticos especificos de la via." },
+        EM04: { name: "Clinica conjunta y MDT", definition: "Clinica conjunta, revision del equipo multidisciplinario y revision de decisiones entre especialidades." },
+        EM05: { name: "Planificacion del tratamiento", definition: "Intencion terapeutica, elegibilidad, seleccion de modalidad y decisiones de planificacion." },
+        EM06: { name: "Terapia sistemica y oncologia", definition: "Revision de oncologia medica, quimioterapia, tratamiento sistemico, preparacion farmaceutica, evaluacion de respuesta y progresion." },
+        EM07: { name: "Cirugia", definition: "Procedimiento quirurgico, anestesia, uso de quirofano, cuidados perioperatorios, estancia y residuos asociados." },
+        EM08: { name: "Radioterapia", definition: "Decision, planificacion, fracciones, quimiorradiacion, inmovilizacion y viajes relacionados con radioterapia." },
+        EM09: { name: "Seguimiento", definition: "Vigilancia, consulta ambulatoria, pruebas de seguimiento, monitorizacion de recurrencia y contactos de retorno." },
+        EM10: { name: "Apoyo al paciente", definition: "Procesos de apoyo al paciente que pueden ocurrir en varias actividades y requieren asignacion transparente." },
+        EM11: { name: "Soporte hospitalario compartido", definition: "Servicios compartidos y procesos de soporte para multiples actividades de la via que requieren reglas de asignacion." }
+      }
+    };
 
     function normaliseLanguage(value) {
       return languageOptions.some((item) => item.id === value) ? value : "en";
@@ -2626,10 +2956,45 @@
       language: readStoredLanguage(),
       scenarioBuildMode: true,
       scenarioNodes: {},
-      mapFullscreenOpen: false
+      mapFullscreenOpen: false,
+      activitiesCollapsed: false
     };
 
     let detailSyncQueued = false;
+
+    function localizedPathwayField(pathwayId, field) {
+      const languageText = pathwayText[state.language] || pathwayText.en;
+      return languageText[pathwayId]?.[field] || pathwayText.en[pathwayId]?.[field] || pathwayData[pathwayId]?.[field] || "";
+    }
+
+    function localizedPathwayLabel(pathwayId = state.pathway) {
+      return localizedPathwayField(pathwayId, "label");
+    }
+
+    function localizedPathwayTitle(pathwayId = state.pathway) {
+      return localizedPathwayField(pathwayId, "title");
+    }
+
+    function localizedPathwayScope(pathwayId = state.pathway) {
+      return localizedPathwayField(pathwayId, "scope");
+    }
+
+    function localizedPathwayStatus(pathwayId = state.pathway) {
+      return localizedPathwayField(pathwayId, "status");
+    }
+
+    function localizedModule(moduleId) {
+      const languageText = moduleText[state.language] || moduleText.en;
+      return languageText[moduleId] || moduleText.en[moduleId] || moduleRegistry[moduleId] || { name: moduleId, definition: "" };
+    }
+
+    function moduleName(moduleId) {
+      return localizedModule(moduleId).name || moduleId;
+    }
+
+    function moduleDefinition(moduleId) {
+      return localizedModule(moduleId).definition || "";
+    }
 
     function block(module, name, unit, resourceFlows) {
       return { module, name, unit, resourceFlows };
@@ -2758,7 +3123,7 @@
     }
 
     function lcaModuleRole(moduleId) {
-      return crossCuttingModuleIds.includes(moduleId) ? "Cross-cutting support" : "Pathway-linked";
+      return crossCuttingModuleIds.includes(moduleId) ? t("roleCrossCuttingSupport") : t("rolePathwayLinked");
     }
 
     function isOncologyModule(moduleId) {
@@ -2768,7 +3133,7 @@
     function isOncologyBuildingBlock(item) {
       const text = [
         item.module,
-        moduleRegistry[item.module] ? moduleRegistry[item.module].name : "",
+        moduleRegistry[item.module] ? moduleName(item.module) : "",
         item.name,
         item.resourceFlows.join(" ")
       ].join(" ").toLowerCase();
@@ -2793,14 +3158,13 @@
       const pathway = currentPathway();
       const query = state.query.trim().toLowerCase();
       return pathway.nodes.filter((node) => {
-        const module = moduleRegistry[node.module];
         const text = [
           node.id,
           node.label,
           node.domain,
           node.type,
           node.module,
-          module ? module.name : "",
+          moduleRegistry[node.module] ? moduleName(node.module) : "",
           node.protocolStep,
           node.rationale,
           node.resourceFlows.join(" "),
@@ -2960,7 +3324,7 @@
           id: "gastro",
           label: t("specialtyGastro"),
           items: [
-            { id: "crcGuide", label: "EU/ESMO CRC", sourceKey: "sourceReference" },
+            { id: "crcGuideline", label: "EU/ESMO CRC", sourceKey: "sourceReference" },
             { id: "crcEmc", label: "EMC CRC", sourceKey: "sourceEmc" }
           ]
         }
@@ -2968,11 +3332,12 @@
     }
 
     function selectedPathwaySource() {
-      for (const group of pathwaySourceGroups()) {
+      const groups = pathwaySourceGroups();
+      for (const group of groups) {
         const item = group.items.find((candidate) => candidate.id === state.pathway);
         if (item) return { group, item };
       }
-      return pathwaySourceGroups()[0].items[0];
+      return { group: groups[0], item: groups[0].items[0] };
     }
 
     function renderSourceSwitch() {
@@ -3000,6 +3365,7 @@
             <span>${escapeHtml(item.label)}${item.id === state.pathway ? " ✓" : ""}</span>
           `;
           button.addEventListener("click", () => {
+            if (!pathwayData[item.id]) return;
             state.pathway = item.id;
             state.selected = pathwayData[item.id].defaultSelected;
             state.detailAnchor = "map";
@@ -3041,7 +3407,7 @@
       modules.forEach((moduleId) => {
         const option = document.createElement("option");
         option.value = moduleId;
-        option.textContent = moduleId === "all" ? t("allModules") : `${moduleId} ${moduleRegistry[moduleId].name}`;
+        option.textContent = moduleId === "all" ? t("allModules") : `${moduleId} ${moduleName(moduleId)}`;
         moduleFilter.appendChild(option);
       });
 
@@ -3058,27 +3424,26 @@
         "Diagnostics": t("diagnostics"),
         "Joint clinic and MDT": t("jointMdt"),
         "Treatment": t("treatment"),
-        "Treatment planning": `${t("treatment")} planning`,
-        "Systemic therapy and oncology": "Systemic therapy and oncology",
-        "Surgery": "Surgery",
-        "Radiotherapy": "Radiotherapy",
+        "Treatment planning": t("treatmentPlanning"),
+        "Systemic therapy and oncology": t("systemicTherapyOncology"),
+        "Surgery": t("surgery"),
+        "Radiotherapy": t("radiotherapy"),
         "Follow-up": t("followup"),
-        "Advanced disease": "Advanced disease"
+        "Advanced disease": t("advancedDisease")
       };
       return labels[domain] || domain;
     }
 
     function renderHeader() {
-      const pathway = currentPathway();
-      document.getElementById("pathwayTitle").textContent = pathway.title;
-      document.getElementById("pathwayScope").textContent = pathway.scope;
-      document.getElementById("pathwayStatus").textContent = pathway.status;
+      document.getElementById("pathwayTitle").textContent = localizedPathwayTitle();
+      document.getElementById("pathwayScope").textContent = localizedPathwayScope();
+      document.getElementById("pathwayStatus").textContent = localizedPathwayStatus();
       const fullscreenTitle = document.getElementById("fullscreenPathwayTitle");
       const fullscreenScope = document.getElementById("fullscreenPathwayScope");
       const fullscreenStatus = document.getElementById("fullscreenPathwayStatus");
-      if (fullscreenTitle) fullscreenTitle.textContent = pathway.title;
-      if (fullscreenScope) fullscreenScope.textContent = pathway.scope;
-      if (fullscreenStatus) fullscreenStatus.textContent = pathway.status;
+      if (fullscreenTitle) fullscreenTitle.textContent = localizedPathwayTitle();
+      if (fullscreenScope) fullscreenScope.textContent = localizedPathwayScope();
+      if (fullscreenStatus) fullscreenStatus.textContent = localizedPathwayStatus();
     }
 
     function renderPathwayScenarioControls() {
@@ -3149,8 +3514,8 @@
       const titleId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgTitle" : "svgTitle";
       const descId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgDesc" : "svgDesc";
       clear(svg);
-      svg.appendChild(createSvgElement("title", { id: titleId })).textContent = pathway.title;
-      svg.appendChild(createSvgElement("desc", { id: descId })).textContent = pathway.scope;
+      svg.appendChild(createSvgElement("title", { id: titleId })).textContent = localizedPathwayTitle();
+      svg.appendChild(createSvgElement("desc", { id: descId })).textContent = localizedPathwayScope();
 
       pathway.lanes.forEach((lane) => {
         const line = createSvgElement("line", {
@@ -3489,7 +3854,6 @@
         detail.innerHTML = `<div class="empty">${escapeHtml(t("noActivitySelected"))}</div>`;
         return;
       }
-      const module = moduleRegistry[node.module];
       detail.innerHTML = `
         <div class="detail-title">
           <div class="code-pill">${escapeHtml(displayCode(node))}</div>
@@ -3517,8 +3881,8 @@
             <strong>${escapeHtml(t("ecopathModule"))}</strong>
             <p>${escapeHtml(t("moduleExplanation", {
               module: node.module,
-              name: module.name,
-              definition: module.definition
+              name: moduleName(node.module),
+              definition: moduleDefinition(node.module)
             }))}</p>
           </div>
           <div class="detail-block">
@@ -3615,17 +3979,27 @@
           updateActivityListSelection();
           scheduleDetailPanelSync();
         });
-        const module = moduleRegistry[node.module];
         button.innerHTML = `
           <span class="code-pill">${escapeHtml(displayCode(node))}</span>
           <span class="activity-name">
             <strong>${escapeHtml(node.label)}</strong>
             <span>${escapeHtml(domainLabel(node.domain))} · ${escapeHtml(node.type === "decision" ? t("decisionPoint") : t("activity"))}</span>
           </span>
-          <span class="tag module">${escapeHtml(node.module)} ${escapeHtml(module.name)}</span>
+          <span class="tag module">${escapeHtml(node.module)} ${escapeHtml(moduleName(node.module))}</span>
         `;
         list.appendChild(button);
       });
+    }
+
+    function renderActivityPanelState() {
+      const panel = document.getElementById("activitiesPanel");
+      const list = document.getElementById("activityList");
+      const toggle = document.getElementById("toggleActivities");
+      if (!panel || !list || !toggle) return;
+      panel.classList.toggle("collapsed", state.activitiesCollapsed);
+      list.hidden = state.activitiesCollapsed;
+      toggle.textContent = state.activitiesCollapsed ? t("expandActivities") : t("collapseActivities");
+      toggle.setAttribute("aria-expanded", state.activitiesCollapsed ? "false" : "true");
     }
 
     function renderBuildingBlockMap() {
@@ -3647,7 +4021,6 @@
       });
 
       moduleIds.forEach((moduleId) => {
-        const module = moduleRegistry[moduleId];
         const blocks = buildingBlockRegistry.filter((item) => item.module === moduleId);
         const zone = document.createElement("div");
         const hasOncologyBlock = blocks.some((item) => isOncologyBuildingBlock(item));
@@ -3661,11 +4034,11 @@
           <div class="module-zone-header">
             <span class="tag module">${escapeHtml(moduleId)}</span>
             <span class="module-zone-title">
-              <strong>${escapeHtml(module.name)}</strong>
-              <span>${lcaModuleRole(moduleId)} · ${blocks.length} candidate building block${blocks.length === 1 ? "" : "s"}</span>
+              <strong>${escapeHtml(moduleName(moduleId))}</strong>
+              <span>${escapeHtml(lcaModuleRole(moduleId))} · ${escapeHtml(t("candidateBuildingBlockCount", { count: blocks.length }))}</span>
             </span>
           </div>
-          <p>${escapeHtml(module.definition)}</p>
+          <p>${escapeHtml(moduleDefinition(moduleId))}</p>
           <div class="building-block-grid"></div>
         `;
         const blockGrid = zone.querySelector(".building-block-grid");
@@ -3719,7 +4092,6 @@
         container.appendChild(heading);
 
         group.moduleIds.forEach((moduleId) => {
-          const module = moduleRegistry[moduleId];
           const moduleRows = lcaRows
             .map((row, index) => ({ row, index }))
             .filter((item) => item.row.module === moduleId);
@@ -3738,10 +4110,10 @@
           section.innerHTML = `
           <div class="lca-module-calculation-header">
             <label class="lca-module-toggle">
-              <input type="checkbox" data-lca-module-toggle="${escapeHtml(moduleId)}" ${included ? "checked" : ""} aria-label="Include ${escapeHtml(moduleId)} ${escapeHtml(module.name)} in the LCA calculation">
+              <input type="checkbox" data-lca-module-toggle="${escapeHtml(moduleId)}" ${included ? "checked" : ""} aria-label="${escapeHtml(t("use"))} ${escapeHtml(moduleId)} ${escapeHtml(moduleName(moduleId))}">
               <span class="lca-module-code">${escapeHtml(moduleId)}</span>
               <span class="lca-module-title">
-                <strong>${escapeHtml(module.name)}</strong>
+                <strong>${escapeHtml(moduleName(moduleId))}</strong>
                 <small>${escapeHtml(t("activeRowSummary", {
                   active: activeRows,
                   total: moduleRows.length,
@@ -3859,7 +4231,7 @@
       }).join("");
       document.getElementById("lcaResults").innerHTML = resultCards;
       document.getElementById("lcaPathwayStatus").textContent = t("pathwayStatus", {
-        pathway: currentPathway().label,
+        pathway: localizedPathwayLabel(),
         pathwayModules: lcaPathwayModuleIds().length,
         supportModules: lcaSupportModuleIds().length
       });
@@ -3961,6 +4333,11 @@
       const activityPanel = document.querySelector(".activity-panel");
       if (!panel || !layout || !activityPanel || window.innerWidth <= 960) {
         if (panel) panel.style.marginTop = "0px";
+        return;
+      }
+
+      if (state.activitiesCollapsed) {
+        panel.style.marginTop = "0px";
         return;
       }
 
@@ -4089,7 +4466,7 @@
           const included = moduleIncluded && rowIncluded;
           return {
             ...row,
-            moduleName: moduleRegistry[row.module] ? moduleRegistry[row.module].name : "",
+            moduleName: moduleRegistry[row.module] ? moduleName(row.module) : "",
             moduleIncluded,
             rowIncluded,
             included,
@@ -4107,7 +4484,7 @@
           : 0;
         return {
           id: moduleId,
-          name: moduleRegistry[moduleId] ? moduleRegistry[moduleId].name : "",
+          name: moduleRegistry[moduleId] ? moduleName(moduleId) : "",
           role: lcaModuleRole(moduleId),
           included,
           subtotal,
@@ -4125,15 +4502,15 @@
         .sort((a, b) => b.baseContribution - a.baseContribution)
         .slice(0, 8);
       return {
-        pathwayLabel: pathway.label,
-        pathwayTitle: pathway.title,
-        pathwayScope: pathway.scope,
-        pathwayStatus: pathway.status,
+        pathwayLabel: localizedPathwayLabel(),
+        pathwayTitle: localizedPathwayTitle(),
+        pathwayScope: localizedPathwayScope(),
+        pathwayStatus: localizedPathwayStatus(),
         selectedActivities: selectedScenarioNodes().map((node) => ({
           code: displayCode(node),
           label: node.label,
           module: node.module,
-          moduleName: moduleRegistry[node.module] ? moduleRegistry[node.module].name : ""
+          moduleName: moduleRegistry[node.module] ? moduleName(node.module) : ""
         })),
         generatedAt: reportGeneratedAt(),
         caseCount,
@@ -4449,7 +4826,7 @@
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       const status = document.getElementById("lcaExportStatus");
-      if (status) status.textContent = `Report exported: ${filename}`;
+      if (status) status.textContent = t("reportExported", { filename });
     }
 
     function bindControls() {
@@ -4488,6 +4865,11 @@
       document.getElementById("lcaExportReport").addEventListener("click", exportLcaReport);
       document.getElementById("openMapFullscreen").addEventListener("click", openMapFullscreen);
       document.getElementById("closeMapFullscreen").addEventListener("click", closeMapFullscreen);
+      document.getElementById("toggleActivities").addEventListener("click", () => {
+        state.activitiesCollapsed = !state.activitiesCollapsed;
+        renderActivityPanelState();
+        scheduleDetailPanelSync();
+      });
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && state.mapFullscreenOpen) closeMapFullscreen();
       });
@@ -4504,6 +4886,7 @@
       renderDetail();
       renderBuildingBlockMap();
       renderActivityList();
+      renderActivityPanelState();
       renderLcaTable();
       renderLcaOutputs();
       renderFullscreenView();

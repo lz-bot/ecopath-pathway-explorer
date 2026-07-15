@@ -87,18 +87,22 @@
     }
 
     .topbar-actions {
-      display: grid;
+      display: flex;
+      flex-wrap: wrap;
       gap: 8px;
-      justify-items: end;
-      align-items: center;
+      justify-content: flex-end;
+      align-items: flex-start;
     }
 
-    .language-selector {
+    .language-selector,
+    .specialty-selector {
       position: relative;
       justify-self: end;
     }
 
-    .language-selector summary {
+    .language-selector summary,
+    .specialty-selector summary {
+      display: block;
       min-width: 156px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -110,11 +114,21 @@
       font-weight: 700;
     }
 
-    .language-selector summary::-webkit-details-marker {
+    .language-selector summary {
+      min-width: 128px;
+    }
+
+    .specialty-selector summary {
+      min-width: 250px;
+    }
+
+    .language-selector summary::-webkit-details-marker,
+    .specialty-selector summary::-webkit-details-marker {
       display: none;
     }
 
-    .language-selector summary::after {
+    .language-selector summary::after,
+    .specialty-selector summary::after {
       content: "▾";
       float: right;
       color: var(--muted);
@@ -122,12 +136,30 @@
       margin-left: 12px;
     }
 
-    .language-selector[open] summary {
+    .language-selector[open] summary,
+    .specialty-selector[open] summary {
       border-color: var(--accent);
       background: var(--accent-soft);
     }
 
-    .language-options {
+    .summary-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .language-selector .language-icon {
+      width: 17px;
+      height: 17px;
+      min-height: 0;
+      color: var(--accent-dark);
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .language-options,
+    .specialty-options {
       position: absolute;
       top: calc(100% + 6px);
       right: 0;
@@ -142,7 +174,17 @@
       box-shadow: var(--shadow);
     }
 
-    .language-option {
+    .language-selector:not([open]) .language-options,
+    .specialty-selector:not([open]) .specialty-options {
+      display: none;
+    }
+
+    .specialty-options {
+      min-width: 280px;
+    }
+
+    .language-option,
+    .specialty-option {
       width: 100%;
       display: flex;
       justify-content: space-between;
@@ -152,18 +194,31 @@
       padding: 8px 10px;
     }
 
-    .language-option.active {
+    .language-option.active,
+    .specialty-option.active {
       background: var(--accent-soft);
       border-color: var(--accent);
       color: var(--accent-dark);
       font-weight: 700;
     }
 
-    .source-switch {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+    .specialty-group {
+      display: grid;
+      gap: 4px;
+      padding: 4px 0;
+    }
+
+    .specialty-group + .specialty-group {
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    .specialty-group-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 10px;
     }
 
     button, select, input {
@@ -1278,13 +1333,15 @@
       }
 
       .topbar-actions,
-      .language-selector {
-        justify-items: start;
+      .language-selector,
+      .specialty-selector {
+        justify-content: flex-start;
         justify-self: start;
       }
 
-      .source-switch {
-        justify-content: flex-start;
+      .specialty-options {
+        right: auto;
+        left: 0;
       }
 
       .map-actions,
@@ -1334,7 +1391,8 @@
     @media (max-width: 620px) {
       main { padding: 12px; }
       .topbar { padding: 12px; }
-      .language-selector summary {
+      .language-selector summary,
+      .specialty-selector summary {
         min-width: 140px;
       }
       .brand-lockup {
@@ -1370,16 +1428,19 @@
       <div class="brand-lockup">
         <img class="brand-logo" src="assets/erasmusmc_logo.png" alt="Erasmus MC logo">
         <div>
-          <h1>ECO-PATH Pathway Activity Explorer</h1>
-          <p class="subtitle">MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.</p>
+          <h1 id="appTitle">ECO-PATH Pathway Activity Explorer</h1>
+          <p class="subtitle" id="appSubtitle">MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.</p>
         </div>
       </div>
       <div class="topbar-actions">
         <details class="language-selector" id="languageSelector">
-          <summary id="languageSummary">Language · English</summary>
+          <summary id="languageSummary">English</summary>
           <div class="language-options" id="languageOptions" aria-label="Language options"></div>
         </details>
-        <div class="source-switch" id="sourceSwitch" aria-label="Pathway source"></div>
+        <details class="specialty-selector" id="specialtySelector">
+          <summary id="specialtySummary">Specialty · Urology / EMC</summary>
+          <div class="specialty-options" id="specialtyOptions" aria-label="Specialty pathway source"></div>
+        </details>
       </div>
     </div>
   </header>
@@ -1387,15 +1448,15 @@
   <main>
     <section class="filters" aria-label="Activity filters">
       <div class="field">
-        <label for="domainFilter">Domain</label>
+        <label for="domainFilter" id="domainFilterLabel">Domain</label>
         <select id="domainFilter"></select>
       </div>
       <div class="field">
-        <label for="moduleFilter">ECO-PATH module</label>
+        <label for="moduleFilter" id="moduleFilterLabel">ECO-PATH module</label>
         <select id="moduleFilter"></select>
       </div>
       <div class="field">
-        <label for="typeFilter">Element type</label>
+        <label for="typeFilter" id="typeFilterLabel">Element type</label>
         <select id="typeFilter">
           <option value="all">All elements</option>
           <option value="activity">Activities</option>
@@ -1403,16 +1464,16 @@
         </select>
       </div>
       <div class="field">
-        <label for="searchBox">Search</label>
+        <label for="searchBox" id="searchBoxLabel">Search</label>
         <input id="searchBox" type="search" placeholder="activity, module, oncology, imaging">
       </div>
       <div class="field">
-        <label for="oncologyLens">Oncology lens</label>
+        <label for="oncologyLens" id="oncologyLensLabel">Oncology lens</label>
         <label class="toggle-field" for="oncologyLens">
           <input id="oncologyLens" type="checkbox">
           <span>
-            <strong>Highlight oncology</strong>
-            <small>Activities and LCA blocks</small>
+            <strong id="oncologyLensTitle">Highlight oncology</strong>
+            <small id="oncologyLensSubtitle">Activities and LCA blocks</small>
           </span>
         </label>
       </div>
@@ -1441,31 +1502,31 @@
             <label class="toggle-field" for="pathwayScenarioMode">
               <input id="pathwayScenarioMode" type="checkbox" checked>
               <span>
-                <strong>Pathway scenario</strong>
-                <small>Selected activities control pathway-linked LCA modules</small>
+                <strong id="pathwayScenarioTitle">Pathway scenario</strong>
+                <small id="pathwayScenarioSubtitle">Selected activities control pathway-linked LCA modules</small>
               </span>
             </label>
             <span class="status-chip" id="pathwayScenarioStatus"></span>
             <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
           </div>
           <div class="legend" aria-label="Route legend">
-            <span class="legend-item"><span class="swatch diagnostic"></span>Diagnostic and access route</span>
-            <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
-            <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
-            <span class="legend-item"><span class="swatch return"></span>Conditional or return route</span>
+            <span class="legend-item"><span class="swatch diagnostic"></span><span id="diagnosticRouteLabel">Diagnostic and access route</span></span>
+            <span class="legend-item"><span class="swatch treatment"></span><span id="treatmentRouteLabel">Treatment route</span></span>
+            <span class="legend-item"><span class="swatch followup"></span><span id="followupRouteLabel">Follow-up route</span></span>
+            <span class="legend-item"><span class="swatch return"></span><span id="returnRouteLabel">Conditional or return route</span></span>
           </div>
           <div class="code-legend" aria-label="Station code prefixes">
-            <span class="code-legend-item"><span class="prefix-chip">AC</span>Access</span>
-            <span class="code-legend-item"><span class="prefix-chip">DX</span>Diagnostics</span>
-            <span class="code-legend-item"><span class="prefix-chip">JM</span>Joint clinic / MDT</span>
-            <span class="code-legend-item"><span class="prefix-chip">TX</span>Treatment</span>
-            <span class="code-legend-item"><span class="prefix-chip">FU</span>Follow-up</span>
+            <span class="code-legend-item"><span class="prefix-chip">AC</span><span id="accessPrefixLabel">Access</span></span>
+            <span class="code-legend-item"><span class="prefix-chip">DX</span><span id="diagnosticsPrefixLabel">Diagnostics</span></span>
+            <span class="code-legend-item"><span class="prefix-chip">JM</span><span id="jmPrefixLabel">Joint clinic / MDT</span></span>
+            <span class="code-legend-item"><span class="prefix-chip">TX</span><span id="treatmentPrefixLabel">Treatment</span></span>
+            <span class="code-legend-item"><span class="prefix-chip">FU</span><span id="followupPrefixLabel">Follow-up</span></span>
           </div>
         </section>
 
         <section class="panel activity-panel">
           <div class="activity-toolbar">
-            <h2>Activities</h2>
+            <h2 id="activitiesHeading">Activities</h2>
             <span class="count" id="activityCount"></span>
           </div>
           <div class="activity-list" id="activityList"></div>
@@ -1473,24 +1534,24 @@
 
         <section class="method-note" aria-label="Method notes">
           <div class="note-cell">
-            <strong>Protocol step</strong>
-            <p>Source instruction from a guideline, protocol, or workflow diagram.</p>
+            <strong id="methodProtocolTitle">Protocol step</strong>
+            <p id="methodProtocolText">Source instruction from a guideline, protocol, or workflow diagram.</p>
           </div>
           <div class="note-cell">
-            <strong>Activity</strong>
-            <p>Clinical or operational action placed on the pathway map and reviewed by experts.</p>
+            <strong id="methodActivityTitle">Activity</strong>
+            <p id="methodActivityText">Clinical or operational action placed on the pathway map and reviewed by experts.</p>
           </div>
           <div class="note-cell">
-            <strong>ECO-PATH module</strong>
-            <p>LCA modeling zone assigned to pathway activities. It is not another clinical activity.</p>
+            <strong id="methodModuleTitle">ECO-PATH module</strong>
+            <p id="methodModuleText">LCA modeling zone assigned to pathway activities. It is not another clinical activity.</p>
           </div>
           <div class="note-cell">
-            <strong>Resource flow</strong>
-            <p>Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.</p>
+            <strong id="methodResourceTitle">Resource flow</strong>
+            <p id="methodResourceText">Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.</p>
           </div>
           <div class="note-cell">
-            <strong>LCI / LCIA link</strong>
-            <p>Resource flows are mapped to inventory data and impact coefficients for calculation.</p>
+            <strong id="methodLciTitle">LCI / LCIA link</strong>
+            <p id="methodLciText">Resource flows are mapped to inventory data and impact coefficients for calculation.</p>
           </div>
         </section>
       </div>
@@ -1503,8 +1564,8 @@
     <section class="panel lca-panel" id="lcaCalculator" aria-label="LCA building block calculator">
       <div class="panel-heading">
         <div>
-          <h2>Modular LCA calculation demo</h2>
-          <p class="scope-note">Editable calculation rows for candidate building blocks. Modules define the LCA boundary; row checkboxes define which building blocks are active in the current scenario. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
+          <h2 id="lcaHeading">Modular LCA calculation demo</h2>
+          <p class="scope-note" id="lcaIntro">Editable calculation rows for candidate building blocks. Modules define the LCA boundary; row checkboxes define which building blocks are active in the current scenario. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
         </div>
         <div class="lca-header-actions">
           <span class="status-chip" id="lcaPathwayStatus"></span>
@@ -1516,14 +1577,14 @@
       <div class="lca-module-map" aria-label="LCA building block map">
         <div class="panel-heading">
           <div>
-            <h3>Candidate building blocks by LCA module</h3>
-            <p class="scope-note">Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
+            <h3 id="buildingBlockMapHeading">Candidate building blocks by LCA module</h3>
+            <p class="scope-note" id="buildingBlockMapIntro">Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
           </div>
           <span class="status-chip" id="buildingBlockCount"></span>
         </div>
         <div class="candidate-legend" aria-label="Candidate component legend">
-          <span><i class="candidate-swatch module" aria-hidden="true"></i>Module zone</span>
-          <span><i class="candidate-swatch block" aria-hidden="true"></i>Candidate building block</span>
+          <span><i class="candidate-swatch module" aria-hidden="true"></i><span id="moduleZoneLegendLabel">Module zone</span></span>
+          <span><i class="candidate-swatch block" aria-hidden="true"></i><span id="candidateBlockLegendLabel">Candidate building block</span></span>
         </div>
         <div class="module-map-grid" id="buildingBlockMap"></div>
       </div>
@@ -1532,7 +1593,7 @@
         <div>
           <div class="lca-control-grid" aria-label="LCA scenario inputs">
             <div class="field">
-              <label for="lcaCaseCount">Cohort size, patients</label>
+              <label for="lcaCaseCount" id="lcaCaseCountLabel">Cohort size, patients</label>
               <input id="lcaCaseCount" type="number" min="1" step="1" value="100">
             </div>
           </div>
@@ -1542,7 +1603,7 @@
 
         <div>
           <div class="lca-results" id="lcaResults"></div>
-          <h3>Data to collect next</h3>
+          <h3 id="dataToCollectHeading">Data to collect next</h3>
           <ul class="lca-priority-list" id="lcaPriorityList"></ul>
         </div>
       </div>
@@ -1993,6 +2054,511 @@
       { id: "es", label: "Español", htmlLang: "es" }
     ];
 
+    const languageLocales = {
+      en: "en-US",
+      nl: "nl-NL",
+      zh: "zh-CN",
+      ja: "ja-JP",
+      es: "es-ES"
+    };
+
+    const uiText = {
+      en: {
+        appTitle: "ECO-PATH Pathway Activity Explorer",
+        appSubtitle: "MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.",
+        languageSelector: "Language",
+        specialtySummary: "Specialties",
+        specialtyUrology: "Urology",
+        specialtyGastro: "Gastroenterology",
+        sourceReference: "Guideline reference",
+        sourceEmc: "EMC local",
+        domain: "Domain",
+        module: "ECO-PATH module",
+        elementType: "Element type",
+        allDomains: "All domains",
+        allModules: "All modules",
+        allElements: "All elements",
+        activitiesOption: "Activities",
+        decisionsOption: "Decision points",
+        search: "Search",
+        searchPlaceholder: "activity, module, oncology, imaging",
+        oncologyLens: "Oncology lens",
+        highlightOncology: "Highlight oncology",
+        oncologySubtitle: "Activities and LCA blocks",
+        fullscreenMap: "Fullscreen map",
+        closeFullscreen: "Close full screen",
+        clearPathway: "Clear selected pathway",
+        pathwayScenario: "Pathway scenario",
+        pathwayScenarioSubtitle: "Selected activities control pathway-linked LCA modules",
+        selectedActivitiesStatus: "{count} selected activities; {modules} pathway modules active",
+        diagnosticRoute: "Diagnostic and access route",
+        treatmentRoute: "Treatment route",
+        followupRoute: "Follow-up route",
+        returnRoute: "Conditional or return route",
+        access: "Access",
+        diagnostics: "Diagnostics",
+        jointMdt: "Joint clinic / MDT",
+        treatment: "Treatment",
+        followup: "Follow-up",
+        activitiesHeading: "Activities",
+        elementsShown: "{shown} of {total} elements shown",
+        noActivities: "No activities match the current filters.",
+        activity: "Activity",
+        decisionPoint: "Decision point",
+        selectedPathway: "Selected pathway",
+        oncologyRelevant: "Oncology relevant",
+        protocolInterpretation: "Protocol-to-activity interpretation",
+        whyKept: "Why this element is kept",
+        ecopathModule: "ECO-PATH module",
+        moduleExplanation: "{module} {name}. This is the LCA modeling zone assigned to the selected activity, not a separate clinical activity. Candidate building blocks are shown in the LCA section. {definition}",
+        resourceFlows: "Candidate resource flows",
+        expertConfirmation: "Expert confirmation needed",
+        noActivitySelected: "No activity selected.",
+        methodProtocolTitle: "Protocol step",
+        methodProtocolText: "Source instruction from a guideline, protocol, or workflow diagram.",
+        methodActivityTitle: "Activity",
+        methodActivityText: "Clinical or operational action placed on the pathway map and reviewed by experts.",
+        methodModuleTitle: "ECO-PATH module",
+        methodModuleText: "LCA modeling zone assigned to pathway activities. It is not another clinical activity.",
+        methodResourceTitle: "Resource flow",
+        methodResourceText: "Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.",
+        methodLciTitle: "LCI / LCIA link",
+        methodLciText: "Resource flows are mapped to inventory data and impact coefficients for calculation.",
+        lcaHeading: "Modular LCA calculation demo",
+        lcaIntro: "Editable calculation rows for candidate building blocks. Modules define the LCA boundary; row checkboxes define which building blocks are active in the current scenario. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.",
+        exportReport: "Export LCA report",
+        buildingBlockMapHeading: "Candidate building blocks by LCA module",
+        buildingBlockMapIntro: "Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.",
+        moduleZone: "Module zone",
+        candidateBuildingBlock: "Candidate building block",
+        cohortSize: "Cohort size, patients",
+        dataToCollect: "Data to collect next",
+        pathwayStatus: "{pathway}: {pathwayModules} pathway modules + {supportModules} support modules",
+        candidateBlockCount: "{blocks} candidate building blocks: {pathwayModules} pathway modules + {supportModules} support modules",
+        unit: "Unit",
+        resourceFlowsLabel: "Resource flows",
+        pathwayLinkedTitle: "Pathway-linked modules from current map",
+        pathwayLinkedDescription: "These modules are available in the current activity map. Selecting pathway activities on the map automatically checks the corresponding module.",
+        supportModulesTitle: "Optional cross-cutting support modules",
+        supportModulesDescription: "These modules are not stations on the pathway map. Use them for patient support and shared hospital support if they are inside the LCA boundary.",
+        activeRowSummary: "{active} active of {total} candidate building blocks; {selected} selected activities{boundary}",
+        moduleOutsideBoundary: "; module outside boundary",
+        use: "Use",
+        buildingBlock: "Building block",
+        resourceFlowsToModel: "Resource flows to model",
+        baseQuantity: "Base quantity",
+        uncertainty: "Uncertainty, +/- %",
+        impactCoefficient: "Impact coefficient, kg CO2-eq/unit",
+        defaultStatusGap: "Default status / data gap",
+        baseContribution: "Base contribution",
+        excludedFromTotal: "Excluded from total",
+        moduleSubtotal: "Module subtotal: {value} ({rows} active rows)",
+        low: "Low",
+        base: "Base",
+        high: "High",
+        scenario: "scenario",
+        demoLibraryTotal: "Demo library total for {count} pathway instances",
+        perPathway: "Per pathway instance: {value}",
+        includedModulesRows: "Included modules: {modules} of {moduleTotal}; active rows: {rows} of {rowTotal}",
+        formulaBlockRow: "Building block row",
+        formulaUncertainty: "Uncertainty range",
+        formulaLibrary: "Building block library",
+        formulaCohort: "Cohort impact",
+        formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.",
+        lcaWarning: "Only checked modules and checked building block rows are editable and counted in the totals. The selected pathway scenario on the map automatically checks pathway-linked modules; EM10 and EM11 remain optional support modules in the LCA boundary. Row checkboxes define which candidate building blocks are active in the current scenario, because a guideline or local pathway may use only part of a module such as EM06. All default quantities and impact coefficients are illustrative dummy values. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence.",
+        noActiveRows: "No building block row is active. Check at least one module and one building block row to include it in the calculation.",
+        priorityRow: "{module} {block}: {impact} per demo pathway instance. {gap}",
+        reportTitle: "ECO-PATH LCA report: {pathway}",
+        generatedFrom: "Generated {date} from the interactive ECO-PATH pathway explorer.",
+        scopeConfig: "Scope and current configuration",
+        pathwayStatusLabel: "Pathway status",
+        checkedModules: "Checked modules",
+        rowsCounted: "Rows counted",
+        selectedPathwayActivities: "Selected pathway activities",
+        scenarioResults: "Scenario results",
+        valuesDummyNote: "These values are calculated from current browser inputs. The default occurrence counts and impact coefficients are dummy values until replaced with hospital LCI data and documented LCIA mappings.",
+        selectedPathwayScenario: "Selected pathway scenario",
+        code: "Code",
+        assignedModule: "Assigned module",
+        noSelectedReport: "No pathway activity was selected. Pathway-linked modules remain outside the LCA boundary unless manually checked.",
+        calculationFormula: "Calculation formula",
+        formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. N is cohort size.",
+        moduleBoundary: "Module boundary and subtotals",
+        name: "Name",
+        role: "Role",
+        status: "Status",
+        activeRows: "Active rows",
+        baseSubtotal: "Base subtotal",
+        priorityData: "Priority data to collect",
+        currentDataGap: "Current data gap",
+        fullCalculationRows: "Full building block calculation rows",
+        counted: "Counted",
+        blockOff: "Building block off",
+        moduleOff: "Module off",
+        included: "Included",
+        excluded: "Excluded",
+        noCheckedTotal: "No checked module and building block row combination is currently included in the LCA total.",
+        methodLimitations: "Method note and limitations",
+        methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. Use it to review pathway scope, checked modules, candidate building blocks, data gaps, and parameter sensitivity before formal data collection and model validation.",
+        reportFooter: "ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser."
+      },
+      nl: {
+        appTitle: "ECO-PATH Verkenner voor zorgpadactiviteiten",
+        appSubtitle: "Protocol-naar-activiteit weergaven voor MIBC en colorectale kanker voor richtlijnlogica en lokale workflowafbakening.",
+        languageSelector: "Taal",
+        specialtySummary: "Specialismen",
+        specialtyUrology: "Urologie",
+        specialtyGastro: "Gastro-enterologie",
+        sourceReference: "Richtlijnreferentie",
+        sourceEmc: "EMC lokaal",
+        domain: "Domein",
+        module: "ECO-PATH-module",
+        elementType: "Elementtype",
+        allDomains: "Alle domeinen",
+        allModules: "Alle modules",
+        allElements: "Alle elementen",
+        activitiesOption: "Activiteiten",
+        decisionsOption: "Beslispunten",
+        search: "Zoeken",
+        searchPlaceholder: "activiteit, module, oncologie, beeldvorming",
+        oncologyLens: "Oncologiefilter",
+        highlightOncology: "Oncologie markeren",
+        oncologySubtitle: "Activiteiten en LCA-blokken",
+        fullscreenMap: "Kaart volledig scherm",
+        closeFullscreen: "Volledig scherm sluiten",
+        clearPathway: "Geselecteerd zorgpad wissen",
+        pathwayScenario: "Zorgpadscenario",
+        pathwayScenarioSubtitle: "Geselecteerde activiteiten sturen zorgpadgebonden LCA-modules",
+        selectedActivitiesStatus: "{count} geselecteerde activiteiten; {modules} actieve zorgpadmodules",
+        diagnosticRoute: "Diagnostische en toegangsroute",
+        treatmentRoute: "Behandelroute",
+        followupRoute: "Follow-uproute",
+        returnRoute: "Voorwaardelijke of retourroute",
+        access: "Toegang",
+        diagnostics: "Diagnostiek",
+        jointMdt: "Joint clinic / MDO",
+        treatment: "Behandeling",
+        followup: "Follow-up",
+        activitiesHeading: "Activiteiten",
+        elementsShown: "{shown} van {total} elementen getoond",
+        noActivities: "Geen activiteiten passen bij de huidige filters.",
+        activity: "Activiteit",
+        decisionPoint: "Beslispunt",
+        selectedPathway: "Geselecteerd zorgpad",
+        oncologyRelevant: "Oncologisch relevant",
+        protocolInterpretation: "Protocol-naar-activiteit interpretatie",
+        whyKept: "Waarom dit element is behouden",
+        ecopathModule: "ECO-PATH-module",
+        moduleExplanation: "{module} {name}. Dit is de LCA-modelleerzone voor de geselecteerde activiteit, geen afzonderlijke klinische activiteit. Kandidaatbouwstenen staan in het LCA-gedeelte. {definition}",
+        resourceFlows: "Kandidaat-resourceflows",
+        expertConfirmation: "Expertbevestiging nodig",
+        noActivitySelected: "Geen activiteit geselecteerd.",
+        methodProtocolTitle: "Protocolstap",
+        methodProtocolText: "Broninstructie uit een richtlijn, protocol of workflowdiagram.",
+        methodActivityTitle: "Activiteit",
+        methodActivityText: "Klinische of operationele handeling op de zorgpadkaart en beoordeeld door experts.",
+        methodModuleTitle: "ECO-PATH-module",
+        methodModuleText: "LCA-modelleerzone toegewezen aan zorgpadactiviteiten. Het is geen extra klinische activiteit.",
+        methodResourceTitle: "Resourceflow",
+        methodResourceText: "Meetbare input of output binnen een module, zoals reizen, apparaattijd, energie, materialen of afval.",
+        methodLciTitle: "LCI / LCIA-koppeling",
+        methodLciText: "Resourceflows worden gekoppeld aan inventarisdata en impactcoëfficiënten voor berekening.",
+        lcaHeading: "Modulaire LCA-berekeningsdemo",
+        lcaIntro: "Bewerkbare berekeningsrijen voor kandidaatbouwstenen. Modules definiëren de LCA-grens; rijselecties bepalen welke bouwstenen actief zijn in het huidige scenario. Elke rij gebruikt een placeholder-aantal en dummy impactcoëfficiënt om de rekenlogica en databehoefte te tonen.",
+        exportReport: "LCA-rapport exporteren",
+        buildingBlockMapHeading: "Kandidaatbouwstenen per LCA-module",
+        buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken, bijvoorbeeld alleen consultatie en monitoring binnen EM06. EM10 en EM11 zijn optionele ondersteunende modules, geen stations op de zorgpadkaart.",
+        moduleZone: "Modulezone",
+        candidateBuildingBlock: "Kandidaatbouwsteen",
+        cohortSize: "Cohortgrootte, patiënten",
+        dataToCollect: "Volgende data om te verzamelen",
+        pathwayStatus: "{pathway}: {pathwayModules} zorgpadmodules + {supportModules} ondersteunende modules",
+        candidateBlockCount: "{blocks} kandidaatbouwstenen: {pathwayModules} zorgpadmodules + {supportModules} ondersteunende modules",
+        unit: "Eenheid",
+        resourceFlowsLabel: "Resourceflows",
+        pathwayLinkedTitle: "Zorgpadgebonden modules uit de huidige kaart",
+        pathwayLinkedDescription: "Deze modules zijn beschikbaar in de huidige activiteitenkaart. Geselecteerde zorgpadactiviteiten zetten automatisch de bijbehorende module aan.",
+        supportModulesTitle: "Optionele overkoepelende ondersteunende modules",
+        supportModulesDescription: "Deze modules zijn geen stations op de zorgpadkaart. Gebruik ze voor patiëntondersteuning en gedeelde ziekenhuisondersteuning als ze binnen de LCA-grens vallen.",
+        activeRowSummary: "{active} actief van {total} kandidaatbouwstenen; {selected} geselecteerde activiteiten{boundary}",
+        moduleOutsideBoundary: "; module buiten grens",
+        use: "Gebruik",
+        buildingBlock: "Bouwsteen",
+        resourceFlowsToModel: "Te modelleren resourceflows",
+        baseQuantity: "Basishoeveelheid",
+        uncertainty: "Onzekerheid, +/- %",
+        impactCoefficient: "Impactcoëfficiënt, kg CO2-eq/eenheid",
+        defaultStatusGap: "Standaardstatus / datagap",
+        baseContribution: "Basisbijdrage",
+        excludedFromTotal: "Uitgesloten van totaal",
+        moduleSubtotal: "Modulesubtotaal: {value} ({rows} actieve rijen)",
+        low: "Laag",
+        base: "Basis",
+        high: "Hoog",
+        scenario: "scenario",
+        demoLibraryTotal: "Demobibliotheektotaal voor {count} zorgpadinstanties",
+        perPathway: "Per zorgpadinstantie: {value}",
+        includedModulesRows: "Opgenomen modules: {modules} van {moduleTotal}; actieve rijen: {rows} van {rowTotal}",
+        formulaBlockRow: "Bouwsteenrij",
+        formulaUncertainty: "Onzekerheidsbereik",
+        formulaLibrary: "Bouwsteenbibliotheek",
+        formulaCohort: "Cohortimpact",
+        formulaNote: "S = aangevinkte bouwsteenrijen binnen aangevinkte modules. q = aantal of resourcehoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u = relatieve onzekerheid, N = cohortgrootte. Dit is een demobibliotheek, geen definitief zorgpadscenario.",
+        lcaWarning: "Alleen aangevinkte modules en bouwsteenrijen zijn bewerkbaar en tellen mee in de totalen. Het geselecteerde zorgpadscenario op de kaart zet zorgpadgebonden modules automatisch aan; EM10 en EM11 blijven optionele ondersteunende modules binnen de LCA-grens. Rijselecties bepalen welke kandidaatbouwstenen actief zijn. Standaardhoeveelheden en impactcoëfficiënten zijn dummywaarden.",
+        noActiveRows: "Geen bouwsteenrij is actief. Vink ten minste één module en één bouwsteenrij aan om deze mee te nemen.",
+        priorityRow: "{module} {block}: {impact} per demo-zorgpadinstantie. {gap}",
+        reportTitle: "ECO-PATH LCA-rapport: {pathway}",
+        generatedFrom: "Gegenereerd {date} vanuit de interactieve ECO-PATH zorgpadverkenner.",
+        scopeConfig: "Scope en huidige configuratie",
+        pathwayStatusLabel: "Zorgpadstatus",
+        checkedModules: "Aangevinkte modules",
+        rowsCounted: "Getelde rijen",
+        selectedPathwayActivities: "Geselecteerde zorgpadactiviteiten",
+        scenarioResults: "Scenarioresultaten",
+        valuesDummyNote: "Deze waarden zijn berekend op basis van huidige browserinvoer. De standaard aantallen en impactcoëfficiënten zijn dummywaarden totdat ze zijn vervangen door ziekenhuis-LCI-data en gedocumenteerde LCIA-koppelingen.",
+        selectedPathwayScenario: "Geselecteerd zorgpadscenario",
+        code: "Code",
+        assignedModule: "Toegewezen module",
+        noSelectedReport: "Er is geen zorgpadactiviteit geselecteerd. Zorgpadgebonden modules blijven buiten de LCA-grens tenzij ze handmatig zijn aangevinkt.",
+        calculationFormula: "Berekeningsformule",
+        formulaReportNote: "S is de set aangevinkte bouwsteenrijen binnen aangevinkte modules. q is aantal of resourcehoeveelheid. c is de impactcoëfficiënt. N is cohortgrootte.",
+        moduleBoundary: "Modulegrens en subtotalen",
+        name: "Naam",
+        role: "Rol",
+        status: "Status",
+        activeRows: "Actieve rijen",
+        baseSubtotal: "Basissubtotaal",
+        priorityData: "Prioritaire data om te verzamelen",
+        currentDataGap: "Huidige datagap",
+        fullCalculationRows: "Volledige berekeningsrijen voor bouwstenen",
+        counted: "Meegeteld",
+        blockOff: "Bouwsteen uit",
+        moduleOff: "Module uit",
+        included: "Opgenomen",
+        excluded: "Uitgesloten",
+        noCheckedTotal: "Er is momenteel geen combinatie van aangevinkte module en bouwsteenrij opgenomen in het LCA-totaal.",
+        methodLimitations: "Methodenotitie en beperkingen",
+        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport.",
+        reportFooter: "ECO-PATH demo voor zorgpadniveau milieubeoordeling. Rapport lokaal in de browser gegenereerd."
+      }
+    };
+
+    const baseUiText = uiText.en;
+    ["zh", "ja", "es"].forEach((languageId) => {
+      uiText[languageId] = {
+        ...baseUiText,
+        ...(languageId === "zh" ? {
+          appTitle: "ECO-PATH 医疗路径活动探索器",
+          appSubtitle: "用于指南逻辑和本地工作流界定的 MIBC 与结直肠癌 protocol-to-activity 视图。",
+          languageSelector: "语言",
+          specialtySummary: "专科",
+          specialtyUrology: "泌尿外科",
+          specialtyGastro: "胃肠病学",
+          sourceReference: "指南参考",
+          sourceEmc: "EMC 本地",
+          domain: "领域",
+          elementType: "元素类型",
+          allDomains: "所有领域",
+          allModules: "所有模块",
+          allElements: "所有元素",
+          activitiesOption: "活动",
+          decisionsOption: "决策点",
+          search: "搜索",
+          searchPlaceholder: "activity, module, oncology, imaging",
+          oncologyLens: "肿瘤学视角",
+          highlightOncology: "高亮肿瘤学相关内容",
+          oncologySubtitle: "活动和 LCA building blocks",
+          fullscreenMap: "全屏地图",
+          closeFullscreen: "关闭全屏",
+          clearPathway: "清空已选路径",
+          pathwayScenario: "路径情景",
+          pathwayScenarioSubtitle: "已选活动控制 pathway-linked LCA modules",
+          selectedActivitiesStatus: "已选 {count} 个活动；{modules} 个路径模块已启用",
+          diagnosticRoute: "诊断和准入路线",
+          treatmentRoute: "治疗路线",
+          followupRoute: "随访路线",
+          returnRoute: "条件或返回路线",
+          access: "准入",
+          diagnostics: "诊断",
+          jointMdt: "联合门诊 / MDT",
+          treatment: "治疗",
+          followup: "随访",
+          activitiesHeading: "活动",
+          elementsShown: "显示 {shown} / {total} 个元素",
+          noActivities: "没有活动符合当前筛选条件。",
+          activity: "活动",
+          decisionPoint: "决策点",
+          selectedPathway: "已选路径",
+          oncologyRelevant: "肿瘤学相关",
+          protocolInterpretation: "Protocol-to-activity 解释",
+          whyKept: "保留此元素的原因",
+          ecopathModule: "ECO-PATH 模块",
+          resourceFlows: "候选资源流",
+          expertConfirmation: "需要专家确认",
+          noActivitySelected: "未选择活动。",
+          lcaHeading: "模块化 LCA 计算演示",
+          exportReport: "导出 LCA 报告",
+          buildingBlockMapHeading: "按 LCA 模块分组的候选 building blocks",
+          moduleZone: "模块区域",
+          candidateBuildingBlock: "候选 building block",
+          cohortSize: "队列规模，患者数",
+          dataToCollect: "下一步需要收集的数据",
+          use: "使用",
+          buildingBlock: "Building block",
+          resourceFlowsToModel: "需要建模的资源流",
+          baseQuantity: "基础数量",
+          uncertainty: "不确定性，+/- %",
+          impactCoefficient: "影响系数，kg CO2-eq/单位",
+          defaultStatusGap: "默认状态 / 数据缺口",
+          baseContribution: "基础贡献",
+          low: "低",
+          base: "基准",
+          high: "高",
+          scenario: "情景",
+          reportTitle: "ECO-PATH LCA 报告：{pathway}",
+          generatedFrom: "由交互式 ECO-PATH 路径探索器于 {date} 生成。",
+          scopeConfig: "范围和当前配置",
+          scenarioResults: "情景结果",
+          selectedPathwayScenario: "已选路径情景",
+          calculationFormula: "计算公式",
+          moduleBoundary: "模块边界和小计",
+          priorityData: "优先收集的数据",
+          fullCalculationRows: "完整 building block 计算行",
+          counted: "计入",
+          blockOff: "Building block 关闭",
+          moduleOff: "模块关闭",
+          included: "纳入",
+          excluded: "排除"
+        } : languageId === "ja" ? {
+          appTitle: "ECO-PATH パスウェイ活動エクスプローラー",
+          appSubtitle: "MIBC と大腸がんの protocol-to-activity ビュー。ガイドラインロジックとローカルワークフローのスコーピング用。",
+          languageSelector: "言語",
+          specialtySummary: "診療科",
+          specialtyUrology: "泌尿器科",
+          specialtyGastro: "消化器科",
+          sourceReference: "ガイドライン参照",
+          sourceEmc: "EMC ローカル",
+          domain: "領域",
+          elementType: "要素タイプ",
+          allDomains: "すべての領域",
+          allModules: "すべてのモジュール",
+          allElements: "すべての要素",
+          activitiesOption: "活動",
+          decisionsOption: "意思決定点",
+          search: "検索",
+          searchPlaceholder: "activity, module, oncology, imaging",
+          oncologyLens: "オンコロジー表示",
+          highlightOncology: "オンコロジーを強調",
+          fullscreenMap: "全画面マップ",
+          closeFullscreen: "全画面を閉じる",
+          clearPathway: "選択したパスウェイをクリア",
+          pathwayScenario: "パスウェイシナリオ",
+          selectedActivitiesStatus: "{count} 件の活動を選択；{modules} 件のパスウェイモジュールが有効",
+          diagnosticRoute: "診断・アクセスルート",
+          treatmentRoute: "治療ルート",
+          followupRoute: "フォローアップルート",
+          returnRoute: "条件付きまたは戻りルート",
+          access: "アクセス",
+          diagnostics: "診断",
+          treatment: "治療",
+          followup: "フォローアップ",
+          activitiesHeading: "活動",
+          activity: "活動",
+          decisionPoint: "意思決定点",
+          selectedPathway: "選択済みパスウェイ",
+          oncologyRelevant: "オンコロジー関連",
+          lcaHeading: "モジュール型 LCA 計算デモ",
+          exportReport: "LCA レポートを出力",
+          cohortSize: "コホートサイズ、患者数",
+          dataToCollect: "次に収集するデータ",
+          use: "使用",
+          buildingBlock: "Building block",
+          baseQuantity: "基準数量",
+          uncertainty: "不確実性、+/- %",
+          baseContribution: "基準寄与",
+          low: "低",
+          base: "基準",
+          high: "高",
+          scenario: "シナリオ",
+          reportTitle: "ECO-PATH LCA レポート：{pathway}",
+          scopeConfig: "範囲と現在の設定",
+          scenarioResults: "シナリオ結果",
+          selectedPathwayScenario: "選択済みパスウェイシナリオ",
+          calculationFormula: "計算式",
+          moduleBoundary: "モジュール境界と小計",
+          priorityData: "優先的に収集するデータ",
+          counted: "計上",
+          blockOff: "Building block オフ",
+          moduleOff: "モジュールオフ",
+          included: "含む",
+          excluded: "除外"
+        } : {
+          appTitle: "Explorador de actividades ECO-PATH",
+          appSubtitle: "Vistas protocol-to-activity para MIBC y cáncer colorrectal para lógica de guías y delimitación de flujos locales.",
+          languageSelector: "Idioma",
+          specialtySummary: "Especialidades",
+          specialtyUrology: "Urología",
+          specialtyGastro: "Gastroenterología",
+          sourceReference: "Referencia de guía",
+          sourceEmc: "EMC local",
+          domain: "Dominio",
+          elementType: "Tipo de elemento",
+          allDomains: "Todos los dominios",
+          allModules: "Todos los módulos",
+          allElements: "Todos los elementos",
+          activitiesOption: "Actividades",
+          decisionsOption: "Puntos de decisión",
+          search: "Buscar",
+          searchPlaceholder: "actividad, módulo, oncología, imagen",
+          oncologyLens: "Filtro de oncología",
+          highlightOncology: "Resaltar oncología",
+          fullscreenMap: "Mapa en pantalla completa",
+          closeFullscreen: "Cerrar pantalla completa",
+          clearPathway: "Borrar vía seleccionada",
+          pathwayScenario: "Escenario de vía",
+          selectedActivitiesStatus: "{count} actividades seleccionadas; {modules} módulos de vía activos",
+          diagnosticRoute: "Ruta diagnóstica y de acceso",
+          treatmentRoute: "Ruta de tratamiento",
+          followupRoute: "Ruta de seguimiento",
+          returnRoute: "Ruta condicional o de retorno",
+          access: "Acceso",
+          diagnostics: "Diagnóstico",
+          treatment: "Tratamiento",
+          followup: "Seguimiento",
+          activitiesHeading: "Actividades",
+          activity: "Actividad",
+          decisionPoint: "Punto de decisión",
+          selectedPathway: "Vía seleccionada",
+          oncologyRelevant: "Relevante para oncología",
+          lcaHeading: "Demostración de cálculo LCA modular",
+          exportReport: "Exportar informe LCA",
+          cohortSize: "Tamaño de cohorte, pacientes",
+          dataToCollect: "Datos a recopilar después",
+          use: "Usar",
+          buildingBlock: "Building block",
+          baseQuantity: "Cantidad base",
+          uncertainty: "Incertidumbre, +/- %",
+          baseContribution: "Contribución base",
+          low: "Bajo",
+          base: "Base",
+          high: "Alto",
+          scenario: "escenario",
+          reportTitle: "Informe LCA ECO-PATH: {pathway}",
+          scopeConfig: "Alcance y configuración actual",
+          scenarioResults: "Resultados de escenarios",
+          selectedPathwayScenario: "Escenario de vía seleccionado",
+          calculationFormula: "Fórmula de cálculo",
+          moduleBoundary: "Límite de módulo y subtotales",
+          priorityData: "Datos prioritarios a recopilar",
+          counted: "Contado",
+          blockOff: "Building block desactivado",
+          moduleOff: "Módulo desactivado",
+          included: "Incluido",
+          excluded: "Excluido"
+        })
+      };
+    });
+
     function normaliseLanguage(value) {
       return languageOptions.some((item) => item.id === value) ? value : "en";
     }
@@ -2011,6 +2577,41 @@
       } catch {
         // Local storage can be unavailable in strict browser modes.
       }
+    }
+
+    function t(key, values = {}) {
+      const dictionary = uiText[state.language] || uiText.en;
+      const template = dictionary[key] || uiText.en[key] || key;
+      return Object.entries(values).reduce(
+        (text, [name, value]) => text.replaceAll(`{${name}}`, String(value)),
+        template
+      );
+    }
+
+    function setText(id, key, values = {}) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = t(key, values);
+    }
+
+    function currentLanguageOption() {
+      return languageOptions.find((item) => item.id === state.language) || languageOptions[0];
+    }
+
+    function languageGlobeSvg() {
+      return `
+        <svg class="language-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+          <path d="M3.6 9h16.8M3.6 15h16.8M12 3c2.5 2.4 3.8 5.4 3.8 9s-1.3 6.6-3.8 9M12 3C9.5 5.4 8.2 8.4 8.2 12s1.3 6.6 3.8 9" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.45"></path>
+        </svg>
+      `;
+    }
+
+    function htmlLangForCurrentLanguage() {
+      return currentLanguageOption().htmlLang;
+    }
+
+    function localeForCurrentLanguage() {
+      return languageLocales[state.language] || languageLocales.en;
     }
 
     const state = {
@@ -2231,13 +2832,19 @@
     }
 
     function renderLanguageSelector() {
-      const language = languageOptions.find((item) => item.id === state.language) || languageOptions[0];
+      const language = currentLanguageOption();
       const selector = document.getElementById("languageSelector");
       const summary = document.getElementById("languageSummary");
       const options = document.getElementById("languageOptions");
       if (!summary || !options) return;
       document.documentElement.lang = language.htmlLang;
-      summary.textContent = `Language · ${language.label}`;
+      summary.setAttribute("aria-label", `${t("languageSelector")}: ${language.label}`);
+      summary.innerHTML = `
+        <span class="summary-content">
+          ${languageGlobeSvg()}
+          <span>${escapeHtml(language.label)}</span>
+        </span>
+      `;
       clear(options);
 
       languageOptions.forEach((item) => {
@@ -2255,11 +2862,78 @@
         button.addEventListener("click", () => {
           state.language = item.id;
           storeLanguage(item.id);
-          renderLanguageSelector();
+          render();
           if (selector) selector.removeAttribute("open");
         });
         options.appendChild(button);
       });
+    }
+
+    function renderStaticLanguageText() {
+      setText("appTitle", "appTitle");
+      setText("appSubtitle", "appSubtitle");
+      setText("domainFilterLabel", "domain");
+      setText("moduleFilterLabel", "module");
+      setText("typeFilterLabel", "elementType");
+      setText("searchBoxLabel", "search");
+      setText("oncologyLensLabel", "oncologyLens");
+      setText("oncologyLensTitle", "highlightOncology");
+      setText("oncologyLensSubtitle", "oncologySubtitle");
+      setText("pathwayScenarioTitle", "pathwayScenario");
+      setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
+      setText("diagnosticRouteLabel", "diagnosticRoute");
+      setText("treatmentRouteLabel", "treatmentRoute");
+      setText("followupRouteLabel", "followupRoute");
+      setText("returnRouteLabel", "returnRoute");
+      setText("accessPrefixLabel", "access");
+      setText("diagnosticsPrefixLabel", "diagnostics");
+      setText("jmPrefixLabel", "jointMdt");
+      setText("treatmentPrefixLabel", "treatment");
+      setText("followupPrefixLabel", "followup");
+      setText("activitiesHeading", "activitiesHeading");
+      setText("methodProtocolTitle", "methodProtocolTitle");
+      setText("methodProtocolText", "methodProtocolText");
+      setText("methodActivityTitle", "methodActivityTitle");
+      setText("methodActivityText", "methodActivityText");
+      setText("methodModuleTitle", "methodModuleTitle");
+      setText("methodModuleText", "methodModuleText");
+      setText("methodResourceTitle", "methodResourceTitle");
+      setText("methodResourceText", "methodResourceText");
+      setText("methodLciTitle", "methodLciTitle");
+      setText("methodLciText", "methodLciText");
+      setText("lcaHeading", "lcaHeading");
+      setText("lcaIntro", "lcaIntro");
+      setText("buildingBlockMapHeading", "buildingBlockMapHeading");
+      setText("buildingBlockMapIntro", "buildingBlockMapIntro");
+      setText("moduleZoneLegendLabel", "moduleZone");
+      setText("candidateBlockLegendLabel", "candidateBuildingBlock");
+      setText("lcaCaseCountLabel", "cohortSize");
+      setText("dataToCollectHeading", "dataToCollect");
+
+      const searchBox = document.getElementById("searchBox");
+      if (searchBox) searchBox.placeholder = t("searchPlaceholder");
+      const openButton = document.getElementById("openMapFullscreen");
+      if (openButton) openButton.textContent = t("fullscreenMap");
+      const closeButton = document.getElementById("closeMapFullscreen");
+      if (closeButton) closeButton.textContent = t("closeFullscreen");
+      const clearButton = document.getElementById("clearPathwayScenario");
+      if (clearButton) clearButton.textContent = t("clearPathway");
+      const clearFullscreenButton = document.getElementById("clearPathwayScenarioFullscreen");
+      if (clearFullscreenButton) clearFullscreenButton.textContent = t("clearPathway");
+      const exportButton = document.getElementById("lcaExportReport");
+      if (exportButton) exportButton.textContent = t("exportReport");
+
+      const typeFilter = document.getElementById("typeFilter");
+      if (typeFilter) {
+        const labels = {
+          all: t("allElements"),
+          activity: t("activitiesOption"),
+          decision: t("decisionsOption")
+        };
+        Array.from(typeFilter.options).forEach((option) => {
+          option.textContent = labels[option.value] || option.textContent;
+        });
+      }
     }
 
     function pathForEdge(from, to) {
@@ -2272,28 +2946,76 @@
       return `M ${from.x} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${to.x} ${to.y}`;
     }
 
+    function pathwaySourceGroups() {
+      return [
+        {
+          id: "urology",
+          label: t("specialtyUrology"),
+          items: [
+            { id: "eau", label: "EAU MIBC", sourceKey: "sourceReference" },
+            { id: "emc", label: "EMC MIBC", sourceKey: "sourceEmc" }
+          ]
+        },
+        {
+          id: "gastro",
+          label: t("specialtyGastro"),
+          items: [
+            { id: "crcGuide", label: "EU/ESMO CRC", sourceKey: "sourceReference" },
+            { id: "crcEmc", label: "EMC CRC", sourceKey: "sourceEmc" }
+          ]
+        }
+      ];
+    }
+
+    function selectedPathwaySource() {
+      for (const group of pathwaySourceGroups()) {
+        const item = group.items.find((candidate) => candidate.id === state.pathway);
+        if (item) return { group, item };
+      }
+      return pathwaySourceGroups()[0].items[0];
+    }
+
     function renderSourceSwitch() {
-      const container = document.getElementById("sourceSwitch");
+      const selector = document.getElementById("specialtySelector");
+      const summary = document.getElementById("specialtySummary");
+      const container = document.getElementById("specialtyOptions");
+      if (!summary || !container) return;
+      const selected = selectedPathwaySource();
+      summary.textContent = `${t("specialtySummary")} · ${selected.group.label} / ${t(selected.item.sourceKey)}`;
       clear(container);
-      Object.entries(pathwayData).forEach(([id, pathway]) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = pathway.label;
-        button.className = id === state.pathway ? "active" : "";
-        button.addEventListener("click", () => {
-          state.pathway = id;
-          state.selected = pathwayData[id].defaultSelected;
-          state.detailAnchor = "map";
-          state.domain = "all";
-          state.module = "all";
-          state.type = "all";
-          state.query = "";
-          document.getElementById("typeFilter").value = "all";
-          document.getElementById("searchBox").value = "";
-          syncPathwayModulesFromScenario();
-          render();
+
+      pathwaySourceGroups().forEach((group) => {
+        const groupElement = document.createElement("div");
+        groupElement.className = "specialty-group";
+        groupElement.innerHTML = `<div class="specialty-group-title">${escapeHtml(group.label)}</div>`;
+        group.items.forEach((item) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = ["specialty-option", item.id === state.pathway ? "active" : ""]
+            .filter(Boolean)
+            .join(" ");
+          button.dataset.pathway = item.id;
+          button.innerHTML = `
+            <span>${escapeHtml(t(item.sourceKey))}</span>
+            <span>${escapeHtml(item.label)}${item.id === state.pathway ? " ✓" : ""}</span>
+          `;
+          button.addEventListener("click", () => {
+            state.pathway = item.id;
+            state.selected = pathwayData[item.id].defaultSelected;
+            state.detailAnchor = "map";
+            state.domain = "all";
+            state.module = "all";
+            state.type = "all";
+            state.query = "";
+            document.getElementById("typeFilter").value = "all";
+            document.getElementById("searchBox").value = "";
+            syncPathwayModulesFromScenario();
+            render();
+            if (selector) selector.removeAttribute("open");
+          });
+          groupElement.appendChild(button);
         });
-        container.appendChild(button);
+        container.appendChild(groupElement);
       });
     }
 
@@ -2312,14 +3034,14 @@
       domains.forEach((domain) => {
         const option = document.createElement("option");
         option.value = domain;
-        option.textContent = domain === "all" ? "All domains" : domain;
+        option.textContent = domain === "all" ? t("allDomains") : domainLabel(domain);
         domainFilter.appendChild(option);
       });
 
       modules.forEach((moduleId) => {
         const option = document.createElement("option");
         option.value = moduleId;
-        option.textContent = moduleId === "all" ? "All modules" : `${moduleId} ${moduleRegistry[moduleId].name}`;
+        option.textContent = moduleId === "all" ? t("allModules") : `${moduleId} ${moduleRegistry[moduleId].name}`;
         moduleFilter.appendChild(option);
       });
 
@@ -2328,6 +3050,22 @@
       domainFilter.value = state.domain;
       moduleFilter.value = state.module;
       document.getElementById("oncologyLens").checked = state.oncologyLens;
+    }
+
+    function domainLabel(domain) {
+      const labels = {
+        "Access": t("access"),
+        "Diagnostics": t("diagnostics"),
+        "Joint clinic and MDT": t("jointMdt"),
+        "Treatment": t("treatment"),
+        "Treatment planning": `${t("treatment")} planning`,
+        "Systemic therapy and oncology": "Systemic therapy and oncology",
+        "Surgery": "Surgery",
+        "Radiotherapy": "Radiotherapy",
+        "Follow-up": t("followup"),
+        "Advanced disease": "Advanced disease"
+      };
+      return labels[domain] || domain;
     }
 
     function renderHeader() {
@@ -2346,7 +3084,7 @@
     function renderPathwayScenarioControls() {
       const selectedCount = selectedScenarioNodes().length;
       const moduleCount = selectedScenarioModuleIds().length;
-      const status = `${selectedCount} selected activities; ${moduleCount} pathway modules active`;
+      const status = t("selectedActivitiesStatus", { count: selectedCount, modules: moduleCount });
       const modeToggle = document.getElementById("pathwayScenarioMode");
       const clearButton = document.getElementById("clearPathwayScenario");
       const clearFullscreenButton = document.getElementById("clearPathwayScenarioFullscreen");
@@ -2748,7 +3486,7 @@
       const detail = document.getElementById(targetId);
       if (!detail) return;
       if (!node) {
-        detail.innerHTML = '<div class="empty">No activity selected.</div>';
+        detail.innerHTML = `<div class="empty">${escapeHtml(t("noActivitySelected"))}</div>`;
         return;
       }
       const module = moduleRegistry[node.module];
@@ -2758,33 +3496,37 @@
           <div>
             <h2>${escapeHtml(node.label)}</h2>
             <div class="meta-row">
-              <span class="tag">${escapeHtml(node.domain)}</span>
-              <span class="tag">${escapeHtml(node.type === "decision" ? "Decision point" : "Activity")}</span>
+              <span class="tag">${escapeHtml(domainLabel(node.domain))}</span>
+              <span class="tag">${escapeHtml(node.type === "decision" ? t("decisionPoint") : t("activity"))}</span>
               <span class="tag module">${escapeHtml(node.module)}</span>
-              ${isScenarioNodeSelected(node.id) ? '<span class="tag scenario">Selected pathway</span>' : ""}
-              ${node.oncology ? '<span class="tag oncology">Oncology relevant</span>' : ""}
+              ${isScenarioNodeSelected(node.id) ? `<span class="tag scenario">${escapeHtml(t("selectedPathway"))}</span>` : ""}
+              ${node.oncology ? `<span class="tag oncology">${escapeHtml(t("oncologyRelevant"))}</span>` : ""}
             </div>
           </div>
         </div>
         <div class="detail-grid">
           <div class="detail-block">
-            <strong>Protocol-to-activity interpretation</strong>
+            <strong>${escapeHtml(t("protocolInterpretation"))}</strong>
             <p>${escapeHtml(node.protocolStep)}</p>
           </div>
           <div class="detail-block">
-            <strong>Why this element is kept</strong>
+            <strong>${escapeHtml(t("whyKept"))}</strong>
             <p>${escapeHtml(node.rationale)}</p>
           </div>
           <div class="detail-block">
-            <strong>ECO-PATH module</strong>
-            <p>${escapeHtml(node.module)} ${escapeHtml(module.name)}. This is the LCA modeling zone assigned to the selected activity, not a separate clinical activity. Candidate building blocks are shown in the LCA section. ${escapeHtml(module.definition)}</p>
+            <strong>${escapeHtml(t("ecopathModule"))}</strong>
+            <p>${escapeHtml(t("moduleExplanation", {
+              module: node.module,
+              name: module.name,
+              definition: module.definition
+            }))}</p>
           </div>
           <div class="detail-block">
-            <strong>Candidate resource flows</strong>
+            <strong>${escapeHtml(t("resourceFlows"))}</strong>
             <ul class="resource-list">${node.resourceFlows.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
           </div>
           <div class="detail-block">
-            <strong>Expert confirmation needed</strong>
+            <strong>${escapeHtml(t("expertConfirmation"))}</strong>
             <ul class="question-list">${node.openQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
           </div>
         </div>
@@ -2842,12 +3584,15 @@
       const list = document.getElementById("activityList");
       const nodes = filteredNodes();
       clear(list);
-      document.getElementById("activityCount").textContent = `${nodes.length} of ${currentPathway().nodes.length} elements shown`;
+      document.getElementById("activityCount").textContent = t("elementsShown", {
+        shown: nodes.length,
+        total: currentPathway().nodes.length
+      });
 
       if (!nodes.length) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = "No activities match the current filters.";
+        empty.textContent = t("noActivities");
         list.appendChild(empty);
         return;
       }
@@ -2875,7 +3620,7 @@
           <span class="code-pill">${escapeHtml(displayCode(node))}</span>
           <span class="activity-name">
             <strong>${escapeHtml(node.label)}</strong>
-            <span>${escapeHtml(node.domain)} · ${escapeHtml(node.type === "decision" ? "Decision point" : "Activity")}</span>
+            <span>${escapeHtml(domainLabel(node.domain))} · ${escapeHtml(node.type === "decision" ? t("decisionPoint") : t("activity"))}</span>
           </span>
           <span class="tag module">${escapeHtml(node.module)} ${escapeHtml(module.name)}</span>
         `;
@@ -2895,7 +3640,11 @@
       const blockCount = buildingBlockRegistry
         .filter((item) => moduleIds.includes(item.module))
         .length;
-      count.textContent = `${blockCount} candidate building blocks: ${pathwayModuleIdsForLca.length} pathway modules + ${supportModuleIdsForLca.length} support modules`;
+      count.textContent = t("candidateBlockCount", {
+        blocks: blockCount,
+        pathwayModules: pathwayModuleIdsForLca.length,
+        supportModules: supportModuleIdsForLca.length
+      });
 
       moduleIds.forEach((moduleId) => {
         const module = moduleRegistry[moduleId];
@@ -2928,8 +3677,8 @@
           ].filter(Boolean).join(" ");
           blockCard.innerHTML = `
             <strong>${escapeHtml(item.name)}</strong>
-            <span>Unit: ${escapeHtml(item.unit)}</span>
-            <span>Resource flows: ${escapeHtml(item.resourceFlows.join("; "))}</span>
+            <span>${escapeHtml(t("unit"))}: ${escapeHtml(item.unit)}</span>
+            <span>${escapeHtml(t("resourceFlowsLabel"))}: ${escapeHtml(item.resourceFlows.join("; "))}</span>
           `;
           blockGrid.appendChild(blockCard);
         });
@@ -2949,13 +3698,13 @@
       clear(container);
       const groups = [
         {
-          title: "Pathway-linked modules from current map",
-          description: "These modules are available in the current activity map. Selecting pathway activities on the map automatically checks the corresponding module.",
+          title: t("pathwayLinkedTitle"),
+          description: t("pathwayLinkedDescription"),
           moduleIds: lcaPathwayModuleIds()
         },
         {
-          title: "Optional cross-cutting support modules",
-          description: "These modules are not stations on the pathway map. Use them for patient support and shared hospital support if they are inside the LCA boundary.",
+          title: t("supportModulesTitle"),
+          description: t("supportModulesDescription"),
           moduleIds: lcaSupportModuleIds()
         }
       ];
@@ -2993,7 +3742,12 @@
               <span class="lca-module-code">${escapeHtml(moduleId)}</span>
               <span class="lca-module-title">
                 <strong>${escapeHtml(module.name)}</strong>
-                <small>${activeRows} active of ${moduleRows.length} candidate building block${moduleRows.length === 1 ? "" : "s"}; ${selectedActivityCount} selected activit${selectedActivityCount === 1 ? "y" : "ies"}${included ? "" : "; module outside boundary"}</small>
+                <small>${escapeHtml(t("activeRowSummary", {
+                  active: activeRows,
+                  total: moduleRows.length,
+                  selected: selectedActivityCount,
+                  boundary: included ? "" : t("moduleOutsideBoundary")
+                }))}</small>
               </span>
             </label>
             <span class="lca-module-total" id="lcaModuleTotal-${escapeHtml(moduleId)}"></span>
@@ -3002,15 +3756,15 @@
             <table class="lca-table">
               <thead>
                 <tr>
-                  <th>Use</th>
-                  <th>Building block</th>
-                  <th>Resource flows to model</th>
-                  <th>Unit</th>
-                  <th>Base quantity</th>
-                  <th>Uncertainty, +/- %</th>
-                  <th>Impact coefficient, kg CO2-eq/unit</th>
-                  <th>Default status / data gap</th>
-                  <th>Base contribution</th>
+                  <th>${escapeHtml(t("use"))}</th>
+                  <th>${escapeHtml(t("buildingBlock"))}</th>
+                  <th>${escapeHtml(t("resourceFlowsToModel"))}</th>
+                  <th>${escapeHtml(t("unit"))}</th>
+                  <th>${escapeHtml(t("baseQuantity"))}</th>
+                  <th>${escapeHtml(t("uncertainty"))}</th>
+                  <th>${escapeHtml(t("impactCoefficient"))}</th>
+                  <th>${escapeHtml(t("defaultStatusGap"))}</th>
+                  <th>${escapeHtml(t("baseContribution"))}</th>
                 </tr>
               </thead>
               <tbody>
@@ -3082,78 +3836,84 @@
       const activeRows = lcaRows.filter((row) => isLcaRowActive(row)).length;
       const includedModules = calculationModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
       const scenarios = [
-        { id: "low", label: "Low" },
-        { id: "base", label: "Base" },
-        { id: "high", label: "High" }
+        { id: "low", label: t("low") },
+        { id: "base", label: t("base") },
+        { id: "high", label: t("high") }
       ];
       const resultCards = scenarios.map((scenario) => {
         const values = lcaScenarioValues(scenario.id, caseCount);
         return `
           <div class="lca-result-card">
-            <strong>${scenario.label} scenario</strong>
+            <strong>${escapeHtml(scenario.label)} ${escapeHtml(t("scenario"))}</strong>
             <span>${formatKg(values.cohortExpected)}</span>
-            <small>Demo library total for ${formatNumber(caseCount)} pathway instances</small>
-            <small>Per pathway instance: ${formatKg(values.perPathway)}</small>
-            <small>Included modules: ${includedModules} of ${calculationModuleIds.length}; active rows: ${formatNumber(activeRows)} of ${formatNumber(lcaVisibleRows().length)}</small>
+            <small>${escapeHtml(t("demoLibraryTotal", { count: formatNumber(caseCount) }))}</small>
+            <small>${escapeHtml(t("perPathway", { value: formatKg(values.perPathway) }))}</small>
+            <small>${escapeHtml(t("includedModulesRows", {
+              modules: includedModules,
+              moduleTotal: calculationModuleIds.length,
+              rows: formatNumber(activeRows),
+              rowTotal: formatNumber(lcaVisibleRows().length)
+            }))}</small>
           </div>
         `;
       }).join("");
       document.getElementById("lcaResults").innerHTML = resultCards;
-      document.getElementById("lcaPathwayStatus").textContent = `${currentPathway().label}: ${lcaPathwayModuleIds().length} pathway modules + ${lcaSupportModuleIds().length} support modules`;
+      document.getElementById("lcaPathwayStatus").textContent = t("pathwayStatus", {
+        pathway: currentPathway().label,
+        pathwayModules: lcaPathwayModuleIds().length,
+        supportModules: lcaSupportModuleIds().length
+      });
 
       lcaRows.forEach((row) => {
         const element = document.getElementById(`lcaContribution-${row.id}`);
-        if (element) element.textContent = isLcaRowActive(row) ? formatKg(rowImpact(row, "base")) : "Excluded";
+        if (element) element.textContent = isLcaRowActive(row) ? formatKg(rowImpact(row, "base")) : t("excluded");
       });
 
       calculationModuleIds.forEach((moduleId) => {
         const element = document.getElementById(`lcaModuleTotal-${moduleId}`);
         if (!element) return;
         if (!isLcaModuleIncluded(moduleId)) {
-          element.textContent = "Excluded from total";
+          element.textContent = t("excludedFromTotal");
           return;
         }
         const moduleTotal = lcaRows
           .filter((row) => row.module === moduleId && isLcaRowIncluded(row))
           .reduce((sum, row) => sum + rowImpact(row, "base"), 0);
         const moduleActiveRows = lcaRows.filter((row) => row.module === moduleId && isLcaRowIncluded(row)).length;
-        element.textContent = `Module subtotal: ${formatKg(moduleTotal)} (${moduleActiveRows} active rows)`;
+        element.textContent = t("moduleSubtotal", { value: formatKg(moduleTotal), rows: moduleActiveRows });
       });
 
       document.getElementById("lcaFormula").innerHTML = `
         <div class="formula-line">
-          <span class="formula-label">Building block row</span>
+          <span class="formula-label">${escapeHtml(t("formulaBlockRow"))}</span>
           <span class="formula-expression">
             I<sub>i,j</sub> = q<sub>i</sub><span class="operator">&middot;</span>c<sub>i,j</sub>
           </span>
         </div>
         <div class="formula-line">
-          <span class="formula-label">Uncertainty range</span>
+          <span class="formula-label">${escapeHtml(t("formulaUncertainty"))}</span>
           <span class="formula-expression">
             I<sub>i</sub><sup>low/high</sup> = I<sub>i</sub><span class="operator">&middot;</span>(1 &plusmn; u<sub>i</sub>)
           </span>
         </div>
         <div class="formula-line">
-          <span class="formula-label">Building block library</span>
+          <span class="formula-label">${escapeHtml(t("formulaLibrary"))}</span>
           <span class="formula-expression">
             I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>
           </span>
         </div>
         <div class="formula-line">
-          <span class="formula-label">Cohort impact</span>
+          <span class="formula-label">${escapeHtml(t("formulaCohort"))}</span>
           <span>
             <span class="formula-expression">
               I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>library,j</sub>
             </span>
-            <span class="formula-note">S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.</span>
+            <span class="formula-note">${escapeHtml(t("formulaNote"))}</span>
           </span>
         </div>
       `;
 
-      const warning = [
-        "Only checked modules and checked building block rows are editable and counted in the totals. The selected pathway scenario on the map automatically checks pathway-linked modules; EM10 and EM11 remain optional support modules in the LCA boundary. Row checkboxes define which candidate building blocks are active in the current scenario, because a guideline or local pathway may use only part of a module such as EM06. All default quantities and impact coefficients are illustrative dummy values. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
-      ];
-      document.getElementById("lcaDataWarning").textContent = warning.join(" ");
+      document.getElementById("lcaDataWarning").textContent = t("lcaWarning");
       renderLcaPriorityList();
     }
 
@@ -3170,13 +3930,18 @@
       clear(list);
       if (priorityRows.length === 0) {
         const item = document.createElement("li");
-        item.textContent = "No building block row is active. Check at least one module and one building block row to include it in the calculation.";
+        item.textContent = t("noActiveRows");
         list.appendChild(item);
         return;
       }
       priorityRows.forEach((row) => {
         const item = document.createElement("li");
-        item.textContent = `${row.module} ${row.block}: ${formatKg(row.weightedImpact)} per demo pathway instance. ${row.gap}`;
+        item.textContent = t("priorityRow", {
+          module: row.module,
+          block: row.block,
+          impact: formatKg(row.weightedImpact),
+          gap: row.gap
+        });
         list.appendChild(item);
       });
     }
@@ -3272,13 +4037,13 @@
     }
 
     function formatNumber(value) {
-      return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      return value.toLocaleString(localeForCurrentLanguage(), { maximumFractionDigits: 0 });
     }
 
     function formatDecimal(value, maximumFractionDigits = 2) {
       const number = Number(value);
       if (!Number.isFinite(number)) return "0";
-      return number.toLocaleString("en-US", { maximumFractionDigits });
+      return number.toLocaleString(localeForCurrentLanguage(), { maximumFractionDigits });
     }
 
     function escapeHtml(value) {
@@ -3291,7 +4056,7 @@
     }
 
     function amsterdamDateParts() {
-      const parts = new Intl.DateTimeFormat("en-GB", {
+      const parts = new Intl.DateTimeFormat(localeForCurrentLanguage(), {
         timeZone: "Europe/Amsterdam",
         year: "numeric",
         month: "2-digit",
@@ -3383,17 +4148,18 @@
 
     function buildLcaReportHtml() {
       const data = collectLcaReportData();
-      const reportTitle = `ECO-PATH LCA report: ${data.pathwayLabel}`;
+      const language = currentLanguageOption();
+      const reportTitle = t("reportTitle", { pathway: data.pathwayLabel });
       const logoUrl = new URL("assets/erasmusmc_logo.png", window.location.href).href;
       const resultCards = [
-        ["Low scenario", data.totals.low],
-        ["Base scenario", data.totals.base],
-        ["High scenario", data.totals.high]
+        [`${t("low")} ${t("scenario")}`, data.totals.low],
+        [`${t("base")} ${t("scenario")}`, data.totals.base],
+        [`${t("high")} ${t("scenario")}`, data.totals.high]
       ].map(([label, values]) => `
         <div class="metric">
           <strong>${escapeHtml(label)}</strong>
           <span>${escapeHtml(formatKg(values.cohortExpected))}</span>
-          <small>${escapeHtml(formatKg(values.perPathway))} per pathway instance</small>
+          <small>${escapeHtml(t("perPathway", { value: formatKg(values.perPathway) }))}</small>
         </div>
       `).join("");
       const moduleRows = data.modules.map((module) => `
@@ -3401,9 +4167,9 @@
           <td>${escapeHtml(module.id)}</td>
           <td>${escapeHtml(module.name)}</td>
           <td>${escapeHtml(module.role)}</td>
-          <td>${module.included ? "Included" : "Excluded"}</td>
-          <td>${escapeHtml(formatNumber(module.activeRowCount))} active of ${escapeHtml(formatNumber(module.rowCount))}</td>
-          <td>${module.included ? escapeHtml(formatKg(module.subtotal)) : "Excluded"}</td>
+          <td>${module.included ? escapeHtml(t("included")) : escapeHtml(t("excluded"))}</td>
+          <td>${escapeHtml(formatNumber(module.activeRowCount))} / ${escapeHtml(formatNumber(module.rowCount))}</td>
+          <td>${module.included ? escapeHtml(formatKg(module.subtotal)) : escapeHtml(t("excluded"))}</td>
         </tr>
       `).join("");
       const topRows = data.topRows.length
@@ -3415,7 +4181,7 @@
             <td>${escapeHtml(row.gap)}</td>
           </tr>
         `).join("")
-        : `<tr><td colspan="4">No checked module and building block row combination is currently included in the LCA total.</td></tr>`;
+        : `<tr><td colspan="4">${escapeHtml(t("noCheckedTotal"))}</td></tr>`;
       const selectedActivityRows = data.selectedActivities.length
         ? data.selectedActivities.map((activity) => `
           <tr>
@@ -3424,22 +4190,22 @@
             <td>${escapeHtml(activity.module)} ${escapeHtml(activity.moduleName)}</td>
           </tr>
         `).join("")
-        : `<tr><td colspan="3">No pathway activity was selected. Pathway-linked modules remain outside the LCA boundary unless manually checked.</td></tr>`;
+        : `<tr><td colspan="3">${escapeHtml(t("noSelectedReport"))}</td></tr>`;
       const calculationRows = data.rows.map((row) => `
         <tr class="${row.included ? "" : "excluded"}">
           <td>${escapeHtml(row.module)}</td>
           <td>${escapeHtml(row.block)}</td>
-          <td>${row.included ? "Counted" : row.moduleIncluded ? "Building block off" : "Module off"}</td>
+          <td>${row.included ? escapeHtml(t("counted")) : row.moduleIncluded ? escapeHtml(t("blockOff")) : escapeHtml(t("moduleOff"))}</td>
           <td>${escapeHtml(row.flow)}</td>
           <td>${escapeHtml(row.unit)}</td>
           <td>${escapeHtml(formatDecimal(row.quantity, 3))}</td>
           <td>${escapeHtml(formatDecimal(row.uncertainty, 1))}%</td>
           <td>${escapeHtml(formatDecimal(row.factor, 4))}</td>
-          <td>${row.included ? escapeHtml(formatKg(row.baseContribution)) : "Excluded"}</td>
+          <td>${row.included ? escapeHtml(formatKg(row.baseContribution)) : escapeHtml(t("excluded"))}</td>
         </tr>
       `).join("");
       return `<!doctype html>
-<html lang="en">
+<html lang="${escapeHtml(language.htmlLang)}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -3588,82 +4354,82 @@
       <img class="logo" src="${escapeHtml(logoUrl)}" alt="Erasmus MC logo">
       <div>
         <h1>${escapeHtml(reportTitle)}</h1>
-        <p class="muted">Generated ${escapeHtml(data.generatedAt)} from the interactive ECO-PATH pathway explorer.</p>
+        <p class="muted">${escapeHtml(t("generatedFrom", { date: data.generatedAt }))}</p>
       </div>
     </header>
 
     <section>
-      <h2>Scope and current configuration</h2>
+      <h2>${escapeHtml(t("scopeConfig"))}</h2>
       <p><strong>${escapeHtml(data.pathwayTitle)}</strong></p>
       <p>${escapeHtml(data.pathwayScope)}</p>
       <div class="config">
-        <div><strong>Pathway status</strong><br>${escapeHtml(data.pathwayStatus)}</div>
-        <div><strong>Cohort size</strong><br>${escapeHtml(formatNumber(data.caseCount))} pathway instances</div>
-        <div><strong>Checked modules</strong><br>${escapeHtml(formatNumber(data.includedModuleCount))} of ${escapeHtml(formatNumber(data.moduleCount))}</div>
-        <div><strong>Rows counted</strong><br>${escapeHtml(formatNumber(data.rows.filter((row) => row.included).length))} of ${escapeHtml(formatNumber(data.rows.length))}</div>
-        <div><strong>Selected pathway activities</strong><br>${escapeHtml(formatNumber(data.selectedActivities.length))}</div>
+        <div><strong>${escapeHtml(t("pathwayStatusLabel"))}</strong><br>${escapeHtml(data.pathwayStatus)}</div>
+        <div><strong>${escapeHtml(t("cohortSize"))}</strong><br>${escapeHtml(formatNumber(data.caseCount))}</div>
+        <div><strong>${escapeHtml(t("checkedModules"))}</strong><br>${escapeHtml(formatNumber(data.includedModuleCount))} / ${escapeHtml(formatNumber(data.moduleCount))}</div>
+        <div><strong>${escapeHtml(t("rowsCounted"))}</strong><br>${escapeHtml(formatNumber(data.rows.filter((row) => row.included).length))} / ${escapeHtml(formatNumber(data.rows.length))}</div>
+        <div><strong>${escapeHtml(t("selectedPathwayActivities"))}</strong><br>${escapeHtml(formatNumber(data.selectedActivities.length))}</div>
       </div>
     </section>
 
     <section>
-      <h2>Scenario results</h2>
+      <h2>${escapeHtml(t("scenarioResults"))}</h2>
       <div class="metrics">${resultCards}</div>
-      <p class="muted">These values are calculated from current browser inputs. The default occurrence counts and impact coefficients are dummy values until replaced with hospital LCI data and documented LCIA mappings.</p>
+      <p class="muted">${escapeHtml(t("valuesDummyNote"))}</p>
     </section>
 
     <section>
-      <h2>Selected pathway scenario</h2>
+      <h2>${escapeHtml(t("selectedPathwayScenario"))}</h2>
       <table>
         <thead>
-          <tr><th>Code</th><th>Activity</th><th>Assigned module</th></tr>
+          <tr><th>${escapeHtml(t("code"))}</th><th>${escapeHtml(t("activity"))}</th><th>${escapeHtml(t("assignedModule"))}</th></tr>
         </thead>
         <tbody>${selectedActivityRows}</tbody>
       </table>
     </section>
 
     <section>
-      <h2>Calculation formula</h2>
+      <h2>${escapeHtml(t("calculationFormula"))}</h2>
       <p class="formula">I<sub>i,j</sub> = q<sub>i</sub> &middot; c<sub>i,j</sub>; I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>; I<sub>cohort,j</sub> = N &middot; I<sub>library,j</sub></p>
-      <p class="muted">S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. N is cohort size.</p>
+      <p class="muted">${escapeHtml(t("formulaReportNote"))}</p>
     </section>
 
     <section>
-      <h2>Module boundary and subtotals</h2>
+      <h2>${escapeHtml(t("moduleBoundary"))}</h2>
       <table>
         <thead>
-          <tr><th>Module</th><th>Name</th><th>Role</th><th>Status</th><th>Active rows</th><th>Base subtotal</th></tr>
+          <tr><th>${escapeHtml(t("module"))}</th><th>${escapeHtml(t("name"))}</th><th>${escapeHtml(t("role"))}</th><th>${escapeHtml(t("status"))}</th><th>${escapeHtml(t("activeRows"))}</th><th>${escapeHtml(t("baseSubtotal"))}</th></tr>
         </thead>
         <tbody>${moduleRows}</tbody>
       </table>
     </section>
 
     <section>
-      <h2>Priority data to collect</h2>
+      <h2>${escapeHtml(t("priorityData"))}</h2>
       <table>
         <thead>
-          <tr><th>Module</th><th>Building block</th><th>Base contribution</th><th>Current data gap</th></tr>
+          <tr><th>${escapeHtml(t("module"))}</th><th>${escapeHtml(t("buildingBlock"))}</th><th>${escapeHtml(t("baseContribution"))}</th><th>${escapeHtml(t("currentDataGap"))}</th></tr>
         </thead>
         <tbody>${topRows}</tbody>
       </table>
     </section>
 
     <section>
-      <h2>Full building block calculation rows</h2>
+      <h2>${escapeHtml(t("fullCalculationRows"))}</h2>
       <table>
         <thead>
-          <tr><th>Module</th><th>Building block</th><th>Status</th><th>Resource flows</th><th>Unit</th><th>Base quantity</th><th>Uncertainty</th><th>Impact coefficient</th><th>Base contribution</th></tr>
+          <tr><th>${escapeHtml(t("module"))}</th><th>${escapeHtml(t("buildingBlock"))}</th><th>${escapeHtml(t("status"))}</th><th>${escapeHtml(t("resourceFlowsLabel"))}</th><th>${escapeHtml(t("unit"))}</th><th>${escapeHtml(t("baseQuantity"))}</th><th>${escapeHtml(t("uncertainty"))}</th><th>${escapeHtml(t("impactCoefficient"))}</th><th>${escapeHtml(t("baseContribution"))}</th></tr>
         </thead>
         <tbody>${calculationRows}</tbody>
       </table>
     </section>
 
     <section class="note">
-      <h2>Method note and limitations</h2>
-      <p>This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. Use it to review pathway scope, checked modules, candidate building blocks, data gaps, and parameter sensitivity before formal data collection and model validation.</p>
+      <h2>${escapeHtml(t("methodLimitations"))}</h2>
+      <p>${escapeHtml(t("methodLimitationsText"))}</p>
     </section>
 
     <footer>
-      ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser.
+      ${escapeHtml(t("reportFooter"))}
     </footer>
   </main>
 </body>
@@ -3687,6 +4453,12 @@
     }
 
     function bindControls() {
+      document.getElementById("languageSelector").addEventListener("toggle", (event) => {
+        if (event.target.open) document.getElementById("specialtySelector").removeAttribute("open");
+      });
+      document.getElementById("specialtySelector").addEventListener("toggle", (event) => {
+        if (event.target.open) document.getElementById("languageSelector").removeAttribute("open");
+      });
       document.getElementById("domainFilter").addEventListener("change", (event) => {
         state.domain = event.target.value;
         render();
@@ -3723,6 +4495,7 @@
 
     function render() {
       renderLanguageSelector();
+      renderStaticLanguageText();
       renderSourceSwitch();
       renderFilterOptions();
       renderHeader();

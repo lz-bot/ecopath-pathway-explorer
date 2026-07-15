@@ -491,7 +491,7 @@
 
     .node-code {
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       fill: var(--ink);
       text-anchor: middle;
@@ -503,14 +503,14 @@
     }
 
     .station-label-text {
-      font-size: 11px;
+      font-size: 13px;
       fill: var(--ink);
       dominant-baseline: text-before-edge;
       pointer-events: none;
     }
 
     .lane-label {
-      font-size: 12px;
+      font-size: 13.5px;
       fill: var(--muted);
       font-weight: 700;
     }
@@ -4359,7 +4359,7 @@
         labelLines.forEach((line, index) => {
           const tspan = createSvgElement("tspan", {
             x: labelLayout.textX,
-            dy: index === 0 ? 0 : 14
+            dy: index === 0 ? 0 : 16
           });
           tspan.textContent = line;
           labelText.appendChild(tspan);
@@ -4534,7 +4534,7 @@
 
     function stationLabelLayout(node, lines, placedLabels, markerBoxes) {
       const labelWidth = estimateLabelWidth(lines);
-      const labelHeight = lines.length * 14;
+      const labelHeight = lines.length * 16;
       const forcedCandidate = forcedStationLabelCandidate(node, labelWidth);
       const candidates = [
         ...(forcedCandidate ? [forcedCandidate] : []),
@@ -4599,7 +4599,7 @@
 
     function estimateLabelWidth(lines) {
       const maxLength = Math.max(...lines.map((line) => line.length), 8);
-      return Math.max(54, Math.min(132, maxLength * 6.1));
+      return Math.max(64, Math.min(156, maxLength * 7.1));
     }
 
     function splitLabel(label, maxLength) {

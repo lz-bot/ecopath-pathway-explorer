@@ -2157,6 +2157,9 @@
         moduleExplanation: "{module} {name}. This is the LCA modeling zone assigned to the selected activity, not a separate clinical activity. Candidate building blocks are shown in the LCA section. {definition}",
         resourceFlows: "Candidate resource flows",
         expertConfirmation: "Expert confirmation needed",
+        clinicalProtocolFallback: "{label} is represented as a {type} in the {domain} domain. This display text is a localized working summary for review, and the English source text remains the underlying protocol record.",
+        clinicalRationaleFallback: "This element is retained because it can affect pathway structure, resource use, module selection, or data collection. Expert confirmation is still required before formal LCA use.",
+        clinicalQuestionFallback: "Confirm local execution, frequency, location, data source, and pathway boundary for {label}.",
         noActivitySelected: "No activity selected.",
         methodProtocolTitle: "Protocol step",
         methodProtocolText: "Source instruction from a guideline, protocol, or workflow diagram.",
@@ -2182,6 +2185,10 @@
         candidateBlockCount: "{blocks} candidate building blocks: {pathwayModules} pathway modules + {supportModules} support modules",
         unit: "Unit",
         resourceFlowsLabel: "Resource flows",
+        dummyGapTemplate: "Dummy aggregate coefficient. Replace with foreground LCI for {flows} and documented LCIA mapping.",
+        baseQuantityAria: "{block} base quantity",
+        uncertaintyAria: "{block} uncertainty percent",
+        impactCoefficientAria: "{block} impact coefficient",
         pathwayLinkedTitle: "Pathway-linked modules from current map",
         pathwayLinkedDescription: "These modules are available in the current activity map. Selecting pathway activities on the map automatically checks the corresponding module.",
         supportModulesTitle: "Optional cross-cutting support modules",
@@ -2307,6 +2314,9 @@
         moduleExplanation: "{module} {name}. Dit is de LCA-modelleerzone voor de geselecteerde activiteit, geen afzonderlijke klinische activiteit. Kandidaatbouwstenen staan in het LCA-gedeelte. {definition}",
         resourceFlows: "Kandidaat-resourceflows",
         expertConfirmation: "Expertbevestiging nodig",
+        clinicalProtocolFallback: "{label} is opgenomen als {type} binnen het domein {domain}. Deze tekst is een gelokaliseerde werksamenvatting voor review; de Engelse brontekst blijft het onderliggende protocolrecord.",
+        clinicalRationaleFallback: "Dit element is behouden omdat het zorgpadstructuur, resourcegebruik, modulekeuze of dataverzameling kan beinvloeden. Expertbevestiging blijft nodig voordat het formeel voor LCA wordt gebruikt.",
+        clinicalQuestionFallback: "Bevestig lokale uitvoering, frequentie, locatie, databron en zorgpadgrens voor {label}.",
         noActivitySelected: "Geen activiteit geselecteerd.",
         methodProtocolTitle: "Protocolstap",
         methodProtocolText: "Broninstructie uit een richtlijn, protocol of workflowdiagram.",
@@ -2332,6 +2342,10 @@
         candidateBlockCount: "{blocks} kandidaatbouwstenen: {pathwayModules} zorgpadmodules + {supportModules} ondersteunende modules",
         unit: "Eenheid",
         resourceFlowsLabel: "Resourceflows",
+        dummyGapTemplate: "Dummy-aggregaatcoefficient. Vervang deze door foreground-LCI voor {flows} en gedocumenteerde LCIA-koppeling.",
+        baseQuantityAria: "{block} basishoeveelheid",
+        uncertaintyAria: "{block} onzekerheidspercentage",
+        impactCoefficientAria: "{block} impactcoefficient",
         pathwayLinkedTitle: "Zorgpadgebonden modules uit de huidige kaart",
         pathwayLinkedDescription: "Deze modules zijn beschikbaar in de huidige activiteitenkaart. Geselecteerde zorgpadactiviteiten zetten automatisch de bijbehorende module aan.",
         supportModulesTitle: "Optionele overkoepelende ondersteunende modules",
@@ -2459,10 +2473,25 @@
           protocolInterpretation: "Protocol-to-activity 解释",
           whyKept: "保留此元素的原因",
           ecopathModule: "ECO-PATH 模块",
+          moduleExplanation: "{module} {name}。这是分配给所选活动的 LCA 建模区域，不是另一个临床活动。候选 building blocks 显示在 LCA 部分。{definition}",
           resourceFlows: "候选资源流",
           expertConfirmation: "需要专家确认",
+          clinicalProtocolFallback: "{label} 在路径图中作为 {domain} 领域的{type}表示。这里显示的是本地化工作摘要，英文原始文本仍作为底层 protocol 记录保留。",
+          clinicalRationaleFallback: "保留该元素是因为它可能影响路径结构、资源使用、模块选择或数据收集。正式用于 LCA 前仍需专家确认。",
+          clinicalQuestionFallback: "请确认 {label} 的本地执行情况、频率、地点、数据来源和路径边界。",
           noActivitySelected: "未选择活动。",
+          methodProtocolTitle: "Protocol 步骤",
+          methodProtocolText: "来自指南、protocol 或工作流图的源指令。",
+          methodActivityTitle: "活动",
+          methodActivityText: "放置在路径图上、并由专家审核的临床或运营动作。",
+          methodModuleTitle: "ECO-PATH 模块",
+          methodModuleText: "分配给路径活动的 LCA 建模区域。它不是另一个临床活动。",
+          methodResourceTitle: "资源流",
+          methodResourceText: "模块内可测量的输入或输出，例如出行、设备时间、能源、材料或废弃物。",
+          methodLciTitle: "LCI / LCIA 连接",
+          methodLciText: "资源流会映射到清单数据和影响系数，用于计算。",
           lcaHeading: "模块化 LCA 计算演示",
+          lcaIntro: "这里列出候选 building blocks 的可编辑计算行。模块定义 LCA 边界；行复选框定义当前情景中启用哪些 building blocks。每一行使用占位发生次数和示例影响系数，用于展示计算逻辑，并标出后续需要收集的数据。",
           exportReport: "导出 LCA 报告",
           buildingBlockMapHeading: "按 LCA 模块分组的候选 building blocks",
           buildingBlockMapIntro: "按模块分组显示候选 ECO-PATH building blocks。一个已选路径可能只使用某个模块的一部分，例如 EM06 中的会诊和监测。EM10 与 EM11 是可选的跨活动支持模块，不是路径图上的站点模块。",
@@ -2471,6 +2500,14 @@
           candidateBuildingBlockCount: "{count} 个候选 building blocks",
           cohortSize: "队列规模，患者数",
           dataToCollect: "下一步需要收集的数据",
+          pathwayStatus: "{pathway}：{pathwayModules} 个路径模块 + {supportModules} 个支持模块",
+          candidateBlockCount: "{blocks} 个候选 building blocks：{pathwayModules} 个路径模块 + {supportModules} 个支持模块",
+          unit: "单位",
+          resourceFlowsLabel: "资源流",
+          dummyGapTemplate: "示例聚合系数。请用 {flows} 的 foreground LCI 和已记录的 LCIA 映射替换。",
+          baseQuantityAria: "{block} 基础数量",
+          uncertaintyAria: "{block} 不确定性百分比",
+          impactCoefficientAria: "{block} 影响系数",
           pathwayLinkedTitle: "当前路径图中的 pathway-linked modules",
           pathwayLinkedDescription: "这些模块来自当前活动图。用户在图中选择活动后，对应模块会自动勾选。",
           supportModulesTitle: "可选的跨活动支持模块",
@@ -2584,7 +2621,27 @@
           decisionPoint: "意思決定点",
           selectedPathway: "選択済みパスウェイ",
           oncologyRelevant: "オンコロジー関連",
+          protocolInterpretation: "Protocol-to-activity 解釈",
+          whyKept: "この要素を保持する理由",
+          ecopathModule: "ECO-PATH モジュール",
+          moduleExplanation: "{module} {name}。これは選択された活動に割り当てられた LCA モデリング領域であり、別の臨床活動ではありません。候補 building blocks は LCA セクションに表示されます。{definition}",
+          resourceFlows: "候補リソースフロー",
+          expertConfirmation: "専門家確認が必要",
+          clinicalProtocolFallback: "{label} は {domain} 領域の {type} としてパスウェイ図に表示されています。この表示はレビュー用のローカライズされた作業要約であり、英語の原文が基礎となる protocol 記録です。",
+          clinicalRationaleFallback: "この要素は、パスウェイ構造、資源使用、モジュール選択、データ収集に影響する可能性があるため保持されています。正式な LCA 使用前に専門家確認が必要です。",
+          clinicalQuestionFallback: "{label} のローカル実施、頻度、場所、データソース、パスウェイ境界を確認してください。",
+          methodProtocolTitle: "Protocol ステップ",
+          methodProtocolText: "ガイドライン、protocol、またはワークフロー図からのソース指示。",
+          methodActivityTitle: "活動",
+          methodActivityText: "パスウェイ図に配置され、専門家がレビューする臨床または運用上の行為。",
+          methodModuleTitle: "ECO-PATH モジュール",
+          methodModuleText: "パスウェイ活動に割り当てられた LCA モデリング領域。別の臨床活動ではありません。",
+          methodResourceTitle: "リソースフロー",
+          methodResourceText: "移動、設備時間、エネルギー、材料、廃棄物など、モジュール内の測定可能な入力または出力。",
+          methodLciTitle: "LCI / LCIA リンク",
+          methodLciText: "リソースフローは計算用のインベントリデータと影響係数に対応付けられます。",
           lcaHeading: "モジュール型 LCA 計算デモ",
+          lcaIntro: "候補 building blocks の編集可能な計算行です。モジュールが LCA 境界を定義し、行チェックボックスが現在のシナリオで有効な building blocks を定義します。",
           exportReport: "LCA レポートを出力",
           buildingBlockMapHeading: "LCA モジュール別の候補 building blocks",
           buildingBlockMapIntro: "候補 ECO-PATH building blocks をモジュール別に表示します。選択したパスウェイは、EM06 の診察とモニタリングなど、モジュールの一部だけを使用する場合があります。",
@@ -2593,6 +2650,14 @@
           candidateBuildingBlockCount: "{count} 件の候補 building blocks",
           cohortSize: "コホートサイズ、患者数",
           dataToCollect: "次に収集するデータ",
+          pathwayStatus: "{pathway}：{pathwayModules} 件のパスウェイモジュール + {supportModules} 件の支援モジュール",
+          candidateBlockCount: "{blocks} 件の候補 building blocks：{pathwayModules} 件のパスウェイモジュール + {supportModules} 件の支援モジュール",
+          unit: "単位",
+          resourceFlowsLabel: "リソースフロー",
+          dummyGapTemplate: "ダミー集約係数です。{flows} の foreground LCI と文書化された LCIA 対応付けに置き換えてください。",
+          baseQuantityAria: "{block} 基準数量",
+          uncertaintyAria: "{block} 不確実性パーセント",
+          impactCoefficientAria: "{block} 影響係数",
           rolePathwayLinked: "パスウェイ連動",
           roleCrossCuttingSupport: "横断的支援",
           use: "使用",
@@ -2663,7 +2728,27 @@
           decisionPoint: "Punto de decisión",
           selectedPathway: "Vía seleccionada",
           oncologyRelevant: "Relevante para oncología",
+          protocolInterpretation: "Interpretación protocol-to-activity",
+          whyKept: "Por qué se conserva este elemento",
+          ecopathModule: "Módulo ECO-PATH",
+          moduleExplanation: "{module} {name}. Esta es la zona de modelado LCA asignada a la actividad seleccionada, no otra actividad clínica. Los building blocks candidatos se muestran en la sección LCA. {definition}",
+          resourceFlows: "Flujos de recursos candidatos",
+          expertConfirmation: "Confirmación experta necesaria",
+          clinicalProtocolFallback: "{label} se representa como {type} en el dominio {domain}. Este texto es un resumen localizado de trabajo para revisión; el texto fuente en inglés sigue siendo el registro protocol subyacente.",
+          clinicalRationaleFallback: "Este elemento se conserva porque puede afectar la estructura de la vía, el uso de recursos, la selección de módulos o la recopilación de datos. Se requiere confirmación experta antes de usarlo formalmente para LCA.",
+          clinicalQuestionFallback: "Confirme ejecución local, frecuencia, ubicación, fuente de datos y límite de vía para {label}.",
+          methodProtocolTitle: "Paso de protocol",
+          methodProtocolText: "Instrucción fuente de una guía, protocol o diagrama de flujo.",
+          methodActivityTitle: "Actividad",
+          methodActivityText: "Acción clínica u operativa ubicada en el mapa de vía y revisada por expertos.",
+          methodModuleTitle: "Módulo ECO-PATH",
+          methodModuleText: "Zona de modelado LCA asignada a actividades de la vía. No es otra actividad clínica.",
+          methodResourceTitle: "Flujo de recursos",
+          methodResourceText: "Entrada o salida medible dentro de un módulo, como viaje, tiempo de equipo, energía, materiales o residuos.",
+          methodLciTitle: "Enlace LCI / LCIA",
+          methodLciText: "Los flujos de recursos se asignan a datos de inventario y coeficientes de impacto para el cálculo.",
           lcaHeading: "Demostración de cálculo LCA modular",
+          lcaIntro: "Filas de cálculo editables para building blocks candidatos. Los módulos definen el límite LCA; las casillas de fila definen qué building blocks están activos en el escenario actual.",
           exportReport: "Exportar informe LCA",
           buildingBlockMapHeading: "Building blocks candidatos por módulo LCA",
           buildingBlockMapIntro: "Building blocks ECO-PATH candidatos agrupados por módulo. Una vía seleccionada puede usar solo parte de un módulo, por ejemplo consulta y monitorización dentro de EM06.",
@@ -2672,6 +2757,14 @@
           candidateBuildingBlockCount: "{count} building blocks candidatos",
           cohortSize: "Tamaño de cohorte, pacientes",
           dataToCollect: "Datos a recopilar después",
+          pathwayStatus: "{pathway}: {pathwayModules} módulos de vía + {supportModules} módulos de soporte",
+          candidateBlockCount: "{blocks} building blocks candidatos: {pathwayModules} módulos de vía + {supportModules} módulos de soporte",
+          unit: "Unidad",
+          resourceFlowsLabel: "Flujos de recursos",
+          dummyGapTemplate: "Coeficiente agregado dummy. Reemplazar con foreground LCI para {flows} y mapeo LCIA documentado.",
+          baseQuantityAria: "Cantidad base de {block}",
+          uncertaintyAria: "Porcentaje de incertidumbre de {block}",
+          impactCoefficientAria: "Coeficiente de impacto de {block}",
           rolePathwayLinked: "Vinculado a la vía",
           roleCrossCuttingSupport: "Soporte transversal",
           use: "Usar",
@@ -2889,6 +2982,627 @@
       }
     };
 
+    const nodeLabelText = {
+      nl: {
+        "Referral or presentation": "Verwijzing of presentatie",
+        "History and physical assessment": "Anamnese en lichamelijk onderzoek",
+        "Urine cytology and laboratory workup": "Urinecytologie en laboratoriumonderzoek",
+        "Cystoscopy": "Cystoscopie",
+        "TURBT for diagnosis and staging": "TURBT voor diagnose en stadiering",
+        "Histopathological confirmation": "Histopathologische bevestiging",
+        "Staging imaging": "Beeldvorming voor stadiering",
+        "Fitness and health status assessment": "Fitheid en gezondheidsstatus",
+        "MDT discussion": "MDT-bespreking",
+        "Treatment intent decision": "Besluit over behandelintentie",
+        "Perioperative systemic therapy eligibility": "Geschiktheid voor perioperatieve systemische therapie",
+        "Neoadjuvant or adjuvant systemic therapy": "Neo-adjuvante of adjuvante systemische therapie",
+        "Radical cystectomy and urinary diversion": "Radicale cystectomie en urinedeviatie",
+        "Bladder-sparing or trimodality pathway": "Blaassparend of trimodaliteitstraject",
+        "External beam radiotherapy or chemoradiation": "Uitwendige radiotherapie of chemoradiatie",
+        "Palliative or advanced disease route": "Palliatieve of gevorderde ziekte-route",
+        "Follow-up and surveillance": "Follow-up en surveillance",
+        "Referral": "Verwijzing",
+        "Triage": "Triage",
+        "Invite decision": "Uitnodigingsbesluit",
+        "Return to referrer": "Terug naar verwijzer",
+        "Pathology review": "Pathologiebeoordeling",
+        "Repeat CT decision": "Besluit over herhaalde CT",
+        "Radiology": "Radiologie",
+        "CT reassessment": "CT-herbeoordeling",
+        "Joint clinic": "Gezamenlijke polikliniek",
+        "Urological tumor MDT": "Urologisch tumor-MDT",
+        "Direct local therapy": "Directe lokale therapie",
+        "Paper assessment": "Papieren beoordeling",
+        "Neoadjuvant chemotherapy": "Neo-adjuvante chemotherapie",
+        "Induction chemotherapy": "Inductiechemotherapie",
+        "Medical oncology management": "Medisch-oncologische begeleiding",
+        "Progression assessment": "Progressiebeoordeling",
+        "Response assessment": "Responsbeoordeling",
+        "Curative treatment decision": "Besluit over curatieve behandeling",
+        "Palliative treatment decision": "Besluit over palliatieve behandeling",
+        "Systemic therapy decision": "Besluit over systemische therapie",
+        "Radiotherapy decision": "Besluit over radiotherapie",
+        "Radical surgery choice": "Keuze voor radicale chirurgie",
+        "Bladder-sparing choice": "Keuze voor blaassparing",
+        "Urology surgery": "Urologische chirurgie",
+        "Radiotherapy treatment": "Radiotherapiebehandeling",
+        "Chemoradiation": "Chemoradiatie",
+        "Return to referring hospital": "Terug naar verwijzend ziekenhuis",
+        "Follow-up": "Follow-up",
+        "Screening or referral entry": "Screening of verwijzing",
+        "FIT-positive or symptoms": "FIT-positief of symptomen",
+        "Colonoscopy": "Coloscopie",
+        "Biopsy and pathology": "Biopsie en pathologie",
+        "CT staging and CEA workup": "CT-stadiering en CEA-onderzoek",
+        "Rectal MRI if indicated": "Rectale MRI indien geindiceerd",
+        "CRC MDT review": "CRC-MDT-beoordeling",
+        "Colon or rectal route decision": "Besluit over colon- of rectumroute",
+        "Colon surgery": "Colonchirurgie",
+        "Adjuvant chemotherapy decision": "Besluit over adjuvante chemotherapie",
+        "Adjuvant systemic therapy": "Adjuvante systemische therapie",
+        "Neoadjuvant rectal therapy decision": "Besluit over neo-adjuvante rectumtherapie",
+        "Chemoradiation or TNT": "Chemoradiatie of TNT",
+        "Rectal surgery": "Rectumchirurgie",
+        "Metastatic disease decision": "Besluit over gemetastaseerde ziekte",
+        "Systemic therapy": "Systemische therapie",
+        "Metastasis local therapy or HIPEC": "Lokale metastasebehandeling of HIPEC",
+        "Referral to MDL-oncology": "Verwijzing naar MDL-oncologie",
+        "Diagnostic investigations": "Diagnostische onderzoeken",
+        "Colonoscopy or endoscopy": "Coloscopie of endoscopie",
+        "Pathology and staging results": "Pathologie- en stadieringsuitslagen",
+        "Weekly colorectal MDO": "Wekelijks colorectaal MDO",
+        "Treatment plan discussion": "Bespreking behandelplan",
+        "Colon surgery or colectomy": "Colonchirurgie of colectomie",
+        "Chemotherapy or oncology": "Chemotherapie of oncologie",
+        "Metastasis treatment or HIPEC": "Metastasebehandeling of HIPEC",
+        "Follow-up after treatment": "Follow-up na behandeling",
+        "Home-based follow-up option": "Thuisgebaseerde follow-upoptie"
+      },
+      zh: {
+        "Referral or presentation": "转诊或就诊",
+        "History and physical assessment": "病史和体格评估",
+        "Urine cytology and laboratory workup": "尿细胞学和实验室检查",
+        "Cystoscopy": "膀胱镜",
+        "TURBT for diagnosis and staging": "用于诊断和分期的 TURBT",
+        "Histopathological confirmation": "组织病理学确认",
+        "Staging imaging": "分期影像",
+        "Fitness and health status assessment": "适应性和健康状态评估",
+        "MDT discussion": "MDT 讨论",
+        "Treatment intent decision": "治疗意图决策",
+        "Perioperative systemic therapy eligibility": "围手术期系统治疗适应性",
+        "Neoadjuvant or adjuvant systemic therapy": "新辅助或辅助系统治疗",
+        "Radical cystectomy and urinary diversion": "根治性膀胱切除和尿流改道",
+        "Bladder-sparing or trimodality pathway": "保膀胱或三联治疗路径",
+        "External beam radiotherapy or chemoradiation": "外照射放疗或同步放化疗",
+        "Palliative or advanced disease route": "姑息或晚期疾病路径",
+        "Follow-up and surveillance": "随访和监测",
+        "Referral": "转诊",
+        "Triage": "分诊",
+        "Invite decision": "邀请决策",
+        "Return to referrer": "返回转诊方",
+        "Pathology review": "病理复核",
+        "Repeat CT decision": "重复 CT 决策",
+        "Radiology": "放射影像",
+        "CT reassessment": "CT 复评",
+        "Joint clinic": "联合门诊",
+        "Urological tumor MDT": "泌尿肿瘤 MDT",
+        "Direct local therapy": "直接局部治疗",
+        "Paper assessment": "纸面评估",
+        "Neoadjuvant chemotherapy": "新辅助化疗",
+        "Induction chemotherapy": "诱导化疗",
+        "Medical oncology management": "肿瘤内科管理",
+        "Progression assessment": "进展评估",
+        "Response assessment": "疗效评估",
+        "Curative treatment decision": "根治性治疗决策",
+        "Palliative treatment decision": "姑息治疗决策",
+        "Systemic therapy decision": "系统治疗决策",
+        "Radiotherapy decision": "放疗决策",
+        "Radical surgery choice": "根治性手术选择",
+        "Bladder-sparing choice": "保膀胱选择",
+        "Urology surgery": "泌尿外科手术",
+        "Radiotherapy treatment": "放射治疗",
+        "Chemoradiation": "同步放化疗",
+        "Return to referring hospital": "返回转诊医院",
+        "Follow-up": "随访",
+        "Screening or referral entry": "筛查或转诊入口",
+        "FIT-positive or symptoms": "FIT 阳性或症状",
+        "Colonoscopy": "结肠镜",
+        "Biopsy and pathology": "活检和病理",
+        "CT staging and CEA workup": "CT 分期和 CEA 检查",
+        "Rectal MRI if indicated": "必要时直肠 MRI",
+        "CRC MDT review": "CRC MDT 复核",
+        "Colon or rectal route decision": "结肠或直肠路径决策",
+        "Colon surgery": "结肠手术",
+        "Adjuvant chemotherapy decision": "辅助化疗决策",
+        "Adjuvant systemic therapy": "辅助系统治疗",
+        "Neoadjuvant rectal therapy decision": "直肠新辅助治疗决策",
+        "Chemoradiation or TNT": "同步放化疗或 TNT",
+        "Rectal surgery": "直肠手术",
+        "Metastatic disease decision": "转移性疾病决策",
+        "Systemic therapy": "系统治疗",
+        "Metastasis local therapy or HIPEC": "转移灶局部治疗或 HIPEC",
+        "Referral to MDL-oncology": "转诊至 MDL-oncology",
+        "Diagnostic investigations": "诊断检查",
+        "Colonoscopy or endoscopy": "结肠镜或内镜",
+        "Pathology and staging results": "病理和分期结果",
+        "Weekly colorectal MDO": "每周结直肠 MDO",
+        "Treatment plan discussion": "治疗计划讨论",
+        "Colon surgery or colectomy": "结肠手术或结肠切除",
+        "Chemotherapy or oncology": "化疗或肿瘤治疗",
+        "Metastasis treatment or HIPEC": "转移灶治疗或 HIPEC",
+        "Follow-up after treatment": "治疗后随访",
+        "Home-based follow-up option": "居家随访选项"
+      }
+    };
+
+    const blockNameText = {
+      nl: {
+        "Referral processing": "Verwijzingsverwerking",
+        "Triage review": "Triagebeoordeling",
+        "Intake scheduling": "Intakeplanning",
+        "Return-to-referrer handover": "Overdracht terug naar verwijzer",
+        "Pathology slide review": "Beoordeling van pathologieslides",
+        "Specimen processing": "Monsterverwerking",
+        "Biopsy or polyp pathology": "Biopsie- of polieppathologie",
+        "IHC or molecular pathology add-on": "IHC of moleculaire pathologie add-on",
+        "CT scan": "CT-scan",
+        "MRI scan": "MRI-scan",
+        "PET-CT scan": "PET-CT-scan",
+        "Colonoscopy": "Coloscopie",
+        "Cystoscopy": "Cystoscopie",
+        "Ultrasound": "Echografie",
+        "MDT case discussion": "MDT-casusbespreking",
+        "Joint outpatient clinic": "Gezamenlijk polikliniekbezoek",
+        "Digital case review": "Digitale casusbeoordeling",
+        "Treatment planning consultation": "Consult voor behandelplanning",
+        "Shared decision-making session": "Sessie voor samen beslissen",
+        "Fitness or pre-treatment assessment": "Fitheids- of voorbehandelingsbeoordeling",
+        "Response or progression assessment": "Respons- of progressiebeoordeling",
+        "Medical oncology consultation": "Medisch-oncologisch consult",
+        "Chemotherapy infusion cycle": "Chemotherapie-infusiecyclus",
+        "Oral systemic therapy cycle": "Orale systemische therapiecyclus",
+        "Pharmacy preparation": "Apotheekbereiding",
+        "Therapy monitoring laboratory set": "Laboratoriumset voor therapiemonitoring",
+        "Operating room time": "Operatiekamertijd",
+        "Anesthesia episode": "Anesthesie-episode",
+        "Sterile instrument set": "Steriele instrumentenset",
+        "Surgical consumable pack": "Chirurgisch verbruiksmaterialenpakket",
+        "Ward admission day": "Opnamedag op verpleegafdeling",
+        "ICU admission day": "IC-opnamedag",
+        "Procedure-related clinical waste": "Proceduregerelateerd klinisch afval",
+        "Radiotherapy planning": "Radiotherapieplanning",
+        "Radiotherapy fraction": "Radiotherapiefractie",
+        "Immobilization device": "Immobilisatiehulpmiddel",
+        "Chemoradiation co-treatment add-on": "Add-on voor gecombineerde chemoradiatie",
+        "Outpatient follow-up visit": "Poliklinisch follow-upbezoek",
+        "Surveillance test set": "Surveillancetestset",
+        "Home-based follow-up kit": "Thuisgebaseerde follow-upkit",
+        "Return-route follow-up handover": "Follow-upoverdracht via retourroute",
+        "Patient travel": "Patientreis",
+        "Caregiver travel": "Mantelzorgerreis",
+        "Patient food or accommodation": "Patientvoeding of verblijf",
+        "Digital patient support": "Digitale patientondersteuning",
+        "Building energy allocation": "Allocatie van gebouwenergie",
+        "Cleaning service": "Schoonmaakdienst",
+        "Laundry service": "Wasserijdienst",
+        "ICT and EHR use": "ICT- en EPD-gebruik",
+        "General waste handling": "Algemene afvalverwerking",
+        "Shared sterilization support": "Gedeelde sterilisatieondersteuning"
+      },
+      zh: {
+        "Referral processing": "转诊处理",
+        "Triage review": "分诊复核",
+        "Intake scheduling": "接收和预约安排",
+        "Return-to-referrer handover": "返回转诊方交接",
+        "Pathology slide review": "病理切片复核",
+        "Specimen processing": "标本处理",
+        "Biopsy or polyp pathology": "活检或息肉病理",
+        "IHC or molecular pathology add-on": "IHC 或分子病理附加检测",
+        "CT scan": "CT 扫描",
+        "MRI scan": "MRI 扫描",
+        "PET-CT scan": "PET-CT 扫描",
+        "Colonoscopy": "结肠镜",
+        "Cystoscopy": "膀胱镜",
+        "Ultrasound": "超声",
+        "MDT case discussion": "MDT 病例讨论",
+        "Joint outpatient clinic": "联合门诊",
+        "Digital case review": "数字病例复核",
+        "Treatment planning consultation": "治疗规划会诊",
+        "Shared decision-making session": "共同决策会谈",
+        "Fitness or pre-treatment assessment": "适应性或治疗前评估",
+        "Response or progression assessment": "疗效或进展评估",
+        "Medical oncology consultation": "肿瘤内科会诊",
+        "Chemotherapy infusion cycle": "化疗输注周期",
+        "Oral systemic therapy cycle": "口服系统治疗周期",
+        "Pharmacy preparation": "药房配制",
+        "Therapy monitoring laboratory set": "治疗监测实验室组合",
+        "Operating room time": "手术室时间",
+        "Anesthesia episode": "麻醉过程",
+        "Sterile instrument set": "无菌器械包",
+        "Surgical consumable pack": "手术耗材包",
+        "Ward admission day": "普通病房住院日",
+        "ICU admission day": "ICU 住院日",
+        "Procedure-related clinical waste": "操作相关临床废弃物",
+        "Radiotherapy planning": "放疗计划",
+        "Radiotherapy fraction": "放疗分次",
+        "Immobilization device": "固定装置",
+        "Chemoradiation co-treatment add-on": "同步放化疗附加项",
+        "Outpatient follow-up visit": "门诊随访",
+        "Surveillance test set": "监测检查组合",
+        "Home-based follow-up kit": "居家随访套件",
+        "Return-route follow-up handover": "返回路径随访交接",
+        "Patient travel": "患者出行",
+        "Caregiver travel": "照护者出行",
+        "Patient food or accommodation": "患者餐食或住宿",
+        "Digital patient support": "数字患者支持",
+        "Building energy allocation": "建筑能源分配",
+        "Cleaning service": "清洁服务",
+        "Laundry service": "洗涤服务",
+        "ICT and EHR use": "ICT 和 EHR 使用",
+        "General waste handling": "一般废弃物处理",
+        "Shared sterilization support": "共享灭菌支持"
+      }
+    };
+
+    const unitText = {
+      nl: {
+        "per referral": "per verwijzing",
+        "per triage decision": "per triagebesluit",
+        "per appointment": "per afspraak",
+        "per transfer": "per overdracht",
+        "per review": "per beoordeling",
+        "per specimen": "per monster",
+        "per test": "per test",
+        "per scan": "per scan",
+        "per procedure": "per procedure",
+        "per case discussed": "per besproken casus",
+        "per visit": "per bezoek",
+        "per consultation": "per consult",
+        "per session": "per sessie",
+        "per assessment": "per beoordeling",
+        "per cycle": "per cyclus",
+        "per preparation": "per bereiding",
+        "per monitoring set": "per monitoringset",
+        "per OR hour": "per OK-uur",
+        "per anesthesia": "per anesthesie",
+        "per set": "per set",
+        "per bed-day": "per ligdag",
+        "per ICU day": "per IC-dag",
+        "per kg waste": "per kg afval",
+        "per treatment plan": "per behandelplan",
+        "per fraction": "per fractie",
+        "per device": "per hulpmiddel",
+        "per cycle or fraction set": "per cyclus of fractieset",
+        "per surveillance round": "per surveillanceronde",
+        "per kit": "per kit",
+        "per handover": "per overdracht",
+        "per round trip": "per retourreis",
+        "per visit or day": "per bezoek of dag",
+        "per episode": "per episode",
+        "per room-hour or m2-hour": "per kameruur of m2-uur",
+        "per room turnover": "per kamerwissel",
+        "per kg textile": "per kg textiel",
+        "per activity or case": "per activiteit of casus",
+        "per sterilization cycle": "per sterilisatiecyclus"
+      },
+      zh: {
+        "per referral": "每次转诊",
+        "per triage decision": "每次分诊决策",
+        "per appointment": "每次预约",
+        "per transfer": "每次转交",
+        "per review": "每次复核",
+        "per specimen": "每个标本",
+        "per test": "每次检测",
+        "per scan": "每次扫描",
+        "per procedure": "每次操作",
+        "per case discussed": "每个讨论病例",
+        "per visit": "每次就诊",
+        "per consultation": "每次会诊",
+        "per session": "每次会谈",
+        "per assessment": "每次评估",
+        "per cycle": "每个周期",
+        "per preparation": "每次配制",
+        "per monitoring set": "每套监测组合",
+        "per OR hour": "每手术室小时",
+        "per anesthesia": "每次麻醉",
+        "per set": "每套",
+        "per bed-day": "每床日",
+        "per ICU day": "每 ICU 日",
+        "per kg waste": "每 kg 废弃物",
+        "per treatment plan": "每个治疗计划",
+        "per fraction": "每次分割",
+        "per device": "每个装置",
+        "per cycle or fraction set": "每个周期或分割组合",
+        "per surveillance round": "每轮监测",
+        "per kit": "每个套件",
+        "per handover": "每次交接",
+        "per round trip": "每次往返",
+        "per visit or day": "每次就诊或每天",
+        "per episode": "每个 episode",
+        "per room-hour or m2-hour": "每房间小时或 m2 小时",
+        "per room turnover": "每次房间周转",
+        "per kg textile": "每 kg 织物",
+        "per activity or case": "每个活动或病例",
+        "per sterilization cycle": "每次灭菌循环"
+      }
+    };
+
+    const resourceFlowText = {
+      nl: {
+        "Staff time": "Personeelstijd",
+        "EHR use": "EPD-gebruik",
+        "Referral communication": "Verwijzingscommunicatie",
+        "Clinician time": "Tijd van zorgverlener",
+        "Record review": "Dossierbeoordeling",
+        "Scheduling": "Planning",
+        "Administrative time": "Administratieve tijd",
+        "Patient communication": "Patientcommunicatie",
+        "ICT": "ICT",
+        "Clinical letter": "Klinische brief",
+        "EHR transfer": "EPD-overdracht",
+        "Pathologist time": "Tijd van patholoog",
+        "Microscopy or digital pathology": "Microscopie of digitale pathologie",
+        "Report generation": "Rapportage",
+        "Cassette": "Cassette",
+        "Paraffin embedding": "Paraffine-inbedding",
+        "Staining": "Kleuring",
+        "Lab electricity": "Laboratoriumelektriciteit",
+        "Container": "Container",
+        "Slides": "Slides",
+        "Staining reagents": "Kleurreagentia",
+        "Pathology waste": "Pathologieafval",
+        "Reagents": "Reagentia",
+        "Equipment time": "Apparaattijd",
+        "Consumables": "Verbruiksmaterialen",
+        "Hazardous waste": "Gevaarlijk afval",
+        "Scanner electricity": "Scanner-elektriciteit",
+        "Contrast media": "Contrastmiddel",
+        "Disposables": "Wegwerpmaterialen",
+        "Radiology reporting": "Radiologierapportage",
+        "Room time": "Kamertijd",
+        "Patient travel": "Patientreis",
+        "Radiotracer": "Radiotracer",
+        "Uptake room time": "Uptake-kamertijd",
+        "Waste": "Afval",
+        "Procedure materials": "Procedurematerialen",
+        "Sedation": "Sedatie",
+        "Endoscope reprocessing": "Endoscoopreiniging",
+        "Water": "Water",
+        "Scope use": "Gebruik van scoop",
+        "Reprocessing": "Reiniging en herverwerking",
+        "Procedure room time": "Procedurekamertijd",
+        "Equipment electricity": "Apparaatelektriciteit",
+        "Gel and covers": "Gel en hoezen",
+        "Clinical staff time": "Tijd van klinisch personeel",
+        "Meeting room or digital platform": "Vergaderruimte of digitaal platform",
+        "Image display": "Beeldweergave",
+        "Multi-specialty staff time": "Tijd van meerdere specialismen",
+        "Room use": "Kamergebruik",
+        "Image access": "Toegang tot beelden",
+        "Decision aid material": "Beslisondersteunend materiaal",
+        "Assessment time": "Beoordelingstijd",
+        "Laboratory review": "Laboratoriumbeoordeling",
+        "EHR documentation": "EPD-documentatie",
+        "Clinical review": "Klinische beoordeling",
+        "Imaging review": "Beeldvormingsbeoordeling",
+        "Oncologist time": "Tijd van oncoloog",
+        "Drug dose": "Geneesmiddeldosis",
+        "Drug dose and regimen": "Geneesmiddeldosis en schema",
+        "Infusion materials": "Infusiematerialen",
+        "Day-care chair time": "Dagbehandelstoel-tijd",
+        "Cytotoxic waste": "Cytotoxisch afval",
+        "Dispensing": "Uitgifte",
+        "Monitoring": "Monitoring",
+        "Packaging": "Verpakking",
+        "Pharmacy staff time": "Tijd van apotheekpersoneel",
+        "PPE": "PBM",
+        "Syringes or bags": "Spuiten of zakken",
+        "Blood draw": "Bloedafname",
+        "Lab reagents": "Laboratoriumreagentia",
+        "Analyzer electricity": "Analyzer-elektriciteit",
+        "Reporting": "Rapportage",
+        "OR electricity": "OK-elektriciteit",
+        "Ventilation": "Ventilatie",
+        "Lighting": "Verlichting",
+        "Equipment use": "Apparaatgebruik",
+        "Anesthetic medicines": "Anesthetica",
+        "Anesthesia medicines and gases": "Anesthesiemedicatie en gassen",
+        "Airway materials": "Luchtwegmaterialen",
+        "Monitoring consumables": "Monitoringverbruiksmaterialen",
+        "CSSD processing": "CSA-verwerking",
+        "Sterilization energy": "Sterilisatie-energie",
+        "Transport": "Transport",
+        "Drapes": "Afdekmateriaal",
+        "Gowns": "Jassen",
+        "Gloves": "Handschoenen",
+        "Single-use instruments": "Instrumenten voor eenmalig gebruik",
+        "Ward energy": "Afdelingsenergie",
+        "Nursing time": "Verpleegkundige tijd",
+        "Meals": "Maaltijden",
+        "Linen": "Linnen",
+        "ICU energy": "IC-energie",
+        "Monitoring equipment": "Monitoringsapparatuur",
+        "Medicines": "Medicijnen",
+        "Waste mass": "Afvalmassa",
+        "Waste segregation": "Afvalscheiding",
+        "Treatment route": "Verwerkingsroute",
+        "Planning CT": "Plannings-CT",
+        "Treatment planning workstation": "Werkstation voor behandelplanning",
+        "Linear accelerator electricity": "Elektriciteit van lineaire versneller",
+        "Machine time": "Machinetijd",
+        "Thermoplastic mask or mold": "Thermoplastisch masker of mal",
+        "Setup materials": "Opstellingsmaterialen",
+        "Systemic therapy inputs": "Inputs voor systemische therapie",
+        "Extra monitoring": "Extra monitoring",
+        "Combined visits": "Gecombineerde bezoeken",
+        "Blood test": "Bloedtest",
+        "Imaging or endoscopy": "Beeldvorming of endoscopie",
+        "Sampling material": "Afnamemateriaal",
+        "Shipping": "Verzending",
+        "Laboratory processing": "Laboratoriumverwerking",
+        "Digital app use": "Gebruik van digitale app",
+        "Distance": "Afstand",
+        "Mode share": "Verdeling vervoerswijzen",
+        "Companion travel if included": "Reis van begeleider indien meegenomen",
+        "Attendance assumptions": "Aannames over aanwezigheid",
+        "Meals": "Maaltijden",
+        "Accommodation": "Verblijf",
+        "Allocation rule": "Allocatieregel",
+        "App use": "Appgebruik",
+        "Portal messages": "Portaalberichten",
+        "Home monitoring device if used": "Thuismonitoringapparaat indien gebruikt",
+        "Electricity": "Elektriciteit",
+        "Heating": "Verwarming",
+        "Cooling": "Koeling",
+        "Allocation key": "Allocatiesleutel",
+        "Cleaning materials": "Schoonmaakmiddelen",
+        "Wastewater": "Afvalwater",
+        "Washing energy": "Wasenergie",
+        "Detergent": "Wasproduct",
+        "Device use": "Apparaatgebruik",
+        "Server allocation": "Serverallocatie",
+        "Network use": "Netwerkgebruik",
+        "Autoclave energy": "Autoclaafenergie",
+        "CSSD allocation": "CSA-allocatie"
+      },
+      zh: {
+        "Staff time": "人员时间",
+        "EHR use": "EHR 使用",
+        "Referral communication": "转诊沟通",
+        "Clinician time": "临床人员时间",
+        "Record review": "病历复核",
+        "Scheduling": "排程",
+        "Administrative time": "行政时间",
+        "Patient communication": "患者沟通",
+        "ICT": "ICT",
+        "Clinical letter": "临床信函",
+        "EHR transfer": "EHR 转交",
+        "Pathologist time": "病理医生时间",
+        "Microscopy or digital pathology": "显微镜或数字病理",
+        "Report generation": "报告生成",
+        "Cassette": "包埋盒",
+        "Paraffin embedding": "石蜡包埋",
+        "Staining": "染色",
+        "Lab electricity": "实验室用电",
+        "Container": "容器",
+        "Slides": "玻片",
+        "Staining reagents": "染色试剂",
+        "Pathology waste": "病理废弃物",
+        "Reagents": "试剂",
+        "Equipment time": "设备时间",
+        "Consumables": "耗材",
+        "Hazardous waste": "危险废弃物",
+        "Scanner electricity": "扫描仪用电",
+        "Contrast media": "造影剂",
+        "Disposables": "一次性用品",
+        "Radiology reporting": "放射报告",
+        "Room time": "房间时间",
+        "Patient travel": "患者出行",
+        "Radiotracer": "放射性示踪剂",
+        "Uptake room time": "摄取室时间",
+        "Waste": "废弃物",
+        "Procedure materials": "操作材料",
+        "Sedation": "镇静",
+        "Endoscope reprocessing": "内镜再处理",
+        "Water": "水",
+        "Scope use": "内镜使用",
+        "Reprocessing": "再处理",
+        "Procedure room time": "操作室时间",
+        "Equipment electricity": "设备用电",
+        "Gel and covers": "凝胶和保护套",
+        "Clinical staff time": "临床人员时间",
+        "Meeting room or digital platform": "会议室或数字平台",
+        "Image display": "影像显示",
+        "Multi-specialty staff time": "多专科人员时间",
+        "Room use": "房间使用",
+        "Image access": "影像访问",
+        "Decision aid material": "决策辅助材料",
+        "Assessment time": "评估时间",
+        "Laboratory review": "实验室结果复核",
+        "EHR documentation": "EHR 记录",
+        "Clinical review": "临床复核",
+        "Imaging review": "影像复核",
+        "Oncologist time": "肿瘤医生时间",
+        "Drug dose": "药物剂量",
+        "Drug dose and regimen": "药物剂量和方案",
+        "Infusion materials": "输注材料",
+        "Day-care chair time": "日间治疗椅时间",
+        "Cytotoxic waste": "细胞毒性废弃物",
+        "Dispensing": "发药",
+        "Monitoring": "监测",
+        "Packaging": "包装",
+        "Pharmacy staff time": "药房人员时间",
+        "PPE": "个人防护用品",
+        "Syringes or bags": "注射器或输液袋",
+        "Blood draw": "采血",
+        "Lab reagents": "实验室试剂",
+        "Analyzer electricity": "分析仪用电",
+        "Reporting": "报告",
+        "OR electricity": "手术室用电",
+        "Ventilation": "通风",
+        "Lighting": "照明",
+        "Equipment use": "设备使用",
+        "Anesthetic medicines": "麻醉药物",
+        "Anesthesia medicines and gases": "麻醉药物和气体",
+        "Airway materials": "气道材料",
+        "Monitoring consumables": "监测耗材",
+        "CSSD processing": "CSSD 处理",
+        "Sterilization energy": "灭菌能耗",
+        "Transport": "运输",
+        "Drapes": "铺单",
+        "Gowns": "手术衣",
+        "Gloves": "手套",
+        "Single-use instruments": "一次性器械",
+        "Ward energy": "病房能源",
+        "Nursing time": "护理时间",
+        "Meals": "餐食",
+        "Linen": "织物",
+        "ICU energy": "ICU 能源",
+        "Monitoring equipment": "监测设备",
+        "Medicines": "药品",
+        "Waste mass": "废弃物质量",
+        "Waste segregation": "废弃物分类",
+        "Treatment route": "处理路径",
+        "Planning CT": "计划 CT",
+        "Treatment planning workstation": "治疗计划工作站",
+        "Linear accelerator electricity": "直线加速器用电",
+        "Machine time": "设备时间",
+        "Thermoplastic mask or mold": "热塑面罩或模具",
+        "Setup materials": "摆位材料",
+        "Systemic therapy inputs": "系统治疗投入",
+        "Extra monitoring": "额外监测",
+        "Combined visits": "合并就诊",
+        "Blood test": "血液检查",
+        "Imaging or endoscopy": "影像或内镜",
+        "Sampling material": "采样材料",
+        "Shipping": "运输",
+        "Laboratory processing": "实验室处理",
+        "Digital app use": "数字应用使用",
+        "Distance": "距离",
+        "Mode share": "出行方式占比",
+        "Companion travel if included": "如纳入则包括陪同者出行",
+        "Attendance assumptions": "陪同假设",
+        "Accommodation": "住宿",
+        "Allocation rule": "分配规则",
+        "App use": "应用使用",
+        "Portal messages": "门户消息",
+        "Home monitoring device if used": "如使用则包括居家监测设备",
+        "Electricity": "电力",
+        "Heating": "供暖",
+        "Cooling": "制冷",
+        "Allocation key": "分配键",
+        "Cleaning materials": "清洁材料",
+        "Wastewater": "废水",
+        "Washing energy": "洗涤能耗",
+        "Detergent": "洗涤剂",
+        "Device use": "设备使用",
+        "Server allocation": "服务器分配",
+        "Network use": "网络使用",
+        "Autoclave energy": "高压灭菌能耗",
+        "CSSD allocation": "CSSD 分配"
+      }
+    };
+
     function normaliseLanguage(value) {
       return languageOptions.some((item) => item.id === value) ? value : "en";
     }
@@ -2994,6 +3708,56 @@
 
     function moduleDefinition(moduleId) {
       return localizedModule(moduleId).definition || "";
+    }
+
+    function localizedLookup(dictionary, value) {
+      return dictionary[state.language]?.[value] || value;
+    }
+
+    function localizedNodeLabel(node) {
+      return localizedLookup(nodeLabelText, node.label);
+    }
+
+    function localizedBlockName(blockName) {
+      return localizedLookup(blockNameText, blockName);
+    }
+
+    function localizedUnit(unit) {
+      return localizedLookup(unitText, unit);
+    }
+
+    function localizedResourceFlow(flow) {
+      return localizedLookup(resourceFlowText, flow);
+    }
+
+    function localizedResourceFlowList(flows) {
+      const items = Array.isArray(flows)
+        ? flows
+        : String(flows).split(";").map((item) => item.trim()).filter(Boolean);
+      return items.map(localizedResourceFlow).join("; ");
+    }
+
+    function localizedClinicalProtocol(node) {
+      if (state.language === "en") return node.protocolStep;
+      return t("clinicalProtocolFallback", {
+        label: localizedNodeLabel(node),
+        type: node.type === "decision" ? t("decisionPoint").toLowerCase() : t("activity").toLowerCase(),
+        domain: domainLabel(node.domain)
+      });
+    }
+
+    function localizedClinicalRationale(node) {
+      return state.language === "en" ? node.rationale : t("clinicalRationaleFallback");
+    }
+
+    function localizedClinicalQuestions(node) {
+      if (state.language === "en") return node.openQuestions;
+      return [t("clinicalQuestionFallback", { label: localizedNodeLabel(node) })];
+    }
+
+    function localizedGap(row) {
+      if (state.language === "en") return row.gap;
+      return t("dummyGapTemplate", { flows: localizedResourceFlowList(row.flow) });
     }
 
     function block(module, name, unit, resourceFlows) {
@@ -3161,13 +3925,16 @@
         const text = [
           node.id,
           node.label,
+          localizedNodeLabel(node),
           node.domain,
+          domainLabel(node.domain),
           node.type,
           node.module,
           moduleRegistry[node.module] ? moduleName(node.module) : "",
           node.protocolStep,
           node.rationale,
           node.resourceFlows.join(" "),
+          localizedResourceFlowList(node.resourceFlows),
           node.openQuestions.join(" "),
           node.oncology ? "oncology systemic therapy chemotherapy" : ""
         ].join(" ").toLowerCase();
@@ -3569,7 +4336,7 @@
         const group = createSvgElement("g", {
           class: "map-node",
           role: "button",
-          "aria-label": `${node.id} ${node.label}`,
+          "aria-label": `${node.id} ${localizedNodeLabel(node)}`,
           tabindex: "0"
         });
         attachMapNodeInteractions(group, node);
@@ -3609,7 +4376,7 @@
         const group = createSvgElement("g", {
           class: "map-node",
           role: "button",
-          "aria-label": `${node.id} ${node.label}`,
+          "aria-label": `${node.id} ${localizedNodeLabel(node)}`,
           tabindex: "0"
         });
         attachMapNodeInteractions(group, node);
@@ -3762,7 +4529,7 @@
         "Follow-up after treatment": "Follow-up",
         "Home-based follow-up option": "Home follow-up"
       };
-      return replacements[node.label] || node.label;
+      return state.language === "en" ? (replacements[node.label] || node.label) : localizedNodeLabel(node);
     }
 
     function stationLabelLayout(node, lines, placedLabels, markerBoxes) {
@@ -3858,7 +4625,7 @@
         <div class="detail-title">
           <div class="code-pill">${escapeHtml(displayCode(node))}</div>
           <div>
-            <h2>${escapeHtml(node.label)}</h2>
+            <h2>${escapeHtml(localizedNodeLabel(node))}</h2>
             <div class="meta-row">
               <span class="tag">${escapeHtml(domainLabel(node.domain))}</span>
               <span class="tag">${escapeHtml(node.type === "decision" ? t("decisionPoint") : t("activity"))}</span>
@@ -3871,11 +4638,11 @@
         <div class="detail-grid">
           <div class="detail-block">
             <strong>${escapeHtml(t("protocolInterpretation"))}</strong>
-            <p>${escapeHtml(node.protocolStep)}</p>
+            <p>${escapeHtml(localizedClinicalProtocol(node))}</p>
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("whyKept"))}</strong>
-            <p>${escapeHtml(node.rationale)}</p>
+            <p>${escapeHtml(localizedClinicalRationale(node))}</p>
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("ecopathModule"))}</strong>
@@ -3887,11 +4654,11 @@
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("resourceFlows"))}</strong>
-            <ul class="resource-list">${node.resourceFlows.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+            <ul class="resource-list">${node.resourceFlows.map((item) => `<li>${escapeHtml(localizedResourceFlow(item))}</li>`).join("")}</ul>
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("expertConfirmation"))}</strong>
-            <ul class="question-list">${node.openQuestions.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+            <ul class="question-list">${localizedClinicalQuestions(node).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
           </div>
         </div>
       `;
@@ -3982,7 +4749,7 @@
         button.innerHTML = `
           <span class="code-pill">${escapeHtml(displayCode(node))}</span>
           <span class="activity-name">
-            <strong>${escapeHtml(node.label)}</strong>
+            <strong>${escapeHtml(localizedNodeLabel(node))}</strong>
             <span>${escapeHtml(domainLabel(node.domain))} · ${escapeHtml(node.type === "decision" ? t("decisionPoint") : t("activity"))}</span>
           </span>
           <span class="tag module">${escapeHtml(node.module)} ${escapeHtml(moduleName(node.module))}</span>
@@ -4049,9 +4816,9 @@
             state.oncologyLens && isOncologyBuildingBlock(item) ? "oncology-highlight" : ""
           ].filter(Boolean).join(" ");
           blockCard.innerHTML = `
-            <strong>${escapeHtml(item.name)}</strong>
-            <span>${escapeHtml(t("unit"))}: ${escapeHtml(item.unit)}</span>
-            <span>${escapeHtml(t("resourceFlowsLabel"))}: ${escapeHtml(item.resourceFlows.join("; "))}</span>
+            <strong>${escapeHtml(localizedBlockName(item.name))}</strong>
+            <span>${escapeHtml(t("unit"))}: ${escapeHtml(localizedUnit(item.unit))}</span>
+            <span>${escapeHtml(t("resourceFlowsLabel"))}: ${escapeHtml(localizedResourceFlowList(item.resourceFlows))}</span>
           `;
           blockGrid.appendChild(blockCard);
         });
@@ -4151,15 +4918,15 @@
                   return `
                   <tr class="${rowClass}">
                     <td>
-                      <input type="checkbox" data-lca-row-toggle="${index}" ${rowIncluded ? "checked" : ""} aria-label="Use ${escapeHtml(row.block)} in the LCA scenario"${moduleDisabledAttr}>
+                      <input type="checkbox" data-lca-row-toggle="${index}" ${rowIncluded ? "checked" : ""} aria-label="${escapeHtml(t("use"))} ${escapeHtml(localizedBlockName(row.block))}"${moduleDisabledAttr}>
                     </td>
-                    <td><span class="lca-block-cell">${escapeHtml(row.block)}</span></td>
-                    <td>${escapeHtml(row.flow)}</td>
-                    <td>${escapeHtml(row.unit)}</td>
-                    <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(row.block)} base quantity"${rowDisabledAttr}></td>
-                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(row.block)} uncertainty percent"${rowDisabledAttr}></td>
-                    <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(row.block)} impact coefficient"${rowDisabledAttr}></td>
-                    <td class="lca-source-cell">${escapeHtml(row.gap)}</td>
+                    <td><span class="lca-block-cell">${escapeHtml(localizedBlockName(row.block))}</span></td>
+                    <td>${escapeHtml(localizedResourceFlowList(row.flow))}</td>
+                    <td>${escapeHtml(localizedUnit(row.unit))}</td>
+                    <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(t("baseQuantityAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
+                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(t("uncertaintyAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
+                    <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(t("impactCoefficientAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
+                    <td class="lca-source-cell">${escapeHtml(localizedGap(row))}</td>
                     <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
                   </tr>
                 `;
@@ -4310,9 +5077,9 @@
         const item = document.createElement("li");
         item.textContent = t("priorityRow", {
           module: row.module,
-          block: row.block,
+          block: localizedBlockName(row.block),
           impact: formatKg(row.weightedImpact),
-          gap: row.gap
+          gap: localizedGap(row)
         });
         list.appendChild(item);
       });
@@ -4467,6 +5234,10 @@
           return {
             ...row,
             moduleName: moduleRegistry[row.module] ? moduleName(row.module) : "",
+            displayBlock: localizedBlockName(row.block),
+            displayFlow: localizedResourceFlowList(row.flow),
+            displayUnit: localizedUnit(row.unit),
+            displayGap: localizedGap(row),
             moduleIncluded,
             rowIncluded,
             included,
@@ -4508,7 +5279,7 @@
         pathwayStatus: localizedPathwayStatus(),
         selectedActivities: selectedScenarioNodes().map((node) => ({
           code: displayCode(node),
-          label: node.label,
+          label: localizedNodeLabel(node),
           module: node.module,
           moduleName: moduleRegistry[node.module] ? moduleName(node.module) : ""
         })),
@@ -4553,9 +5324,9 @@
         ? data.topRows.map((row) => `
           <tr>
             <td>${escapeHtml(row.module)} ${escapeHtml(row.moduleName)}</td>
-            <td>${escapeHtml(row.block)}</td>
+            <td>${escapeHtml(row.displayBlock)}</td>
             <td>${escapeHtml(formatKg(row.baseContribution))}</td>
-            <td>${escapeHtml(row.gap)}</td>
+            <td>${escapeHtml(row.displayGap)}</td>
           </tr>
         `).join("")
         : `<tr><td colspan="4">${escapeHtml(t("noCheckedTotal"))}</td></tr>`;
@@ -4571,10 +5342,10 @@
       const calculationRows = data.rows.map((row) => `
         <tr class="${row.included ? "" : "excluded"}">
           <td>${escapeHtml(row.module)}</td>
-          <td>${escapeHtml(row.block)}</td>
+          <td>${escapeHtml(row.displayBlock)}</td>
           <td>${row.included ? escapeHtml(t("counted")) : row.moduleIncluded ? escapeHtml(t("blockOff")) : escapeHtml(t("moduleOff"))}</td>
-          <td>${escapeHtml(row.flow)}</td>
-          <td>${escapeHtml(row.unit)}</td>
+          <td>${escapeHtml(row.displayFlow)}</td>
+          <td>${escapeHtml(row.displayUnit)}</td>
           <td>${escapeHtml(formatDecimal(row.quantity, 3))}</td>
           <td>${escapeHtml(formatDecimal(row.uncertainty, 1))}%</td>
           <td>${escapeHtml(formatDecimal(row.factor, 4))}</td>

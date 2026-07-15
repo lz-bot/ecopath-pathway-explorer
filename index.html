@@ -218,6 +218,15 @@
       padding: 12px;
     }
 
+    .map-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      min-width: 220px;
+    }
+
     .panel-heading {
       display: flex;
       align-items: flex-start;
@@ -286,6 +295,16 @@
     .map-node {
       cursor: pointer;
       outline: none;
+    }
+
+    .map-node:hover .node-shape,
+    .map-node:focus .node-shape {
+      stroke-width: 4;
+    }
+
+    .label-hitbox {
+      fill: transparent;
+      stroke: none;
     }
 
     .node-shape {
@@ -384,6 +403,80 @@
       font-weight: 700;
       color: var(--ink);
       background: var(--panel-soft);
+    }
+
+    body.map-fullscreen-open {
+      overflow: hidden;
+    }
+
+    .map-fullscreen-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 12px;
+      padding: 16px;
+      background: rgba(247, 251, 253, 0.98);
+    }
+
+    .map-fullscreen-overlay.active {
+      display: grid;
+    }
+
+    .map-fullscreen-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .map-fullscreen-header h2 {
+      margin: 0 0 3px;
+      font-size: 18px;
+    }
+
+    .map-fullscreen-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .map-fullscreen-shell {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(330px, 0.28fr);
+      gap: 12px;
+    }
+
+    .map-fullscreen-map-panel,
+    .map-fullscreen-detail {
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .map-fullscreen-map-panel {
+      padding: 12px;
+      overflow: auto;
+    }
+
+    .map-fullscreen-detail {
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .map-fullscreen-map-wrap svg {
+      min-height: calc(100vh - 210px);
     }
 
     .swatch {
@@ -1048,12 +1141,26 @@
         justify-content: flex-start;
       }
 
+      .map-actions,
+      .map-fullscreen-controls {
+        justify-content: flex-start;
+      }
+
       .brand-logo {
         width: 124px;
       }
 
       .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .lca-module-calculation-header {
         grid-template-columns: 1fr;
+      }
+
+      .map-fullscreen-shell,
+      .map-fullscreen-header {
+        grid-template-columns: 1fr;
+      }
+
+      .map-fullscreen-map-wrap svg {
+        min-height: 520px;
       }
 
       .lca-results {
@@ -1164,7 +1271,10 @@
               <h2 id="pathwayTitle"></h2>
               <p class="scope-note" id="pathwayScope"></p>
             </div>
-            <span class="status-chip" id="pathwayStatus"></span>
+            <div class="map-actions">
+              <span class="status-chip" id="pathwayStatus"></span>
+              <button type="button" id="openMapFullscreen" aria-expanded="false">Fullscreen map</button>
+            </div>
           </div>
           <div class="map-wrap">
             <svg id="pathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="svgTitle svgDesc">
@@ -1274,6 +1384,45 @@
       <div class="lca-module-calculations" id="lcaModuleCalculations"></div>
     </section>
   </main>
+
+  <section class="map-fullscreen-overlay" id="mapFullscreenOverlay" aria-hidden="true" aria-label="Fullscreen pathway map">
+    <div class="map-fullscreen-header">
+      <div>
+        <h2 id="fullscreenPathwayTitle"></h2>
+        <p class="scope-note" id="fullscreenPathwayScope"></p>
+      </div>
+      <div class="map-fullscreen-controls">
+        <span class="status-chip" id="fullscreenPathwayStatus"></span>
+        <button type="button" id="closeMapFullscreen">Close full screen</button>
+      </div>
+    </div>
+    <div class="map-fullscreen-shell">
+      <section class="map-fullscreen-map-panel" aria-label="Fullscreen metro pathway map">
+        <div class="map-wrap map-fullscreen-map-wrap">
+          <svg id="fullscreenPathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="fullscreenSvgTitle fullscreenSvgDesc">
+            <title id="fullscreenSvgTitle">Pathway activity map</title>
+            <desc id="fullscreenSvgDesc">Fullscreen interactive pathway map with coded activities and ECO-PATH modules.</desc>
+          </svg>
+        </div>
+        <div class="legend" aria-label="Route legend">
+          <span class="legend-item"><span class="swatch diagnostic"></span>Diagnostic and access route</span>
+          <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
+          <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
+          <span class="legend-item"><span class="swatch return"></span>Conditional or return route</span>
+        </div>
+        <div class="code-legend" aria-label="Station code prefixes">
+          <span class="code-legend-item"><span class="prefix-chip">AC</span>Access</span>
+          <span class="code-legend-item"><span class="prefix-chip">DX</span>Diagnostics</span>
+          <span class="code-legend-item"><span class="prefix-chip">JM</span>Joint clinic / MDT</span>
+          <span class="code-legend-item"><span class="prefix-chip">TX</span>Treatment</span>
+          <span class="code-legend-item"><span class="prefix-chip">FU</span>Follow-up</span>
+        </div>
+      </section>
+      <aside class="map-fullscreen-detail" aria-live="polite">
+        <div id="fullscreenActivityDetail"></div>
+      </aside>
+    </div>
+  </section>
 
   <script>
     const moduleRegistry = {
@@ -1675,7 +1824,8 @@
       module: "all",
       type: "all",
       query: "",
-      oncologyLens: false
+      oncologyLens: false,
+      mapFullscreenOpen: false
     };
 
     let detailSyncQueued = false;
@@ -1909,15 +2059,63 @@
       document.getElementById("pathwayTitle").textContent = pathway.title;
       document.getElementById("pathwayScope").textContent = pathway.scope;
       document.getElementById("pathwayStatus").textContent = pathway.status;
+      const fullscreenTitle = document.getElementById("fullscreenPathwayTitle");
+      const fullscreenScope = document.getElementById("fullscreenPathwayScope");
+      const fullscreenStatus = document.getElementById("fullscreenPathwayStatus");
+      if (fullscreenTitle) fullscreenTitle.textContent = pathway.title;
+      if (fullscreenScope) fullscreenScope.textContent = pathway.scope;
+      if (fullscreenStatus) fullscreenStatus.textContent = pathway.status;
     }
 
-    function renderMap() {
-      const svg = document.getElementById("pathwaySvg");
+    function attachMapNodeInteractions(group, node) {
+      group.addEventListener("mouseenter", () => previewMapNode(node.id));
+      group.addEventListener("focus", () => previewMapNode(node.id));
+      group.addEventListener("click", () => selectMapNode(node.id));
+      group.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectMapNode(node.id);
+        }
+      });
+    }
+
+    function previewMapNode(nodeId) {
+      const node = nodeById(currentPathway(), nodeId);
+      if (!node) return;
+      if (state.mapFullscreenOpen) {
+        renderNodeDetail(node, "fullscreenActivityDetail");
+        return;
+      }
+      state.selected = node.id;
+      state.detailAnchor = "map";
+      renderDetail();
+      updateActivityListSelection();
+      scheduleDetailPanelSync();
+    }
+
+    function selectMapNode(nodeId) {
+      const node = nodeById(currentPathway(), nodeId);
+      if (!node) return;
+      state.selected = node.id;
+      state.detailAnchor = "map";
+      renderMap("pathwaySvg");
+      if (state.mapFullscreenOpen) renderMap("fullscreenPathwaySvg");
+      renderDetail();
+      renderNodeDetail(node, "fullscreenActivityDetail");
+      updateActivityListSelection();
+      scheduleDetailPanelSync();
+    }
+
+    function renderMap(svgId = "pathwaySvg") {
+      const svg = document.getElementById(svgId);
+      if (!svg) return;
       const pathway = currentPathway();
       const visibleIds = new Set(filteredNodes().map((node) => node.id));
+      const titleId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgTitle" : "svgTitle";
+      const descId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgDesc" : "svgDesc";
       clear(svg);
-      svg.appendChild(createSvgElement("title", { id: "svgTitle" })).textContent = pathway.title;
-      svg.appendChild(createSvgElement("desc", { id: "svgDesc" })).textContent = pathway.scope;
+      svg.appendChild(createSvgElement("title", { id: titleId })).textContent = pathway.title;
+      svg.appendChild(createSvgElement("desc", { id: descId })).textContent = pathway.scope;
 
       pathway.lanes.forEach((lane) => {
         const line = createSvgElement("line", {
@@ -1973,20 +2171,16 @@
           "aria-label": `${node.id} ${node.label}`,
           tabindex: "0"
         });
-        group.addEventListener("click", () => {
-          state.selected = node.id;
-          state.detailAnchor = "map";
-          render();
-        });
-        group.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            state.selected = node.id;
-            state.detailAnchor = "map";
-            render();
-          }
-        });
+        attachMapNodeInteractions(group, node);
         if (!visible) group.setAttribute("opacity", "0.24");
+
+        group.appendChild(createSvgElement("rect", {
+          x: labelLayout.x - 5,
+          y: labelLayout.y - 5,
+          width: labelLayout.width + 10,
+          height: labelLayout.height + 10,
+          class: "label-hitbox"
+        }));
 
         const labelText = createSvgElement("text", {
           x: labelLayout.textX,
@@ -2016,19 +2210,7 @@
           "aria-label": `${node.id} ${node.label}`,
           tabindex: "0"
         });
-        group.addEventListener("click", () => {
-          state.selected = node.id;
-          state.detailAnchor = "map";
-          render();
-        });
-        group.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            state.selected = node.id;
-            state.detailAnchor = "map";
-            render();
-          }
-        });
+        attachMapNodeInteractions(group, node);
         if (!visible) group.setAttribute("opacity", "0.24");
 
         const showOncologyHalo = state.oncologyLens && node.oncology;
@@ -2247,13 +2429,12 @@
     }
 
     function renderDetail() {
-      const detail = document.getElementById("activityDetail");
-      const pathway = currentPathway();
-      let node = nodeById(pathway, state.selected);
-      if (!node) {
-        node = filteredNodes()[0] || pathway.nodes[0];
-        state.selected = node ? node.id : null;
-      }
+      renderNodeDetail(selectedNodeForCurrentPathway(), "activityDetail");
+    }
+
+    function renderNodeDetail(node, targetId) {
+      const detail = document.getElementById(targetId);
+      if (!detail) return;
       if (!node) {
         detail.innerHTML = '<div class="empty">No activity selected.</div>';
         return;
@@ -2295,6 +2476,53 @@
           </div>
         </div>
       `;
+    }
+
+    function selectedNodeForCurrentPathway() {
+      const pathway = currentPathway();
+      let node = nodeById(pathway, state.selected);
+      if (!node) {
+        node = filteredNodes()[0] || pathway.nodes[0];
+        state.selected = node ? node.id : null;
+      }
+      return node;
+    }
+
+    function renderFullscreenView() {
+      if (!state.mapFullscreenOpen) return;
+      renderHeader();
+      renderMap("fullscreenPathwaySvg");
+      renderNodeDetail(selectedNodeForCurrentPathway(), "fullscreenActivityDetail");
+    }
+
+    function openMapFullscreen() {
+      state.mapFullscreenOpen = true;
+      document.body.classList.add("map-fullscreen-open");
+      const overlay = document.getElementById("mapFullscreenOverlay");
+      const openButton = document.getElementById("openMapFullscreen");
+      if (overlay) {
+        overlay.classList.add("active");
+        overlay.setAttribute("aria-hidden", "false");
+      }
+      if (openButton) openButton.setAttribute("aria-expanded", "true");
+      renderFullscreenView();
+      const closeButton = document.getElementById("closeMapFullscreen");
+      if (closeButton) closeButton.focus();
+    }
+
+    function closeMapFullscreen() {
+      state.mapFullscreenOpen = false;
+      document.body.classList.remove("map-fullscreen-open");
+      const overlay = document.getElementById("mapFullscreenOverlay");
+      const openButton = document.getElementById("openMapFullscreen");
+      if (overlay) {
+        overlay.classList.remove("active");
+        overlay.setAttribute("aria-hidden", "true");
+      }
+      if (openButton) {
+        openButton.setAttribute("aria-expanded", "false");
+        openButton.focus();
+      }
     }
 
     function renderActivityList() {
@@ -3095,6 +3323,11 @@
         render();
       });
       document.getElementById("lcaExportReport").addEventListener("click", exportLcaReport);
+      document.getElementById("openMapFullscreen").addEventListener("click", openMapFullscreen);
+      document.getElementById("closeMapFullscreen").addEventListener("click", closeMapFullscreen);
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && state.mapFullscreenOpen) closeMapFullscreen();
+      });
     }
 
     function render() {
@@ -3107,6 +3340,7 @@
       renderActivityList();
       renderLcaTable();
       renderLcaOutputs();
+      renderFullscreenView();
       scheduleDetailPanelSync();
     }
 

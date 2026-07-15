@@ -327,6 +327,33 @@
       stroke-width: 4;
     }
 
+    .node-shape.scenario-selected {
+      fill: var(--accent-soft);
+      stroke: var(--accent-dark);
+      stroke-width: 5;
+    }
+
+    .scenario-badge {
+      fill: var(--accent-dark);
+      stroke: var(--panel);
+      stroke-width: 2;
+      pointer-events: none;
+    }
+
+    .scenario-badge-mark {
+      fill: none;
+      stroke: var(--panel);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2.4;
+      pointer-events: none;
+    }
+
+    .map-edge.scenario-edge {
+      opacity: 1;
+      filter: drop-shadow(0 2px 3px rgba(21, 74, 139, 0.16));
+    }
+
     .oncology-halo {
       fill: rgba(138, 120, 189, 0.14);
       stroke: rgba(138, 120, 189, 0.62);
@@ -368,6 +395,19 @@
       align-items: center;
       color: var(--muted);
       font-size: 12px;
+    }
+
+    .pathway-scenario-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .pathway-scenario-bar .toggle-field {
+      min-width: 260px;
+      flex: 1 1 280px;
     }
 
     .legend-item {
@@ -550,6 +590,12 @@
       border-color: rgba(138, 120, 189, 0.75);
       color: var(--ink);
       background: rgba(138, 120, 189, 0.16);
+    }
+
+    .tag.scenario {
+      border-color: rgba(111, 207, 241, 0.85);
+      background: var(--accent-soft);
+      color: var(--accent-dark);
     }
 
     .detail-grid {
@@ -749,6 +795,11 @@
     .activity-row.active {
       border-color: var(--accent);
       background: var(--accent-soft);
+    }
+
+    .activity-row.in-scenario {
+      border-color: rgba(21, 74, 139, 0.45);
+      box-shadow: inset 3px 0 0 var(--accent-dark);
     }
 
     .activity-row.oncology-highlight {
@@ -1298,6 +1349,17 @@
               <desc id="svgDesc">Interactive pathway map with coded activities and ECO-PATH modules.</desc>
             </svg>
           </div>
+          <div class="pathway-scenario-bar" aria-label="Selected pathway scenario">
+            <label class="toggle-field" for="pathwayScenarioMode">
+              <input id="pathwayScenarioMode" type="checkbox" checked>
+              <span>
+                <strong>Pathway scenario</strong>
+                <small>Selected activities control pathway-linked LCA modules</small>
+              </span>
+            </label>
+            <span class="status-chip" id="pathwayScenarioStatus"></span>
+            <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
+          </div>
           <div class="legend" aria-label="Route legend">
             <span class="legend-item"><span class="swatch diagnostic"></span>Diagnostic and access route</span>
             <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
@@ -1409,6 +1471,8 @@
       </div>
       <div class="map-fullscreen-controls">
         <span class="status-chip" id="fullscreenPathwayStatus"></span>
+        <span class="status-chip" id="fullscreenScenarioStatus"></span>
+        <button type="button" id="clearPathwayScenarioFullscreen">Clear selected pathway</button>
         <button type="button" id="closeMapFullscreen">Close full screen</button>
       </div>
     </div>
@@ -1598,7 +1662,7 @@
     let lcaRows = lcaDefaultRows.map((row) => ({ ...row }));
     const crossCuttingModuleIds = ["EM10", "EM11"];
     const lcaModuleIncluded = Object.fromEntries(
-      Object.keys(moduleRegistry).map((moduleId) => [moduleId, true])
+      Object.keys(moduleRegistry).map((moduleId) => [moduleId, false])
     );
 
     const pathwayData = {
@@ -1842,6 +1906,8 @@
       type: "all",
       query: "",
       oncologyLens: false,
+      scenarioBuildMode: true,
+      scenarioNodes: {},
       mapFullscreenOpen: false
     };
 
@@ -1914,6 +1980,49 @@
     function pathwayModuleIds(pathway = currentPathway()) {
       const present = new Set(pathway.nodes.map((node) => node.module));
       return moduleRegistryIds().filter((moduleId) => present.has(moduleId));
+    }
+
+    function scenarioSetForPathway(pathwayId = state.pathway) {
+      if (!state.scenarioNodes[pathwayId]) state.scenarioNodes[pathwayId] = new Set();
+      return state.scenarioNodes[pathwayId];
+    }
+
+    function isScenarioNodeSelected(nodeId) {
+      return scenarioSetForPathway().has(nodeId);
+    }
+
+    function selectedScenarioNodes() {
+      const pathway = currentPathway();
+      const selectedIds = scenarioSetForPathway();
+      return pathway.nodes.filter((node) => selectedIds.has(node.id));
+    }
+
+    function selectedScenarioModuleIds() {
+      const modules = new Set(selectedScenarioNodes().map((node) => node.module));
+      return pathwayModuleIds().filter((moduleId) => modules.has(moduleId));
+    }
+
+    function syncPathwayModulesFromScenario() {
+      const selectedModules = new Set(selectedScenarioModuleIds());
+      lcaPathwayModuleIds().forEach((moduleId) => {
+        lcaModuleIncluded[moduleId] = selectedModules.has(moduleId);
+      });
+    }
+
+    function toggleScenarioNode(nodeId) {
+      const selectedIds = scenarioSetForPathway();
+      if (selectedIds.has(nodeId)) {
+        selectedIds.delete(nodeId);
+      } else {
+        selectedIds.add(nodeId);
+      }
+      syncPathwayModulesFromScenario();
+    }
+
+    function clearScenarioSelection() {
+      scenarioSetForPathway().clear();
+      syncPathwayModulesFromScenario();
+      render();
     }
 
     function lcaPathwayModuleIds() {
@@ -2032,6 +2141,7 @@
           state.query = "";
           document.getElementById("typeFilter").value = "all";
           document.getElementById("searchBox").value = "";
+          syncPathwayModulesFromScenario();
           render();
         });
         container.appendChild(button);
@@ -2084,6 +2194,22 @@
       if (fullscreenStatus) fullscreenStatus.textContent = pathway.status;
     }
 
+    function renderPathwayScenarioControls() {
+      const selectedCount = selectedScenarioNodes().length;
+      const moduleCount = selectedScenarioModuleIds().length;
+      const status = `${selectedCount} selected activities; ${moduleCount} pathway modules active`;
+      const modeToggle = document.getElementById("pathwayScenarioMode");
+      const clearButton = document.getElementById("clearPathwayScenario");
+      const clearFullscreenButton = document.getElementById("clearPathwayScenarioFullscreen");
+      const statusChip = document.getElementById("pathwayScenarioStatus");
+      const fullscreenStatusChip = document.getElementById("fullscreenScenarioStatus");
+      if (modeToggle) modeToggle.checked = state.scenarioBuildMode;
+      if (statusChip) statusChip.textContent = status;
+      if (fullscreenStatusChip) fullscreenStatusChip.textContent = status;
+      if (clearButton) clearButton.disabled = selectedCount === 0;
+      if (clearFullscreenButton) clearFullscreenButton.disabled = selectedCount === 0;
+    }
+
     function attachMapNodeInteractions(group, node) {
       group.addEventListener("mouseenter", () => previewMapNode(node.id));
       group.addEventListener("focus", () => previewMapNode(node.id));
@@ -2115,10 +2241,15 @@
       if (!node) return;
       state.selected = node.id;
       state.detailAnchor = "map";
+      if (state.scenarioBuildMode) toggleScenarioNode(node.id);
       renderMap("pathwaySvg");
       if (state.mapFullscreenOpen) renderMap("fullscreenPathwaySvg");
+      renderPathwayScenarioControls();
       renderDetail();
       renderNodeDetail(node, "fullscreenActivityDetail");
+      renderBuildingBlockMap();
+      renderLcaTable();
+      renderLcaOutputs();
       updateActivityListSelection();
       scheduleDetailPanelSync();
     }
@@ -2158,11 +2289,12 @@
         const from = nodeById(pathway, edgeItem.from);
         const to = nodeById(pathway, edgeItem.to);
         if (!from || !to) return;
+        const scenarioEdge = isScenarioNodeSelected(from.id) && isScenarioNodeSelected(to.id);
         const path = createSvgElement("path", {
           d: pathForEdge(from, to),
-          class: `map-edge ${edgeItem.route === "return" ? "return" : ""}`,
+          class: `map-edge ${edgeItem.route === "return" ? "return" : ""} ${scenarioEdge ? "scenario-edge" : ""}`,
           stroke: routeColor(edgeItem.route),
-          "stroke-width": edgeItem.route === "diagnostic" ? 7 : 6
+          "stroke-width": scenarioEdge ? 9 : edgeItem.route === "diagnostic" ? 7 : 6
         });
         if (!visibleIds.has(from.id) || !visibleIds.has(to.id)) {
           path.setAttribute("opacity", "0.16");
@@ -2221,6 +2353,7 @@
       pathway.nodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
         const selected = state.selected === node.id;
+        const scenarioSelected = isScenarioNodeSelected(node.id);
         const group = createSvgElement("g", {
           class: "map-node",
           role: "button",
@@ -2248,7 +2381,7 @@
         if (node.type === "decision") {
           const diamond = createSvgElement("polygon", {
             points: `${node.x},${node.y - 30} ${node.x + 38},${node.y} ${node.x},${node.y + 30} ${node.x - 38},${node.y}`,
-            class: `node-shape decision ${node.route} ${selected ? "selected" : ""}`
+            class: `node-shape decision ${node.route} ${selected ? "selected" : ""} ${scenarioSelected ? "scenario-selected" : ""}`
           });
           group.appendChild(diamond);
         } else {
@@ -2256,9 +2389,22 @@
             cx: node.x,
             cy: node.y,
             r: 24,
-            class: `node-shape activity ${node.route} ${selected ? "selected" : ""}`
+            class: `node-shape activity ${node.route} ${selected ? "selected" : ""} ${scenarioSelected ? "scenario-selected" : ""}`
           });
           group.appendChild(circle);
+        }
+
+        if (scenarioSelected) {
+          group.appendChild(createSvgElement("circle", {
+            cx: node.x + 26,
+            cy: node.y - 24,
+            r: 9,
+            class: "scenario-badge"
+          }));
+          group.appendChild(createSvgElement("path", {
+            d: `M ${node.x + 21.5} ${node.y - 24} L ${node.x + 24.5} ${node.y - 20.8} L ${node.x + 31.2} ${node.y - 27.2}`,
+            class: "scenario-badge-mark"
+          }));
         }
 
         const [codePrefix, codeNumber] = stationCodeParts(node);
@@ -2466,6 +2612,7 @@
               <span class="tag">${escapeHtml(node.domain)}</span>
               <span class="tag">${escapeHtml(node.type === "decision" ? "Decision point" : "Activity")}</span>
               <span class="tag module">${escapeHtml(node.module)}</span>
+              ${isScenarioNodeSelected(node.id) ? '<span class="tag scenario">Selected pathway</span>' : ""}
               ${node.oncology ? '<span class="tag oncology">Oncology relevant</span>' : ""}
             </div>
           </div>
@@ -2562,6 +2709,7 @@
         button.className = [
           "activity-row",
           state.selected === node.id ? "active" : "",
+          isScenarioNodeSelected(node.id) ? "in-scenario" : "",
           state.oncologyLens && node.oncology ? "oncology-highlight" : ""
         ].filter(Boolean).join(" ");
         button.dataset.nodeId = node.id;
@@ -2607,6 +2755,7 @@
         const hasOncologyBlock = blocks.some((item) => isOncologyBuildingBlock(item));
         zone.className = [
           "module-zone",
+          isLcaModuleIncluded(moduleId) ? "active" : "",
           state.oncologyLens && hasOncologyBlock ? "oncology-highlight" : ""
         ].filter(Boolean).join(" ");
         zone.dataset.moduleId = moduleId;
@@ -2642,6 +2791,7 @@
     function updateActivityListSelection() {
       document.querySelectorAll(".activity-row").forEach((row) => {
         row.classList.toggle("active", row.dataset.nodeId === state.selected);
+        row.classList.toggle("in-scenario", isScenarioNodeSelected(row.dataset.nodeId));
       });
     }
 
@@ -2651,7 +2801,7 @@
       const groups = [
         {
           title: "Pathway-linked modules from current map",
-          description: "These modules are used by the selected pathway's activity map and match the top ECO-PATH module filter.",
+          description: "These modules are available in the current activity map. Selecting pathway activities on the map automatically checks the corresponding module.",
           moduleIds: lcaPathwayModuleIds()
         },
         {
@@ -2676,7 +2826,8 @@
             .map((row, index) => ({ row, index }))
             .filter((item) => item.row.module === moduleId);
           const included = isLcaModuleIncluded(moduleId);
-          const activeRows = moduleRows.filter(({ row }) => isLcaRowIncluded(row)).length;
+          const activeRows = included ? moduleRows.filter(({ row }) => isLcaRowIncluded(row)).length : 0;
+          const selectedActivityCount = selectedScenarioNodes().filter((node) => node.module === moduleId).length;
           const moduleDisabledAttr = included ? "" : " disabled";
           const hasOncologyRows = moduleRows.some(({ row }) => isOncologyLcaRow(row));
           const section = document.createElement("section");
@@ -2693,7 +2844,7 @@
               <span class="lca-module-code">${escapeHtml(moduleId)}</span>
               <span class="lca-module-title">
                 <strong>${escapeHtml(module.name)}</strong>
-                <small>${activeRows} active of ${moduleRows.length} candidate building block${moduleRows.length === 1 ? "" : "s"} in scenario${included ? "" : "; module outside boundary"}</small>
+                <small>${activeRows} active of ${moduleRows.length} candidate building block${moduleRows.length === 1 ? "" : "s"}; ${selectedActivityCount} selected activit${selectedActivityCount === 1 ? "y" : "ies"}${included ? "" : "; module outside boundary"}</small>
               </span>
             </label>
             <span class="lca-module-total" id="lcaModuleTotal-${escapeHtml(moduleId)}"></span>
@@ -2770,6 +2921,7 @@
         const moduleId = checkbox.dataset.lcaModuleToggle;
         if (!moduleId || !(moduleId in lcaModuleIncluded)) return;
         lcaModuleIncluded[moduleId] = checkbox.checked;
+        renderBuildingBlockMap();
         renderLcaTable();
         renderLcaOutputs();
       });
@@ -2850,7 +3002,7 @@
       `;
 
       const warning = [
-        "Only checked modules and checked building block rows are editable and counted in the totals. Module checkboxes define the LCA system boundary. Row checkboxes define which candidate building blocks are active in the current scenario, because a guideline or local pathway may use only part of a module such as EM06. Pathway-linked modules follow the currently selected pathway; cross-cutting support modules are optional boundary additions. All default quantities and impact coefficients are illustrative dummy values. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
+        "Only checked modules and checked building block rows are editable and counted in the totals. The selected pathway scenario on the map automatically checks pathway-linked modules; EM10 and EM11 remain optional support modules in the LCA boundary. Row checkboxes define which candidate building blocks are active in the current scenario, because a guideline or local pathway may use only part of a module such as EM06. All default quantities and impact coefficients are illustrative dummy values. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence."
       ];
       document.getElementById("lcaDataWarning").textContent = warning.join(" ");
       renderLcaPriorityList();
@@ -3063,6 +3215,12 @@
         pathwayTitle: pathway.title,
         pathwayScope: pathway.scope,
         pathwayStatus: pathway.status,
+        selectedActivities: selectedScenarioNodes().map((node) => ({
+          code: displayCode(node),
+          label: node.label,
+          module: node.module,
+          moduleName: moduleRegistry[node.module] ? moduleRegistry[node.module].name : ""
+        })),
         generatedAt: reportGeneratedAt(),
         caseCount,
         moduleCount: moduleIds.length,
@@ -3109,6 +3267,15 @@
           </tr>
         `).join("")
         : `<tr><td colspan="4">No checked module and building block row combination is currently included in the LCA total.</td></tr>`;
+      const selectedActivityRows = data.selectedActivities.length
+        ? data.selectedActivities.map((activity) => `
+          <tr>
+            <td>${escapeHtml(activity.code)}</td>
+            <td>${escapeHtml(activity.label)}</td>
+            <td>${escapeHtml(activity.module)} ${escapeHtml(activity.moduleName)}</td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="3">No pathway activity was selected. Pathway-linked modules remain outside the LCA boundary unless manually checked.</td></tr>`;
       const calculationRows = data.rows.map((row) => `
         <tr class="${row.included ? "" : "excluded"}">
           <td>${escapeHtml(row.module)}</td>
@@ -3285,6 +3452,7 @@
         <div><strong>Cohort size</strong><br>${escapeHtml(formatNumber(data.caseCount))} pathway instances</div>
         <div><strong>Checked modules</strong><br>${escapeHtml(formatNumber(data.includedModuleCount))} of ${escapeHtml(formatNumber(data.moduleCount))}</div>
         <div><strong>Rows counted</strong><br>${escapeHtml(formatNumber(data.rows.filter((row) => row.included).length))} of ${escapeHtml(formatNumber(data.rows.length))}</div>
+        <div><strong>Selected pathway activities</strong><br>${escapeHtml(formatNumber(data.selectedActivities.length))}</div>
       </div>
     </section>
 
@@ -3292,6 +3460,16 @@
       <h2>Scenario results</h2>
       <div class="metrics">${resultCards}</div>
       <p class="muted">These values are calculated from current browser inputs. The default occurrence counts and impact coefficients are dummy values until replaced with hospital LCI data and documented LCIA mappings.</p>
+    </section>
+
+    <section>
+      <h2>Selected pathway scenario</h2>
+      <table>
+        <thead>
+          <tr><th>Code</th><th>Activity</th><th>Assigned module</th></tr>
+        </thead>
+        <tbody>${selectedActivityRows}</tbody>
+      </table>
     </section>
 
     <section>
@@ -3380,6 +3558,12 @@
         state.oncologyLens = event.target.checked;
         render();
       });
+      document.getElementById("pathwayScenarioMode").addEventListener("change", (event) => {
+        state.scenarioBuildMode = event.target.checked;
+        renderPathwayScenarioControls();
+      });
+      document.getElementById("clearPathwayScenario").addEventListener("click", clearScenarioSelection);
+      document.getElementById("clearPathwayScenarioFullscreen").addEventListener("click", clearScenarioSelection);
       document.getElementById("lcaExportReport").addEventListener("click", exportLcaReport);
       document.getElementById("openMapFullscreen").addEventListener("click", openMapFullscreen);
       document.getElementById("closeMapFullscreen").addEventListener("click", closeMapFullscreen);
@@ -3392,6 +3576,7 @@
       renderSourceSwitch();
       renderFilterOptions();
       renderHeader();
+      renderPathwayScenarioControls();
       renderMap();
       renderDetail();
       renderBuildingBlockMap();

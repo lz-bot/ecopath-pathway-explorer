@@ -1854,9 +1854,9 @@
     const pathwayData = {
       eau: {
         label: "Urology: EAU MIBC",
-        title: "EAU MIBC Guideline Reference Pathway",
-        status: "Clinical reference, local execution not assumed",
-        scope: "Guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. Local Erasmus MC activity execution must be confirmed before LCA use.",
+        title: "EAU MIBC Simplified Guideline Map",
+        status: "Guideline abstraction, local execution not assumed",
+        scope: "Simplified guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. It uses the existing 17-node EAU abstraction. Use the full extraction view when individual guideline activities need to be visible as separate nodes.",
         defaultSelected: "EAU-DX04",
         lanes: [
           { y: 112, label: "Diagnosis and staging" },
@@ -1901,6 +1901,86 @@
           edge("EAU-TX04", "EAU-FU01", "followup"),
           edge("EAU-TX06", "EAU-FU01", "followup"),
           edge("EAU-TX07", "EAU-FU01", "return")
+        ]
+      },
+      eauFull: {
+        label: "Urology: EAU full activity extraction",
+        title: "EAU MIBC Full Activity Extraction",
+        status: "Expanded guideline activity extraction, local execution not assumed",
+        scope: "Activity-level extraction from the EAU MIBC guideline for ECO-PATH scoping. It separates guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. It is still not an Erasmus MC operational workflow.",
+        defaultSelected: "EAUFULL-JM01",
+        lanes: [
+          { y: 92, label: "Diagnosis and staging" },
+          { y: 230, label: "MDT and eligibility" },
+          { y: 348, label: "Surgery and perioperative treatment" },
+          { y: 462, label: "Bladder-sparing and radiotherapy" },
+          { y: 578, label: "Follow-up and advanced care" }
+        ],
+        nodes: [
+          activity("EAUFULL-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Guideline entry after suspected bladder cancer, presentation, or referral into MIBC workup.", "This entry point is retained for scoping. It does not define which hospital performs referral intake or triage.", ["Patient travel", "Administrative ICT", "Referral communication"], ["Define whether ECO-PATH starts at first presentation, first specialist referral, confirmed MIBC, or tertiary referral."]),
+          activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "EAU includes baseline clinical assessment because it informs diagnosis, staging interpretation, and treatment eligibility.", ["Clinician time", "Outpatient room use", "EHR documentation"], ["Which baseline assessments are repeated after referral?"]),
+          activity("EAUFULL-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM03", "diagnostic", 290, 92, "Urine cytology and laboratory workup used in diagnostic assessment and treatment planning.", "This can affect resource use if tests are repeated locally or added before treatment.", ["Laboratory testing", "Specimen transport", "Staff time"], ["Are these tests performed locally or only reviewed from referring hospitals?"]),
+          activity("EAUFULL-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 400, 92, "Endoscopic visualization and documentation of bladder tumor characteristics.", "Cystoscopy is guideline-relevant, but it may be outside a post-referral Erasmus MC boundary unless repeated locally.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy inside the selected pathway boundary?"]),
+          activity("EAUFULL-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 510, 92, "Transurethral resection used for histopathological diagnosis and staging.", "TURBT is resource-intensive and should be explicit if the ECO-PATH boundary starts before confirmed MIBC.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Does the MIBC model include TURBT or only review of TURBT results?"]),
+          activity("EAUFULL-DX05", "Pathology report and specimen review", "Diagnostics", "activity", "EM02", "diagnostic", 620, 92, "Pathology report review, grade and invasion depth confirmation, and specimen adequacy assessment.", "Pathology is separated because EAU provides explicit diagnostic requirements and local workflows may include pathology revision.", ["Pathologist time", "Microscopy or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
+          activity("EAUFULL-DX06", "CT chest abdomen pelvis staging", "Diagnostics", "activity", "EM03", "diagnostic", 750, 92, "CT imaging for chest, abdomen, and pelvis staging in confirmed MIBC.", "Staging CT is a distinct imaging activity with scanner electricity, contrast media, reporting, and patient travel.", ["Scanner electricity", "Contrast media", "Radiology reporting", "Patient travel"], ["Which staging scans are new, repeated, or reviewed only?"]),
+          activity("EAUFULL-DX07", "CT urography or upper tract assessment", "Diagnostics", "activity", "EM03", "diagnostic", 880, 92, "Upper tract urothelial evaluation, including CT urography or further assessment when needed.", "Upper tract assessment can add imaging phases, reporting time, and follow-up implications.", ["Scanner electricity", "Contrast media", "Radiology reporting"], ["Is upper tract evaluation routinely repeated at the local center?"]),
+          activity("EAUFULL-DX08", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 1010, 92, "MRI for local staging or response assessment, and PET-CT where clinically indicated.", "These imaging options are guideline-relevant but should be parameterized only if they occur in the selected scenario.", ["MRI scan", "PET-CT scan", "Radiology reporting", "Patient travel"], ["Which additional imaging tests are used for the target population?"]),
+          activity("EAUFULL-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1100, 230, "Multidisciplinary team discussion before treatment initiation and route selection.", "MDT is the clinical bridge between diagnostic findings and treatment intent.", ["Clinician time", "Meeting room use", "Imaging display", "EHR access"], ["Which specialties attend and how often are patients re-discussed?"]),
+          activity("EAUFULL-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 950, 230, "Assessment of health status, frailty, comorbidity, cognition, and fitness for radical or bladder-sparing treatment.", "EAU includes health status because chronological age alone is insufficient for treatment choice.", ["Assessment time", "Laboratory review", "EHR documentation"], ["Which fitness scores or geriatric assessments are available locally?"]),
+          activity("EAUFULL-TX02", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 800, 230, "Eligibility assessment for cisplatin-based or alternative perioperative systemic therapy.", "This decision controls whether systemic therapy modules are active and which regimen parameters are needed.", ["Medical oncology review", "Laboratory monitoring", "Pharmacy planning"], ["Which eligibility criteria and regimens are used locally?"]),
+          activity("EAUFULL-TX03", "Treatment intent and shared decision", "Treatment planning", "decision", "EM05", "treatment", 650, 230, "Decision on curative, bladder-sparing, systemic, or palliative treatment intent after informed discussion.", "This is kept separate because it defines the pathway scenario rather than the resource use of one procedure.", ["Consultation time", "Shared decision documentation", "Scheduling"], ["Which alternatives are clinically comparable for environmental comparison?"]),
+          activity("EAUFULL-TX04", "Neoadjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 500, 348, "Systemic therapy before definitive local treatment when clinically indicated.", "This is a major oncology-related LCA activity because drugs, infusion materials, pharmacy preparation, monitoring, and cytotoxic waste are concentrated here.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring", "Cytotoxic waste"], ["Which regimen, cycle count, and dose assumptions should be used?"]),
+          activity("EAUFULL-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 650, 348, "Restaging assessment after neoadjuvant treatment to detect progression or metastatic disease before definitive treatment.", "EAU follow-up and treatment sections identify restaging as a relevant pathway-changing assessment.", ["CT scan", "MRI scan", "Radiology reporting", "Clinical review"], ["Which restaging modality is used locally?"]),
+          activity("EAUFULL-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 800, 348, "Radical cystectomy as a primary curative surgical option for eligible patients.", "This is a high-resource surgical activity and should be separated from planning decisions and follow-up.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Which surgical episode boundary should be used?"]),
+          activity("EAUFULL-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 930, 348, "Pelvic lymph node dissection as part of the surgical treatment pathway where indicated.", "This can change operation time, instruments, pathology specimens, and downstream staging.", ["Operating room time", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Should lymph node dissection be modeled as part of cystectomy or as a separate parameter?"]),
+          activity("EAUFULL-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 1060, 348, "Choice of urinary diversion such as ileal conduit, neobladder, or other diversion options.", "EAU provides detailed diversion considerations. ECO-PATH needs this as a parameter because resource flows and follow-up differ by diversion.", ["Operating room time", "Surgical consumables", "Ward stay", "Patient education"], ["Which diversion types are relevant for the selected patient population?"]),
+          activity("EAUFULL-TX09", "Perioperative care and VTE prophylaxis", "Surgery", "activity", "EM07", "treatment", 1060, 462, "Perioperative care, enhanced recovery elements, and pharmacological venous thromboembolism prophylaxis after radical cystectomy.", "This activity captures resource flows that are not visible if surgery is represented only as one cystectomy node.", ["Ward stay", "Medicines", "Nursing time", "Monitoring consumables"], ["Which perioperative care elements should be inside the surgical boundary?"]),
+          activity("EAUFULL-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 900, 578, "Postoperative assessment for adjuvant chemotherapy, immunotherapy, radiotherapy, or surveillance when indicated.", "This decision can activate additional systemic therapy or radiotherapy resource flows after surgery.", ["Medical oncology review", "Pathology review", "Laboratory monitoring"], ["Which adjuvant options are used in local practice?"]),
+          activity("EAUFULL-TX11", "Trimodality therapy eligibility", "Radiotherapy", "decision", "EM08", "treatment", 500, 462, "Eligibility for bladder-preserving trimodality treatment in selected patients.", "This decision separates bladder-preserving scenarios from radical cystectomy and palliative care.", ["MDT review", "Clinical review", "Imaging review"], ["Which criteria define eligibility locally?"]),
+          activity("EAUFULL-TX12", "Maximal TURBT for bladder preservation", "Surgery", "activity", "EM07", "treatment", 360, 462, "Maximal TURBT as part of a bladder-preserving approach where clinically appropriate.", "This is distinct from diagnostic TURBT because it supports a treatment strategy and may have different resource assumptions.", ["Operating room time", "Anesthesia", "Sterile instruments", "Surgical waste"], ["Is maximal TURBT performed locally for bladder-preserving candidates?"]),
+          activity("EAUFULL-TX13", "Radiotherapy planning", "Radiotherapy", "activity", "EM08", "treatment", 650, 462, "Radiotherapy planning before EBRT or chemoradiation delivery.", "Planning CT, treatment planning workstation time, staff time, and immobilization should be modeled separately from fractions.", ["Planning CT", "Treatment planning workstation", "Staff time", "Immobilization materials"], ["Which planning workflow is used locally?"]),
+          activity("EAUFULL-TX14", "EBRT or chemoradiation delivery", "Radiotherapy", "activity", "EM08", "treatment", 800, 462, "External beam radiotherapy or chemoradiation delivery, including fractionated treatment.", "This activity should be parameterized by fraction count, machine time, concurrent therapy, and patient travel.", ["Radiotherapy fractions", "Linear accelerator electricity", "Machine time", "Chemotherapy co-treatment", "Patient travel"], ["Which dose and fractionation schedules are used locally?"]),
+          activity("EAUFULL-TX15", "Response monitoring and salvage decision", "Treatment planning", "decision", "EM05", "return", 950, 462, "Monitoring after bladder-preserving treatment and decision on salvage cystectomy when recurrence or inadequate response occurs.", "This keeps the long-term pathway logic visible because bladder-sparing care requires close surveillance and possible salvage treatment.", ["Cystoscopy", "Imaging review", "Clinical review", "Shared decision documentation"], ["What surveillance and salvage assumptions should be used?"]),
+          activity("EAUFULL-TX16", "Palliative radiotherapy or symptom control", "Radiotherapy", "activity", "EM08", "return", 500, 578, "Palliative radiotherapy or symptom-directed treatment for patients not following a curative route.", "This activity may belong to a different functional unit from curative-intent pathways and should be explicitly scoped.", ["Radiotherapy fractions", "Clinical review", "Patient travel", "Supportive care"], ["Should palliative treatment be a separate scenario?"]),
+          activity("EAUFULL-TX17", "Advanced systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "return", 650, 578, "Systemic treatment for advanced or metastatic disease where indicated.", "Advanced systemic therapy can dominate resource use and should not be merged with curative perioperative therapy without clear scope.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring"], ["Which advanced-disease regimens are inside the target case?"]),
+          activity("EAUFULL-FU01", "Follow-up after radical cystectomy", "Follow-up", "activity", "EM09", "followup", 1030, 578, "Surveillance and follow-up after radical cystectomy.", "Follow-up after cystectomy includes repeated assessment, imaging, laboratory testing, and diversion-related care over time.", ["Outpatient visits", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["What follow-up time horizon should be used?"]),
+          activity("EAUFULL-FU02", "Follow-up after trimodality therapy", "Follow-up", "activity", "EM09", "followup", 900, 578, "Close follow-up after trimodality therapy, including cystoscopy, cytology, and cross-sectional imaging.", "This branch can have repeated surveillance events that materially affect pathway-level impact.", ["Cystoscopy", "Surveillance imaging", "Outpatient visits", "Patient travel"], ["Which TMT surveillance schedule should be modeled?"]),
+          activity("EAUFULL-FU03", "Functional follow-up after diversion", "Follow-up", "activity", "EM09", "followup", 1150, 578, "Functional follow-up after urinary diversion, including stoma care, metabolic monitoring, and complication management.", "This is separated because diversion-related follow-up can differ strongly from oncologic surveillance.", ["Outpatient visits", "Laboratory tests", "Stoma care", "Patient travel"], ["Which functional follow-up activities are included?"])
+        ],
+        edges: [
+          edge("EAUFULL-AC01", "EAUFULL-DX01", "diagnostic"),
+          edge("EAUFULL-DX01", "EAUFULL-DX02", "diagnostic"),
+          edge("EAUFULL-DX02", "EAUFULL-DX03", "diagnostic"),
+          edge("EAUFULL-DX03", "EAUFULL-DX04", "diagnostic"),
+          edge("EAUFULL-DX04", "EAUFULL-DX05", "diagnostic"),
+          edge("EAUFULL-DX05", "EAUFULL-DX06", "diagnostic"),
+          edge("EAUFULL-DX06", "EAUFULL-DX07", "diagnostic"),
+          edge("EAUFULL-DX07", "EAUFULL-DX08", "diagnostic"),
+          edge("EAUFULL-DX08", "EAUFULL-JM01", "diagnostic"),
+          edge("EAUFULL-JM01", "EAUFULL-TX01", "diagnostic"),
+          edge("EAUFULL-TX01", "EAUFULL-TX02", "treatment"),
+          edge("EAUFULL-TX02", "EAUFULL-TX03", "treatment"),
+          edge("EAUFULL-TX03", "EAUFULL-TX04", "treatment"),
+          edge("EAUFULL-TX04", "EAUFULL-TX05", "treatment"),
+          edge("EAUFULL-TX05", "EAUFULL-TX06", "treatment"),
+          edge("EAUFULL-TX06", "EAUFULL-TX07", "treatment"),
+          edge("EAUFULL-TX07", "EAUFULL-TX08", "treatment"),
+          edge("EAUFULL-TX08", "EAUFULL-TX09", "treatment"),
+          edge("EAUFULL-TX08", "EAUFULL-FU03", "followup"),
+          edge("EAUFULL-TX06", "EAUFULL-TX10", "treatment"),
+          edge("EAUFULL-TX10", "EAUFULL-FU01", "followup"),
+          edge("EAUFULL-TX03", "EAUFULL-TX11", "treatment"),
+          edge("EAUFULL-TX11", "EAUFULL-TX12", "treatment"),
+          edge("EAUFULL-TX12", "EAUFULL-TX13", "treatment"),
+          edge("EAUFULL-TX13", "EAUFULL-TX14", "treatment"),
+          edge("EAUFULL-TX14", "EAUFULL-TX15", "return"),
+          edge("EAUFULL-TX14", "EAUFULL-FU02", "followup"),
+          edge("EAUFULL-TX15", "EAUFULL-FU02", "followup"),
+          edge("EAUFULL-TX03", "EAUFULL-TX16", "return"),
+          edge("EAUFULL-TX16", "EAUFULL-TX17", "return"),
+          edge("EAUFULL-TX17", "EAUFULL-FU01", "followup"),
+          edge("EAUFULL-TX09", "EAUFULL-FU01", "followup")
         ]
       },
       emc: {
@@ -2796,10 +2876,16 @@
     const pathwayText = {
       en: {
         eau: {
-          label: "Urology: EAU MIBC",
-          title: "EAU MIBC Guideline Reference Pathway",
-          status: "Clinical reference, local execution not assumed",
-          scope: "Guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. Local Erasmus MC activity execution must be confirmed before LCA use."
+          label: "EAU MIBC simplified",
+          title: "EAU MIBC Simplified Guideline Map",
+          status: "Guideline abstraction, local execution not assumed",
+          scope: "Simplified guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. It uses the existing 17-node EAU abstraction. Use the full extraction view when individual guideline activities need to be visible as separate nodes."
+        },
+        eauFull: {
+          label: "EAU full activity extraction",
+          title: "EAU MIBC Full Activity Extraction",
+          status: "Expanded guideline activity extraction, local execution not assumed",
+          scope: "Activity-level extraction from the EAU MIBC guideline for ECO-PATH scoping. It separates guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. It is still not an Erasmus MC operational workflow."
         },
         emc: {
           label: "Urology: EMC MIBC",
@@ -2822,10 +2908,16 @@
       },
       nl: {
         eau: {
-          label: "Urologie: EAU MIBC",
-          title: "EAU MIBC-richtlijnreferentieroute",
-          status: "Klinische referentie, lokale uitvoering niet verondersteld",
-          scope: "Richtlijnlogica voor MIBC vanaf diagnose en stadiering tot behandelbesluit, primaire behandeling en follow-up. Lokale uitvoering binnen Erasmus MC moet worden bevestigd voordat de route voor LCA wordt gebruikt."
+          label: "EAU MIBC vereenvoudigd",
+          title: "EAU MIBC vereenvoudigde richtlijnkaart",
+          status: "Richtlijnabstractie, lokale uitvoering niet verondersteld",
+          scope: "Vereenvoudigde richtlijnlogica voor MIBC vanaf diagnose en stadiering tot behandelbesluit, primaire behandeling en follow-up. Deze weergave gebruikt de bestaande EAU-abstractie met 17 knopen. Gebruik de volledige activiteitsextractieweergave wanneer afzonderlijke richtlijnactiviteiten zichtbaar moeten zijn."
+        },
+        eauFull: {
+          label: "EAU volledige activiteitsextractie",
+          title: "EAU MIBC volledige activiteitsextractie",
+          status: "Uitgebreide extractie van richtlijnactiviteiten, lokale uitvoering niet verondersteld",
+          scope: "Activiteitsextractie uit de EAU MIBC-richtlijn voor ECO-PATH-scoping. Deze weergave splitst richtlijnactiviteiten en beslissingen die zorgpadstructuur, resourcegebruik, LCA-modules of onzekerheidsanalyse kunnen beïnvloeden. Het is nog steeds geen Erasmus MC-operationele workflow."
         },
         emc: {
           label: "Urologie: EMC MIBC",
@@ -2848,10 +2940,16 @@
       },
       zh: {
         eau: {
-          label: "泌尿外科：EAU MIBC",
-          title: "EAU MIBC 指南参考路径",
-          status: "临床参考路径，未假定本地执行",
-          scope: "指南层面的 MIBC 逻辑，覆盖诊断和分期、治疗决策、初始治疗和随访。用于 LCA 前，需要确认 Erasmus MC 本地实际执行情况。"
+          label: "EAU MIBC 简化图",
+          title: "EAU MIBC 简化指南图",
+          status: "指南抽象，未假定本地执行",
+          scope: "简化版 MIBC 指南逻辑，覆盖诊断和分期、治疗决策、初始治疗和随访。它使用现有的 17 节点 EAU 抽象图。若需要把单个指南活动显示为独立节点，请使用完整活动提取视图。"
+        },
+        eauFull: {
+          label: "EAU 完整活动提取",
+          title: "EAU MIBC 完整活动提取图",
+          status: "展开版指南活动提取，未假定本地执行",
+          scope: "从 EAU MIBC 指南中提取 activity-level 内容用于 ECO-PATH 范围界定。它拆分可能影响路径结构、资源使用、LCA 模块或不确定性分析的指南活动和决策。它仍然不是 Erasmus MC 本地运营工作流。"
         },
         emc: {
           label: "泌尿外科：EMC MIBC",
@@ -2874,10 +2972,16 @@
       },
       ja: {
         eau: {
-          label: "泌尿器科：EAU MIBC",
-          title: "EAU MIBC ガイドライン参照パスウェイ",
-          status: "臨床参照であり、ローカル実施は仮定していません",
-          scope: "MIBC の診断、病期分類、治療決定、初回治療、フォローアップに関するガイドラインレベルのロジックです。LCA に使用する前に、Erasmus MC での実施を確認する必要があります。"
+          label: "EAU MIBC 簡略図",
+          title: "EAU MIBC 簡略ガイドラインマップ",
+          status: "ガイドライン抽象であり、ローカル実施は仮定していません",
+          scope: "診断、病期分類、治療決定、初回治療、フォローアップまでの MIBC ガイドラインロジックの簡略表示です。既存の 17 ノード EAU 抽象を使用します。個別のガイドライン活動をノードとして確認する場合は、完全活動抽出表示を使用します。"
+        },
+        eauFull: {
+          label: "EAU 完全活動抽出",
+          title: "EAU MIBC 完全活動抽出",
+          status: "展開されたガイドライン活動抽出であり、ローカル実施は仮定していません",
+          scope: "ECO-PATH スコーピングのために EAU MIBC ガイドラインから活動レベルで抽出した表示です。パスウェイ構造、資源使用、LCA モジュール、不確実性分析に影響するガイドライン活動と意思決定を分離します。Erasmus MC のローカル運用ワークフローではありません。"
         },
         emc: {
           label: "泌尿器科：EMC MIBC",
@@ -2900,10 +3004,16 @@
       },
       es: {
         eau: {
-          label: "Urología: EAU MIBC",
-          title: "Vía de referencia EAU MIBC",
-          status: "Referencia clínica, no se asume ejecución local",
-          scope: "Lógica de guía para MIBC desde diagnóstico y estadificación hasta decisión terapéutica, tratamiento primario y seguimiento. La ejecución local en Erasmus MC debe confirmarse antes de usarla para LCA."
+          label: "EAU MIBC simplificado",
+          title: "Mapa simplificado de guía EAU MIBC",
+          status: "Abstracción de guía, no se asume ejecución local",
+          scope: "Lógica simplificada de guía MIBC desde diagnóstico y estadificación hasta decisión terapéutica, tratamiento primario y seguimiento. Usa la abstracción EAU existente de 17 nodos. Use la vista de extracción completa de actividades cuando las actividades individuales de la guía deban verse como nodos separados."
+        },
+        eauFull: {
+          label: "Extracción completa de actividades EAU",
+          title: "Extracción completa de actividades EAU MIBC",
+          status: "Extracción ampliada de actividades de guía, no se asume ejecución local",
+          scope: "Extracción a nivel de actividad desde la guía EAU MIBC para el alcance ECO-PATH. Separa actividades y decisiones de guía que pueden afectar estructura de vía, uso de recursos, módulos LCA o análisis de incertidumbre. Todavía no es un flujo operativo local de Erasmus MC."
         },
         emc: {
           label: "Urología: EMC MIBC",
@@ -3287,11 +3397,122 @@
       "Home-based follow-up option": "Opción de seguimiento domiciliario"
     });
 
+    Object.assign(nodeLabelText.nl = nodeLabelText.nl || {}, {
+      "Pathology report and specimen review": "Pathologierapport en specimenreview",
+      "CT chest abdomen pelvis staging": "CT-stadiering thorax abdomen bekken",
+      "CT urography or upper tract assessment": "CT-urografie of bovenste urineweg",
+      "MRI or PET-CT if indicated": "MRI of PET-CT indien nodig",
+      "Health status and frailty assessment": "Gezondheidsstatus en kwetsbaarheid",
+      "Cisplatin and systemic therapy eligibility": "Geschiktheid voor cisplatine en systeemtherapie",
+      "Treatment intent and shared decision": "Behandelintentie en samen beslissen",
+      "Neoadjuvant systemic therapy": "Neo-adjuvante systeemtherapie",
+      "Restaging after neoadjuvant therapy": "Herstadiering na neo-adjuvante therapie",
+      "Radical cystectomy": "Radicale cystectomie",
+      "Pelvic lymph node dissection": "Pelviene lymfeklierdissectie",
+      "Urinary diversion choice": "Keuze urinedeviatie",
+      "Perioperative care and VTE prophylaxis": "Perioperatieve zorg en VTE-profylaxe",
+      "Adjuvant therapy assessment": "Beoordeling adjuvante therapie",
+      "Trimodality therapy eligibility": "Geschiktheid voor trimodaliteit",
+      "Maximal TURBT for bladder preservation": "Maximale TURBT voor blaassparing",
+      "Radiotherapy planning": "Radiotherapieplanning",
+      "EBRT or chemoradiation delivery": "EBRT of chemoradiatie",
+      "Response monitoring and salvage decision": "Responsmonitoring en salvagebesluit",
+      "Palliative radiotherapy or symptom control": "Palliatieve radiotherapie of symptoomcontrole",
+      "Advanced systemic therapy": "Systemische therapie gevorderde ziekte",
+      "Follow-up after radical cystectomy": "Follow-up na radicale cystectomie",
+      "Follow-up after trimodality therapy": "Follow-up na trimodaliteit",
+      "Functional follow-up after diversion": "Functionele follow-up na deviatie"
+    });
+
+    Object.assign(nodeLabelText.zh = nodeLabelText.zh || {}, {
+      "Pathology report and specimen review": "病理报告和标本复核",
+      "CT chest abdomen pelvis staging": "胸腹盆 CT 分期",
+      "CT urography or upper tract assessment": "CT 尿路造影或上尿路评估",
+      "MRI or PET-CT if indicated": "必要时 MRI 或 PET-CT",
+      "Health status and frailty assessment": "健康状态和衰弱评估",
+      "Cisplatin and systemic therapy eligibility": "顺铂和系统治疗适应性",
+      "Treatment intent and shared decision": "治疗意图和共同决策",
+      "Neoadjuvant systemic therapy": "新辅助系统治疗",
+      "Restaging after neoadjuvant therapy": "新辅助治疗后再分期",
+      "Radical cystectomy": "根治性膀胱切除",
+      "Pelvic lymph node dissection": "盆腔淋巴结清扫",
+      "Urinary diversion choice": "尿流改道选择",
+      "Perioperative care and VTE prophylaxis": "围手术期照护和 VTE 预防",
+      "Adjuvant therapy assessment": "辅助治疗评估",
+      "Trimodality therapy eligibility": "三联治疗适应性",
+      "Maximal TURBT for bladder preservation": "保膀胱最大 TURBT",
+      "Radiotherapy planning": "放疗计划",
+      "EBRT or chemoradiation delivery": "EBRT 或同步放化疗",
+      "Response monitoring and salvage decision": "疗效监测和挽救治疗决策",
+      "Palliative radiotherapy or symptom control": "姑息放疗或症状控制",
+      "Advanced systemic therapy": "晚期系统治疗",
+      "Follow-up after radical cystectomy": "根治性膀胱切除后随访",
+      "Follow-up after trimodality therapy": "三联治疗后随访",
+      "Functional follow-up after diversion": "尿流改道后功能随访"
+    });
+
+    Object.assign(nodeLabelText.ja = nodeLabelText.ja || {}, {
+      "Pathology report and specimen review": "病理報告と検体レビュー",
+      "CT chest abdomen pelvis staging": "胸腹骨盤 CT 病期評価",
+      "CT urography or upper tract assessment": "CT 尿路造影または上部尿路評価",
+      "MRI or PET-CT if indicated": "必要時 MRI または PET-CT",
+      "Health status and frailty assessment": "健康状態とフレイル評価",
+      "Cisplatin and systemic therapy eligibility": "シスプラチン・全身療法適応",
+      "Treatment intent and shared decision": "治療意図と共同意思決定",
+      "Neoadjuvant systemic therapy": "術前全身療法",
+      "Restaging after neoadjuvant therapy": "術前療法後の再病期評価",
+      "Radical cystectomy": "根治的膀胱摘除",
+      "Pelvic lymph node dissection": "骨盤リンパ節郭清",
+      "Urinary diversion choice": "尿路変向選択",
+      "Perioperative care and VTE prophylaxis": "周術期ケアと VTE 予防",
+      "Adjuvant therapy assessment": "術後補助療法評価",
+      "Trimodality therapy eligibility": "三者併用療法の適応",
+      "Maximal TURBT for bladder preservation": "膀胱温存の最大 TURBT",
+      "Radiotherapy planning": "放射線治療計画",
+      "EBRT or chemoradiation delivery": "EBRT または化学放射線療法",
+      "Response monitoring and salvage decision": "奏効監視と救済判断",
+      "Palliative radiotherapy or symptom control": "緩和照射または症状制御",
+      "Advanced systemic therapy": "進行期全身療法",
+      "Follow-up after radical cystectomy": "膀胱摘除後フォローアップ",
+      "Follow-up after trimodality therapy": "三者併用後フォローアップ",
+      "Functional follow-up after diversion": "尿路変向後機能フォロー"
+    });
+
+    Object.assign(nodeLabelText.es = nodeLabelText.es || {}, {
+      "Pathology report and specimen review": "Informe patológico y revisión de muestra",
+      "CT chest abdomen pelvis staging": "CT tórax abdomen pelvis",
+      "CT urography or upper tract assessment": "CT urografía o vía urinaria superior",
+      "MRI or PET-CT if indicated": "MRI o PET-CT si indicado",
+      "Health status and frailty assessment": "Estado de salud y fragilidad",
+      "Cisplatin and systemic therapy eligibility": "Elegibilidad para cisplatino y terapia sistémica",
+      "Treatment intent and shared decision": "Intención terapéutica y decisión compartida",
+      "Neoadjuvant systemic therapy": "Terapia sistémica neoadyuvante",
+      "Restaging after neoadjuvant therapy": "Reestadificación tras neoadyuvancia",
+      "Radical cystectomy": "Cistectomía radical",
+      "Pelvic lymph node dissection": "Disección ganglionar pélvica",
+      "Urinary diversion choice": "Elección de derivación urinaria",
+      "Perioperative care and VTE prophylaxis": "Cuidado perioperatorio y profilaxis VTE",
+      "Adjuvant therapy assessment": "Evaluación de terapia adyuvante",
+      "Trimodality therapy eligibility": "Elegibilidad para trimodalidad",
+      "Maximal TURBT for bladder preservation": "TURBT máxima para preservación vesical",
+      "Radiotherapy planning": "Planificación de radioterapia",
+      "EBRT or chemoradiation delivery": "EBRT o quimiorradiación",
+      "Response monitoring and salvage decision": "Monitorización de respuesta y rescate",
+      "Palliative radiotherapy or symptom control": "Radioterapia paliativa o control sintomático",
+      "Advanced systemic therapy": "Terapia sistémica avanzada",
+      "Follow-up after radical cystectomy": "Seguimiento tras cistectomía radical",
+      "Follow-up after trimodality therapy": "Seguimiento tras trimodalidad",
+      "Functional follow-up after diversion": "Seguimiento funcional tras derivación"
+    });
+
     const laneLabelText = {
       nl: {
         "Diagnosis and staging": "Diagnose en stadiering",
         "Decision and treatment": "Besluitvorming en behandeling",
         "Follow-up and advanced care": "Follow-up en gevorderde zorg",
+        "MDT and eligibility": "MDO en geschiktheid",
+        "Surgery and perioperative treatment": "Chirurgie en perioperatieve behandeling",
+        "Bladder-sparing and radiotherapy": "Blaassparing en radiotherapie",
         "Referral, diagnostics, and MDT": "Verwijzing, diagnostiek en MDO",
         "Systemic therapy and assessment": "Systemische therapie en beoordeling",
         "Treatment choices, delivery, and follow-up": "Behandelkeuzes, uitvoering en follow-up",
@@ -3306,6 +3527,9 @@
         "Diagnosis and staging": "诊断和分期",
         "Decision and treatment": "决策和治疗",
         "Follow-up and advanced care": "随访和晚期照护",
+        "MDT and eligibility": "MDT 和适应性",
+        "Surgery and perioperative treatment": "手术和围手术期治疗",
+        "Bladder-sparing and radiotherapy": "保膀胱和放疗",
         "Referral, diagnostics, and MDT": "转诊、诊断和 MDT",
         "Systemic therapy and assessment": "系统治疗和评估",
         "Treatment choices, delivery, and follow-up": "治疗选择、实施和随访",
@@ -3320,6 +3544,9 @@
         "Diagnosis and staging": "診断と病期分類",
         "Decision and treatment": "意思決定と治療",
         "Follow-up and advanced care": "フォローアップと進行期ケア",
+        "MDT and eligibility": "MDT と適応性",
+        "Surgery and perioperative treatment": "手術と周術期治療",
+        "Bladder-sparing and radiotherapy": "膀胱温存と放射線治療",
         "Referral, diagnostics, and MDT": "紹介、診断、MDT",
         "Systemic therapy and assessment": "全身療法と評価",
         "Treatment choices, delivery, and follow-up": "治療選択、実施、フォローアップ",
@@ -3334,6 +3561,9 @@
         "Diagnosis and staging": "Diagnóstico y estadificación",
         "Decision and treatment": "Decisión y tratamiento",
         "Follow-up and advanced care": "Seguimiento y atención avanzada",
+        "MDT and eligibility": "MDT y elegibilidad",
+        "Surgery and perioperative treatment": "Cirugía y tratamiento perioperatorio",
+        "Bladder-sparing and radiotherapy": "Preservación vesical y radioterapia",
         "Referral, diagnostics, and MDT": "Referencia, diagnóstico y MDT",
         "Systemic therapy and assessment": "Terapia sistémica y evaluación",
         "Treatment choices, delivery, and follow-up": "Opciones, tratamiento y seguimiento",
@@ -3343,6 +3573,113 @@
         "Referral, investigations, and MDO": "Referencia, pruebas y MDO",
         "Treatment options": "Opciones de tratamiento",
         "Advanced care and follow-up": "Atención avanzada y seguimiento"
+      }
+    };
+
+    const shortNodeLabelText = {
+      nl: {
+        "Referral or presentation": "Verwijzing",
+        "Pathology report and specimen review": "Pathologierapport",
+        "CT chest abdomen pelvis staging": "CT-stadiering",
+        "CT urography or upper tract assessment": "CT-urografie",
+        "MRI or PET-CT if indicated": "MRI / PET-CT",
+        "Health status and frailty assessment": "Kwetsbaarheid",
+        "Cisplatin and systemic therapy eligibility": "Systeemgeschiktheid",
+        "Treatment intent and shared decision": "Behandelintentie",
+        "Neoadjuvant systemic therapy": "Neo-adjuvant",
+        "Restaging after neoadjuvant therapy": "Herstadiering",
+        "Pelvic lymph node dissection": "Pelviene LND",
+        "Urinary diversion choice": "Deviatiekeuze",
+        "Perioperative care and VTE prophylaxis": "Perioperatieve zorg",
+        "Adjuvant therapy assessment": "Adjuvant?",
+        "Trimodality therapy eligibility": "TMT-geschiktheid",
+        "Maximal TURBT for bladder preservation": "Maximale TURBT",
+        "Radiotherapy planning": "RT-planning",
+        "EBRT or chemoradiation delivery": "EBRT / chemoradiatie",
+        "Response monitoring and salvage decision": "Respons / salvage",
+        "Palliative radiotherapy or symptom control": "Palliatieve RT",
+        "Advanced systemic therapy": "Gevorderde systeemtherapie",
+        "Follow-up after radical cystectomy": "RC follow-up",
+        "Follow-up after trimodality therapy": "TMT follow-up",
+        "Functional follow-up after diversion": "Functionele follow-up"
+      },
+      zh: {
+        "Referral or presentation": "转诊",
+        "Pathology report and specimen review": "病理报告",
+        "CT chest abdomen pelvis staging": "CT 分期",
+        "CT urography or upper tract assessment": "CT 尿路造影",
+        "MRI or PET-CT if indicated": "MRI / PET-CT",
+        "Health status and frailty assessment": "衰弱评估",
+        "Cisplatin and systemic therapy eligibility": "系统治疗适应性",
+        "Treatment intent and shared decision": "治疗意图",
+        "Neoadjuvant systemic therapy": "新辅助治疗",
+        "Restaging after neoadjuvant therapy": "再分期",
+        "Pelvic lymph node dissection": "盆腔淋巴清扫",
+        "Urinary diversion choice": "尿流改道选择",
+        "Perioperative care and VTE prophylaxis": "围手术期照护",
+        "Adjuvant therapy assessment": "辅助治疗？",
+        "Trimodality therapy eligibility": "三联治疗适应性",
+        "Maximal TURBT for bladder preservation": "最大 TURBT",
+        "Radiotherapy planning": "放疗计划",
+        "EBRT or chemoradiation delivery": "EBRT / 放化疗",
+        "Response monitoring and salvage decision": "疗效 / 挽救",
+        "Palliative radiotherapy or symptom control": "姑息放疗",
+        "Advanced systemic therapy": "晚期系统治疗",
+        "Follow-up after radical cystectomy": "术后随访",
+        "Follow-up after trimodality therapy": "三联后随访",
+        "Functional follow-up after diversion": "功能随访"
+      },
+      ja: {
+        "Referral or presentation": "紹介",
+        "Pathology report and specimen review": "病理報告",
+        "CT chest abdomen pelvis staging": "CT 病期評価",
+        "CT urography or upper tract assessment": "CT 尿路造影",
+        "MRI or PET-CT if indicated": "MRI / PET-CT",
+        "Health status and frailty assessment": "フレイル評価",
+        "Cisplatin and systemic therapy eligibility": "全身療法適応",
+        "Treatment intent and shared decision": "治療意図",
+        "Neoadjuvant systemic therapy": "術前全身療法",
+        "Restaging after neoadjuvant therapy": "再病期評価",
+        "Pelvic lymph node dissection": "骨盤 LND",
+        "Urinary diversion choice": "尿路変向選択",
+        "Perioperative care and VTE prophylaxis": "周術期ケア",
+        "Adjuvant therapy assessment": "術後補助？",
+        "Trimodality therapy eligibility": "TMT 適応",
+        "Maximal TURBT for bladder preservation": "最大 TURBT",
+        "Radiotherapy planning": "RT 計画",
+        "EBRT or chemoradiation delivery": "EBRT / 化学放射線",
+        "Response monitoring and salvage decision": "奏効 / 救済",
+        "Palliative radiotherapy or symptom control": "緩和照射",
+        "Advanced systemic therapy": "進行期全身療法",
+        "Follow-up after radical cystectomy": "摘除後フォロー",
+        "Follow-up after trimodality therapy": "TMT 後フォロー",
+        "Functional follow-up after diversion": "機能フォロー"
+      },
+      es: {
+        "Referral or presentation": "Referencia",
+        "Pathology report and specimen review": "Informe patológico",
+        "CT chest abdomen pelvis staging": "CT estadificación",
+        "CT urography or upper tract assessment": "CT urografía",
+        "MRI or PET-CT if indicated": "MRI / PET-CT",
+        "Health status and frailty assessment": "Fragilidad",
+        "Cisplatin and systemic therapy eligibility": "Elegibilidad sistémica",
+        "Treatment intent and shared decision": "Intención terapéutica",
+        "Neoadjuvant systemic therapy": "Neoadyuvancia",
+        "Restaging after neoadjuvant therapy": "Reestadificación",
+        "Pelvic lymph node dissection": "LND pélvica",
+        "Urinary diversion choice": "Derivación",
+        "Perioperative care and VTE prophylaxis": "Cuidado perioperatorio",
+        "Adjuvant therapy assessment": "Adyuvancia?",
+        "Trimodality therapy eligibility": "Elegibilidad TMT",
+        "Maximal TURBT for bladder preservation": "TURBT máxima",
+        "Radiotherapy planning": "Plan RT",
+        "EBRT or chemoradiation delivery": "EBRT / quimiorradiación",
+        "Response monitoring and salvage decision": "Respuesta / rescate",
+        "Palliative radiotherapy or symptom control": "RT paliativa",
+        "Advanced systemic therapy": "Terapia sistémica avanzada",
+        "Follow-up after radical cystectomy": "Seguimiento RC",
+        "Follow-up after trimodality therapy": "Seguimiento TMT",
+        "Functional follow-up after diversion": "Seguimiento funcional"
       }
     };
 
@@ -4414,6 +4751,82 @@
       "CSSD allocation": "Asignación CSSD"
     });
 
+    Object.assign(resourceFlowText.nl = resourceFlowText.nl || {}, {
+      "Outpatient room use": "Gebruik van poliklinische ruimte",
+      "Specimen transport": "Monstertransport",
+      "Pathology sample": "Pathologiemonster",
+      "CT scan": "CT-scan",
+      "MRI scan": "MRI-scan",
+      "PET-CT scan": "PET-CT-scan",
+      "Pathology review": "Pathologiebeoordeling",
+      "Pharmacy planning": "Apotheekplanning",
+      "Shared decision documentation": "Documentatie van samen beslissen",
+      "Surgical consumables": "Chirurgische verbruiksmaterialen",
+      "Patient education": "Patientinstructie",
+      "Systemic therapy if used": "Systemische therapie indien gebruikt",
+      "Supportive care": "Ondersteunende zorg",
+      "Surveillance imaging or cystoscopy": "Surveillancebeeldvorming of cystoscopie",
+      "Stoma care": "Stomazorg",
+      "Laboratory tests": "Laboratoriumtesten"
+    });
+
+    Object.assign(resourceFlowText.zh = resourceFlowText.zh || {}, {
+      "Outpatient room use": "门诊房间使用",
+      "Specimen transport": "标本运输",
+      "Pathology sample": "病理标本",
+      "CT scan": "CT 扫描",
+      "MRI scan": "MRI 扫描",
+      "PET-CT scan": "PET-CT 扫描",
+      "Pathology review": "病理复核",
+      "Pharmacy planning": "药房规划",
+      "Shared decision documentation": "共同决策记录",
+      "Surgical consumables": "手术耗材",
+      "Patient education": "患者教育",
+      "Systemic therapy if used": "如使用则包括系统治疗",
+      "Supportive care": "支持性照护",
+      "Surveillance imaging or cystoscopy": "监测影像或膀胱镜",
+      "Stoma care": "造口照护",
+      "Laboratory tests": "实验室检查"
+    });
+
+    Object.assign(resourceFlowText.ja = resourceFlowText.ja || {}, {
+      "Outpatient room use": "外来室使用",
+      "Specimen transport": "検体輸送",
+      "Pathology sample": "病理検体",
+      "CT scan": "CT 検査",
+      "MRI scan": "MRI 検査",
+      "PET-CT scan": "PET-CT 検査",
+      "Pathology review": "病理レビュー",
+      "Pharmacy planning": "薬剤部計画",
+      "Shared decision documentation": "共同意思決定の記録",
+      "Surgical consumables": "手術消耗品",
+      "Patient education": "患者教育",
+      "Systemic therapy if used": "使用時の全身療法",
+      "Supportive care": "支持療法",
+      "Surveillance imaging or cystoscopy": "サーベイランス画像または膀胱鏡",
+      "Stoma care": "ストーマケア",
+      "Laboratory tests": "検査"
+    });
+
+    Object.assign(resourceFlowText.es = resourceFlowText.es || {}, {
+      "Outpatient room use": "Uso de sala ambulatoria",
+      "Specimen transport": "Transporte de muestra",
+      "Pathology sample": "Muestra de patología",
+      "CT scan": "CT",
+      "MRI scan": "MRI",
+      "PET-CT scan": "PET-CT",
+      "Pathology review": "Revisión patológica",
+      "Pharmacy planning": "Planificación farmacéutica",
+      "Shared decision documentation": "Documentación de decisión compartida",
+      "Surgical consumables": "Consumibles quirúrgicos",
+      "Patient education": "Educación del paciente",
+      "Systemic therapy if used": "Terapia sistémica si se usa",
+      "Supportive care": "Cuidados de soporte",
+      "Surveillance imaging or cystoscopy": "Imagen de vigilancia o cistoscopia",
+      "Stoma care": "Cuidado de estoma",
+      "Laboratory tests": "Pruebas de laboratorio"
+    });
+
     function normaliseLanguage(value) {
       return languageOptions.some((item) => item.id === value) ? value : "en";
     }
@@ -4898,16 +5311,17 @@
           id: "urology",
           label: t("specialtyUrology"),
           items: [
-            { id: "eau", label: "EAU MIBC", sourceKey: "sourceReference" },
-            { id: "emc", label: "EMC MIBC", sourceKey: "sourceEmc" }
+            { id: "eau", sourceKey: "sourceReference" },
+            { id: "eauFull", sourceKey: "sourceReference" },
+            { id: "emc", sourceKey: "sourceEmc" }
           ]
         },
         {
           id: "gastro",
           label: t("specialtyGastro"),
           items: [
-            { id: "crcGuideline", label: "EU/ESMO CRC", sourceKey: "sourceReference" },
-            { id: "crcEmc", label: "EMC CRC", sourceKey: "sourceEmc" }
+            { id: "crcGuideline", sourceKey: "sourceReference" },
+            { id: "crcEmc", sourceKey: "sourceEmc" }
           ]
         }
       ];
@@ -4928,7 +5342,7 @@
       const container = document.getElementById("specialtyOptions");
       if (!summary || !container) return;
       const selected = selectedPathwaySource();
-      summary.textContent = `${t("specialtySummary")} · ${selected.group.label} / ${t(selected.item.sourceKey)}`;
+      summary.textContent = `${t("specialtySummary")} · ${selected.group.label} / ${localizedPathwayLabel(selected.item.id)}`;
       clear(container);
 
       pathwaySourceGroups().forEach((group) => {
@@ -4942,9 +5356,10 @@
             .filter(Boolean)
             .join(" ");
           button.dataset.pathway = item.id;
+          const itemLabel = localizedPathwayLabel(item.id);
           button.innerHTML = `
             <span>${escapeHtml(t(item.sourceKey))}</span>
-            <span>${escapeHtml(item.label)}${item.id === state.pathway ? " ✓" : ""}</span>
+            <span>${escapeHtml(itemLabel)}${item.id === state.pathway ? " ✓" : ""}</span>
           `;
           button.addEventListener("click", () => {
             if (!pathwayData[item.id]) return;
@@ -5291,7 +5706,7 @@
 
     function shortStationLabel(node) {
       const replacements = {
-        "Referral or presentation": "Referral / presentation",
+        "Referral or presentation": "Referral",
         "History and physical assessment": "History + exam",
         "Urine cytology and laboratory workup": "Urine + lab workup",
         "TURBT for diagnosis and staging": "TURBT staging",
@@ -5305,6 +5720,30 @@
         "External beam radiotherapy or chemoradiation": "EBRT / chemoradiation",
         "Palliative or advanced disease route": "Palliative route",
         "Follow-up and surveillance": "Follow-up",
+        "Pathology report and specimen review": "Pathology report",
+        "CT chest abdomen pelvis staging": "CT staging",
+        "CT urography or upper tract assessment": "CT urography",
+        "MRI or PET-CT if indicated": "MRI / PET-CT",
+        "Health status and frailty assessment": "Frailty assessment",
+        "Cisplatin and systemic therapy eligibility": "Systemic eligibility",
+        "Treatment intent and shared decision": "Treatment intent",
+        "Neoadjuvant systemic therapy": "Neoadjuvant therapy",
+        "Restaging after neoadjuvant therapy": "Restaging",
+        "Radical cystectomy": "Radical cystectomy",
+        "Pelvic lymph node dissection": "Pelvic LND",
+        "Urinary diversion choice": "Diversion choice",
+        "Perioperative care and VTE prophylaxis": "Perioperative care",
+        "Adjuvant therapy assessment": "Adjuvant therapy?",
+        "Trimodality therapy eligibility": "TMT eligibility",
+        "Maximal TURBT for bladder preservation": "Maximal TURBT",
+        "Radiotherapy planning": "RT planning",
+        "EBRT or chemoradiation delivery": "EBRT / chemoradiation",
+        "Response monitoring and salvage decision": "Response / salvage",
+        "Palliative radiotherapy or symptom control": "Palliative RT",
+        "Advanced systemic therapy": "Advanced systemic therapy",
+        "Follow-up after radical cystectomy": "RC follow-up",
+        "Follow-up after trimodality therapy": "TMT follow-up",
+        "Functional follow-up after diversion": "Functional follow-up",
         "Return to referrer": "Return",
         "Repeat CT decision": "Repeat CT?",
         "CT reassessment": "CT reassessment",
@@ -5348,7 +5787,8 @@
         "Follow-up after treatment": "Follow-up",
         "Home-based follow-up option": "Home follow-up"
       };
-      return state.language === "en" ? (replacements[node.label] || node.label) : localizedNodeLabel(node);
+      if (state.language === "en") return replacements[node.label] || node.label;
+      return shortNodeLabelText[state.language]?.[node.label] || localizedNodeLabel(node);
     }
 
     function stationLabelLayout(node, lines, placedLabels, markerBoxes) {

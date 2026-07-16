@@ -2326,8 +2326,8 @@
           { y: 92, label: "ASZ or regional hospital: diagnosis and MIBC confirmation" },
           { y: 220, label: "Staging, referral package, and transfer to Erasmus MC" },
           { y: 348, label: "Erasmus MC review and multidisciplinary treatment planning" },
-          { y: 470, label: "Curative surgery and perioperative treatment", labelY: 360 },
-          { y: 590, label: "Bladder preservation and follow-up" }
+          { y: 470, label: "Curative surgery / perioperative care", labelY: 450 },
+          { y: 590, label: "Bladder preservation and follow-up", labelY: 630 }
         ],
         nodes: [
           activity("EMC-FC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral to regional urology after hematuria or another suspicion of bladder cancer.", "Joost described this as the operational start before the patient reaches Erasmus MC. Primary-care events are context; the modeled hospital boundary starts at regional urology.", ["Patient travel", "Outpatient room use", "EHR documentation"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
@@ -2397,7 +2397,7 @@
         defaultSelected: "CRCDUTCH-DX04",
         lanes: [
           { y: 88, label: "First hospital contact after positive FIT" },
-          { y: 210, label: "Diagnostic colonoscopy and findings" },
+          { y: 210, label: "Diagnostic colonoscopy and findings", labelY: 190 },
           { y: 335, label: "Polyp management and surveillance" },
           { y: 470, label: "CRC staging, MDO, and treatment" },
           { y: 595, label: "Post-treatment surveillance" }
@@ -2531,7 +2531,7 @@
           },
           {
             id: "CRCDUTCH-FU03",
-            x: 1160,
+            x: 1125,
             y: 335,
             label: "Post-polypectomy surveillance colonoscopy",
             domain: "Follow-up",
@@ -2661,7 +2661,7 @@
           },
           {
             id: "CRCDUTCH-TX07",
-            x: 1160,
+            x: 1125,
             y: 470,
             label: "Advanced or palliative route",
             domain: "Treatment",
@@ -4606,7 +4606,7 @@
       "ASZ or regional hospital: diagnosis and MIBC confirmation": "ASZ of regionaal ziekenhuis: diagnose en MIBC-bevestiging",
       "Staging, referral package, and transfer to Erasmus MC": "Stadiering, verwijspakket en overdracht naar Erasmus MC",
       "Erasmus MC review and multidisciplinary treatment planning": "Erasmus MC-review en multidisciplinaire behandelplanning",
-      "Curative surgery and perioperative treatment": "Curatieve chirurgie en perioperatieve behandeling",
+      "Curative surgery / perioperative care": "Curatieve chirurgie / perioperatieve zorg",
       "Bladder preservation and follow-up": "Blaassparing en follow-up"
     });
 
@@ -4614,7 +4614,7 @@
       "ASZ or regional hospital: diagnosis and MIBC confirmation": "ASZ 或区域医院：诊断和 MIBC 确认",
       "Staging, referral package, and transfer to Erasmus MC": "分期、转诊资料和转入 Erasmus MC",
       "Erasmus MC review and multidisciplinary treatment planning": "Erasmus MC 复核和多学科治疗规划",
-      "Curative surgery and perioperative treatment": "根治性手术和围手术期治疗",
+      "Curative surgery / perioperative care": "根治手术 / 围手术期照护",
       "Bladder preservation and follow-up": "保膀胱和随访"
     });
 
@@ -4622,7 +4622,7 @@
       "ASZ or regional hospital: diagnosis and MIBC confirmation": "ASZ または地域病院：診断と MIBC 確定",
       "Staging, referral package, and transfer to Erasmus MC": "病期評価、紹介資料、Erasmus MC への移行",
       "Erasmus MC review and multidisciplinary treatment planning": "Erasmus MC レビューと多職種治療計画",
-      "Curative surgery and perioperative treatment": "根治手術と周術期治療",
+      "Curative surgery / perioperative care": "根治手術 / 周術期ケア",
       "Bladder preservation and follow-up": "膀胱温存とフォローアップ"
     });
 
@@ -4630,7 +4630,7 @@
       "ASZ or regional hospital: diagnosis and MIBC confirmation": "ASZ u hospital regional: diagnóstico y confirmación MIBC",
       "Staging, referral package, and transfer to Erasmus MC": "Estadificación, paquete de referencia y transferencia a Erasmus MC",
       "Erasmus MC review and multidisciplinary treatment planning": "Revisión Erasmus MC y planificación multidisciplinaria",
-      "Curative surgery and perioperative treatment": "Cirugía curativa y tratamiento perioperatorio",
+      "Curative surgery / perioperative care": "Cirugía curativa / atención perioperatoria",
       "Bladder preservation and follow-up": "Preservación vesical y seguimiento"
     });
 
@@ -7769,7 +7769,7 @@
       });
       pathway.nodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
-        const labelLines = splitLabel(shortStationLabel(node), 18);
+        const labelLines = splitLabel(shortStationLabel(node), 17);
         const labelLayout = stationLabelLayout(node, labelLines, placedLabels, markerBoxes, edgeBoxes);
         placedLabels.push({
           x: labelLayout.x,
@@ -8059,51 +8059,38 @@
     function stationLabelLayout(node, lines, placedLabels, markerBoxes, edgeBoxes) {
       const labelWidth = estimateLabelWidth(lines);
       const labelHeight = lines.length * 18;
-      const forcedCandidate = forcedStationLabelCandidate(node, labelWidth);
-      if (forcedCandidate) {
-        const x = Math.max(14, Math.min(1186 - labelWidth, forcedCandidate.x));
-        const y = Math.max(14, Math.min(650 - labelHeight, forcedCandidate.y));
-        let textX = x;
-        let anchor = "start";
-        if (forcedCandidate.dx < 0) {
-          textX = x + labelWidth;
-          anchor = "end";
-        } else if (forcedCandidate.dx === 0) {
-          textX = x + labelWidth / 2;
-          anchor = "middle";
-        }
-        return {
-          x,
-          y,
-          width: labelWidth,
-          height: labelHeight,
-          textX,
-          anchor
-        };
-      }
-      const candidates = [
-        { x: node.x + 34, y: node.y + 34, dx: 1 },
-        { x: node.x - 34 - labelWidth, y: node.y + 34, dx: -1 },
-        { x: node.x - labelWidth / 2, y: node.y + 54, dx: 0 },
-        { x: node.x + 34, y: node.y - 58, dx: 1 },
-        { x: node.x - 34 - labelWidth, y: node.y - 58, dx: -1 },
-        { x: node.x - labelWidth / 2, y: node.y - 64, dx: 0 },
-        { x: node.x + 34, y: node.y - labelHeight / 2, dx: 1 },
-        { x: node.x - 34 - labelWidth, y: node.y - labelHeight / 2, dx: -1 }
-      ];
+      const markerHalfHeight = node.type === "decision" ? 30 : 24;
+      const labelGap = 10;
+      const centeredX = node.x - labelWidth / 2;
+      const above = {
+        x: centeredX,
+        y: node.y - markerHalfHeight - labelGap - labelHeight,
+        dx: 0
+      };
+      const below = {
+        x: centeredX,
+        y: node.y + markerHalfHeight + labelGap,
+        dx: 0
+      };
+      const verticalCandidates = ["EMC-DX09", "EMC-FU03"].includes(node.id)
+        ? [above]
+        : (node.y >= 540 ? [above, below] : [below, above]);
+      const candidates = verticalCandidates
+        .filter((candidate) => candidate.y >= 14 && candidate.y <= 650 - labelHeight);
 
       let best = null;
       candidates.forEach((candidate, index) => {
         const unclamped = { ...candidate, width: labelWidth, height: labelHeight };
-        const x = Math.max(14, Math.min(1186 - labelWidth, candidate.x));
+        const x = Math.max(2, Math.min(1198 - labelWidth, candidate.x));
         const y = Math.max(14, Math.min(650 - labelHeight, candidate.y));
         const box = { x, y, width: labelWidth, height: labelHeight };
         const clampPenalty = Math.abs(x - candidate.x) * 2 + Math.abs(y - candidate.y) * 2;
         const labelPenalty = placedLabels.reduce((total, placed) => total + overlapArea(box, placed) * 30, 0);
         const markerPenalty = markerBoxes.reduce((total, marker) => total + overlapArea(box, marker) * 40, 0);
-        const edgePenalty = edgeBoxes.reduce((total, edgeBox) => total + overlapArea(box, edgeBox), 0);
+        const edgePenalty = edgeBoxes.reduce((total, edgeBox) => total + overlapArea(box, edgeBox) * 0.2, 0);
         const distancePenalty = Math.hypot(box.x + box.width / 2 - node.x, box.y + box.height / 2 - node.y) * 0.08;
-        const preferencePenalty = index * 0.2 + (unclamped.x < 14 || unclamped.x + labelWidth > 1186 ? 80 : 0);
+        const preferencePenalty = index * 5
+          + (unclamped.x < 2 || unclamped.x + labelWidth > 1198 ? 80 : 0);
         const penalty = clampPenalty + labelPenalty + markerPenalty + edgePenalty + distancePenalty + preferencePenalty;
         if (!best || penalty < best.penalty) {
           best = { ...box, dx: candidate.dx, penalty };
@@ -8127,37 +8114,6 @@
         textX,
         anchor
       };
-    }
-
-    function forcedStationLabelCandidate(node, labelWidth) {
-      if (node.id === "EAUFULL-DX02") {
-        return { x: node.x - labelWidth / 2, y: node.y - 58, dx: 0 };
-      }
-      if (node.id === "EMC-TX05") {
-        return { x: node.x - labelWidth / 2, y: node.y + 56, dx: 0 };
-      }
-      if (node.id === "EMC-TX10") {
-        return { x: node.x - 34 - labelWidth, y: node.y + 34, dx: -1 };
-      }
-      if (node.id === "EMC-TX15") {
-        return { x: node.x - labelWidth / 2, y: node.y - 64, dx: 0 };
-      }
-      if (["EMC-TX16", "EMC-TX17", "EMC-FU02"].includes(node.id)) {
-        return { x: node.x - labelWidth / 2, y: node.y + 56, dx: 0 };
-      }
-      if (node.id === "EMC-FU03") {
-        return { x: node.x + 34, y: node.y + 34, dx: 1 };
-      }
-      if (node.id === "CRCDUTCH-TX05") {
-        return { x: node.x - 34 - labelWidth, y: node.y + 36, dx: -1 };
-      }
-      if (node.id === "CRCDUTCH-FU04") {
-        return { x: node.x - 34 - labelWidth, y: node.y - 10, dx: -1 };
-      }
-      if (node.id === "CRCDUTCH-FU03") {
-        return { x: node.x - labelWidth + 44, y: node.y + 64, dx: -1 };
-      }
-      return null;
     }
 
     function overlapArea(a, b) {
@@ -8210,8 +8166,10 @@
     }
 
     function estimateLabelWidth(lines) {
-      const maxLength = Math.max(...lines.map((line) => line.length), 8);
-      return Math.max(68, Math.min(168, maxLength * 7.9));
+      const isCjk = /^(zh|ja)$/.test(state.language);
+      const maxLength = Math.max(...lines.map((line) => line.length), isCjk ? 4 : 8);
+      const characterWidth = isCjk ? 14.2 : 7;
+      return Math.max(68, Math.min(168, maxLength * characterWidth));
     }
 
     function splitLaneLabel(label) {

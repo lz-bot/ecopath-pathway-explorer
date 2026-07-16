@@ -94,6 +94,105 @@
       align-items: flex-start;
     }
 
+    .help-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .help-icon {
+      width: 19px;
+      height: 19px;
+      display: inline-grid;
+      place-items: center;
+      border: 1.5px solid currentColor;
+      border-radius: 50%;
+      color: var(--accent-dark);
+      font-family: var(--sans);
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    button:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .help-dialog {
+      width: min(720px, calc(100vw - 32px));
+      max-height: min(760px, calc(100vh - 32px));
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: 0 20px 60px rgba(28, 48, 45, 0.22);
+    }
+
+    .help-dialog::backdrop {
+      background: rgba(31, 42, 46, 0.46);
+      backdrop-filter: blur(2px);
+    }
+
+    .help-dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--accent-soft);
+    }
+
+    .help-dialog-header h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .help-dialog-body {
+      padding: 20px;
+      max-height: calc(100vh - 110px);
+      overflow: auto;
+    }
+
+    .help-dialog-body > p {
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .help-steps {
+      margin: 0;
+      padding-left: 24px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .help-cutoff-note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .help-cutoff-note h3 {
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .help-cutoff-note p {
+      margin-bottom: 8px;
+    }
+
+    .help-cutoff-note ul {
+      margin: 0;
+      padding-left: 20px;
+      columns: 2;
+      column-gap: 28px;
+    }
+
     .language-selector,
     .specialty-selector {
       position: relative;
@@ -889,6 +988,15 @@
       gap: 6px;
     }
 
+    .cutoff-summary {
+      margin: 0 0 10px;
+      padding: 8px 10px;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .candidate-swatch {
       width: 18px;
       height: 12px;
@@ -1465,6 +1573,9 @@
       .formula-expression {
         font-size: 15px;
       }
+      .help-cutoff-note ul {
+        columns: 1;
+      }
       svg { min-height: 300px; }
     }
   </style>
@@ -1480,6 +1591,10 @@
         </div>
       </div>
       <div class="topbar-actions">
+        <button class="help-button" type="button" id="openHelpDialog" aria-haspopup="dialog" aria-controls="helpDialog">
+          <span class="help-icon" aria-hidden="true">?</span>
+          <span id="helpButtonText">How to use</span>
+        </button>
         <details class="language-selector" id="languageSelector">
           <summary id="languageSummary">English</summary>
           <div class="language-options" id="languageOptions" aria-label="Language options"></div>
@@ -1491,6 +1606,28 @@
       </div>
     </div>
   </header>
+
+  <dialog class="help-dialog" id="helpDialog" aria-labelledby="helpDialogTitle">
+    <div class="help-dialog-header">
+      <h2 id="helpDialogTitle">How to use ECO-PATH</h2>
+      <button type="button" id="closeHelpDialog">Close</button>
+    </div>
+    <div class="help-dialog-body">
+      <p id="helpIntro"></p>
+      <ol class="help-steps">
+        <li id="helpStep1"></li>
+        <li id="helpStep2"></li>
+        <li id="helpStep3"></li>
+        <li id="helpStep4"></li>
+        <li id="helpStep5"></li>
+      </ol>
+      <section class="help-cutoff-note" aria-labelledby="helpCutoffTitle">
+        <h3 id="helpCutoffTitle"></h3>
+        <p id="helpCutoffText"></p>
+        <ul id="helpCutoffList"></ul>
+      </section>
+    </div>
+  </dialog>
 
   <main>
     <section class="filters" aria-label="Activity filters">
@@ -1557,13 +1694,13 @@
             <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
           </div>
           <div class="legend" aria-label="Route legend">
-            <span class="legend-item"><span class="swatch diagnostic"></span><span id="diagnosticRouteLabel">Diagnostic and access route</span></span>
+            <span class="legend-item"><span class="swatch diagnostic"></span><span id="diagnosticRouteLabel">Diagnostic and first-contact route</span></span>
             <span class="legend-item"><span class="swatch treatment"></span><span id="treatmentRouteLabel">Treatment route</span></span>
             <span class="legend-item"><span class="swatch followup"></span><span id="followupRouteLabel">Follow-up route</span></span>
             <span class="legend-item"><span class="swatch return"></span><span id="returnRouteLabel">Conditional or return route</span></span>
           </div>
           <div class="code-legend" aria-label="Station code prefixes">
-            <span class="code-legend-item"><span class="prefix-chip">AC</span><span id="accessPrefixLabel">Access</span></span>
+            <span class="code-legend-item"><span class="prefix-chip">FC</span><span id="accessPrefixLabel">First contact / intake</span></span>
             <span class="code-legend-item"><span class="prefix-chip">DX</span><span id="diagnosticsPrefixLabel">Diagnostics</span></span>
             <span class="code-legend-item"><span class="prefix-chip">JM</span><span id="jmPrefixLabel">Joint clinic / MDT</span></span>
             <span class="code-legend-item"><span class="prefix-chip">TX</span><span id="treatmentPrefixLabel">Treatment</span></span>
@@ -1636,6 +1773,7 @@
           <span><i class="candidate-swatch module" aria-hidden="true"></i><span id="moduleZoneLegendLabel">Module zone</span></span>
           <span><i class="candidate-swatch block" aria-hidden="true"></i><span id="candidateBlockLegendLabel">Candidate building block</span></span>
         </div>
+        <p class="cutoff-summary" id="lcaCutoffSummary"></p>
         <div class="module-map-grid" id="buildingBlockMap"></div>
       </div>
 
@@ -1684,13 +1822,13 @@
           </svg>
         </div>
         <div class="legend" aria-label="Route legend">
-          <span class="legend-item"><span class="swatch diagnostic"></span>Diagnostic and access route</span>
+          <span class="legend-item"><span class="swatch diagnostic"></span><span id="fullscreenDiagnosticRouteLabel">Diagnostic and first-contact route</span></span>
           <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
           <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
           <span class="legend-item"><span class="swatch return"></span>Conditional or return route</span>
         </div>
         <div class="code-legend" aria-label="Station code prefixes">
-          <span class="code-legend-item"><span class="prefix-chip">AC</span>Access</span>
+          <span class="code-legend-item"><span class="prefix-chip">FC</span><span id="fullscreenAccessPrefixLabel">First contact / intake</span></span>
           <span class="code-legend-item"><span class="prefix-chip">DX</span>Diagnostics</span>
           <span class="code-legend-item"><span class="prefix-chip">JM</span>Joint clinic / MDT</span>
           <span class="code-legend-item"><span class="prefix-chip">TX</span>Treatment</span>
@@ -1706,29 +1844,29 @@
   <script>
     const moduleRegistry = {
       EM01: {
-        name: "Access",
-        definition: "Referral, triage, intake, administrative coordination, and return-to-referrer activities.",
-        resourceFlows: ["Patient travel", "Staff time", "EHR and administrative ICT", "Referral communication"]
+        name: "First contact and intake",
+        definition: "First specialist contact, intake, and material-relevant preparation before diagnostic or treatment activities.",
+        resourceFlows: ["Patient travel", "Room use", "Bowel preparation", "EHR use"]
       },
       EM02: {
         name: "Pathology",
         definition: "Pathology review, sample-related assessment, paper review, and diagnostic reassessment decisions.",
-        resourceFlows: ["Pathology staff time", "Sample handling", "Microscopy or digital pathology", "Report generation"]
+        resourceFlows: ["Sample handling", "Microscopy or digital pathology", "Report generation"]
       },
       EM03: {
         name: "Imaging and endoscopy",
         definition: "Radiology, CT reassessment, MRI, PET-CT, cystoscopy, colonoscopy, or other pathway-specific diagnostic procedures.",
-        resourceFlows: ["Equipment electricity", "Contrast media or procedure materials", "Clinical staff time", "Patient travel"]
+        resourceFlows: ["Equipment electricity", "Contrast media or procedure materials", "Patient travel"]
       },
       EM04: {
         name: "Joint clinic and MDT",
         definition: "Joint clinic, multidisciplinary team review, and cross-specialty decision review.",
-        resourceFlows: ["Clinician time", "Meeting room use", "EHR and imaging display", "Patient travel for clinic attendance"]
+        resourceFlows: ["Meeting room use", "EHR and imaging display", "Patient travel for clinic attendance"]
       },
       EM05: {
         name: "Treatment planning",
         definition: "Treatment intent, eligibility, modality choice, and treatment planning decisions.",
-        resourceFlows: ["Consultation time", "Treatment planning ICT", "Scheduling", "Patient-facing communication"]
+        resourceFlows: ["Treatment planning ICT", "Scheduling", "Patient-facing communication"]
       },
       EM06: {
         name: "Systemic therapy and oncology",
@@ -1748,7 +1886,7 @@
       EM09: {
         name: "Follow-up",
         definition: "Surveillance, outpatient review, follow-up tests, recurrence monitoring, and return-route contacts.",
-        resourceFlows: ["Outpatient visit", "Surveillance tests", "Staff time", "Patient travel", "EHR use"]
+        resourceFlows: ["Outpatient visit", "Surveillance tests", "Patient travel", "EHR use"]
       },
       EM10: {
         name: "Patient support",
@@ -1762,12 +1900,33 @@
       }
     };
 
-    const buildingBlockRegistry = [
+    const excludedHumanLaborFlowLabels = new Set([
+      "Staff time",
+      "Clinician time",
+      "Nurse time",
+      "Pathologist time",
+      "Clinical staff time",
+      "Multi-specialty staff time",
+      "Assessment time",
+      "Oncologist time",
+      "Pharmacy staff time",
+      "Nursing time"
+    ]);
+
+    const cutoffBuildingBlockRegistry = [
       block("EM01", "Referral processing", "per referral", ["Staff time", "EHR use", "Referral communication"]),
       block("EM01", "Triage review", "per triage decision", ["Clinician time", "Record review", "Scheduling"]),
       block("EM01", "Intake scheduling", "per appointment", ["Administrative time", "Patient communication", "ICT"]),
-      block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"]),
       block("EM01", "Return-to-referrer handover", "per transfer", ["Clinical letter", "EHR transfer", "Administrative time"]),
+      block("EM04", "MDT case discussion", "per case discussed", ["Clinician time", "Meeting room or digital platform", "Image display", "EHR use"]),
+      block("EM04", "Digital case review", "per review", ["Clinician time", "ICT", "Image access"]),
+      block("EM09", "Return-route follow-up handover", "per handover", ["Clinical letter", "Administrative time", "EHR transfer"]),
+      block("EM11", "ICT and EHR use", "per activity or case", ["Device use", "Server allocation", "Network use"])
+    ];
+
+    const buildingBlockRegistry = [
+      block("EM01", "First specialist consultation", "per consultation", ["Patient travel", "Room use", "EHR use"]),
+      block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"]),
 
       block("EM02", "Pathology slide review", "per review", ["Pathologist time", "Microscopy or digital pathology", "Report generation"]),
       block("EM02", "Specimen processing", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
@@ -1782,9 +1941,7 @@
       block("EM03", "Cystoscopy", "per procedure", ["Scope use", "Consumables", "Reprocessing", "Procedure room time"]),
       block("EM03", "Ultrasound", "per scan", ["Equipment electricity", "Gel and covers", "Clinical staff time"]),
 
-      block("EM04", "MDT case discussion", "per case discussed", ["Clinician time", "Meeting room or digital platform", "Image display", "EHR use"]),
       block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use", "Patient travel", "EHR use"]),
-      block("EM04", "Digital case review", "per review", ["Clinician time", "ICT", "Image access"]),
 
       block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
       block("EM05", "Shared decision-making session", "per session", ["Clinician time", "Decision aid material", "Patient communication"]),
@@ -1816,7 +1973,6 @@
       block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing", "Patient travel"]),
       block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"]),
       block("EM09", "Home-based follow-up kit", "per kit", ["Sampling material", "Shipping", "Laboratory processing", "Digital app use"]),
-      block("EM09", "Return-route follow-up handover", "per handover", ["Clinical letter", "Administrative time", "EHR transfer"]),
 
       block("EM10", "Patient travel", "per round trip", ["Distance", "Mode share", "Companion travel if included"]),
       block("EM10", "Caregiver travel", "per round trip", ["Distance", "Mode share", "Attendance assumptions"]),
@@ -1826,7 +1982,6 @@
       block("EM11", "Building energy allocation", "per room-hour or m2-hour", ["Electricity", "Heating", "Cooling", "Allocation key"]),
       block("EM11", "Cleaning service", "per room turnover", ["Cleaning materials", "Staff time", "Water", "Wastewater"]),
       block("EM11", "Laundry service", "per kg textile", ["Washing energy", "Water", "Detergent", "Transport"]),
-      block("EM11", "ICT and EHR use", "per activity or case", ["Device use", "Server allocation", "Network use"]),
       block("EM11", "General waste handling", "per kg waste", ["Waste mass", "Treatment route", "Transport"]),
       block("EM11", "Shared sterilization support", "per sterilization cycle", ["Autoclave energy", "Water", "Packaging", "CSSD allocation"])
     ];
@@ -2407,6 +2562,14 @@
         ]
       }
     };
+
+    const lcaCutoffNodeIds = new Set([
+      "EAU-JM01",
+      "EAUFULL-JM01",
+      "EMC-JM02",
+      "CRCDUTCH-JM01"
+    ]);
+
     const languageOptions = [
       { id: "en", label: "English", htmlLang: "en" },
       { id: "nl", label: "Nederlands", htmlLang: "nl" },
@@ -2427,6 +2590,18 @@
       en: {
         appTitle: "ECO-PATH Pathway Activity Explorer",
         appSubtitle: "MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.",
+        helpButton: "How to use",
+        helpTitle: "How to use ECO-PATH",
+        closeHelp: "Close",
+        helpIntro: "Use the pathway map to define a clinically meaningful scenario, then use the LCA section to decide which resource-bearing building blocks enter the environmental model.",
+        helpStep1: "Choose a specialty and a guideline or local workflow source from the pathway menu.",
+        helpStep2: "Hover over or click an activity to review its clinical interpretation, module assignment, resource flows, and open questions.",
+        helpStep3: "Select the activities that form the pathway scenario of interest. Relevant LCA modules are checked automatically, except activities under the provisional cut-off.",
+        helpStep4: "In the LCA section, keep only the modules and building blocks that occur in the scenario. Replace every dummy quantity and impact coefficient before using results as evidence.",
+        helpStep5: "Review uncertainty and data gaps, then export the report in the currently selected language.",
+        helpCutoffTitle: "Provisional LCA cut-off",
+        helpCutoffText: "Clinical decision nodes remain on the map, but meeting-only, digital-letter, and purely administrative activities are excluded from calculation when they add only staff time and minor office or ICT energy. Human labor is not characterized as an environmental resource flow; time may still be used to allocate room or equipment inputs. No numerical cut-off threshold has yet been validated, so this exclusion must be documented and revisited during formal LCA modeling.",
+        lcaCutoffSummary: "Provisional cut-off applied: meeting-only, digital-letter, and purely administrative building blocks are not shown in the calculation rows.",
         languageSelector: "Language",
         specialtySummary: "Specialties",
         specialtyUrology: "Urology",
@@ -2452,11 +2627,11 @@
         pathwayScenario: "Pathway scenario",
         pathwayScenarioSubtitle: "Selected activities control pathway-linked LCA modules",
         selectedActivitiesStatus: "{count} selected activities; {modules} pathway modules active",
-        diagnosticRoute: "Diagnostic and access route",
+        diagnosticRoute: "Diagnostic and first-contact route",
         treatmentRoute: "Treatment route",
         followupRoute: "Follow-up route",
         returnRoute: "Conditional or return route",
-        access: "Access",
+        access: "First contact / intake",
         diagnostics: "Diagnostics",
         jointMdt: "Joint clinic / MDT",
         treatment: "Treatment",
@@ -2475,10 +2650,14 @@
         decisionPoint: "Decision point",
         selectedPathway: "Selected pathway",
         oncologyRelevant: "Oncology relevant",
+        lcaCutoff: "LCA cut-off",
+        lcaStatus: "LCA status",
+        lcaEligible: "Module eligible",
         protocolInterpretation: "Protocol-to-activity interpretation",
         whyKept: "Why this element is kept",
         ecopathModule: "ECO-PATH module",
         moduleExplanation: "{module} {name}. This is the LCA modeling zone assigned to the selected activity, not a separate clinical activity. Candidate building blocks are shown in the LCA section. {definition}",
+        cutoffActivityExplanation: "{module} {name} remains the clinical classification for this decision activity. Under the current provisional cut-off, this activity does not activate an LCA module because its additional direct inputs are limited to staff time and minor office or digital energy.",
         resourceFlows: "Candidate resource flows",
         expertConfirmation: "Expert confirmation needed",
         clinicalProtocolFallback: "{label} is represented as a {type} in the {domain} domain. This display text is a localized working summary for review, and the English source text remains the underlying protocol record.",
@@ -2577,13 +2756,25 @@
         excluded: "Excluded",
         noCheckedTotal: "No checked module and building block row combination is currently included in the LCA total.",
         methodLimitations: "Method note and limitations",
-        methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. Use it to review pathway scope, checked modules, candidate building blocks, data gaps, and parameter sensitivity before formal data collection and model validation.",
+        methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. The prototype applies a provisional qualitative cut-off to meeting-only, digital-letter, and purely administrative activities with no additional travel or procedure. Human labor is not characterized as an environmental resource flow; time may be used as an allocation parameter. This cut-off requires documentation and sensitivity review during formal LCA modeling.",
         reportFooter: "ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser.",
         reportExported: "Report exported: {filename}"
       },
       nl: {
         appTitle: "ECO-PATH Verkenner voor zorgpadactiviteiten",
         appSubtitle: "Protocol-naar-activiteit weergaven voor MIBC en colorectale kanker voor richtlijnlogica en lokale workflowafbakening.",
+        helpButton: "Gebruiksaanwijzing",
+        helpTitle: "ECO-PATH gebruiken",
+        closeHelp: "Sluiten",
+        helpIntro: "Gebruik de zorgpadkaart om een klinisch betekenisvol scenario af te bakenen. Bepaal daarna in het LCA-gedeelte welke bouwstenen met relevante hulpbronnen in het milieumodel worden opgenomen.",
+        helpStep1: "Kies in het zorgpadmenu een specialisme en een richtlijn of lokale workflowbron.",
+        helpStep2: "Beweeg over of klik op een activiteit om de klinische interpretatie, moduletoewijzing, hulpbronnen en open vragen te bekijken.",
+        helpStep3: "Selecteer de activiteiten die het gewenste zorgpadscenario vormen. Relevante LCA-modules worden automatisch aangevinkt, behalve activiteiten onder de voorlopige cut-off.",
+        helpStep4: "Behoud in het LCA-gedeelte alleen modules en bouwstenen die in het scenario voorkomen. Vervang alle dummyhoeveelheden en impactcoëfficiënten voordat resultaten als bewijs worden gebruikt.",
+        helpStep5: "Controleer onzekerheid en datalacunes en exporteer daarna het rapport in de gekozen taal.",
+        helpCutoffTitle: "Voorlopige LCA-cut-off",
+        helpCutoffText: "Klinische beslispunten blijven op de kaart staan. Activiteiten die alleen uit overleg, digitale brieven of administratie bestaan, worden uitgesloten als ze uitsluitend personeeltijd en gering kantoor- of ICT-energiegebruik toevoegen. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan wel als allocatiesleutel voor ruimte- of apparatuurinputs dienen. Er is nog geen numerieke drempel gevalideerd; deze uitsluiting moet bij formele LCA-modellering worden vastgelegd en opnieuw beoordeeld.",
+        lcaCutoffSummary: "Voorlopige cut-off toegepast: bouwstenen voor alleen overleg, digitale brieven en zuivere administratie staan niet in de berekeningsrijen.",
         languageSelector: "Taal",
         specialtySummary: "Specialismen",
         specialtyUrology: "Urologie",
@@ -2609,11 +2800,11 @@
         pathwayScenario: "Zorgpadscenario",
         pathwayScenarioSubtitle: "Geselecteerde activiteiten sturen zorgpadgebonden LCA-modules",
         selectedActivitiesStatus: "{count} geselecteerde activiteiten; {modules} actieve zorgpadmodules",
-        diagnosticRoute: "Diagnostische en toegangsroute",
+        diagnosticRoute: "Diagnostische en eerste-contactroute",
         treatmentRoute: "Behandelroute",
         followupRoute: "Follow-uproute",
         returnRoute: "Voorwaardelijke of retourroute",
-        access: "Toegang",
+        access: "Eerste contact / intake",
         diagnostics: "Diagnostiek",
         jointMdt: "Joint clinic / MDO",
         treatment: "Behandeling",
@@ -2632,10 +2823,14 @@
         decisionPoint: "Beslispunt",
         selectedPathway: "Geselecteerd zorgpad",
         oncologyRelevant: "Oncologisch relevant",
+        lcaCutoff: "LCA-cut-off",
+        lcaStatus: "LCA-status",
+        lcaEligible: "Module toepasbaar",
         protocolInterpretation: "Protocol-naar-activiteit interpretatie",
         whyKept: "Waarom dit element is behouden",
         ecopathModule: "ECO-PATH-module",
         moduleExplanation: "{module} {name}. Dit is de LCA-modelleerzone voor de geselecteerde activiteit, geen afzonderlijke klinische activiteit. Kandidaatbouwstenen staan in het LCA-gedeelte. {definition}",
+        cutoffActivityExplanation: "{module} {name} blijft de klinische classificatie voor deze beslisactiviteit. Onder de huidige voorlopige cut-off activeert deze activiteit geen LCA-module, omdat de extra directe inputs beperkt zijn tot personeeltijd en gering kantoor- of digitaal energiegebruik.",
         resourceFlows: "Kandidaat-resourceflows",
         expertConfirmation: "Expertbevestiging nodig",
         clinicalProtocolFallback: "{label} is opgenomen als {type} binnen het domein {domain}. Deze tekst is een gelokaliseerde werksamenvatting voor review; de Engelse brontekst blijft het onderliggende protocolrecord.",
@@ -2734,7 +2929,7 @@
         excluded: "Uitgesloten",
         noCheckedTotal: "Er is momenteel geen combinatie van aangevinkte module en bouwsteenrij opgenomen in het LCA-totaal.",
         methodLimitations: "Methodenotitie en beperkingen",
-        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport.",
+        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport. Het prototype gebruikt een voorlopige kwalitatieve cut-off voor activiteiten die alleen uit overleg, digitale brieven of administratie bestaan en geen extra reis of procedure veroorzaken. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan als allocatieparameter worden gebruikt. Deze cut-off vereist documentatie en gevoeligheidsanalyse bij formele LCA-modellering.",
         reportFooter: "ECO-PATH demo voor zorgpadniveau milieubeoordeling. Rapport lokaal in de browser gegenereerd.",
         reportExported: "Rapport geexporteerd: {filename}"
       }
@@ -2747,6 +2942,18 @@
         ...(languageId === "zh" ? {
           appTitle: "ECO-PATH 医疗路径活动探索器",
           appSubtitle: "用于指南逻辑和本地工作流界定的 MIBC 与结直肠癌 protocol-to-activity 视图。",
+          helpButton: "使用说明",
+          helpTitle: "如何使用 ECO-PATH",
+          closeHelp: "关闭",
+          helpIntro: "先用路径图定义具有临床意义的情景，再在 LCA 部分决定哪些包含实质资源消耗的构建块进入环境模型。",
+          helpStep1: "从路径菜单中选择专科，以及指南或本地工作流来源。",
+          helpStep2: "将鼠标悬停在活动上或点击活动，查看临床解释、模块分配、候选资源流和待确认问题。",
+          helpStep3: "选择组成目标路径情景的活动。相关 LCA 模块会自动勾选，但暂定 cut-off 范围内的活动不会激活模块。",
+          helpStep4: "在 LCA 部分仅保留该情景实际发生的模块和构建块。结果用于证据前，必须替换所有 dummy 数量和影响系数。",
+          helpStep5: "检查不确定性和数据缺口，然后以当前所选语言导出报告。",
+          helpCutoffTitle: "暂定 LCA cut-off",
+          helpCutoffText: "临床决策节点仍保留在路径图中。如果会议、数字信函或纯行政活动仅增加人力以及少量办公室或 ICT 用电，则不进入计算。人力本身不作为环境资源流进行表征；活动时间仍可用于分配房间或设备投入。目前尚未验证数值 cut-off 阈值，因此正式 LCA 建模时必须记录并重新检查这些排除项。",
+          lcaCutoffSummary: "已应用暂定 cut-off：纯会议、数字信函和行政类构建块不显示在计算行中。",
           languageSelector: "语言",
           specialtySummary: "专科",
           specialtyUrology: "泌尿外科",
@@ -2771,11 +2978,11 @@
           pathwayScenario: "路径情景",
           pathwayScenarioSubtitle: "已选活动控制路径关联 LCA 模块",
           selectedActivitiesStatus: "已选 {count} 个活动；{modules} 个路径模块已启用",
-          diagnosticRoute: "诊断和准入路线",
+          diagnosticRoute: "诊断和首次接触路线",
           treatmentRoute: "治疗路线",
           followupRoute: "随访路线",
           returnRoute: "条件或返回路线",
-          access: "准入",
+          access: "首次接触 / 接收",
           diagnostics: "诊断",
           jointMdt: "联合门诊 / MDT",
           treatment: "治疗",
@@ -2794,10 +3001,14 @@
           decisionPoint: "决策点",
           selectedPathway: "已选路径",
           oncologyRelevant: "肿瘤学相关",
+          lcaCutoff: "LCA cut-off",
+          lcaStatus: "LCA 状态",
+          lcaEligible: "模块可纳入",
           protocolInterpretation: "Protocol 到活动解释",
           whyKept: "保留此元素的原因",
           ecopathModule: "ECO-PATH 模块",
           moduleExplanation: "{module} {name}。这是分配给所选活动的 LCA 建模区域，不是另一个临床活动。候选构建块显示在 LCA 部分。{definition}",
+          cutoffActivityExplanation: "{module} {name} 仍是该决策活动的临床分类。根据当前暂定 cut-off，该活动不会激活 LCA 模块，因为新增直接投入仅限于人力以及少量办公室或数字设备用电。",
           resourceFlows: "候选资源流",
           expertConfirmation: "需要专家确认",
           clinicalProtocolFallback: "{label} 在路径图中作为 {domain} 领域的{type}表示。这里显示的是本地化工作摘要，英文原始文本仍作为底层 protocol 记录保留。",
@@ -2896,12 +3107,24 @@
           excluded: "排除",
           noCheckedTotal: "当前没有任何已勾选模块和构建块行组合计入 LCA 总量。",
           methodLimitations: "方法说明和局限性",
-          methodLimitationsText: "本报告是 ECO-PATH 方法开发阶段的模块化 LCA 计算演示，不是最终的 ISO 14040 或 ISO 14044 合规 LCA 报告。它用于检查路径范围、已勾选模块、候选构建块、数据缺口和参数敏感性，然后再进入正式数据收集和模型验证。",
+          methodLimitationsText: "本报告是 ECO-PATH 方法开发阶段的模块化 LCA 计算演示，不是最终的 ISO 14040 或 ISO 14044 合规 LCA 报告。当前原型对不产生额外出行或医疗程序的纯会议、数字信函和行政活动采用暂定定性 cut-off。人力不作为环境资源流进行表征，活动时间可以作为分配参数。正式 LCA 建模时必须记录这些排除项并进行敏感性检查。",
           reportFooter: "ECO-PATH 路径层级环境评估演示。报告在浏览器本地生成。",
           reportExported: "报告已导出：{filename}"
         } : languageId === "ja" ? {
           appTitle: "ECO-PATH パスウェイ活動エクスプローラー",
           appSubtitle: "MIBC と大腸がんの protocol-to-activity ビュー。ガイドラインロジックとローカルワークフローのスコーピング用。",
+          helpButton: "使用方法",
+          helpTitle: "ECO-PATH の使い方",
+          closeHelp: "閉じる",
+          helpIntro: "パスウェイ図で臨床的に意味のあるシナリオを定義し、LCA セクションで実質的な資源投入を伴う構成ブロックを環境モデルに含めます。",
+          helpStep1: "パスウェイメニューから診療科とガイドラインまたはローカルワークフローを選択します。",
+          helpStep2: "活動にカーソルを合わせるかクリックして、臨床的解釈、モジュール割当、資源フロー、確認事項を確認します。",
+          helpStep3: "確認したいパスウェイシナリオを構成する活動を選択します。暫定 cut-off 対象を除き、関連 LCA モジュールが自動的に選択されます。",
+          helpStep4: "LCA セクションでは、シナリオで実際に発生するモジュールと構成ブロックだけを残します。結果を根拠として使う前に、すべてのダミー数量と影響係数を置き換えてください。",
+          helpStep5: "不確実性とデータギャップを確認し、現在選択されている言語でレポートを出力します。",
+          helpCutoffTitle: "暫定 LCA cut-off",
+          helpCutoffText: "臨床上の意思決定点は図に残します。会議、デジタル文書、純粋な事務作業が人員時間とわずかなオフィスまたは ICT 電力しか追加しない場合、計算から除外します。人的労働そのものは環境資源フローとして評価せず、時間は部屋や機器投入の配分にのみ使用できます。数値的な cut-off 閾値はまだ検証されていないため、正式な LCA では除外項目を記録し、再評価する必要があります。",
+          lcaCutoffSummary: "暫定 cut-off を適用：会議のみ、デジタル文書、純粋な事務作業の構成ブロックは計算行に表示されません。",
           languageSelector: "言語",
           specialtySummary: "診療科",
           specialtyUrology: "泌尿器科",
@@ -2924,11 +3147,11 @@
           clearPathway: "選択したパスウェイをクリア",
           pathwayScenario: "パスウェイシナリオ",
           selectedActivitiesStatus: "{count} 件の活動を選択；{modules} 件のパスウェイモジュールが有効",
-          diagnosticRoute: "診断・アクセスルート",
+          diagnosticRoute: "診断・初回接触ルート",
           treatmentRoute: "治療ルート",
           followupRoute: "フォローアップルート",
           returnRoute: "条件付きまたは戻りルート",
-          access: "アクセス",
+          access: "初回接触・受け入れ",
           diagnostics: "診断",
           treatment: "治療",
           followup: "フォローアップ",
@@ -2945,10 +3168,14 @@
           decisionPoint: "意思決定点",
           selectedPathway: "選択済みパスウェイ",
           oncologyRelevant: "オンコロジー関連",
+          lcaCutoff: "LCA cut-off",
+          lcaStatus: "LCA ステータス",
+          lcaEligible: "モジュール対象",
           protocolInterpretation: "Protocol-to-activity 解釈",
           whyKept: "この要素を保持する理由",
           ecopathModule: "ECO-PATH モジュール",
           moduleExplanation: "{module} {name}。これは選択された活動に割り当てられた LCA モデリング領域であり、別の臨床活動ではありません。候補構成ブロックは LCA セクションに表示されます。{definition}",
+          cutoffActivityExplanation: "{module} {name} は、この意思決定活動の臨床分類として図に残ります。現在の暫定 cut-off では、追加の直接投入が人員時間とわずかなオフィスまたはデジタル電力に限られるため、この活動は LCA モジュールを有効にしません。",
           resourceFlows: "候補リソースフロー",
           expertConfirmation: "専門家確認が必要",
           clinicalProtocolFallback: "{label} は {domain} 領域の {type} としてパスウェイ図に表示されています。この表示はレビュー用のローカライズされた作業要約であり、英語の原文が基礎となる protocol 記録です。",
@@ -3005,10 +3232,23 @@
           moduleOff: "モジュールオフ",
           included: "含む",
           excluded: "除外",
+          methodLimitationsText: "本レポートは ECO-PATH 方法開発のためのモジュール型 LCA 計算デモであり、ISO 14040 または ISO 14044 に準拠した最終 LCA レポートではありません。追加の移動や医療処置を伴わない会議、デジタル文書、純粋な事務作業には暫定的な定性的 cut-off を適用しています。人的労働は環境資源フローとして評価せず、時間は配分パラメータとして使用できます。正式な LCA では、この cut-off の記録と感度確認が必要です。",
           reportExported: "レポートを出力しました：{filename}"
         } : {
           appTitle: "Explorador de actividades ECO-PATH",
           appSubtitle: "Vistas protocol-to-activity para MIBC y cáncer colorrectal para lógica de guías y delimitación de flujos locales.",
+          helpButton: "Cómo usar",
+          helpTitle: "Cómo usar ECO-PATH",
+          closeHelp: "Cerrar",
+          helpIntro: "Use el mapa para definir un escenario clínicamente significativo y, después, decida en la sección LCA qué bloques con consumo material de recursos entran en el modelo ambiental.",
+          helpStep1: "Seleccione una especialidad y una guía o fuente de flujo local en el menú de vías.",
+          helpStep2: "Pase el cursor o haga clic en una actividad para revisar su interpretación clínica, módulo, flujos de recursos y preguntas abiertas.",
+          helpStep3: "Seleccione las actividades que forman el escenario de interés. Los módulos LCA relacionados se marcan automáticamente, excepto las actividades bajo el cut-off provisional.",
+          helpStep4: "En la sección LCA, conserve solo los módulos y bloques que ocurren en el escenario. Sustituya todas las cantidades y coeficientes de impacto dummy antes de usar los resultados como evidencia.",
+          helpStep5: "Revise la incertidumbre y las lagunas de datos y exporte el informe en el idioma seleccionado.",
+          helpCutoffTitle: "Cut-off LCA provisional",
+          helpCutoffText: "Los puntos de decisión clínica permanecen en el mapa. Las reuniones, cartas digitales y actividades puramente administrativas se excluyen cuando solo añaden tiempo del personal y un consumo menor de energía de oficina o TIC. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse para asignar consumos de sala o equipos. Todavía no se ha validado un umbral numérico, por lo que la exclusión debe documentarse y revisarse durante el modelado LCA formal.",
+          lcaCutoffSummary: "Cut-off provisional aplicado: los bloques de reuniones, cartas digitales y administración pura no aparecen en las filas de cálculo.",
           languageSelector: "Idioma",
           specialtySummary: "Especialidades",
           specialtyUrology: "Urología",
@@ -3031,11 +3271,11 @@
           clearPathway: "Borrar vía seleccionada",
           pathwayScenario: "Escenario de vía",
           selectedActivitiesStatus: "{count} actividades seleccionadas; {modules} módulos de vía activos",
-          diagnosticRoute: "Ruta diagnóstica y de acceso",
+          diagnosticRoute: "Ruta diagnóstica y de primer contacto",
           treatmentRoute: "Ruta de tratamiento",
           followupRoute: "Ruta de seguimiento",
           returnRoute: "Ruta condicional o de retorno",
-          access: "Acceso",
+          access: "Primer contacto / admisión",
           diagnostics: "Diagnóstico",
           treatment: "Tratamiento",
           followup: "Seguimiento",
@@ -3052,10 +3292,14 @@
           decisionPoint: "Punto de decisión",
           selectedPathway: "Vía seleccionada",
           oncologyRelevant: "Relevante para oncología",
+          lcaCutoff: "Cut-off LCA",
+          lcaStatus: "Estado LCA",
+          lcaEligible: "Módulo aplicable",
           protocolInterpretation: "Interpretación protocol-to-activity",
           whyKept: "Por qué se conserva este elemento",
           ecopathModule: "Módulo ECO-PATH",
           moduleExplanation: "{module} {name}. Esta es la zona de modelado LCA asignada a la actividad seleccionada, no otra actividad clínica. Los bloques constructivos candidatos se muestran en la sección LCA. {definition}",
+          cutoffActivityExplanation: "{module} {name} se mantiene como clasificación clínica de esta actividad de decisión. Con el cut-off provisional actual, esta actividad no activa un módulo LCA porque sus entradas directas adicionales se limitan al tiempo del personal y a un consumo menor de energía de oficina o digital.",
           resourceFlows: "Flujos de recursos candidatos",
           expertConfirmation: "Confirmación experta necesaria",
           clinicalProtocolFallback: "{label} se representa como {type} en el dominio {domain}. Este texto es un resumen localizado de trabajo para revisión; el texto fuente en inglés sigue siendo el registro protocol subyacente.",
@@ -3112,6 +3356,7 @@
           moduleOff: "Módulo desactivado",
           included: "Incluido",
           excluded: "Excluido",
+          methodLimitationsText: "Este informe es una demostración de cálculo LCA modular para el desarrollo metodológico de ECO-PATH y no es un informe LCA final conforme con ISO 14040 o ISO 14044. El prototipo aplica un cut-off cualitativo provisional a reuniones, cartas digitales y actividades puramente administrativas sin desplazamientos ni procedimientos adicionales. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse como parámetro de asignación. Este cut-off requiere documentación y revisión de sensibilidad en el modelado LCA formal.",
           reportExported: "Informe exportado: {filename}"
         })
       };
@@ -3253,7 +3498,7 @@
     const moduleText = {
       en: Object.fromEntries(Object.entries(moduleRegistry).map(([id, item]) => [id, { name: item.name, definition: item.definition }])),
       nl: {
-        EM01: { name: "Toegang", definition: "Verwijzing, triage, intake, administratieve coordinatie en retour naar verwijzer." },
+        EM01: { name: "Eerste contact en intake", definition: "Eerste specialistische contact, intake en materiaalrelevante voorbereiding vóór diagnostiek of behandeling." },
         EM02: { name: "Pathologie", definition: "Pathologiebeoordeling, monstergerelateerde beoordeling, papieren beoordeling en diagnostische herbeoordeling." },
         EM03: { name: "Beeldvorming en endoscopie", definition: "Radiologie, CT-herbeoordeling, MRI, PET-CT, cystoscopie, colonoscopie of andere pathwayspecifieke diagnostiek." },
         EM04: { name: "Joint clinic en MDO", definition: "Joint clinic, multidisciplinaire bespreking en interdisciplinaire besluitvorming." },
@@ -3266,7 +3511,7 @@
         EM11: { name: "Gedeelde ziekenhuisondersteuning", definition: "Gedeelde diensten en overheadprocessen die meerdere pathwayactiviteiten ondersteunen en allocatieregels vereisen." }
       },
       zh: {
-        EM01: { name: "准入", definition: "转诊、分诊、接收、行政协调和返回转诊方等活动。" },
+        EM01: { name: "首次接触与接收", definition: "首次专科接触、接收，以及诊断或治疗前具有实质资源消耗的准备活动。" },
         EM02: { name: "病理", definition: "病理复核、样本相关评估、纸面评估和诊断复评。" },
         EM03: { name: "影像和内镜", definition: "放射影像、CT 复评、MRI、PET-CT、膀胱镜、结肠镜或其他路径特异性诊断程序。" },
         EM04: { name: "联合门诊和 MDT", definition: "联合门诊、多学科团队讨论和跨专科决策复核。" },
@@ -3279,7 +3524,7 @@
         EM11: { name: "医院共享支持", definition: "支持多个路径活动的共享服务和管理过程，需要分配规则。" }
       },
       ja: {
-        EM01: { name: "アクセス", definition: "紹介、トリアージ、受付、事務調整、紹介元への返送に関する活動。" },
+        EM01: { name: "初回接触・受け入れ", definition: "初回専門医接触、受け入れ、診断または治療前の資源投入を伴う準備。" },
         EM02: { name: "病理", definition: "病理レビュー、検体関連評価、書類レビュー、診断再評価。" },
         EM03: { name: "画像診断と内視鏡", definition: "放射線画像、CT 再評価、MRI、PET-CT、膀胱鏡、 colonoscopy、その他のパスウェイ特異的診断手順。" },
         EM04: { name: "合同外来と MDT", definition: "合同外来、多職種チームレビュー、診療科横断の意思決定レビュー。" },
@@ -3292,7 +3537,7 @@
         EM11: { name: "病院共通支援", definition: "複数のパスウェイ活動を支える共通サービスと間接プロセスで、配分ルールが必要です。" }
       },
       es: {
-        EM01: { name: "Acceso", definition: "Referencia, triaje, admision, coordinacion administrativa y retorno al referente." },
+        EM01: { name: "Primer contacto y admisión", definition: "Primer contacto con el especialista, admisión y preparación con consumo material de recursos antes del diagnóstico o tratamiento." },
         EM02: { name: "Patologia", definition: "Revision patologica, evaluacion de muestras, revision documental y reevaluacion diagnostica." },
         EM03: { name: "Imagen y endoscopia", definition: "Radiologia, reevaluacion CT, MRI, PET-CT, cistoscopia, colonoscopia u otros procedimientos diagnosticos especificos de la via." },
         EM04: { name: "Clinica conjunta y MDT", definition: "Clinica conjunta, revision del equipo multidisciplinario y revision de decisiones entre especialidades." },
@@ -4391,6 +4636,7 @@
 
     const blockNameText = {
       nl: {
+        "First specialist consultation": "Eerste specialistische consult",
         "Referral processing": "Verwijzingsverwerking",
         "Triage review": "Triagebeoordeling",
         "Intake scheduling": "Intakeplanning",
@@ -4444,6 +4690,7 @@
         "Shared sterilization support": "Gedeelde sterilisatieondersteuning"
       },
       zh: {
+        "First specialist consultation": "首次专科会诊",
         "Referral processing": "转诊处理",
         "Triage review": "分诊复核",
         "Intake scheduling": "接收和预约安排",
@@ -4928,6 +5175,7 @@
     };
 
     Object.assign(blockNameText.ja = blockNameText.ja || {}, {
+      "First specialist consultation": "初回専門医診察",
       "Referral processing": "紹介処理",
       "Triage review": "トリアージ確認",
       "Intake scheduling": "初回受付予約",
@@ -4982,6 +5230,7 @@
     });
 
     Object.assign(blockNameText.es = blockNameText.es || {}, {
+      "First specialist consultation": "Primera consulta con especialista",
       "Referral processing": "Procesamiento de referencia",
       "Triage review": "Revisión de triaje",
       "Intake scheduling": "Programación de ingreso",
@@ -6129,7 +6378,12 @@
     }
 
     function block(module, name, unit, resourceFlows) {
-      return { module, name, unit, resourceFlows };
+      return {
+        module,
+        name,
+        unit,
+        resourceFlows: resourceFlows.filter((flow) => !excludedHumanLaborFlowLabels.has(flow))
+      };
     }
 
     function defaultQuantityForBlock(item) {
@@ -6213,7 +6467,11 @@
     }
 
     function selectedScenarioModuleIds() {
-      const modules = new Set(selectedScenarioNodes().map((node) => node.module));
+      const modules = new Set(
+        selectedScenarioNodes()
+          .filter((node) => !isLcaCutoffNode(node))
+          .map((node) => node.module)
+      );
       return pathwayModuleIds().filter((moduleId) => modules.has(moduleId));
     }
 
@@ -6241,7 +6499,18 @@
     }
 
     function lcaPathwayModuleIds() {
-      return pathwayModuleIds();
+      const eligibleModules = new Set(
+        currentPathway().nodes
+          .filter((node) => !isLcaCutoffNode(node))
+          .map((node) => node.module)
+      );
+      return pathwayModuleIds()
+        .filter((moduleId) => eligibleModules.has(moduleId))
+        .filter((moduleId) => lcaRows.some((row) => row.module === moduleId));
+    }
+
+    function isLcaCutoffNode(node) {
+      return Boolean(node && lcaCutoffNodeIds.has(node.id));
     }
 
     function lcaSupportModuleIds() {
@@ -6371,6 +6640,17 @@
     function renderStaticLanguageText() {
       setText("appTitle", "appTitle");
       setText("appSubtitle", "appSubtitle");
+      setText("helpButtonText", "helpButton");
+      setText("helpDialogTitle", "helpTitle");
+      setText("closeHelpDialog", "closeHelp");
+      setText("helpIntro", "helpIntro");
+      setText("helpStep1", "helpStep1");
+      setText("helpStep2", "helpStep2");
+      setText("helpStep3", "helpStep3");
+      setText("helpStep4", "helpStep4");
+      setText("helpStep5", "helpStep5");
+      setText("helpCutoffTitle", "helpCutoffTitle");
+      setText("helpCutoffText", "helpCutoffText");
       setText("domainFilterLabel", "domain");
       setText("moduleFilterLabel", "module");
       setText("typeFilterLabel", "elementType");
@@ -6381,10 +6661,12 @@
       setText("pathwayScenarioTitle", "pathwayScenario");
       setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
       setText("diagnosticRouteLabel", "diagnosticRoute");
+      setText("fullscreenDiagnosticRouteLabel", "diagnosticRoute");
       setText("treatmentRouteLabel", "treatmentRoute");
       setText("followupRouteLabel", "followupRoute");
       setText("returnRouteLabel", "returnRoute");
       setText("accessPrefixLabel", "access");
+      setText("fullscreenAccessPrefixLabel", "access");
       setText("diagnosticsPrefixLabel", "diagnostics");
       setText("jmPrefixLabel", "jointMdt");
       setText("treatmentPrefixLabel", "treatment");
@@ -6406,8 +6688,16 @@
       setText("buildingBlockMapIntro", "buildingBlockMapIntro");
       setText("moduleZoneLegendLabel", "moduleZone");
       setText("candidateBlockLegendLabel", "candidateBuildingBlock");
+      setText("lcaCutoffSummary", "lcaCutoffSummary");
       setText("lcaCaseCountLabel", "cohortSize");
       setText("dataToCollectHeading", "dataToCollect");
+
+      const cutoffList = document.getElementById("helpCutoffList");
+      if (cutoffList) {
+        cutoffList.innerHTML = cutoffBuildingBlockRegistry
+          .map((item) => `<li>${escapeHtml(localizedBlockName(item.name))}</li>`)
+          .join("");
+      }
 
       const searchBox = document.getElementById("searchBox");
       if (searchBox) searchBox.placeholder = t("searchPlaceholder");
@@ -6833,7 +7123,8 @@
 
     function displayCode(node) {
       const match = node.id.match(/([A-Z]{2}[0-9]{2,})$/);
-      return match ? match[1] : node.id;
+      const code = match ? match[1] : node.id;
+      return code.replace(/^AC/, "FC");
     }
 
     function markerBounds(node) {
@@ -7132,6 +7423,7 @@
               <span class="tag module">${escapeHtml(node.module)}</span>
               ${isScenarioNodeSelected(node.id) ? `<span class="tag scenario">${escapeHtml(t("selectedPathway"))}</span>` : ""}
               ${node.oncology ? `<span class="tag oncology">${escapeHtml(t("oncologyRelevant"))}</span>` : ""}
+              ${isLcaCutoffNode(node) ? `<span class="tag">${escapeHtml(t("lcaCutoff"))}</span>` : ""}
             </div>
           </div>
         </div>
@@ -7146,11 +7438,13 @@
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("ecopathModule"))}</strong>
-            <p>${escapeHtml(t("moduleExplanation", {
-              module: node.module,
-              name: moduleName(node.module),
-              definition: moduleDefinition(node.module)
-            }))}</p>
+            <p>${escapeHtml(isLcaCutoffNode(node)
+              ? t("cutoffActivityExplanation", { module: node.module, name: moduleName(node.module) })
+              : t("moduleExplanation", {
+                module: node.module,
+                name: moduleName(node.module),
+                definition: moduleDefinition(node.module)
+              }))}</p>
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("resourceFlows"))}</strong>
@@ -7781,7 +8075,8 @@
           code: displayCode(node),
           label: localizedNodeLabel(node),
           module: node.module,
-          moduleName: moduleRegistry[node.module] ? moduleName(node.module) : ""
+          moduleName: moduleRegistry[node.module] ? moduleName(node.module) : "",
+          lcaCutoff: isLcaCutoffNode(node)
         })),
         generatedAt: reportGeneratedAt(),
         caseCount,
@@ -7836,9 +8131,10 @@
             <td>${escapeHtml(activity.code)}</td>
             <td>${escapeHtml(activity.label)}</td>
             <td>${escapeHtml(activity.module)} ${escapeHtml(activity.moduleName)}</td>
+            <td>${escapeHtml(activity.lcaCutoff ? t("lcaCutoff") : t("lcaEligible"))}</td>
           </tr>
         `).join("")
-        : `<tr><td colspan="3">${escapeHtml(t("noSelectedReport"))}</td></tr>`;
+        : `<tr><td colspan="4">${escapeHtml(t("noSelectedReport"))}</td></tr>`;
       const calculationRows = data.rows.map((row) => `
         <tr class="${row.included ? "" : "excluded"}">
           <td>${escapeHtml(row.module)}</td>
@@ -8029,7 +8325,7 @@
       <h2>${escapeHtml(t("selectedPathwayScenario"))}</h2>
       <table>
         <thead>
-          <tr><th>${escapeHtml(t("code"))}</th><th>${escapeHtml(t("activity"))}</th><th>${escapeHtml(t("assignedModule"))}</th></tr>
+          <tr><th>${escapeHtml(t("code"))}</th><th>${escapeHtml(t("activity"))}</th><th>${escapeHtml(t("assignedModule"))}</th><th>${escapeHtml(t("lcaStatus"))}</th></tr>
         </thead>
         <tbody>${selectedActivityRows}</tbody>
       </table>
@@ -8101,6 +8397,18 @@
     }
 
     function bindControls() {
+      const helpDialog = document.getElementById("helpDialog");
+      document.getElementById("openHelpDialog").addEventListener("click", () => {
+        document.getElementById("languageSelector").removeAttribute("open");
+        document.getElementById("specialtySelector").removeAttribute("open");
+        if (helpDialog && !helpDialog.open) helpDialog.showModal();
+      });
+      document.getElementById("closeHelpDialog").addEventListener("click", () => {
+        if (helpDialog && helpDialog.open) helpDialog.close();
+      });
+      helpDialog.addEventListener("click", (event) => {
+        if (event.target === helpDialog) helpDialog.close();
+      });
       document.getElementById("languageSelector").addEventListener("toggle", (event) => {
         if (event.target.open) document.getElementById("specialtySelector").removeAttribute("open");
       });

@@ -2327,7 +2327,7 @@
           { y: 220, label: "Staging, referral package, and transfer to Erasmus MC" },
           { y: 348, label: "Erasmus MC review and multidisciplinary treatment planning" },
           { y: 470, label: "Curative surgery / perioperative care", labelY: 450 },
-          { y: 590, label: "Bladder preservation and follow-up", labelY: 630 }
+          { y: 590, label: "Bladder preservation and follow-up", labelY: 634 }
         ],
         nodes: [
           activity("EMC-FC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral to regional urology after hematuria or another suspicion of bladder cancer.", "Joost described this as the operational start before the patient reaches Erasmus MC. Primary-care events are context; the modeled hospital boundary starts at regional urology.", ["Patient travel", "Outpatient room use", "EHR documentation"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
@@ -4623,7 +4623,7 @@
       "Staging, referral package, and transfer to Erasmus MC": "病期評価、紹介資料、Erasmus MC への移行",
       "Erasmus MC review and multidisciplinary treatment planning": "Erasmus MC レビューと多職種治療計画",
       "Curative surgery / perioperative care": "根治手術 / 周術期ケア",
-      "Bladder preservation and follow-up": "膀胱温存とフォローアップ"
+      "Bladder preservation and follow-up": "膀胱温存・経過観察"
     });
 
     Object.assign(laneLabelText.es, {
@@ -8061,6 +8061,7 @@
       const labelHeight = lines.length * 18;
       const markerHalfHeight = node.type === "decision" ? 30 : 24;
       const labelGap = 10;
+      const labelVerticalOffset = 4;
       const centeredX = node.x - labelWidth / 2;
       const above = {
         x: centeredX,
@@ -8082,9 +8083,10 @@
       candidates.forEach((candidate, index) => {
         const unclamped = { ...candidate, width: labelWidth, height: labelHeight };
         const x = Math.max(2, Math.min(1198 - labelWidth, candidate.x));
-        const y = Math.max(14, Math.min(650 - labelHeight, candidate.y));
+        const baseY = Math.max(14, Math.min(650 - labelHeight, candidate.y));
+        const y = baseY + labelVerticalOffset;
         const box = { x, y, width: labelWidth, height: labelHeight };
-        const clampPenalty = Math.abs(x - candidate.x) * 2 + Math.abs(y - candidate.y) * 2;
+        const clampPenalty = Math.abs(x - candidate.x) * 2 + Math.abs(baseY - candidate.y) * 2;
         const labelPenalty = placedLabels.reduce((total, placed) => total + overlapArea(box, placed) * 30, 0);
         const markerPenalty = markerBoxes.reduce((total, marker) => total + overlapArea(box, marker) * 40, 0);
         const edgePenalty = edgeBoxes.reduce((total, edgeBox) => total + overlapArea(box, edgeBox) * 0.2, 0);

@@ -353,6 +353,7 @@
       align-items: center;
       gap: 8px;
       min-width: 220px;
+      max-width: 300px;
     }
 
     .panel-heading {
@@ -361,6 +362,11 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 10px;
+    }
+
+    .panel-heading > div:first-child {
+      flex: 1 1 360px;
+      min-width: 0;
     }
 
     .panel h2 {
@@ -392,6 +398,13 @@
       font-size: 12px;
       white-space: nowrap;
       background: var(--accent-soft);
+    }
+
+    .map-actions .status-chip {
+      max-width: 300px;
+      white-space: normal;
+      line-height: 1.25;
+      text-align: center;
     }
 
     .map-wrap {
@@ -491,7 +504,7 @@
 
     .node-code {
       font-family: var(--mono);
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       fill: var(--ink);
       text-anchor: middle;
@@ -503,14 +516,14 @@
     }
 
     .station-label-text {
-      font-size: 13px;
+      font-size: 14.5px;
       fill: var(--ink);
       dominant-baseline: text-before-edge;
       pointer-events: none;
     }
 
     .lane-label {
-      font-size: 13.5px;
+      font-size: 14.5px;
       fill: var(--muted);
       font-weight: 700;
     }
@@ -1753,6 +1766,7 @@
       block("EM01", "Referral processing", "per referral", ["Staff time", "EHR use", "Referral communication"]),
       block("EM01", "Triage review", "per triage decision", ["Clinician time", "Record review", "Scheduling"]),
       block("EM01", "Intake scheduling", "per appointment", ["Administrative time", "Patient communication", "ICT"]),
+      block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"]),
       block("EM01", "Return-to-referrer handover", "per transfer", ["Clinical letter", "EHR transfer", "Administrative time"]),
 
       block("EM02", "Pathology slide review", "per review", ["Pathologist time", "Microscopy or digital pathology", "Report generation"]),
@@ -1764,6 +1778,7 @@
       block("EM03", "MRI scan", "per scan", ["Scanner electricity", "Room time", "Radiology reporting", "Patient travel"]),
       block("EM03", "PET-CT scan", "per scan", ["Radiotracer", "Scanner electricity", "Uptake room time", "Waste"]),
       block("EM03", "Colonoscopy", "per procedure", ["Procedure materials", "Sedation", "Endoscope reprocessing", "Water", "Waste"]),
+      block("EM03", "Polypectomy or endoscopic lesion removal", "per procedure", ["Polypectomy device", "Specimen container", "Procedure time", "Endoscopy waste"]),
       block("EM03", "Cystoscopy", "per procedure", ["Scope use", "Consumables", "Reprocessing", "Procedure room time"]),
       block("EM03", "Ultrasound", "per scan", ["Equipment electricity", "Gel and covers", "Clinical staff time"]),
 
@@ -1774,6 +1789,7 @@
       block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
       block("EM05", "Shared decision-making session", "per session", ["Clinician time", "Decision aid material", "Patient communication"]),
       block("EM05", "Fitness or pre-treatment assessment", "per assessment", ["Assessment time", "Laboratory review", "EHR documentation"]),
+      block("EM05", "Polyp risk stratification", "per case classified", ["Pathology review", "Risk category assignment", "Patient communication"]),
       block("EM05", "Response or progression assessment", "per assessment", ["Clinical review", "Imaging review", "Laboratory review"]),
 
       block("EM06", "Medical oncology consultation", "per visit", ["Oncologist time", "Room use", "Patient travel", "EHR use"]),
@@ -1797,6 +1813,8 @@
 
       block("EM09", "Outpatient follow-up visit", "per visit", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
       block("EM09", "Surveillance test set", "per surveillance round", ["Blood test", "Imaging or endoscopy", "Reporting"]),
+      block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing", "Patient travel"]),
+      block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"]),
       block("EM09", "Home-based follow-up kit", "per kit", ["Sampling material", "Shipping", "Laboratory processing", "Digital app use"]),
       block("EM09", "Return-route follow-up handover", "per handover", ["Clinical letter", "Administrative time", "EHR transfer"]),
 
@@ -2060,191 +2078,335 @@
           edge("EMC-FU01", "EMC-FU02", "return")
         ]
       },
-      crcGuideline: {
-        label: "Gastro: EU/ESMO CRC",
-        title: "European CRC Guideline Reference Pathway",
-        status: "Clinical reference, local execution not assumed",
-        scope: "Guideline-level colorectal cancer logic combining ECICC prevention, screening, and diagnosis guidance with ESMO colon, rectal, and metastatic CRC treatment guidance. This is an ECO-PATH scoping abstraction, not a clinical treatment recommendation.",
-        defaultSelected: "CRC-GUIDE-JM01",
+      crcDutch: {
+        specialty: "gastroenterology",
+        sourceType: "guideline",
+        sourceGroup: "reference",
+        label: "Gastroenterology: Dutch CRC pathway",
+        title: "Dutch CRC Screening-Positive Hospital Pathway",
+        status: "Dutch national guideline-based pathway, local EMC execution not assumed",
+        scope: "Hospital-boundary ECO-PATH abstraction starting at first hospital contact after an abnormal FIT screening result. It separates no-polyp, low-risk polyp, high-risk polyp, and colorectal cancer branches using Dutch screening outcome data and FMS/Richtlijnendatabase guidance for colorectal cancer and colonoscopy surveillance.",
+        defaultSelected: "CRCDUTCH-DX04",
         lanes: [
-          { y: 104, label: "Screening, diagnosis, and staging" },
-          { y: 292, label: "Localized colon and rectal treatment" },
-          { y: 484, label: "Advanced disease, local therapy, and follow-up" }
+          { y: 88, label: "First hospital contact after positive FIT" },
+          { y: 210, label: "Diagnostic colonoscopy and findings" },
+          { y: 335, label: "Polyp management and surveillance" },
+          { y: 470, label: "CRC staging, MDO, and treatment" },
+          { y: 595, label: "Post-treatment surveillance" }
         ],
         nodes: [
-          activity("CRC-GUIDE-AC01", "Screening or referral entry", "Access", "activity", "EM01", "diagnostic", 70, 104, "Entry through population screening, symptomatic presentation, or referral into a colorectal cancer diagnostic pathway.", "Retained because CRC can enter through screening or clinical referral, and the entry route affects colonoscopy demand, travel, and administrative contacts.", ["Invitation or referral communication", "Administrative ICT", "Patient travel if clinic attendance occurs"], ["Should the ECO-PATH CRC scope start at FIT-positive screening, symptoms, referral, confirmed diagnosis, or MDT?"]),
-          activity("CRC-GUIDE-DX01", "FIT-positive or symptoms", "Diagnostics", "decision", "EM03", "diagnostic", 190, 104, "Decision-relevant trigger for diagnostic colonoscopy after positive screening or clinical suspicion.", "This keeps the screening-to-diagnosis transition visible for pathway-level modeling.", ["Screening test logistics", "Clinical assessment", "Patient communication"], ["Is population screening inside the modeled boundary or a pre-pathway activity?"]),
-          activity("CRC-GUIDE-DX02", "Colonoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 310, 104, "Endoscopic examination for diagnosis, lesion assessment, biopsy, and possible polypectomy.", "Colonoscopy is a candidate ECO-PATH building block with equipment, sedation, disposables, reprocessing, and pathology links.", ["Endoscopy room time", "Scope reprocessing", "Sedation if used", "Biopsy tools", "Patient travel"], ["Which colonoscopy setting and sedation assumptions apply locally?"]),
-          activity("CRC-GUIDE-DX03", "Biopsy and pathology", "Diagnostics", "activity", "EM02", "diagnostic", 430, 104, "Histopathological confirmation and biomarker-related review where relevant.", "Pathology is needed to connect diagnosis, staging, molecular characterization, and treatment planning.", ["Sample handling", "Pathology staff time", "Digital or microscopy review", "Molecular testing if used"], ["Which pathology and molecular tests are routine for the target CRC subgroup?"]),
-          activity("CRC-GUIDE-DX04", "CT staging and CEA workup", "Diagnostics", "activity", "EM03", "diagnostic", 550, 104, "Staging workup with cross-sectional imaging and laboratory assessment such as CEA where relevant.", "Staging separates localized colon, localized rectal, and metastatic pathways, which have different LCA drivers.", ["CT scanner electricity", "Contrast media", "Laboratory testing", "Radiology reporting"], ["Which staging tests are repeated after referral versus reviewed from another hospital?"]),
-          activity("CRC-GUIDE-DX05", "Rectal MRI if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 670, 58, "Pelvic MRI or rectal-specific staging when the tumor location requires rectal cancer risk assessment.", "Rectal cancer staging can trigger neoadjuvant therapy, chemoradiation, or organ-preservation scenarios.", ["MRI scanner electricity", "Radiology staff time", "Patient travel", "Report generation"], ["Should colon and rectal cancer be separate ECO-PATH case examples?"]),
-          activity("CRC-GUIDE-JM01", "CRC MDT review", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 790, 104, "Multidisciplinary review of diagnosis, staging, operability, treatment intent, and sequence.", "A central decision node that links diagnostic information to surgery, systemic therapy, radiotherapy, and follow-up.", ["Clinician time", "Meeting room or digital meeting", "EHR and imaging display"], ["Which specialties attend the local colorectal MDT, and how often are cases re-discussed?"]),
-          activity("CRC-GUIDE-TX01", "Colon or rectal route decision", "Treatment planning", "decision", "EM05", "treatment", 910, 104, "Decision split between localized colon cancer, localized rectal cancer, metastatic disease, or other route-specific planning.", "Kept separate from treatment delivery because it controls downstream module selection and clinical comparability.", ["Consultation time", "Treatment planning", "Shared decision documentation"], ["Which decision comparison is intended for ECO-PATH: surgery, neoadjuvant treatment, surveillance, or pathway redesign?"]),
-          activity("CRC-GUIDE-TX02", "Colon surgery", "Surgery", "activity", "EM07", "treatment", 550, 292, "Surgical resection route for localized colon cancer where clinically indicated.", "Surgery is likely a high-impact module because of operating room time, anesthesia, instruments, admission, and waste.", ["Operating room time", "Anesthesia", "Sterile instruments", "Ward stay", "Surgical waste"], ["Which colectomy procedures and admission boundaries should be modeled?"]),
-          activity("CRC-GUIDE-TX03", "Adjuvant chemotherapy decision", "Systemic therapy and oncology", "decision", "EM06", "treatment", 670, 292, "Eligibility and indication assessment for adjuvant systemic therapy after localized colon surgery.", "Oncology appears as route decision logic and should connect to regimen, cycle, and monitoring assumptions.", ["Medical oncology review", "Laboratory monitoring", "Treatment scheduling"], ["Which stage, risk, and regimen assumptions are in scope?"]),
-          activity("CRC-GUIDE-TX04", "Adjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 790, 292, "Systemic therapy delivery after surgery where indicated.", "Drug dose, cycles, infusion or oral therapy, pharmacy preparation, and waste are core LCA drivers.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Day-care chair time", "Cytotoxic waste"], ["Which regimens and cycle counts are used locally?"]),
-          activity("CRC-GUIDE-TX05", "Neoadjuvant rectal therapy decision", "Treatment planning", "decision", "EM05", "treatment", 910, 292, "Decision on neoadjuvant therapy or upfront surgery for localized rectal cancer based on staging and risk.", "This node is essential because rectal cancer can change treatment sequence and time horizon.", ["Radiology review", "MDT decision time", "Patient consultation", "Scheduling"], ["Which rectal risk groups should be represented in the pathway?"]),
-          activity("CRC-GUIDE-TX06", "Chemoradiation or TNT", "Radiotherapy", "activity", "EM08", "treatment", 1030, 292, "Radiotherapy-based or total neoadjuvant treatment pathway for selected rectal cancer cases.", "This links radiotherapy, systemic therapy, repeated response assessment, and potential organ-preservation decisions.", ["Radiotherapy fractions", "Treatment planning", "Chemotherapy co-treatment", "Patient travel", "Response assessment"], ["How should EM06 systemic therapy inputs be separated from EM08 radiotherapy inputs?"]),
-          activity("CRC-GUIDE-TX07", "Rectal surgery", "Surgery", "activity", "EM07", "treatment", 1030, 404, "Rectal cancer surgery after upfront surgery or neoadjuvant treatment where indicated.", "A separate surgery node is useful because rectal operations, stoma care, admission, and perioperative pathways differ from colon surgery.", ["Operating room time", "Anesthesia", "Stoma materials if used", "Ward stay", "Surgical waste"], ["Which rectal surgery types and stoma assumptions apply?"]),
-          activity("CRC-GUIDE-TX08", "Metastatic disease decision", "Treatment planning", "decision", "EM05", "treatment", 790, 484, "Decision on systemic therapy, local treatment of metastases, cytoreductive surgery, HIPEC, or palliative route where relevant.", "Metastatic CRC should usually be a separate ECO-PATH scenario because intent, time horizon, and comparability differ from localized disease.", ["MDT review", "Medical oncology consultation", "Interventional planning"], ["Should metastatic CRC be included in the same page as localized CRC or treated as a separate case?"]),
-          activity("CRC-GUIDE-TX09", "Systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 910, 484, "Systemic treatment route for metastatic or advanced colorectal cancer.", "This is a major oncology resource-flow module with drug, pharmacy, monitoring, and waste inputs.", ["Drug dose and regimen", "Infusion or oral treatment", "Pharmacy preparation", "Monitoring tests", "Cytotoxic waste"], ["Which line of therapy and biomarker-defined subgroup is relevant?"]),
-          activity("CRC-GUIDE-TX10", "Metastasis local therapy or HIPEC", "Surgery", "activity", "EM07", "treatment", 1030, 484, "Selected local treatment options for metastases or peritoneal disease, including surgery or HIPEC where clinically relevant.", "Kept as a distinct advanced-disease node because the resource profile differs strongly from standard colectomy.", ["Operating room time", "Perfusion equipment if HIPEC", "Medicines", "ICU or ward stay", "Waste"], ["Which advanced-disease interventions are actually performed in the selected local boundary?"]),
-          activity("CRC-GUIDE-FU01", "Follow-up and surveillance", "Follow-up", "activity", "EM09", "followup", 1130, 484, "Post-treatment surveillance and follow-up after localized or advanced CRC pathways.", "Follow-up can drive repeated visits, CEA testing, imaging, colonoscopy, and travel over a multi-year time horizon.", ["Outpatient visits", "CEA tests", "Surveillance imaging", "Colonoscopy", "Patient travel"], ["What time horizon should be modeled: 90 days, one year, five years, or another interval?"])
+          {
+            id: "CRCDUTCH-AC01",
+            x: 80,
+            y: 88,
+            label: "Positive FIT hospital referral",
+            domain: "Access",
+            type: "activity",
+            module: "EM01",
+            line: "diagnostic",
+            moduleNote: "Hospital boundary starts after the screening program produces an abnormal FIT result and the patient is referred for colonoscopy follow-up.",
+            interpretation: "This is the first hospital-facing handover after national bowel cancer screening, not the home FIT sampling activity itself.",
+            rationale: "Peter emphasized a hospital-wall boundary. The screening kit is upstream unless a wider population-screening study is explicitly chosen.",
+            resourceFlows: ["Referral communication", "Scheduling", "Administrative time"]
+          },
+          {
+            id: "CRCDUTCH-AC02",
+            x: 235,
+            y: 88,
+            label: "Colonoscopy intake and bowel preparation",
+            domain: "Access",
+            type: "activity",
+            module: "EM01",
+            line: "diagnostic",
+            moduleNote: "This step captures the colonoscopy intake visit, risk check, instructions, and bowel preparation logistics before endoscopy.",
+            interpretation: "Operational preparation for colonoscopy after positive FIT.",
+            rationale: "This is a material-relevant activity because bowel preparation, patient instructions, travel, and scheduling occur before the diagnostic procedure.",
+            resourceFlows: ["Staff time", "Bowel preparation", "Patient travel", "EHR use"]
+          },
+          {
+            id: "CRCDUTCH-DX01",
+            x: 390,
+            y: 210,
+            label: "Diagnostic colonoscopy",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM03",
+            line: "diagnostic",
+            moduleNote: "Endoscopy is treated as a diagnostic building block inside the imaging and endoscopy module.",
+            interpretation: "Colonoscopy follow-up after an abnormal FIT screening result.",
+            rationale: "RIVM screening guidance states that an abnormal FIT result is followed by referral for colonoscopy follow-up.",
+            resourceFlows: ["Endoscopy room use", "Endoscope reprocessing", "Sedation", "Consumables", "Waste"]
+          },
+          {
+            id: "CRCDUTCH-DX02",
+            x: 545,
+            y: 210,
+            label: "Lesion detection and polypectomy",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM03",
+            line: "diagnostic",
+            moduleNote: "Polypectomy is modeled with endoscopy because it occurs during colonoscopy for many screen-positive patients.",
+            interpretation: "Detection and removal of relevant lesions during the index colonoscopy when indicated.",
+            rationale: "The majority of screen-positive follow-up findings are no cancer. Polyp handling must therefore be visible in the pathway and not hidden behind the CRC treatment branch.",
+            resourceFlows: ["Polypectomy devices", "Specimen containers", "Procedure time", "Pathology request"]
+          },
+          {
+            id: "CRCDUTCH-DX03",
+            x: 700,
+            y: 210,
+            label: "Pathology classification",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM02",
+            line: "diagnostic",
+            moduleNote: "Pathology separates low-risk polyps, high-risk adenoma or serrated lesions, and colorectal cancer.",
+            interpretation: "Histopathological classification of biopsy or polypectomy specimens.",
+            rationale: "Dutch colonoscopy surveillance guidance bases surveillance decisions on number, size, histology, and serrated or adenoma risk features.",
+            resourceFlows: ["Specimen processing", "Microscopy", "Digital pathology if used", "Reporting"]
+          },
+          {
+            id: "CRCDUTCH-DX04",
+            x: 850,
+            y: 210,
+            label: "Findings branch decision",
+            domain: "Diagnostics",
+            type: "decision",
+            module: "EM05",
+            line: "diagnostic",
+            moduleNote: "This decision node separates no-polyps, low-risk polyps, high-risk polyps, and CRC cases before LCA scenario selection.",
+            interpretation: "Branching after colonoscopy and pathology results.",
+            rationale: "RIVM public information reports that per 100 follow-up investigations, outcomes include no polyps, small polyps, large polyps, and colorectal cancer. This is the key population split for ECO-PATH.",
+            resourceFlows: ["Clinical review", "Patient communication", "Referral decision", "EHR use"]
+          },
+          {
+            id: "CRCDUTCH-FU01",
+            x: 1030,
+            y: 88,
+            label: "No polyps: return to screening",
+            domain: "Follow-up",
+            type: "return",
+            module: "EM09",
+            line: "followup",
+            moduleNote: "No-polyp findings are outside CRC treatment and usually return to the screening program or usual care.",
+            interpretation: "Screen-positive follow-up without relevant polyp or cancer finding.",
+            rationale: "This branch is necessary because a large fraction of follow-up colonoscopies do not lead to CRC treatment.",
+            resourceFlows: ["Result letter", "Administrative discharge", "EHR update"]
+          },
+          {
+            id: "CRCDUTCH-FU02",
+            x: 1030,
+            y: 210,
+            label: "Low-risk polyps: return to screening",
+            domain: "Follow-up",
+            type: "return",
+            module: "EM09",
+            line: "followup",
+            moduleNote: "Low-risk polyp findings may return to the national screening program instead of colonoscopy surveillance.",
+            interpretation: "Low-risk post-polypectomy route after index colonoscopy.",
+            rationale: "Dutch surveillance guidance distinguishes low-risk profiles from high-risk profiles and avoids unnecessary surveillance colonoscopy.",
+            resourceFlows: ["Patient communication", "Administrative discharge", "Future screening invitation"]
+          },
+          {
+            id: "CRCDUTCH-TX01",
+            x: 1030,
+            y: 335,
+            label: "High-risk polyp surveillance indication",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM05",
+            line: "followup",
+            moduleNote: "This is not cancer treatment. It is a surveillance indication after high-risk adenoma, high-risk serrated lesion, or multiple adenomas.",
+            interpretation: "Decision to enter colonoscopy surveillance after high-risk polyp findings.",
+            rationale: "Dutch colonoscopy surveillance guidance recommends surveillance colonoscopy after 3 years for high-risk adenoma, high-risk serrated polyp, or five or more adenomas.",
+            resourceFlows: ["Risk stratification", "Scheduling", "Patient communication"]
+          },
+          {
+            id: "CRCDUTCH-FU03",
+            x: 1160,
+            y: 335,
+            label: "Post-polypectomy surveillance colonoscopy",
+            domain: "Follow-up",
+            type: "activity",
+            module: "EM09",
+            line: "followup",
+            moduleNote: "Polyp surveillance is a follow-up building block and should not be merged with post-CRC treatment surveillance.",
+            interpretation: "Surveillance colonoscopy for patients with high-risk post-polypectomy findings.",
+            rationale: "Peter emphasized that most screen-positive patients are in the polyp pathway, making this branch important for pathway-level LCA.",
+            resourceFlows: ["Surveillance colonoscopy", "Bowel preparation", "Endoscope reprocessing", "Patient travel"]
+          },
+          {
+            id: "CRCDUTCH-DX05",
+            x: 700,
+            y: 470,
+            label: "CRC staging workup",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM03",
+            line: "diagnostic",
+            moduleNote: "CRC cases require staging workup before treatment planning. Exact imaging depends on colon versus rectal cancer and metastatic suspicion.",
+            interpretation: "Imaging and diagnostic staging after colorectal cancer is identified.",
+            rationale: "The Dutch CRC guideline covers diagnosis, staging, treatment, metastases, follow-up, aftercare, and organization of care in secondary and tertiary care.",
+            resourceFlows: ["CT", "MRI if rectal cancer", "Laboratory testing", "Radiology reporting"]
+          },
+          {
+            id: "CRCDUTCH-JM01",
+            x: 850,
+            y: 470,
+            label: "CRC MDO",
+            domain: "Joint clinic and MDT",
+            type: "decision",
+            module: "EM04",
+            line: "treatment",
+            oncology: true,
+            moduleNote: "MDO is shown only for the CRC subgroup, not for all positive FIT or polyp-only cases.",
+            interpretation: "Multidisciplinary oncology discussion for confirmed colorectal cancer.",
+            rationale: "Peter clarified that MDO belongs to the cancer pathway. It should not be applied to the majority polyp-only branch.",
+            resourceFlows: ["Clinician time", "Meeting room or digital meeting", "Image display", "EHR use"]
+          },
+          {
+            id: "CRCDUTCH-TX02",
+            x: 1000,
+            y: 470,
+            label: "Colon versus rectal route decision",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM05",
+            line: "treatment",
+            moduleNote: "Colon and rectal cancer are separated because treatment sequences and resource flows differ.",
+            interpretation: "Treatment planning distinction between colon cancer, rectal cancer, and advanced or palliative disease routes.",
+            rationale: "The Dutch CRC guideline treats colon and rectal cancer separately where relevant, which is necessary for ECO-PATH module selection.",
+            resourceFlows: ["Treatment planning", "Shared decision documentation", "Patient consultation"]
+          },
+          {
+            id: "CRCDUTCH-TX03",
+            x: 700,
+            y: 595,
+            label: "Colon surgery",
+            domain: "Treatment",
+            type: "activity",
+            module: "EM07",
+            line: "treatment",
+            moduleNote: "Surgery is modeled as a reusable module with operating room, anesthesia, admission, instruments, and waste flows.",
+            interpretation: "Surgical treatment route for localized colon cancer when indicated.",
+            rationale: "Surgery is expected to be one of the major environmental hotspots in CRC care pathways.",
+            resourceFlows: ["Operating room time", "Anesthesia", "Surgical instruments", "Admission days", "Waste"]
+          },
+          {
+            id: "CRCDUTCH-TX04",
+            x: 850,
+            y: 595,
+            label: "Adjuvant systemic therapy if indicated",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM06",
+            line: "treatment",
+            oncology: true,
+            moduleNote: "Systemic therapy is conditional and should be parameterized by regimen, cycle count, monitoring, and pharmacy preparation.",
+            interpretation: "Eligibility and indication assessment for adjuvant systemic therapy after localized colon surgery.",
+            rationale: "Oncology is represented as treatment decision logic and resource-intensive systemic therapy building blocks, not as a separate disease pathway.",
+            resourceFlows: ["Medical oncology review", "Chemotherapy cycles", "Pharmacy preparation", "Laboratory monitoring"]
+          },
+          {
+            id: "CRCDUTCH-TX05",
+            x: 550,
+            y: 470,
+            label: "Rectal neoadjuvant or radiotherapy route",
+            domain: "Treatment",
+            type: "activity",
+            module: "EM08",
+            line: "treatment",
+            oncology: true,
+            moduleNote: "Rectal cancer may involve radiotherapy, chemoradiation, or total neoadjuvant therapy depending on stage and local decision making.",
+            interpretation: "Preoperative or organ-preserving rectal treatment route when indicated.",
+            rationale: "This branch creates reusable radiotherapy and chemoradiation building blocks that overlap with other oncology pathways.",
+            resourceFlows: ["Radiotherapy planning", "Treatment fractions", "Concurrent systemic therapy", "Patient travel"]
+          },
+          {
+            id: "CRCDUTCH-FU04",
+            x: 520,
+            y: 595,
+            label: "Watch-and-wait response surveillance",
+            domain: "Follow-up",
+            type: "activity",
+            module: "EM09",
+            line: "followup",
+            oncology: true,
+            moduleNote: "This branch is optional and should be confirmed with clinical experts for a specific rectal cancer scope.",
+            interpretation: "Response-based surveillance after rectal neoadjuvant treatment if an organ-preserving route is chosen.",
+            rationale: "Peter discussed surveillance after treatment as a potentially important pathway feature with repeated tests over time.",
+            resourceFlows: ["MRI or endoscopy", "Clinical assessment", "Patient travel", "Follow-up scheduling"]
+          },
+          {
+            id: "CRCDUTCH-TX06",
+            x: 635,
+            y: 595,
+            label: "Rectal surgery if indicated",
+            domain: "Treatment",
+            type: "activity",
+            module: "EM07",
+            line: "treatment",
+            moduleNote: "Rectal surgery is kept separate from colon surgery because operative duration, admission, stoma care, and preoperative treatment history can differ.",
+            interpretation: "Surgical treatment after rectal staging or neoadjuvant therapy when indicated.",
+            rationale: "Separation helps avoid hiding clinically important resource differences inside a generic surgery block.",
+            resourceFlows: ["Operating room time", "Anesthesia", "Surgical instruments", "Admission days", "Stoma materials if applicable"]
+          },
+          {
+            id: "CRCDUTCH-TX07",
+            x: 1160,
+            y: 470,
+            label: "Advanced or palliative route",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM05",
+            line: "return",
+            oncology: true,
+            moduleNote: "Advanced disease is retained as a branch because the Dutch CRC guideline includes metastatic disease and palliative treatment, but detailed regimens need separate scoping.",
+            interpretation: "Route for metastatic, unresectable, or palliative treatment situations.",
+            rationale: "This branch should remain configurable. It can be excluded when the study boundary is localized CRC only.",
+            resourceFlows: ["Medical oncology review", "Systemic therapy planning", "Palliative care coordination"]
+          },
+          {
+            id: "CRCDUTCH-FU05",
+            x: 1030,
+            y: 595,
+            label: "Post-CRC treatment surveillance",
+            domain: "Follow-up",
+            type: "activity",
+            module: "EM09",
+            line: "followup",
+            moduleNote: "Post-treatment surveillance is separate from polyp surveillance because it can include clinic review, imaging, laboratory testing, and colonoscopy over a defined time horizon.",
+            interpretation: "Follow-up after curative or disease-directed CRC treatment.",
+            rationale: "Peter emphasized that the endpoint must be defined because surveillance may continue for years. ECO-PATH should use a specified time horizon.",
+            resourceFlows: ["Outpatient visits", "CEA or laboratory testing", "CT if indicated", "Colonoscopy", "Patient travel"]
+          }
         ],
         edges: [
-          edge("CRC-GUIDE-AC01", "CRC-GUIDE-DX01", "diagnostic"),
-          edge("CRC-GUIDE-DX01", "CRC-GUIDE-DX02", "diagnostic"),
-          edge("CRC-GUIDE-DX02", "CRC-GUIDE-DX03", "diagnostic"),
-          edge("CRC-GUIDE-DX03", "CRC-GUIDE-DX04", "diagnostic"),
-          edge("CRC-GUIDE-DX04", "CRC-GUIDE-DX05", "diagnostic"),
-          edge("CRC-GUIDE-DX04", "CRC-GUIDE-JM01", "diagnostic"),
-          edge("CRC-GUIDE-DX05", "CRC-GUIDE-JM01", "diagnostic"),
-          edge("CRC-GUIDE-JM01", "CRC-GUIDE-TX01", "treatment"),
-          edge("CRC-GUIDE-TX01", "CRC-GUIDE-TX02", "treatment"),
-          edge("CRC-GUIDE-TX02", "CRC-GUIDE-TX03", "treatment"),
-          edge("CRC-GUIDE-TX03", "CRC-GUIDE-TX04", "treatment"),
-          edge("CRC-GUIDE-TX04", "CRC-GUIDE-FU01", "followup"),
-          edge("CRC-GUIDE-TX01", "CRC-GUIDE-TX05", "treatment"),
-          edge("CRC-GUIDE-TX05", "CRC-GUIDE-TX06", "treatment"),
-          edge("CRC-GUIDE-TX06", "CRC-GUIDE-TX07", "treatment"),
-          edge("CRC-GUIDE-TX07", "CRC-GUIDE-FU01", "followup"),
-          edge("CRC-GUIDE-TX01", "CRC-GUIDE-TX08", "treatment"),
-          edge("CRC-GUIDE-TX08", "CRC-GUIDE-TX09", "treatment"),
-          edge("CRC-GUIDE-TX08", "CRC-GUIDE-TX10", "treatment"),
-          edge("CRC-GUIDE-TX09", "CRC-GUIDE-FU01", "followup"),
-          edge("CRC-GUIDE-TX10", "CRC-GUIDE-FU01", "followup")
-        ]
-      },
-      crcGuidelineFull: {
-        label: "Gastro: EU CRC screening/diagnosis full extraction",
-        title: "EU CRC Screening/Diagnosis Full Extraction",
-        status: "Screening/diagnosis extraction, treatment not assumed",
-        scope: "Activity-level extraction from the European guidelines for quality assurance in colorectal cancer screening and diagnosis. This view expands programme invitation, primary testing, positive-test management, diagnostic colonoscopy, pathology, lesion management, surveillance, and programme evaluation. It is not a complete CRC treatment guideline and does not assume Erasmus MC local execution.",
-        defaultSelected: "CRCFULL-DX10",
-        lanes: [
-          { y: 90, label: "Programme entry and invitation" },
-          { y: 205, label: "Primary screening test" },
-          { y: 320, label: "Diagnostic colonoscopy" },
-          { y: 435, label: "Pathology and lesion management" },
-          { y: 555, label: "Surveillance and programme evaluation" }
-        ],
-        nodes: [
-          activity("CRCFULL-AC01", "Eligible population register", "Access", "activity", "EM01", "diagnostic", 70, 90, "Define and maintain the eligible target population for organised CRC screening.", "The EU guideline emphasizes organised population-based programmes, personal invitation, registry linkage, and monitoring as part of screening quality assurance.", ["Population registry", "Administrative ICT", "Data linkage"], ["Which Dutch or local registry source defines the eligible population for the ECO-PATH boundary?"]),
-          activity("CRCFULL-DX01", "Primary screening strategy", "Diagnostics", "decision", "EM05", "diagnostic", 200, 90, "Define the primary screening strategy, including faecal testing, endoscopy-based screening, or technologies under evaluation.", "This decision controls downstream activity demand, test interval, colonoscopy volume, and data collection needs.", ["Programme planning time", "Evidence review", "Quality assurance documentation"], ["Which primary screening strategy should be represented for the case example?"]),
-          activity("CRCFULL-AC02", "Invitation and information", "Access", "activity", "EM01", "diagnostic", 330, 90, "Invite eligible people and provide balanced screening information.", "Invitation and information are explicit parts of organised CRC screening and affect participation, equity, communication materials, and administrative ICT.", ["Invitation letter", "Patient information material", "Administrative ICT", "Postage or digital communication"], ["Should invitation and information be included in the functional unit or treated as programme overhead?"]),
-          activity("CRCFULL-AC03", "Reminder and participation support", "Access", "activity", "EM01", "diagnostic", 460, 90, "Use reminders and participation support to improve screening uptake and informed participation.", "The guideline discusses reminders, barriers to participation, communication, and primary-care involvement as quality-relevant programme activities.", ["Reminder communication", "Primary care involvement", "Administrative follow-up"], ["Which reminders or support activities occur in the relevant Dutch screening pathway?"]),
-          activity("CRCFULL-DX02", "Test kit delivery", "Diagnostics", "activity", "EM03", "diagnostic", 330, 205, "Deliver the faecal test kit or organise the primary screening test pathway.", "Kit delivery is a discrete resource-relevant activity for stool-test-based screening.", ["Test kit", "Packaging", "Postage or logistics", "Instruction leaflet"], ["Which test kit, packaging, and return logistics are used?"]),
-          activity("CRCFULL-DX03", "Stool sample collection", "Diagnostics", "activity", "EM03", "diagnostic", 460, 205, "Collect and return the stool sample for faecal occult blood testing or FIT-based screening.", "Sample collection and return logistics can affect participation and resource use.", ["Sampling device", "Return packaging", "Patient time", "Transport logistics"], ["Is sample return postal, drop-off, or another pathway?"]),
-          activity("CRCFULL-DX04", "Laboratory analysis and QA", "Diagnostics", "activity", "EM03", "diagnostic", 590, 205, "Analyse the screening sample with internal quality control and external quality assessment where applicable.", "The EU guideline gives detailed attention to analytical performance, sample quality, cut-off limits, internal quality control, and external assessment.", ["Laboratory analyzer electricity", "Reagents", "Quality control material", "Staff time"], ["Which laboratory platform and cut-off assumptions should be used?"]),
-          activity("CRCFULL-DX05", "Result interpretation and reporting", "Diagnostics", "decision", "EM03", "diagnostic", 720, 205, "Interpret the test result and report negative, positive, inadequate, or repeat-test outcomes.", "Result interpretation determines recall, diagnostic colonoscopy demand, repeat testing, and fail-safe requirements.", ["Reporting system", "Administrative ICT", "Result communication"], ["How are inadequate tests and repeat tests handled locally?"]),
-          activity("CRCFULL-FU01", "Negative result and routine recall", "Follow-up", "activity", "EM09", "followup", 850, 90, "Return screen-negative participants to routine recall at the selected screening interval.", "Negative results still generate communication, programme records, and future recall activities.", ["Result letter", "Recall scheduling", "Registry update"], ["What screening interval should be represented?"]),
-          activity("CRCFULL-DX06", "Positive test management", "Diagnostics", "decision", "EM03", "diagnostic", 850, 205, "Manage people with positive screening results and activate fail-safe mechanisms for diagnostic follow-up.", "The guideline explicitly identifies management of positive results and fail-safe mechanisms as part of programme quality.", ["Care coordination", "Patient communication", "Tracking system"], ["Which fail-safe mechanism ensures diagnostic follow-up after a positive result?"]),
-          activity("CRCFULL-DX07", "Colonoscopy scheduling and bowel preparation", "Diagnostics", "activity", "EM03", "diagnostic", 980, 205, "Schedule diagnostic colonoscopy and provide bowel preparation instructions or materials.", "Before-procedure activities include scheduling, bowel preparation, patient information, and timelines.", ["Bowel preparation", "Scheduling", "Patient information material", "Pharmacy or delivery logistics"], ["Which bowel preparation product and delivery route are used?"]),
-          activity("CRCFULL-DX08", "Pre-assessment and consent", "Diagnostics", "activity", "EM03", "diagnostic", 1110, 205, "Perform pre-assessment, provide procedure information, and obtain consent for colonoscopy.", "Pre-assessment and consent are guideline-listed endoscopy quality activities before the procedure.", ["Nurse or clinician time", "Consent documentation", "EHR use"], ["Is pre-assessment done by phone, digitally, or in person?"]),
-          activity("CRCFULL-DX09", "Colonoscopy examination", "Diagnostics", "activity", "EM03", "diagnostic", 1110, 320, "Perform diagnostic colonoscopy after a positive screening test or other indication.", "Colonoscopy is the central diagnostic activity after a positive screening test and a reusable ECO-PATH building block.", ["Endoscopy room time", "Scope reprocessing", "Sedation if used", "Procedure consumables", "Patient travel"], ["Which colonoscopy setting and sedation assumptions apply?"]),
-          activity("CRCFULL-DX10", "Inadequate or incomplete colonoscopy", "Diagnostics", "decision", "EM03", "return", 980, 320, "Identify inadequate bowel preparation, incomplete examination, or technical limitations.", "Incomplete or inadequate examinations affect repeat colonoscopy, alternative imaging, surveillance intervals, and programme quality indicators.", ["Clinical review", "Repeat scheduling", "Documentation"], ["How often does colonoscopy need to be repeated or supplemented?"]),
-          activity("CRCFULL-DX11", "CT colonography if needed", "Diagnostics", "activity", "EM03", "diagnostic", 850, 320, "Use CT colonography or alternative assessment when colonoscopy is incomplete, contraindicated, or otherwise unsuitable.", "The EU guideline includes CT colonography as a technology and diagnostic option under evaluation or specific indication.", ["CT scanner electricity", "Bowel preparation", "Radiology reporting", "Patient travel"], ["When is CT colonography used in the relevant local pathway?"]),
-          activity("CRCFULL-DX12", "Lesion detection and removal", "Diagnostics", "activity", "EM03", "diagnostic", 720, 320, "Detect, characterize, biopsy, remove, and retrieve lesions during endoscopy where appropriate.", "Detection, characterization, removal, and retrieval are central resource-relevant steps in screening colonoscopy.", ["Polypectomy tools", "Biopsy forceps", "Specimen container", "Endoscopy accessories"], ["Which lesion removal methods should be parameterized?"]),
-          activity("CRCFULL-DX13", "Recovery and safety monitoring", "Diagnostics", "activity", "EM03", "diagnostic", 590, 320, "Provide recovery facilities, monitor safety outcomes, and manage immediate complications after colonoscopy.", "Post-procedure recovery and complication monitoring are explicit quality assurance activities.", ["Recovery room time", "Nursing time", "Monitoring consumables", "Emergency equipment readiness"], ["How should complications be represented in scenario or uncertainty analysis?"]),
-          activity("CRCFULL-DX14", "Endoscopy report and communication", "Diagnostics", "activity", "EM03", "diagnostic", 460, 320, "Complete minimum endoscopic reporting and communicate results to relevant professionals and participants.", "Endoscopy reporting and communication link the procedure to pathology, follow-up, and treatment planning.", ["Reporting system", "EHR documentation", "Professional communication"], ["Which report fields are available for ECO-PATH data extraction?"]),
-          activity("CRCFULL-DX15", "Specimen handling and fixation", "Diagnostics", "activity", "EM02", "diagnostic", 330, 435, "Handle, submit, fix, dissect, and section endoscopic or surgically removed specimens.", "The pathology chapter separates specimen handling and practical processing steps that affect pathology resource use.", ["Specimen container", "Fixative", "Cassette", "Pathology staff time"], ["Which specimen handling steps occur at Erasmus MC versus external laboratories?"]),
-          activity("CRCFULL-DX16", "Histopathology classification", "Diagnostics", "activity", "EM02", "diagnostic", 460, 435, "Classify adenomas, serrated lesions, dysplasia, invasive cancer, margin status, and other pathology features.", "Histopathology classification determines risk group, surveillance interval, management of pT1 cancer, and treatment referral.", ["Microscopy or digital pathology", "Staining", "Pathologist time", "Report generation"], ["Which pathology variables should be extracted for module selection?"]),
-          activity("CRCFULL-TX01", "Adenoma risk stratification", "Treatment planning", "decision", "EM05", "treatment", 590, 435, "Classify detected lesions into surveillance risk categories after removal.", "Risk stratification links pathology and procedure quality to surveillance interval and repeated colonoscopy demand.", ["Clinical review", "Guideline lookup", "EHR documentation"], ["Which risk group definitions should be used for the case example?"]),
-          activity("CRCFULL-TX02", "pT1 cancer risk assessment", "Treatment planning", "decision", "EM05", "treatment", 720, 435, "Assess high-risk features of pT1 colorectal cancer and decide whether endoscopic management is sufficient or surgery is needed.", "The guideline separates pT1 risk factors and completion surgery decisions, which can strongly change pathway resource use.", ["Pathology review", "Clinical decision time", "Surgical consultation if needed"], ["Which pT1 risk criteria should trigger surgical referral in the model?"]),
-          activity("CRCFULL-JM01", "Specialist or MDT review", "Joint clinic and MDT", "decision", "EM04", "treatment", 850, 435, "Review complex lesions, pT1 cancer, suspected invasive cancer, or route-changing findings with specialists or MDT.", "A specialist review step preserves the boundary between screening diagnosis and downstream treatment planning.", ["Clinician time", "Meeting room or digital meeting", "Imaging display", "EHR use"], ["Which findings require MDT review in the local CRC pathway?"]),
-          activity("CRCFULL-TX03", "Colon cancer treatment referral", "Treatment planning", "activity", "EM05", "treatment", 980, 435, "Refer confirmed colon cancer to staging and treatment planning.", "This endpoint links screening and diagnosis to treatment without modeling the full colon cancer treatment pathway in this view.", ["Referral communication", "Staging request", "Patient consultation"], ["Where should this extraction hand off to the treatment pathway?"]),
-          activity("CRCFULL-TX04", "Rectal cancer staging referral", "Treatment planning", "activity", "EM05", "treatment", 1110, 435, "Refer suspected or confirmed rectal cancer for rectal staging and treatment planning.", "Rectal cancer often requires additional staging and treatment-sequence decisions, so it should not be hidden inside a generic CRC endpoint.", ["Rectal MRI request", "MDT referral", "Patient consultation"], ["Should rectal cancer be modeled separately from colon cancer?"]),
-          activity("CRCFULL-FU02", "Endoscopic surveillance interval", "Follow-up", "decision", "EM09", "followup", 590, 555, "Assign surveillance colonoscopy interval after adenoma or lesion removal.", "Surveillance intervals determine repeated endoscopy demand over the selected time horizon.", ["Guideline lookup", "Recall scheduling", "Patient communication"], ["What surveillance time horizon should be used?"]),
-          activity("CRCFULL-TX05", "Incomplete excision management", "Treatment planning", "decision", "EM05", "return", 720, 555, "Manage incomplete endoscopic excision or uncertain clearance after lesion removal.", "Incomplete excision can trigger repeat endoscopy, surgery, or intensified surveillance.", ["Clinical review", "Repeat endoscopy planning", "Patient communication"], ["How often should incomplete excision be modeled?"]),
-          activity("CRCFULL-FU03", "Surveillance colonoscopy", "Follow-up", "activity", "EM09", "followup", 850, 555, "Perform surveillance colonoscopy after adenoma removal or local cancer management.", "Surveillance colonoscopy is a repeated resource-intensive activity and a reusable building block for CRC pathways.", ["Endoscopy room time", "Scope reprocessing", "Bowel preparation", "Patient travel"], ["Which surveillance schedule is appropriate for the case example?"]),
-          activity("CRCFULL-FU04", "Interval cancer and programme evaluation", "Follow-up", "activity", "EM09", "followup", 980, 555, "Track interval cancers, programme performance indicators, uptake, positivity, detection rates, and safety outcomes.", "The EU guideline gives substantial attention to evaluation, indicators, monitoring, and data tables.", ["Cancer registry linkage", "Programme database", "Data analysis time"], ["Which programme indicators are relevant for ECO-PATH validation or uncertainty analysis?"]),
-          activity("CRCFULL-AC04", "Programme data feedback", "Access", "activity", "EM01", "return", 1110, 555, "Feed programme evaluation results back into screening organisation and quality improvement.", "This closes the programme-level loop between activity data, quality assurance, and future pathway configuration.", ["Quality meeting time", "Dashboard or registry update", "Administrative ICT"], ["Should programme feedback be included as overhead or outside the patient-level model?"])
-        ],
-        edges: [
-          edge("CRCFULL-AC01", "CRCFULL-DX01", "diagnostic"),
-          edge("CRCFULL-DX01", "CRCFULL-AC02", "diagnostic"),
-          edge("CRCFULL-AC02", "CRCFULL-AC03", "diagnostic"),
-          edge("CRCFULL-AC03", "CRCFULL-DX02", "diagnostic"),
-          edge("CRCFULL-DX02", "CRCFULL-DX03", "diagnostic"),
-          edge("CRCFULL-DX03", "CRCFULL-DX04", "diagnostic"),
-          edge("CRCFULL-DX04", "CRCFULL-DX05", "diagnostic"),
-          edge("CRCFULL-DX05", "CRCFULL-FU01", "followup"),
-          edge("CRCFULL-DX05", "CRCFULL-DX06", "diagnostic"),
-          edge("CRCFULL-DX06", "CRCFULL-DX07", "diagnostic"),
-          edge("CRCFULL-DX07", "CRCFULL-DX08", "diagnostic"),
-          edge("CRCFULL-DX08", "CRCFULL-DX09", "diagnostic"),
-          edge("CRCFULL-DX09", "CRCFULL-DX10", "return"),
-          edge("CRCFULL-DX10", "CRCFULL-DX11", "return"),
-          edge("CRCFULL-DX11", "CRCFULL-DX14", "diagnostic"),
-          edge("CRCFULL-DX09", "CRCFULL-DX12", "diagnostic"),
-          edge("CRCFULL-DX12", "CRCFULL-DX13", "diagnostic"),
-          edge("CRCFULL-DX13", "CRCFULL-DX14", "diagnostic"),
-          edge("CRCFULL-DX14", "CRCFULL-DX15", "diagnostic"),
-          edge("CRCFULL-DX15", "CRCFULL-DX16", "diagnostic"),
-          edge("CRCFULL-DX16", "CRCFULL-TX01", "treatment"),
-          edge("CRCFULL-TX01", "CRCFULL-FU02", "followup"),
-          edge("CRCFULL-TX01", "CRCFULL-TX05", "return"),
-          edge("CRCFULL-TX01", "CRCFULL-TX02", "treatment"),
-          edge("CRCFULL-TX02", "CRCFULL-JM01", "treatment"),
-          edge("CRCFULL-JM01", "CRCFULL-TX03", "treatment"),
-          edge("CRCFULL-JM01", "CRCFULL-TX04", "treatment"),
-          edge("CRCFULL-FU02", "CRCFULL-FU03", "followup"),
-          edge("CRCFULL-TX05", "CRCFULL-FU03", "followup"),
-          edge("CRCFULL-TX03", "CRCFULL-FU04", "followup"),
-          edge("CRCFULL-TX04", "CRCFULL-FU04", "followup"),
-          edge("CRCFULL-FU03", "CRCFULL-FU04", "followup"),
-          edge("CRCFULL-FU01", "CRCFULL-AC04", "return"),
-          edge("CRCFULL-FU04", "CRCFULL-AC04", "return")
-        ]
-      },
-      crcEmc: {
-        label: "Gastro: EMC CRC",
-        title: "Erasmus MC Public CRC Care Route",
-        status: "Public-facing route, internal workflow not found",
-        scope: "Erasmus MC public pages describe CRC diagnosis tests, MDL-oncology consultation, weekly MDO, treatment planning, colectomy and other surgery, radiotherapy, chemotherapy, metastasis treatment, HIPEC, and follow-up options. This public route requires expert confirmation before it is treated as a local operational workflow.",
-        defaultSelected: "CRC-EMC-JM01",
-        lanes: [
-          { y: 104, label: "Referral, investigations, and MDO" },
-          { y: 292, label: "Treatment options" },
-          { y: 484, label: "Advanced care and follow-up" }
-        ],
-        nodes: [
-          activity("CRC-EMC-AC01", "Referral to MDL-oncology", "Access", "activity", "EM01", "diagnostic", 80, 104, "Public Erasmus MC pages state that a first visit to an outpatient clinic requires written referral, and MDL-oncology sees patients with bowel cancer or increased gastrointestinal cancer risk.", "This is a plausible public-facing local entry point, but it is not a substitute for an internal referral workflow.", ["Referral communication", "Scheduling", "Administrative ICT", "Patient travel"], ["Which referring hospitals and referral routes are inside the local CRC boundary?"]),
-          activity("CRC-EMC-DX01", "Diagnostic investigations", "Diagnostics", "activity", "EM03", "diagnostic", 220, 104, "The public Darmkanker page lists bowel cleansing, endoscopy, blood tests, CT scan, MRI scan, and liver ultrasound under investigation and diagnosis.", "Kept as an aggregate public node until local records define which tests occur in which sequence.", ["Endoscopy or imaging resources", "Laboratory testing", "Patient preparation", "Patient travel"], ["Can local experts split this into colonoscopy, CT, MRI, ultrasound, and blood-test nodes?"]),
-          activity("CRC-EMC-DX02", "Colonoscopy or endoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 360, 64, "Erasmus MC patient information describes colonoscopy for the bowel cancer screening pathway and notes that interventions can be performed during the examination.", "Colonoscopy should be tested as a candidate gastroenterology building block if CRC is selected for ECO-PATH.", ["Endoscopy room time", "Scope reprocessing", "Procedure materials", "Sedation if used"], ["Does the modeled EMC route include screening colonoscopy, diagnostic colonoscopy, or both?"]),
-          activity("CRC-EMC-DX03", "Pathology and staging results", "Diagnostics", "activity", "EM02", "diagnostic", 360, 144, "Public pages list staging and diagnosis-related tests, but the internal pathology sequence was not found publicly.", "This node preserves the diagnosis-to-MDO bridge without inventing an internal pathology workflow.", ["Pathology review", "Report generation", "Molecular testing if used", "EHR review"], ["Which pathology activities are performed at Erasmus MC versus reviewed from referring hospitals?"]),
-          activity("CRC-EMC-JM01", "Weekly colorectal MDO", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 520, 104, "Erasmus MC public information states that investigation results are discussed in a multidisciplinary meeting with specialists involved in colorectal cancer care.", "This is the strongest publicly visible local workflow anchor for the CRC route.", ["Clinician time", "Meeting room or digital meeting", "EHR and imaging display"], ["Which specialties attend, and are all CRC cases discussed in the same MDO?"]),
-          activity("CRC-EMC-TX01", "Treatment plan discussion", "Treatment planning", "activity", "EM05", "treatment", 660, 104, "The MDL-oncology page states that the team aims to arrive at a definitive treatment plan within one week after investigations and that the treating physician discusses the treatment and possible side effects with the patient.", "This is a patient-facing planning node that links MDO output to treatment delivery options.", ["Consultation time", "Patient communication", "Scheduling", "EHR documentation"], ["Who discusses the plan locally: MDL physician, surgeon, oncologist, radiotherapist, or a combination?"]),
-          activity("CRC-EMC-TX02", "Colon surgery or colectomy", "Surgery", "activity", "EM07", "treatment", 660, 292, "Erasmus MC describes colectomy as removal of the affected colon segment with associated lymph nodes and vessels.", "Surgery is a high-resource module and should be parameterized with operation type, duration, admission, and waste data.", ["Operating room time", "Anesthesia", "Sterile instruments", "Ward stay", "Surgical waste"], ["Which colectomy procedures are relevant for the selected CRC population?"]),
-          activity("CRC-EMC-TX03", "Rectal surgery", "Surgery", "activity", "EM07", "treatment", 800, 292, "The public Darmkanker page links rectal cancer procedures such as low anterior resection and abdominoperineal resection.", "Rectal surgery should be separated from colon surgery if the case includes rectal cancer because procedure, stoma, and admission profiles differ.", ["Operating room time", "Anesthesia", "Stoma materials if used", "Ward stay"], ["Should colon and rectal surgery be separate ECO-PATH scenarios?"]),
-          activity("CRC-EMC-TX04", "Radiotherapy", "Radiotherapy", "activity", "EM08", "treatment", 940, 214, "The public Darmkanker page lists radiotherapy as a treatment option, especially relevant for rectal cancer pathways.", "Radiotherapy has a distinct LCA structure based on planning, fractions, machine time, and patient travel.", ["Treatment planning", "Fraction count", "Machine electricity", "Immobilization materials", "Patient travel"], ["Which CRC subgroup receives radiotherapy at Erasmus MC?"]),
-          activity("CRC-EMC-TX05", "Chemotherapy or oncology", "Systemic therapy and oncology", "activity", "EM06", "treatment", 940, 370, "The public Darmkanker page lists chemotherapy, and the MDL-oncology page identifies internist-oncologists as part of the multidisciplinary team.", "Systemic therapy should be modeled through EM06 because drugs, infusion materials, pharmacy preparation, monitoring, and waste are central.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring", "Cytotoxic waste"], ["Which regimens and cycles are used in the local CRC target group?"]),
-          activity("CRC-EMC-TX06", "Metastasis treatment or HIPEC", "Surgery", "activity", "EM07", "treatment", 800, 484, "Erasmus MC public pages include treatment for metastases and a HIPEC treatment page for colon cancer with metastases.", "This should remain a separate advanced-disease branch unless clinical experts confirm it belongs in the same functional unit and time horizon.", ["Operating room time", "Perfusion equipment if HIPEC", "Medicines", "ICU or ward stay", "Waste"], ["Is HIPEC or metastasis treatment in scope for the gastroenterology example?"]),
-          activity("CRC-EMC-FU01", "Follow-up after treatment", "Follow-up", "activity", "EM09", "followup", 1080, 292, "Public Erasmus MC material describes follow-up after CRC surgery and surveillance-related care.", "Follow-up affects pathway-level results through repeated visits, blood tests, imaging, colonoscopy, and travel.", ["Outpatient visits", "CEA testing", "Surveillance imaging", "Colonoscopy", "Patient travel"], ["What follow-up time horizon should ECO-PATH use for CRC?"]),
-          activity("CRC-EMC-FU02", "Home-based follow-up option", "Follow-up", "activity", "EM09", "return", 1080, 484, "The PROMISE study explores home-based follow-up after surgery for colon or rectal cancer, using tools such as home CEA sampling in a research setting.", "This is not assumed to be standard care. It is useful as a future pathway redesign scenario.", ["Home sampling kit", "Digital app use", "Laboratory shipping", "Reduced hospital travel"], ["Should home-based follow-up be modeled only as a scenario, not as the baseline?"])
-        ],
-        edges: [
-          edge("CRC-EMC-AC01", "CRC-EMC-DX01", "diagnostic"),
-          edge("CRC-EMC-DX01", "CRC-EMC-DX02", "diagnostic"),
-          edge("CRC-EMC-DX01", "CRC-EMC-DX03", "diagnostic"),
-          edge("CRC-EMC-DX02", "CRC-EMC-JM01", "diagnostic"),
-          edge("CRC-EMC-DX03", "CRC-EMC-JM01", "diagnostic"),
-          edge("CRC-EMC-JM01", "CRC-EMC-TX01", "treatment"),
-          edge("CRC-EMC-TX01", "CRC-EMC-TX02", "treatment"),
-          edge("CRC-EMC-TX01", "CRC-EMC-TX03", "treatment"),
-          edge("CRC-EMC-TX01", "CRC-EMC-TX04", "treatment"),
-          edge("CRC-EMC-TX01", "CRC-EMC-TX05", "treatment"),
-          edge("CRC-EMC-TX01", "CRC-EMC-TX06", "treatment"),
-          edge("CRC-EMC-TX02", "CRC-EMC-FU01", "followup"),
-          edge("CRC-EMC-TX03", "CRC-EMC-FU01", "followup"),
-          edge("CRC-EMC-TX04", "CRC-EMC-FU01", "followup"),
-          edge("CRC-EMC-TX05", "CRC-EMC-FU01", "followup"),
-          edge("CRC-EMC-TX06", "CRC-EMC-FU01", "followup"),
-          edge("CRC-EMC-FU01", "CRC-EMC-FU02", "return")
+          ["CRCDUTCH-AC01", "CRCDUTCH-AC02", "diagnostic"],
+          ["CRCDUTCH-AC02", "CRCDUTCH-DX01", "diagnostic"],
+          ["CRCDUTCH-DX01", "CRCDUTCH-DX02", "diagnostic"],
+          ["CRCDUTCH-DX02", "CRCDUTCH-DX03", "diagnostic"],
+          ["CRCDUTCH-DX03", "CRCDUTCH-DX04", "diagnostic"],
+          ["CRCDUTCH-DX04", "CRCDUTCH-FU01", "followup"],
+          ["CRCDUTCH-DX04", "CRCDUTCH-FU02", "followup"],
+          ["CRCDUTCH-DX04", "CRCDUTCH-TX01", "followup"],
+          ["CRCDUTCH-TX01", "CRCDUTCH-FU03", "followup"],
+          ["CRCDUTCH-DX04", "CRCDUTCH-DX05", "diagnostic"],
+          ["CRCDUTCH-DX05", "CRCDUTCH-JM01", "diagnostic"],
+          ["CRCDUTCH-JM01", "CRCDUTCH-TX02", "treatment"],
+          ["CRCDUTCH-TX02", "CRCDUTCH-TX03", "treatment"],
+          ["CRCDUTCH-TX03", "CRCDUTCH-TX04", "treatment"],
+          ["CRCDUTCH-TX04", "CRCDUTCH-FU05", "followup"],
+          ["CRCDUTCH-TX02", "CRCDUTCH-TX05", "treatment"],
+          ["CRCDUTCH-TX05", "CRCDUTCH-FU04", "followup"],
+          ["CRCDUTCH-FU04", "CRCDUTCH-TX06", "return"],
+          ["CRCDUTCH-TX05", "CRCDUTCH-TX06", "treatment"],
+          ["CRCDUTCH-TX06", "CRCDUTCH-FU05", "followup"],
+          ["CRCDUTCH-TX02", "CRCDUTCH-TX07", "return"],
+          ["CRCDUTCH-TX07", "CRCDUTCH-FU05", "followup"]
         ]
       }
     };
-
     const languageOptions = [
       { id: "en", label: "English", htmlLang: "en" },
       { id: "nl", label: "Nederlands", htmlLang: "nl" },
@@ -2961,7 +3123,7 @@
           label: "EAU MIBC simplified",
           title: "EAU MIBC Simplified Guideline Map",
           status: "Guideline abstraction, local execution not assumed",
-          scope: "Simplified guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. It uses the existing 17-node EAU abstraction. Use the full extraction view when individual guideline activities need to be visible as separate nodes."
+          scope: "Simplified guideline-level MIBC logic from diagnosis and staging through treatment decision, primary treatment, and follow-up. It uses the detailed EAU abstraction as the default simplified view. Use the full extraction view when individual guideline activities need to be visible as separate nodes."
         },
         eauFull: {
           label: "EAU full activity extraction",
@@ -2975,23 +3137,11 @@
           status: "Operational pathway, expert confirmation required",
           scope: "Local Bladder Cancer Center workflow after referral or triage. Upstream cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway unless they are repeated or reviewed locally."
         },
-        crcGuideline: {
-          label: "Gastro: EU/ESMO CRC",
-          title: "European CRC Guideline Reference Pathway",
-          status: "Clinical reference, local execution not assumed",
-          scope: "Guideline-level colorectal cancer logic combining ECICC prevention, screening, and diagnosis guidance with ESMO colon, rectal, and metastatic CRC treatment guidance. This is an ECO-PATH scoping abstraction, not a clinical treatment recommendation."
-        },
-        crcGuidelineFull: {
-          label: "Gastro: EU CRC screening/diagnosis full extraction",
-          title: "EU CRC Screening/Diagnosis Full Extraction",
-          status: "Screening/diagnosis extraction, treatment not assumed",
-          scope: "Activity-level extraction from the European guidelines for quality assurance in colorectal cancer screening and diagnosis. It expands invitation, primary testing, positive-test management, diagnostic colonoscopy, pathology, lesion management, surveillance, and programme evaluation. It is not a complete CRC treatment guideline and does not assume Erasmus MC local execution."
-        },
-        crcEmc: {
-          label: "Gastro: EMC CRC",
-          title: "Erasmus MC Public CRC Care Route",
-          status: "Public-facing route, internal workflow not found",
-          scope: "Erasmus MC public pages describe CRC diagnosis tests, MDL-oncology consultation, weekly MDO, treatment planning, colectomy and other surgery, radiotherapy, chemotherapy, metastasis treatment, HIPEC, and follow-up options. This public route requires expert confirmation before it is treated as a local operational workflow."
+        crcDutch: {
+          label: "Gastro: Dutch CRC pathway",
+          title: "Dutch CRC Screening-Positive Hospital Pathway",
+          status: "Dutch national guideline-based pathway, local EMC execution not assumed",
+          scope: "Hospital-boundary pathway starting at first hospital contact after an abnormal FIT screening result. It separates no-polyp, low-risk polyp, high-risk polyp, and CRC branches using Dutch screening outcome data plus FMS/Richtlijnendatabase guidance for colorectal cancer and colonoscopy surveillance."
         }
       },
       nl: {
@@ -2999,13 +3149,13 @@
           label: "EAU MIBC vereenvoudigd",
           title: "EAU MIBC vereenvoudigde richtlijnkaart",
           status: "Richtlijnabstractie, lokale uitvoering niet verondersteld",
-          scope: "Vereenvoudigde richtlijnlogica voor MIBC vanaf diagnose en stadiering tot behandelbesluit, primaire behandeling en follow-up. Deze weergave gebruikt de bestaande EAU-abstractie met 17 knopen. Gebruik de volledige activiteitsextractieweergave wanneer afzonderlijke richtlijnactiviteiten zichtbaar moeten zijn."
+          scope: "Vereenvoudigde richtlijnlogica voor MIBC vanaf diagnose en stadiering tot behandelbesluit, primaire behandeling en follow-up. Deze weergave gebruikt de gedetailleerde EAU-abstractie als standaard vereenvoudigde kaart. Gebruik de volledige activiteitsextractieweergave wanneer afzonderlijke richtlijnactiviteiten zichtbaar moeten zijn."
         },
         eauFull: {
           label: "EAU volledige activiteitsextractie",
           title: "EAU MIBC volledige activiteitsextractie",
           status: "Uitgebreide extractie van richtlijnactiviteiten, lokale uitvoering niet verondersteld",
-          scope: "Activiteitsextractie uit de EAU MIBC-richtlijn voor ECO-PATH-scoping. Deze weergave splitst richtlijnactiviteiten en beslissingen die zorgpadstructuur, resourcegebruik, LCA-modules of onzekerheidsanalyse kunnen beïnvloeden. Het is nog steeds geen Erasmus MC-operationele workflow."
+          scope: "Activiteitsextractie uit de EAU MIBC-richtlijn voor ECO-PATH-scoping. Deze weergave splitst richtlijnactiviteiten en beslissingen die zorgpadstructuur, resourcegebruik, LCA-modules of onzekerheidsanalyse kunnen beinvloeden. Het is nog steeds geen Erasmus MC-operationele workflow."
         },
         emc: {
           label: "Urologie: EMC MIBC",
@@ -3013,23 +3163,11 @@
           status: "Operationeel zorgpad, expertbevestiging nodig",
           scope: "Lokaal workflowbeeld van het Blaaskankercentrum na verwijzing of triage. Upstream cystoscopie, TURBT en eerste pathologische bevestiging gelden als pre-pathway, tenzij ze lokaal worden herhaald of beoordeeld."
         },
-        crcGuideline: {
-          label: "Gastro: EU/ESMO CRC",
-          title: "Europese CRC-richtlijnreferentieroute",
-          status: "Klinische referentie, lokale uitvoering niet verondersteld",
-          scope: "Richtlijnlogica voor colorectale kanker, gecombineerd uit ECICC-preventie, screening en diagnose en ESMO-richtlijnen voor colon-, rectum- en gemetastaseerde CRC. Dit is een ECO-PATH-scopingabstractie, geen klinisch behandeladvies."
-        },
-        crcGuidelineFull: {
-          label: "Gastro: EU CRC screening/diagnose volledige extractie",
-          title: "EU CRC screening/diagnose volledige extractie",
-          status: "Screening/diagnose-extractie, behandeling niet verondersteld",
-          scope: "Activiteitsextractie uit de Europese richtlijnen voor kwaliteitsborging bij colorectale kankerscreening en diagnose. Deze weergave splitst uitnodiging, primaire test, opvolging van positieve test, diagnostische coloscopie, pathologie, laesiebeheer, surveillance en programma-evaluatie. Het is geen volledige CRC-behandelrichtlijn en veronderstelt geen lokale uitvoering in Erasmus MC."
-        },
-        crcEmc: {
-          label: "Gastro: EMC CRC",
-          title: "Erasmus MC publieke CRC-zorgroute",
-          status: "Publieke route, interne workflow niet gevonden",
-          scope: "Publieke Erasmus MC-pagina's beschrijven diagnostiek, MDL-oncologieconsultatie, wekelijks MDO, behandelplanning, colectomie en andere chirurgie, radiotherapie, chemotherapie, metastasebehandeling, HIPEC en follow-upopties. Expertbevestiging is nodig voordat dit als lokale operationele workflow wordt gebruikt."
+        crcDutch: {
+          label: "Gastro: Nederlandse CRC-route",
+          title: "Nederlandse ziekenhuisroute na positieve FIT voor CRC",
+          status: "Gebaseerd op Nederlandse nationale richtlijnen, lokale EMC-uitvoering niet verondersteld",
+          scope: "Ziekenhuisgrens voor ECO-PATH vanaf het eerste ziekenhuiscontact na een ongunstige FIT-uitslag. De route splitst geen poliepen, laag-risico poliepen, hoog-risico poliepen en colorectaal carcinoom op basis van Nederlandse screeningsuitkomsten en FMS/Richtlijnendatabase-richtlijnen voor colorectaal carcinoom en coloscopiesurveillance."
         }
       },
       zh: {
@@ -3037,7 +3175,7 @@
           label: "EAU MIBC 简化图",
           title: "EAU MIBC 简化指南图",
           status: "指南抽象，未假定本地执行",
-          scope: "简化版 MIBC 指南逻辑，覆盖诊断和分期、治疗决策、初始治疗和随访。它使用现有的 17 节点 EAU 抽象图。若需要把单个指南活动显示为独立节点，请使用完整活动提取视图。"
+          scope: "简化版 MIBC 指南逻辑，覆盖诊断和分期、治疗决策、初始治疗和随访。它把详细 EAU 抽象图作为默认简化视图。若需要把单个指南活动显示为独立节点，请使用完整活动提取视图。"
         },
         eauFull: {
           label: "EAU 完整活动提取",
@@ -3051,23 +3189,11 @@
           status: "本地运营路径，需要专家确认",
           scope: "Erasmus MC 膀胱癌中心在转诊或分诊后的本地工作流。上游膀胱镜、TURBT 和初始病理确认视为路径前活动，除非这些活动在本地重复或复核。"
         },
-        crcGuideline: {
-          label: "胃肠病学：EU/ESMO CRC",
-          title: "欧洲 CRC 指南参考路径",
-          status: "临床参考路径，未假定本地执行",
-          scope: "指南层面的结直肠癌逻辑，结合 ECICC 预防、筛查和诊断建议，以及 ESMO 结肠癌、直肠癌和转移性 CRC 治疗指南。这是 ECO-PATH 的范围抽象，不是临床治疗建议。"
-        },
-        crcGuidelineFull: {
-          label: "胃肠病学：EU CRC 筛查/诊断完整提取",
-          title: "EU CRC 筛查/诊断完整提取",
-          status: "筛查/诊断提取，未假定治疗执行",
-          scope: "从欧洲结直肠癌筛查和诊断质量保证指南中进行 activity-level 提取。它拆分邀请、初筛检测、阳性结果管理、诊断性结肠镜、病理、病变处理、监测和项目评价。它不是完整 CRC 治疗指南，也未假定 Erasmus MC 本地执行。"
-        },
-        crcEmc: {
-          label: "胃肠病学：EMC CRC",
-          title: "Erasmus MC 公开 CRC 照护路线",
-          status: "公开患者信息路线，尚未找到内部工作流",
-          scope: "Erasmus MC 公开页面描述了 CRC 诊断检查、MDL-oncology 会诊、每周 MDO、治疗规划、结肠切除和其他手术、放疗、化疗、转移灶治疗、HIPEC 和随访选项。作为本地运营工作流使用前需要专家确认。"
+        crcDutch: {
+          label: "胃肠病学：荷兰 CRC 路径",
+          title: "荷兰 FIT 阳性后 CRC 医院路径",
+          status: "基于荷兰国家指南，未假定 EMC 本地执行",
+          scope: "ECO-PATH 医院边界路径，从 FIT 筛查结果异常后的首次医院接触开始。它根据荷兰筛查结果数据以及 FMS/Richtlijnendatabase 的结直肠癌和结肠镜监测指南，区分无息肉、低风险息肉、高风险息肉和 CRC 分支。"
         }
       },
       ja: {
@@ -3075,7 +3201,7 @@
           label: "EAU MIBC 簡略図",
           title: "EAU MIBC 簡略ガイドラインマップ",
           status: "ガイドライン抽象であり、ローカル実施は仮定していません",
-          scope: "診断、病期分類、治療決定、初回治療、フォローアップまでの MIBC ガイドラインロジックの簡略表示です。既存の 17 ノード EAU 抽象を使用します。個別のガイドライン活動をノードとして確認する場合は、完全活動抽出表示を使用します。"
+          scope: "診断、病期分類、治療決定、初回治療、フォローアップまでの MIBC ガイドラインロジックの簡略表示です。詳細 EAU 抽象を標準の簡略表示として使用します。個別のガイドライン活動をノードとして確認する場合は、完全活動抽出表示を使用します。"
         },
         eauFull: {
           label: "EAU 完全活動抽出",
@@ -3089,23 +3215,11 @@
           status: "運用パスウェイ、専門家確認が必要",
           scope: "紹介またはトリアージ後の膀胱がんセンターのローカルワークフローです。上流の膀胱鏡、TURBT、初回病理確認は、ローカルで反復またはレビューされる場合を除き、パスウェイ前活動として扱います。"
         },
-        crcGuideline: {
-          label: "消化器科：EU/ESMO CRC",
-          title: "欧州 CRC ガイドライン参照パスウェイ",
-          status: "臨床参照であり、ローカル実施は仮定していません",
-          scope: "ECICC の予防、スクリーニング、診断ガイダンスと、ESMO の結腸、直腸、転移性 CRC 治療ガイダンスを組み合わせたガイドラインレベルのロジックです。これは ECO-PATH のスコーピング抽象であり、臨床治療推奨ではありません。"
-        },
-        crcGuidelineFull: {
-          label: "消化器科：EU CRC スクリーニング/診断完全抽出",
-          title: "EU CRC スクリーニング/診断完全抽出",
-          status: "スクリーニング/診断抽出、治療実施は仮定しません",
-          scope: "大腸がんスクリーニングと診断の品質保証に関する欧州ガイドラインから活動レベルで抽出した表示です。招待、一次検査、陽性結果管理、診断的大腸内視鏡、病理、病変管理、サーベイランス、プログラム評価を分離します。完全な CRC 治療ガイドラインではなく、Erasmus MC のローカル実施も仮定しません。"
-        },
-        crcEmc: {
-          label: "消化器科：EMC CRC",
-          title: "Erasmus MC 公開 CRC ケアルート",
-          status: "公開情報に基づくルート、内部ワークフローは未確認",
-          scope: "Erasmus MC の公開ページには、CRC 診断検査、MDL-oncology 診察、週次 MDO、治療計画、手術、放射線治療、化学療法、転移治療、HIPEC、フォローアップが記載されています。ローカル運用ワークフローとして扱う前に専門家確認が必要です。"
+        crcDutch: {
+          label: "消化器科：オランダ CRC 経路",
+          title: "FIT 陽性後のオランダ CRC 病院パスウェイ",
+          status: "オランダ国内ガイドラインに基づく経路であり、EMC ローカル実施は仮定していません",
+          scope: "FIT スクリーニングで異常結果が出た後の初回病院接触から始まる ECO-PATH の病院境界パスウェイです。オランダのスクリーニング結果データと FMS/Richtlijnendatabase の大腸がんおよび大腸内視鏡サーベイランス指針に基づき、ポリープなし、低リスクポリープ、高リスクポリープ、CRC 分岐を分離します。"
         }
       },
       es: {
@@ -3113,7 +3227,7 @@
           label: "EAU MIBC simplificado",
           title: "Mapa simplificado de guía EAU MIBC",
           status: "Abstracción de guía, no se asume ejecución local",
-          scope: "Lógica simplificada de guía MIBC desde diagnóstico y estadificación hasta decisión terapéutica, tratamiento primario y seguimiento. Usa la abstracción EAU existente de 17 nodos. Use la vista de extracción completa de actividades cuando las actividades individuales de la guía deban verse como nodos separados."
+          scope: "Lógica simplificada de guía MIBC desde diagnóstico y estadificación hasta decisión terapéutica, tratamiento primario y seguimiento. Usa la abstracción EAU detallada como vista simplificada predeterminada. Use la vista de extracción completa de actividades cuando las actividades individuales de la guía deban verse como nodos separados."
         },
         eauFull: {
           label: "Extracción completa de actividades EAU",
@@ -3127,23 +3241,11 @@
           status: "Vía operativa, requiere confirmación experta",
           scope: "Flujo local del Bladder Cancer Center después de referencia o triaje. Cistoscopia, TURBT y confirmación patológica inicial se tratan como actividades previas a la vía salvo que se repitan o revisen localmente."
         },
-        crcGuideline: {
-          label: "Gastro: EU/ESMO CRC",
-          title: "Vía europea de referencia para CRC",
-          status: "Referencia clínica, no se asume ejecución local",
-          scope: "Lógica de guía para cáncer colorrectal que combina prevención, cribado y diagnóstico ECICC con guías ESMO para cáncer de colon, recto y CRC metastásico. Es una abstracción de alcance ECO-PATH, no una recomendación clínica."
-        },
-        crcGuidelineFull: {
-          label: "Gastro: extracción completa EU CRC cribado/diagnóstico",
-          title: "Extracción completa EU CRC cribado/diagnóstico",
-          status: "Extracción cribado/diagnóstico, no se asume tratamiento",
-          scope: "Extracción a nivel de actividad desde las guías europeas de garantía de calidad para cribado y diagnóstico de cáncer colorrectal. Separa invitación, prueba primaria, gestión de positivos, colonoscopia diagnóstica, patología, manejo de lesiones, vigilancia y evaluación del programa. No es una guía completa de tratamiento CRC y no asume ejecución local en Erasmus MC."
-        },
-        crcEmc: {
-          label: "Gastro: EMC CRC",
-          title: "Ruta pública CRC de Erasmus MC",
-          status: "Ruta pública, flujo interno no encontrado",
-          scope: "Las páginas públicas de Erasmus MC describen pruebas diagnósticas CRC, consulta MDL-oncology, MDO semanal, planificación del tratamiento, colectomía y otras cirugías, radioterapia, quimioterapia, tratamiento de metástasis, HIPEC y opciones de seguimiento. Requiere confirmación experta antes de tratarse como flujo operativo local."
+        crcDutch: {
+          label: "Gastro: vía CRC neerlandesa",
+          title: "Vía hospitalaria neerlandesa para CRC tras FIT positivo",
+          status: "Basada en guías nacionales neerlandesas, sin asumir ejecución local EMC",
+          scope: "Vía ECO-PATH con límite hospitalario desde el primer contacto hospitalario tras un resultado FIT desfavorable. Separa ramas de sin pólipos, pólipos de bajo riesgo, pólipos de alto riesgo y CRC usando datos neerlandeses de cribado y guías FMS/Richtlijnendatabase para cáncer colorrectal y vigilancia colonoscópica."
         }
       }
     };
@@ -3646,7 +3748,7 @@
       "Colon cancer treatment referral": "Verwijzing voor colonkankerbehandeling",
       "Rectal cancer staging referral": "Verwijzing voor rectumkankerstadiering",
       "Surveillance colonoscopy": "Surveillancecoloscopie",
-      "Interval cancer and programme evaluation": "Intervalkanker en programma-evaluatie",
+      "Interval cancer and program evaluation": "Intervalkanker en programma-evaluatie",
       "Programme data feedback": "Programmagegevensfeedback"
     });
 
@@ -3679,7 +3781,7 @@
       "Colon cancer treatment referral": "结肠癌治疗转诊",
       "Rectal cancer staging referral": "直肠癌分期转诊",
       "Surveillance colonoscopy": "监测性结肠镜",
-      "Interval cancer and programme evaluation": "间隔癌和项目评价",
+      "Interval cancer and program evaluation": "间隔癌和项目评价",
       "Programme data feedback": "项目数据反馈"
     });
 
@@ -3712,7 +3814,7 @@
       "Colon cancer treatment referral": "結腸がん治療紹介",
       "Rectal cancer staging referral": "直腸がん病期評価紹介",
       "Surveillance colonoscopy": "サーベイランス内視鏡",
-      "Interval cancer and programme evaluation": "中間期がんとプログラム評価",
+      "Interval cancer and program evaluation": "中間期がんとプログラム評価",
       "Programme data feedback": "プログラムデータ還元"
     });
 
@@ -3745,8 +3847,96 @@
       "Colon cancer treatment referral": "Referencia para tratamiento de cáncer de colon",
       "Rectal cancer staging referral": "Referencia para estadificación de cáncer rectal",
       "Surveillance colonoscopy": "Colonoscopia de vigilancia",
-      "Interval cancer and programme evaluation": "Cáncer de intervalo y evaluación del programa",
+      "Interval cancer and program evaluation": "Cáncer de intervalo y evaluación del programa",
       "Programme data feedback": "Retroalimentación de datos del programa"
+    });
+
+    Object.assign(nodeLabelText.nl = nodeLabelText.nl || {}, {
+      "Positive FIT hospital referral": "Ziekenhuisverwijzing na positieve FIT",
+      "Colonoscopy intake and bowel preparation": "Coloscopie-intake en darmvoorbereiding",
+      "Diagnostic colonoscopy": "Diagnostische coloscopie",
+      "Lesion detection and polypectomy": "Laesiedetectie en poliepectomie",
+      "Pathology classification": "Pathologieclassificatie",
+      "Findings branch decision": "Beslissing op basis van bevindingen",
+      "No polyps: return to screening": "Geen poliepen: terug naar screening",
+      "Low-risk polyps: return to screening": "Laag-risico poliepen: terug naar screening",
+      "High-risk polyp surveillance indication": "Surveillance-indicatie bij hoog-risico poliep",
+      "Post-polypectomy surveillance colonoscopy": "Surveillancecoloscopie na poliepectomie",
+      "CRC staging workup": "CRC-stadieringsonderzoek",
+      "CRC MDO": "CRC MDO",
+      "Colon versus rectal route decision": "Colon- versus rectumroute",
+      "Adjuvant systemic therapy if indicated": "Adjuvante systemische therapie indien nodig",
+      "Rectal neoadjuvant or radiotherapy route": "Rectale neoadjuvante of radiotherapieroute",
+      "Watch-and-wait response surveillance": "Watch-and-wait responssurveillance",
+      "Rectal surgery if indicated": "Rectumchirurgie indien nodig",
+      "Advanced or palliative route": "Gevorderde of palliatieve route",
+      "Post-CRC treatment surveillance": "Surveillance na CRC-behandeling"
+    });
+
+    Object.assign(nodeLabelText.zh = nodeLabelText.zh || {}, {
+      "Positive FIT hospital referral": "FIT 阳性后医院转诊",
+      "Colonoscopy intake and bowel preparation": "结肠镜接诊和肠道准备",
+      "Diagnostic colonoscopy": "诊断性结肠镜",
+      "Lesion detection and polypectomy": "病变发现和息肉切除",
+      "Pathology classification": "病理分类",
+      "Findings branch decision": "检查结果分支决策",
+      "No polyps: return to screening": "无息肉：返回筛查",
+      "Low-risk polyps: return to screening": "低风险息肉：返回筛查",
+      "High-risk polyp surveillance indication": "高风险息肉监测指征",
+      "Post-polypectomy surveillance colonoscopy": "息肉切除后监测结肠镜",
+      "CRC staging workup": "CRC 分期检查",
+      "CRC MDO": "CRC MDO",
+      "Colon versus rectal route decision": "结肠或直肠路径决策",
+      "Adjuvant systemic therapy if indicated": "必要时辅助系统治疗",
+      "Rectal neoadjuvant or radiotherapy route": "直肠新辅助或放疗路径",
+      "Watch-and-wait response surveillance": "观察等待疗效监测",
+      "Rectal surgery if indicated": "必要时直肠手术",
+      "Advanced or palliative route": "晚期或姑息路径",
+      "Post-CRC treatment surveillance": "CRC 治疗后监测"
+    });
+
+    Object.assign(nodeLabelText.ja = nodeLabelText.ja || {}, {
+      "Positive FIT hospital referral": "FIT 陽性後の病院紹介",
+      "Colonoscopy intake and bowel preparation": "内視鏡 intake と腸管前処置",
+      "Diagnostic colonoscopy": "診断的大腸内視鏡",
+      "Lesion detection and polypectomy": "病変検出とポリペクトミー",
+      "Pathology classification": "病理分類",
+      "Findings branch decision": "所見に基づく分岐判断",
+      "No polyps: return to screening": "ポリープなし：検診へ戻る",
+      "Low-risk polyps: return to screening": "低リスクポリープ：検診へ戻る",
+      "High-risk polyp surveillance indication": "高リスクポリープ監視適応",
+      "Post-polypectomy surveillance colonoscopy": "ポリペクトミー後監視内視鏡",
+      "CRC staging workup": "CRC 病期評価",
+      "CRC MDO": "CRC MDO",
+      "Colon versus rectal route decision": "結腸・直腸ルート判断",
+      "Adjuvant systemic therapy if indicated": "必要時の術後補助全身療法",
+      "Rectal neoadjuvant or radiotherapy route": "直腸術前または放射線ルート",
+      "Watch-and-wait response surveillance": "watch-and-wait 奏効監視",
+      "Rectal surgery if indicated": "必要時の直腸手術",
+      "Advanced or palliative route": "進行期または緩和ルート",
+      "Post-CRC treatment surveillance": "CRC 治療後サーベイランス"
+    });
+
+    Object.assign(nodeLabelText.es = nodeLabelText.es || {}, {
+      "Positive FIT hospital referral": "Referencia hospitalaria tras FIT positivo",
+      "Colonoscopy intake and bowel preparation": "Admisión para colonoscopia y preparación intestinal",
+      "Diagnostic colonoscopy": "Colonoscopia diagnóstica",
+      "Lesion detection and polypectomy": "Detección de lesiones y polipectomía",
+      "Pathology classification": "Clasificación patológica",
+      "Findings branch decision": "Decisión según hallazgos",
+      "No polyps: return to screening": "Sin pólipos: retorno a cribado",
+      "Low-risk polyps: return to screening": "Pólipos de bajo riesgo: retorno a cribado",
+      "High-risk polyp surveillance indication": "Indicación de vigilancia por pólipo de alto riesgo",
+      "Post-polypectomy surveillance colonoscopy": "Colonoscopia de vigilancia tras polipectomía",
+      "CRC staging workup": "Estadificación CRC",
+      "CRC MDO": "MDO CRC",
+      "Colon versus rectal route decision": "Decisión ruta colon o recto",
+      "Adjuvant systemic therapy if indicated": "Terapia sistémica adyuvante si indicada",
+      "Rectal neoadjuvant or radiotherapy route": "Ruta rectal neoadyuvante o radioterapia",
+      "Watch-and-wait response surveillance": "Vigilancia de respuesta watch-and-wait",
+      "Rectal surgery if indicated": "Cirugía rectal si indicada",
+      "Advanced or palliative route": "Ruta avanzada o paliativa",
+      "Post-CRC treatment surveillance": "Vigilancia tras tratamiento CRC"
     });
 
     const laneLabelText = {
@@ -3767,7 +3957,7 @@
         "Primary screening test": "Primaire screeningstest",
         "Diagnostic colonoscopy": "Diagnostische coloscopie",
         "Pathology and lesion management": "Pathologie en laesiebeheer",
-        "Surveillance and programme evaluation": "Surveillance en programma-evaluatie",
+        "Surveillance and program evaluation": "Surveillance en programma-evaluatie",
         "Referral, investigations, and MDO": "Verwijzing, onderzoek en MDO",
         "Treatment options": "Behandelopties",
         "Advanced care and follow-up": "Gevorderde zorg en follow-up"
@@ -3789,7 +3979,7 @@
         "Primary screening test": "初筛检测",
         "Diagnostic colonoscopy": "诊断性结肠镜",
         "Pathology and lesion management": "病理和病变处理",
-        "Surveillance and programme evaluation": "监测和项目评价",
+        "Surveillance and program evaluation": "监测和项目评价",
         "Referral, investigations, and MDO": "转诊、检查和 MDO",
         "Treatment options": "治疗选项",
         "Advanced care and follow-up": "晚期照护和随访"
@@ -3811,7 +4001,7 @@
         "Primary screening test": "一次スクリーニング検査",
         "Diagnostic colonoscopy": "診断的大腸内視鏡",
         "Pathology and lesion management": "病理と病変管理",
-        "Surveillance and programme evaluation": "サーベイランスと評価",
+        "Surveillance and program evaluation": "サーベイランスと評価",
         "Referral, investigations, and MDO": "紹介、検査、MDO",
         "Treatment options": "治療選択肢",
         "Advanced care and follow-up": "進行期ケアとフォローアップ"
@@ -3833,12 +4023,44 @@
         "Primary screening test": "Prueba primaria de cribado",
         "Diagnostic colonoscopy": "Colonoscopia diagnóstica",
         "Pathology and lesion management": "Patología y manejo de lesiones",
-        "Surveillance and programme evaluation": "Vigilancia y evaluación del programa",
+        "Surveillance and program evaluation": "Vigilancia y evaluación del programa",
         "Referral, investigations, and MDO": "Referencia, pruebas y MDO",
         "Treatment options": "Opciones de tratamiento",
         "Advanced care and follow-up": "Atención avanzada y seguimiento"
       }
     };
+
+    Object.assign(laneLabelText.nl = laneLabelText.nl || {}, {
+      "First hospital contact after positive FIT": "Eerste ziekenhuiscontact na positieve FIT",
+      "Diagnostic colonoscopy and findings": "Diagnostische coloscopie en bevindingen",
+      "Polyp management and surveillance": "Poliepbeheer en surveillance",
+      "CRC staging, MDO, and treatment": "CRC-stadiering, MDO en behandeling",
+      "Post-treatment surveillance": "Surveillance na behandeling"
+    });
+
+    Object.assign(laneLabelText.zh = laneLabelText.zh || {}, {
+      "First hospital contact after positive FIT": "FIT 阳性后的首次医院接触",
+      "Diagnostic colonoscopy and findings": "诊断性结肠镜和检查结果",
+      "Polyp management and surveillance": "息肉处理和监测",
+      "CRC staging, MDO, and treatment": "CRC 分期、MDO 和治疗",
+      "Post-treatment surveillance": "治疗后监测"
+    });
+
+    Object.assign(laneLabelText.ja = laneLabelText.ja || {}, {
+      "First hospital contact after positive FIT": "FIT 陽性後の初回病院接触",
+      "Diagnostic colonoscopy and findings": "診断的大腸内視鏡と所見",
+      "Polyp management and surveillance": "ポリープ管理と監視",
+      "CRC staging, MDO, and treatment": "CRC 病期、MDO、治療",
+      "Post-treatment surveillance": "治療後サーベイランス"
+    });
+
+    Object.assign(laneLabelText.es = laneLabelText.es || {}, {
+      "First hospital contact after positive FIT": "Primer contacto hospitalario tras FIT positivo",
+      "Diagnostic colonoscopy and findings": "Colonoscopia diagnóstica y hallazgos",
+      "Polyp management and surveillance": "Manejo de pólipos y vigilancia",
+      "CRC staging, MDO, and treatment": "Estadificación CRC, MDO y tratamiento",
+      "Post-treatment surveillance": "Vigilancia tras tratamiento"
+    });
 
     const shortNodeLabelText = {
       nl: {
@@ -3976,7 +4198,7 @@
       "Colon cancer treatment referral": "Colonverwijzing",
       "Rectal cancer staging referral": "Rectumverwijzing",
       "Surveillance colonoscopy": "Surveillancecoloscopie",
-      "Interval cancer and programme evaluation": "Programma-evaluatie",
+      "Interval cancer and program evaluation": "Programma-evaluatie",
       "Programme data feedback": "Datafeedback"
     });
 
@@ -4009,7 +4231,7 @@
       "Colon cancer treatment referral": "结肠癌转诊",
       "Rectal cancer staging referral": "直肠分期",
       "Surveillance colonoscopy": "监测肠镜",
-      "Interval cancer and programme evaluation": "项目评价",
+      "Interval cancer and program evaluation": "项目评价",
       "Programme data feedback": "数据反馈"
     });
 
@@ -4042,7 +4264,7 @@
       "Colon cancer treatment referral": "結腸紹介",
       "Rectal cancer staging referral": "直腸病期紹介",
       "Surveillance colonoscopy": "監視内視鏡",
-      "Interval cancer and programme evaluation": "評価",
+      "Interval cancer and program evaluation": "評価",
       "Programme data feedback": "データ還元"
     });
 
@@ -4075,8 +4297,96 @@
       "Colon cancer treatment referral": "Referencia colon",
       "Rectal cancer staging referral": "Referencia rectal",
       "Surveillance colonoscopy": "Colonoscopia vigilancia",
-      "Interval cancer and programme evaluation": "Evaluación programa",
+      "Interval cancer and program evaluation": "Evaluación programa",
       "Programme data feedback": "Datos programa"
+    });
+
+    Object.assign(shortNodeLabelText.nl = shortNodeLabelText.nl || {}, {
+      "Positive FIT hospital referral": "Positieve FIT",
+      "Colonoscopy intake and bowel preparation": "Intake + voorbereiding",
+      "Diagnostic colonoscopy": "Coloscopie",
+      "Lesion detection and polypectomy": "Poliepverwijdering",
+      "Pathology classification": "Pathologie",
+      "Findings branch decision": "Bevindingen",
+      "No polyps: return to screening": "Geen poliep",
+      "Low-risk polyps: return to screening": "Laag risico",
+      "High-risk polyp surveillance indication": "Hoog risico",
+      "Post-polypectomy surveillance colonoscopy": "Poliep-surveillance",
+      "CRC staging workup": "CRC-stadiering",
+      "CRC MDO": "CRC MDO",
+      "Colon versus rectal route decision": "Colon / rectum",
+      "Adjuvant systemic therapy if indicated": "Adjuvant?",
+      "Rectal neoadjuvant or radiotherapy route": "Rectale RT",
+      "Watch-and-wait response surveillance": "Watch-and-wait",
+      "Rectal surgery if indicated": "Rectumchirurgie",
+      "Advanced or palliative route": "Gevorderd",
+      "Post-CRC treatment surveillance": "CRC-surveillance"
+    });
+
+    Object.assign(shortNodeLabelText.zh = shortNodeLabelText.zh || {}, {
+      "Positive FIT hospital referral": "FIT 阳性",
+      "Colonoscopy intake and bowel preparation": "接诊 + 肠道准备",
+      "Diagnostic colonoscopy": "结肠镜",
+      "Lesion detection and polypectomy": "息肉切除",
+      "Pathology classification": "病理分类",
+      "Findings branch decision": "结果分支",
+      "No polyps: return to screening": "无息肉",
+      "Low-risk polyps: return to screening": "低风险息肉",
+      "High-risk polyp surveillance indication": "高风险息肉",
+      "Post-polypectomy surveillance colonoscopy": "息肉后监测",
+      "CRC staging workup": "CRC 分期",
+      "CRC MDO": "CRC MDO",
+      "Colon versus rectal route decision": "结肠 / 直肠",
+      "Adjuvant systemic therapy if indicated": "辅助治疗？",
+      "Rectal neoadjuvant or radiotherapy route": "直肠放疗",
+      "Watch-and-wait response surveillance": "观察等待",
+      "Rectal surgery if indicated": "直肠手术",
+      "Advanced or palliative route": "晚期 / 姑息",
+      "Post-CRC treatment surveillance": "CRC 后监测"
+    });
+
+    Object.assign(shortNodeLabelText.ja = shortNodeLabelText.ja || {}, {
+      "Positive FIT hospital referral": "FIT 陽性",
+      "Colonoscopy intake and bowel preparation": "intake + 前処置",
+      "Diagnostic colonoscopy": "大腸内視鏡",
+      "Lesion detection and polypectomy": "ポリープ切除",
+      "Pathology classification": "病理分類",
+      "Findings branch decision": "所見分岐",
+      "No polyps: return to screening": "ポリープなし",
+      "Low-risk polyps: return to screening": "低リスク",
+      "High-risk polyp surveillance indication": "高リスク",
+      "Post-polypectomy surveillance colonoscopy": "ポリープ監視",
+      "CRC staging workup": "CRC 病期",
+      "CRC MDO": "CRC MDO",
+      "Colon versus rectal route decision": "結腸 / 直腸",
+      "Adjuvant systemic therapy if indicated": "補助療法?",
+      "Rectal neoadjuvant or radiotherapy route": "直腸 RT",
+      "Watch-and-wait response surveillance": "watch-and-wait",
+      "Rectal surgery if indicated": "直腸手術",
+      "Advanced or palliative route": "進行 / 緩和",
+      "Post-CRC treatment surveillance": "CRC 後監視"
+    });
+
+    Object.assign(shortNodeLabelText.es = shortNodeLabelText.es || {}, {
+      "Positive FIT hospital referral": "FIT positivo",
+      "Colonoscopy intake and bowel preparation": "Intake + preparación",
+      "Diagnostic colonoscopy": "Colonoscopia",
+      "Lesion detection and polypectomy": "Polipectomía",
+      "Pathology classification": "Patología",
+      "Findings branch decision": "Hallazgos",
+      "No polyps: return to screening": "Sin pólipos",
+      "Low-risk polyps: return to screening": "Bajo riesgo",
+      "High-risk polyp surveillance indication": "Alto riesgo",
+      "Post-polypectomy surveillance colonoscopy": "Vigilancia pólipo",
+      "CRC staging workup": "Estadificación CRC",
+      "CRC MDO": "MDO CRC",
+      "Colon versus rectal route decision": "Colon / recto",
+      "Adjuvant systemic therapy if indicated": "Adyuvancia?",
+      "Rectal neoadjuvant or radiotherapy route": "RT rectal",
+      "Watch-and-wait response surveillance": "watch-and-wait",
+      "Rectal surgery if indicated": "Cirugía rectal",
+      "Advanced or palliative route": "Avanzado",
+      "Post-CRC treatment surveillance": "Vigilancia CRC"
     });
 
     const blockNameText = {
@@ -4187,6 +4497,38 @@
         "Shared sterilization support": "共享灭菌支持"
       }
     };
+
+    Object.assign(blockNameText.nl = blockNameText.nl || {}, {
+      "Colonoscopy intake and bowel preparation": "Coloscopie-intake en darmvoorbereiding",
+      "Polypectomy or endoscopic lesion removal": "Poliepectomie of endoscopische laesieverwijdering",
+      "Polyp risk stratification": "Risicostratificatie van poliepen",
+      "Post-polypectomy surveillance colonoscopy": "Surveillancecoloscopie na poliepectomie",
+      "Post-CRC treatment surveillance round": "Surveillanceronde na CRC-behandeling"
+    });
+
+    Object.assign(blockNameText.zh = blockNameText.zh || {}, {
+      "Colonoscopy intake and bowel preparation": "结肠镜接诊和肠道准备",
+      "Polypectomy or endoscopic lesion removal": "息肉切除或内镜病变切除",
+      "Polyp risk stratification": "息肉风险分层",
+      "Post-polypectomy surveillance colonoscopy": "息肉切除后监测结肠镜",
+      "Post-CRC treatment surveillance round": "CRC 治疗后监测轮次"
+    });
+
+    Object.assign(blockNameText.ja = blockNameText.ja || {}, {
+      "Colonoscopy intake and bowel preparation": "大腸内視鏡 intake と腸管前処置",
+      "Polypectomy or endoscopic lesion removal": "ポリペクトミーまたは内視鏡的病変切除",
+      "Polyp risk stratification": "ポリープリスク層別化",
+      "Post-polypectomy surveillance colonoscopy": "ポリペクトミー後監視内視鏡",
+      "Post-CRC treatment surveillance round": "CRC 治療後サーベイランス回"
+    });
+
+    Object.assign(blockNameText.es = blockNameText.es || {}, {
+      "Colonoscopy intake and bowel preparation": "Admisión para colonoscopia y preparación intestinal",
+      "Polypectomy or endoscopic lesion removal": "Polipectomía o resección endoscópica de lesión",
+      "Polyp risk stratification": "Estratificación de riesgo de pólipos",
+      "Post-polypectomy surveillance colonoscopy": "Colonoscopia de vigilancia tras polipectomía",
+      "Post-CRC treatment surveillance round": "Ronda de vigilancia tras tratamiento CRC"
+    });
 
     const unitText = {
       nl: {
@@ -4773,6 +5115,30 @@
       "per kg textile": "por kg de textil",
       "per activity or case": "por actividad o caso",
       "per sterilization cycle": "por ciclo de esterilización"
+    });
+
+    Object.assign(unitText.nl = unitText.nl || {}, {
+      "per colonoscopy intake": "per coloscopie-intake",
+      "per case classified": "per geclassificeerde casus",
+      "per surveillance colonoscopy": "per surveillancecoloscopie"
+    });
+
+    Object.assign(unitText.zh = unitText.zh || {}, {
+      "per colonoscopy intake": "每次结肠镜接诊",
+      "per case classified": "每个分类病例",
+      "per surveillance colonoscopy": "每次监测结肠镜"
+    });
+
+    Object.assign(unitText.ja = unitText.ja || {}, {
+      "per colonoscopy intake": "大腸内視鏡 intake 1 件あたり",
+      "per case classified": "分類症例 1 件あたり",
+      "per surveillance colonoscopy": "監視内視鏡 1 回あたり"
+    });
+
+    Object.assign(unitText.es = unitText.es || {}, {
+      "per colonoscopy intake": "por admisión de colonoscopia",
+      "per case classified": "por caso clasificado",
+      "per surveillance colonoscopy": "por colonoscopia de vigilancia"
     });
 
     Object.assign(resourceFlowText.ja = resourceFlowText.ja || {}, {
@@ -5455,6 +5821,150 @@
       "Transport logistics": "Logística de transporte"
     });
 
+    Object.assign(resourceFlowText.nl = resourceFlowText.nl || {}, {
+      "Nurse time": "Verpleegkundige tijd",
+      "Patient instructions": "Patientinstructies",
+      "Endoscopy room use": "Gebruik van endoscopiekamer",
+      "Polypectomy device": "Poliepectomie-instrument",
+      "Polypectomy devices": "Poliepectomie-instrumenten",
+      "Procedure time": "Proceduretijd",
+      "Endoscopy waste": "Endoscopieafval",
+      "Specimen containers": "Monstercontainers",
+      "Pathology request": "Pathologieaanvraag",
+      "Digital pathology if used": "Digitale pathologie indien gebruikt",
+      "Referral decision": "Verwijsbesluit",
+      "EHR update": "EPD-update",
+      "Future screening invitation": "Toekomstige screeningsuitnodiging",
+      "Risk stratification": "Risicostratificatie",
+      "Risk category assignment": "Toewijzing risicocategorie",
+      "CT": "CT",
+      "MRI if rectal cancer": "MRI bij rectumkanker",
+      "Treatment planning": "Behandelplanning",
+      "Shared decision documentation": "Documentatie van samen beslissen",
+      "Surgical instruments": "Chirurgische instrumenten",
+      "Admission days": "Opnamedagen",
+      "Stoma materials if applicable": "Stomamateriaal indien van toepassing",
+      "Chemotherapy cycles": "Chemotherapiecycli",
+      "Radiotherapy planning": "Radiotherapieplanning",
+      "Treatment fractions": "Behandelingsfracties",
+      "Concurrent systemic therapy": "Gelijktijdige systemische therapie",
+      "MRI or endoscopy": "MRI of endoscopie",
+      "Systemic therapy planning": "Planning van systemische therapie",
+      "Palliative care coordination": "Coordinatie van palliatieve zorg",
+      "Outpatient visits": "Poliklinische bezoeken",
+      "CEA or laboratory testing": "CEA of laboratoriumonderzoek",
+      "Imaging if indicated": "Beeldvorming indien nodig",
+      "Colonoscopy if indicated": "Coloscopie indien nodig"
+    });
+
+    Object.assign(resourceFlowText.zh = resourceFlowText.zh || {}, {
+      "Nurse time": "护士时间",
+      "Patient instructions": "患者说明",
+      "Endoscopy room use": "内镜室使用",
+      "Polypectomy device": "息肉切除器械",
+      "Polypectomy devices": "息肉切除器械",
+      "Procedure time": "操作时间",
+      "Endoscopy waste": "内镜废弃物",
+      "Specimen containers": "标本容器",
+      "Pathology request": "病理申请",
+      "Digital pathology if used": "如使用则包括数字病理",
+      "Referral decision": "转诊决策",
+      "EHR update": "EHR 更新",
+      "Future screening invitation": "未来筛查邀请",
+      "Risk stratification": "风险分层",
+      "Risk category assignment": "风险类别分配",
+      "CT": "CT",
+      "MRI if rectal cancer": "如为直肠癌则 MRI",
+      "Treatment planning": "治疗规划",
+      "Shared decision documentation": "共同决策记录",
+      "Surgical instruments": "手术器械",
+      "Admission days": "住院日",
+      "Stoma materials if applicable": "如适用则包括造口材料",
+      "Chemotherapy cycles": "化疗周期",
+      "Radiotherapy planning": "放疗计划",
+      "Treatment fractions": "治疗分次",
+      "Concurrent systemic therapy": "同步系统治疗",
+      "MRI or endoscopy": "MRI 或内镜",
+      "Systemic therapy planning": "系统治疗规划",
+      "Palliative care coordination": "姑息照护协调",
+      "Outpatient visits": "门诊就诊",
+      "CEA or laboratory testing": "CEA 或实验室检测",
+      "Imaging if indicated": "必要时影像检查",
+      "Colonoscopy if indicated": "必要时结肠镜"
+    });
+
+    Object.assign(resourceFlowText.ja = resourceFlowText.ja || {}, {
+      "Nurse time": "看護師時間",
+      "Patient instructions": "患者説明",
+      "Endoscopy room use": "内視鏡室使用",
+      "Polypectomy device": "ポリペクトミーデバイス",
+      "Polypectomy devices": "ポリペクトミーデバイス",
+      "Procedure time": "処置時間",
+      "Endoscopy waste": "内視鏡廃棄物",
+      "Specimen containers": "検体容器",
+      "Pathology request": "病理依頼",
+      "Digital pathology if used": "使用時のデジタル病理",
+      "Referral decision": "紹介判断",
+      "EHR update": "EHR 更新",
+      "Future screening invitation": "将来の検診招待",
+      "Risk stratification": "リスク層別化",
+      "Risk category assignment": "リスク分類割当",
+      "CT": "CT",
+      "MRI if rectal cancer": "直腸がんの場合 MRI",
+      "Treatment planning": "治療計画",
+      "Shared decision documentation": "共同意思決定記録",
+      "Surgical instruments": "手術器械",
+      "Admission days": "入院日数",
+      "Stoma materials if applicable": "該当時ストーマ材料",
+      "Chemotherapy cycles": "化学療法サイクル",
+      "Radiotherapy planning": "放射線治療計画",
+      "Treatment fractions": "治療分割",
+      "Concurrent systemic therapy": "併用全身療法",
+      "MRI or endoscopy": "MRI または内視鏡",
+      "Systemic therapy planning": "全身療法計画",
+      "Palliative care coordination": "緩和ケア調整",
+      "Outpatient visits": "外来受診",
+      "CEA or laboratory testing": "CEA または検査",
+      "Imaging if indicated": "必要時画像検査",
+      "Colonoscopy if indicated": "必要時大腸内視鏡"
+    });
+
+    Object.assign(resourceFlowText.es = resourceFlowText.es || {}, {
+      "Nurse time": "Tiempo de enfermería",
+      "Patient instructions": "Instrucciones al paciente",
+      "Endoscopy room use": "Uso de sala de endoscopia",
+      "Polypectomy device": "Dispositivo de polipectomía",
+      "Polypectomy devices": "Dispositivos de polipectomía",
+      "Procedure time": "Tiempo de procedimiento",
+      "Endoscopy waste": "Residuo de endoscopia",
+      "Specimen containers": "Contenedores de muestra",
+      "Pathology request": "Solicitud de patología",
+      "Digital pathology if used": "Patología digital si se usa",
+      "Referral decision": "Decisión de referencia",
+      "EHR update": "Actualización EHR",
+      "Future screening invitation": "Invitación futura a cribado",
+      "Risk stratification": "Estratificación de riesgo",
+      "Risk category assignment": "Asignación de categoría de riesgo",
+      "CT": "CT",
+      "MRI if rectal cancer": "MRI si cáncer rectal",
+      "Treatment planning": "Planificación de tratamiento",
+      "Shared decision documentation": "Documentación de decisión compartida",
+      "Surgical instruments": "Instrumentos quirúrgicos",
+      "Admission days": "Días de ingreso",
+      "Stoma materials if applicable": "Materiales de estoma si aplica",
+      "Chemotherapy cycles": "Ciclos de quimioterapia",
+      "Radiotherapy planning": "Planificación de radioterapia",
+      "Treatment fractions": "Fracciones de tratamiento",
+      "Concurrent systemic therapy": "Terapia sistémica concurrente",
+      "MRI or endoscopy": "MRI o endoscopia",
+      "Systemic therapy planning": "Planificación de terapia sistémica",
+      "Palliative care coordination": "Coordinación de cuidados paliativos",
+      "Outpatient visits": "Visitas ambulatorias",
+      "CEA or laboratory testing": "CEA o pruebas de laboratorio",
+      "Imaging if indicated": "Imagen si indicada",
+      "Colonoscopy if indicated": "Colonoscopia si indicada"
+    });
+
     function normaliseLanguage(value) {
       return languageOptions.some((item) => item.id === value) ? value : "en";
     }
@@ -5594,7 +6104,7 @@
     }
 
     function localizedClinicalProtocol(node) {
-      if (state.language === "en") return node.protocolStep;
+      if (state.language === "en") return node.protocolStep || node.interpretation || node.label;
       return t("clinicalProtocolFallback", {
         label: localizedNodeLabel(node),
         type: node.type === "decision" ? t("decisionPoint").toLowerCase() : t("activity").toLowerCase(),
@@ -5607,7 +6117,9 @@
     }
 
     function localizedClinicalQuestions(node) {
-      if (state.language === "en") return node.openQuestions;
+      if (state.language === "en") {
+        return node.openQuestions || [`Confirm local execution, frequency, care location, data source, and pathway boundary for ${node.label}.`];
+      }
       return [t("clinicalQuestionFallback", { label: localizedNodeLabel(node) })];
     }
 
@@ -5789,9 +6301,9 @@
           moduleRegistry[node.module] ? moduleName(node.module) : "",
           node.protocolStep,
           node.rationale,
-          node.resourceFlows.join(" "),
+          (node.resourceFlows || []).join(" "),
           localizedResourceFlowList(node.resourceFlows),
-          node.openQuestions.join(" "),
+          (node.openQuestions || []).join(" "),
           node.oncology ? "oncology systemic therapy chemotherapy" : ""
         ].join(" ").toLowerCase();
         return (state.domain === "all" || node.domain === state.domain)
@@ -5948,9 +6460,7 @@
           id: "gastro",
           label: t("specialtyGastro"),
           items: [
-            { id: "crcGuideline", sourceKey: "sourceReference" },
-            { id: "crcGuidelineFull", sourceKey: "sourceReference" },
-            { id: "crcEmc", sourceKey: "sourceEmc" }
+            { id: "crcDutch", sourceKey: "sourceReference" }
           ]
         }
       ];
@@ -6222,7 +6732,7 @@
         labelLines.forEach((line, index) => {
           const tspan = createSvgElement("tspan", {
             x: labelLayout.textX,
-            dy: index === 0 ? 0 : 16
+            dy: index === 0 ? 0 : 18
           });
           tspan.textContent = line;
           labelText.appendChild(tspan);
@@ -6443,8 +6953,27 @@
         "Colon cancer treatment referral": "Colon referral",
         "Rectal cancer staging referral": "Rectal referral",
         "Surveillance colonoscopy": "Surveillance scope",
-        "Interval cancer and programme evaluation": "Programme evaluation",
-        "Programme data feedback": "Data feedback"
+        "Interval cancer and program evaluation": "Programme evaluation",
+        "Programme data feedback": "Data feedback",
+        "Positive FIT hospital referral": "Positive FIT",
+        "Colonoscopy intake and bowel preparation": "Intake + bowel prep",
+        "Diagnostic colonoscopy": "Colonoscopy",
+        "Lesion detection and polypectomy": "Polypectomy",
+        "Pathology classification": "Pathology",
+        "Findings branch decision": "Findings branch",
+        "No polyps: return to screening": "No polyps",
+        "Low-risk polyps: return to screening": "Low-risk polyps",
+        "High-risk polyp surveillance indication": "High-risk polyps",
+        "Post-polypectomy surveillance colonoscopy": "Polyp surveillance",
+        "CRC staging workup": "CRC staging",
+        "CRC MDO": "CRC MDO",
+        "Colon versus rectal route decision": "Colon / rectal route",
+        "Adjuvant systemic therapy if indicated": "Adjuvant therapy?",
+        "Rectal neoadjuvant or radiotherapy route": "Rectal RT route",
+        "Watch-and-wait response surveillance": "Watch-and-wait",
+        "Rectal surgery if indicated": "Rectal surgery",
+        "Advanced or palliative route": "Advanced / palliative",
+        "Post-CRC treatment surveillance": "CRC surveillance"
       };
       if (state.language === "en") return replacements[node.label] || node.label;
       return shortNodeLabelText[state.language]?.[node.label] || localizedNodeLabel(node);
@@ -6452,7 +6981,7 @@
 
     function stationLabelLayout(node, lines, placedLabels, markerBoxes) {
       const labelWidth = estimateLabelWidth(lines);
-      const labelHeight = lines.length * 16;
+      const labelHeight = lines.length * 18;
       const forcedCandidate = forcedStationLabelCandidate(node, labelWidth);
       if (forcedCandidate) {
         const x = Math.max(14, Math.min(1186 - labelWidth, forcedCandidate.x));
@@ -6523,11 +7052,8 @@
     }
 
     function forcedStationLabelCandidate(node, labelWidth) {
-      if (node.id === "EMC-DX03" || node.id === "CRC-EMC-DX02") {
+      if (node.id === "EMC-DX03") {
         return { x: node.x - labelWidth / 2, y: node.y + 34, dx: 0 };
-      }
-      if (node.id === "CRCFULL-AC01") {
-        return { x: node.x - labelWidth / 2, y: node.y + 36, dx: 0 };
       }
       return null;
     }
@@ -6541,9 +7067,9 @@
     function laneLabelBounds(text, x, y) {
       return {
         x,
-        y: y - 14,
+        y: y - 15,
         width: estimateLaneLabelWidth(text),
-        height: 20
+        height: 22
       };
     }
 
@@ -6555,7 +7081,7 @@
 
     function estimateLabelWidth(lines) {
       const maxLength = Math.max(...lines.map((line) => line.length), 8);
-      return Math.max(64, Math.min(156, maxLength * 7.1));
+      return Math.max(68, Math.min(168, maxLength * 7.9));
     }
 
     function splitLabel(label, maxLength) {

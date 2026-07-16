@@ -11,13 +11,11 @@ The current prototype includes urology and gastroenterology examples:
 - Urology: EAU MIBC simplified guideline map
 - Urology: EAU MIBC full activity extraction
 - Urology: Erasmus MC local MIBC operational pathway
-- Gastroenterology: European colorectal cancer guideline reference pathway
-- Gastroenterology: EU CRC screening and diagnosis full activity extraction
-- Gastroenterology: Erasmus MC public colorectal cancer care route
+- Gastroenterology: Dutch national guideline-based CRC screening-positive hospital pathway
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
 
-The page also includes a small interactive LCA building-block calculator for a colorectal screening-positive fragment. It demonstrates the calculation logic for colonoscopy and pathology modules using editable dummy quantities, emission factors, branch probabilities, and low/base/high uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
+The page also includes an interactive LCA building-block calculator. It demonstrates modular calculation logic using editable dummy quantities, emission factors, selected activities, module inclusion, and low/base/high uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
 
 ## What The Explorer Shows
 
@@ -35,11 +33,11 @@ The LCA calculator uses the prototype formula `impact = quantity x emission fact
 
 ## Methodological Scope
 
-The guideline views represent clinical reference logic. The simplified EAU MIBC view keeps the current 17-node clinical abstraction. The EAU MIBC full activity extraction view separates more guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. The EU CRC screening and diagnosis full extraction view is based on European quality assurance guidance for colorectal cancer screening and diagnosis. It is useful for programme invitation, primary testing, positive-test management, diagnostic colonoscopy, pathology, lesion management, surveillance, and programme evaluation, but it is not a complete CRC treatment guideline. These views should be treated as clinical reference material, not as evidence that all activities occur at Erasmus MC.
+The guideline views represent clinical reference logic. The simplified EAU MIBC view keeps the current clinical abstraction. The EAU MIBC full activity extraction view separates more guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. These views should be treated as clinical reference material, not as evidence that all activities occur at Erasmus MC.
 
 The Erasmus MC MIBC view represents a local operational pathway after referral or triage into the bladder cancer center. Upstream activities such as first cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway activities unless local experts confirm that they are repeated or performed within the selected Erasmus MC boundary.
 
-The Erasmus MC colorectal cancer view is based on public patient-facing pages. It is useful for early gastroenterology scoping, but it should not be treated as an internal local workflow until confirmed with Erasmus MC clinical experts.
+The gastroenterology view has been rebuilt around Dutch national guideline sources and the screening-positive hospital boundary discussed with clinical input. It starts after an abnormal FIT result enters hospital follow-up and separates no-polyp, low-risk polyp, high-risk polyp surveillance, and confirmed colorectal cancer branches. It does not assume that an Erasmus MC internal local CRC workflow is available. Any local execution, department handover, treatment location, and surveillance time horizon still require expert confirmation.
 
 The explorer does not provide clinical advice and does not rank treatment options. Environmental comparison requires a confirmed patient population, pathway boundary, clinical decision context, time horizon, and clinical comparability of alternatives.
 

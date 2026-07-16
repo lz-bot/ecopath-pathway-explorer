@@ -8,9 +8,7 @@ ECO-PATH is a pathway-level framework for environmental assessment of healthcare
 
 The current prototype includes urology and gastroenterology examples:
 
-- Urology: EAU MIBC simplified guideline map
-- Urology: EAU MIBC full activity extraction
-- Urology: Erasmus MC local MIBC operational pathway
+- Urology: one MIBC map with selectable Dutch operational and EAU 2026 clinical-reference views
 - Gastroenterology: Dutch national guideline-based CRC screening-positive hospital pathway
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
@@ -33,11 +31,22 @@ Route colors distinguish diagnostic and first-contact movement, treatment moveme
 
 The LCA calculator uses the prototype formula `impact = quantity x emission factor`, then applies an uncertainty range and simple branch weighting for adenoma and cancer add-ons.
 
+## Urology Source Views
+
+The urology entry uses one interactive map container with two selectable source views.
+
+The **Dutch pathway** starts at the hospital boundary in Albert Schweitzer Hospital or another regional hospital. It includes regional urology assessment, cystoscopy, TURBT, pathology, MIBC confirmation, staging, and transfer of the referral package. Confirmed MIBC then enters Erasmus MC pathology and imaging review, joint clinic and MDO, treatment planning, surgery, bladder-preserving treatment, systemic therapy, advanced care, and shared follow-up. The non-MIBC branch exits the current MIBC scope and remains visible so the map does not imply that all detected bladder tumors proceed to tertiary MIBC care.
+
+The **EAU 2026 reference** view is institution-neutral. It separates guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. It does not identify whether an activity occurs at Albert Schweitzer Hospital, Erasmus MC, or another provider.
+
+The Dutch full bladder cancer guideline available through NVU is based on an earlier EAU version. It should not be interpreted as a fully independent Dutch 2026 clinical guideline. Dutch-specific operational assumptions therefore combine NVU guidance, Dutch quality standards, public hospital information, and expert-informed pathway reconstruction. They still require confirmation with Albert Schweitzer Hospital and Erasmus MC clinicians.
+
+Public reference sources:
+
+- [NVU current guideline register](https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/)
+- [EAU muscle-invasive and metastatic bladder cancer guideline](https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer)
+
 ## Methodological Scope
-
-The guideline views represent clinical reference logic. The simplified EAU MIBC view keeps the current clinical abstraction. The EAU MIBC full activity extraction view separates more guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. These views should be treated as clinical reference material, not as evidence that all activities occur at Erasmus MC.
-
-The Erasmus MC MIBC view represents a local operational pathway after referral or triage into the bladder cancer center. Upstream activities such as first cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway activities unless local experts confirm that they are repeated or performed within the selected Erasmus MC boundary.
 
 The gastroenterology view has been rebuilt around Dutch national guideline sources and the screening-positive hospital boundary discussed with clinical input. It starts after an abnormal FIT result enters hospital follow-up and separates no-polyp, low-risk polyp, high-risk polyp surveillance, and confirmed colorectal cancer branches. It does not assume that an Erasmus MC internal local CRC workflow is available. Any local execution, department handover, treatment location, and surveillance time horizon still require expert confirmation.
 

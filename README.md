@@ -12,6 +12,7 @@ The current prototype includes urology and gastroenterology examples:
 - Urology: EAU MIBC full activity extraction
 - Urology: Erasmus MC local MIBC operational pathway
 - Gastroenterology: European colorectal cancer guideline reference pathway
+- Gastroenterology: EU CRC screening and diagnosis full activity extraction
 - Gastroenterology: Erasmus MC public colorectal cancer care route
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
@@ -34,7 +35,7 @@ The LCA calculator uses the prototype formula `impact = quantity x emission fact
 
 ## Methodological Scope
 
-The guideline views represent clinical reference logic. The simplified EAU MIBC view keeps the current 17-node clinical abstraction. The full activity extraction view separates more guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. These views should be treated as clinical reference material, not as evidence that all activities occur at Erasmus MC.
+The guideline views represent clinical reference logic. The simplified EAU MIBC view keeps the current 17-node clinical abstraction. The EAU MIBC full activity extraction view separates more guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. The EU CRC screening and diagnosis full extraction view is based on European quality assurance guidance for colorectal cancer screening and diagnosis. It is useful for programme invitation, primary testing, positive-test management, diagnostic colonoscopy, pathology, lesion management, surveillance, and programme evaluation, but it is not a complete CRC treatment guideline. These views should be treated as clinical reference material, not as evidence that all activities occur at Erasmus MC.
 
 The Erasmus MC MIBC view represents a local operational pathway after referral or triage into the bladder cancer center. Upstream activities such as first cystoscopy, TURBT, and initial pathological confirmation are treated as pre-pathway activities unless local experts confirm that they are repeated or performed within the selected Erasmus MC boundary.
 

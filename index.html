@@ -748,6 +748,29 @@
       gap: 5px;
     }
 
+    .pathway-references {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 10.5px;
+      line-height: 1.45;
+    }
+
+    .pathway-references strong {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .pathway-references a {
+      color: var(--accent-dark);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
     .prefix-chip {
       display: inline-flex;
       align-items: center;
@@ -1048,6 +1071,12 @@
       color: var(--muted);
       font-size: 12px;
       overflow-wrap: anywhere;
+    }
+
+    .building-block-chip .block-applicability {
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 700;
     }
 
     .candidate-legend {
@@ -1817,6 +1846,7 @@
             <span class="code-legend-item"><span class="prefix-chip">TX</span><span id="treatmentPrefixLabel">Treatment</span></span>
             <span class="code-legend-item"><span class="prefix-chip">FU</span><span id="followupPrefixLabel">Follow-up</span></span>
           </div>
+          <div class="pathway-references" id="pathwayReferences" aria-label="Pathway references"></div>
         </section>
 
         <section class="panel activity-panel" id="activitiesPanel">
@@ -1981,22 +2011,22 @@
       },
       EM06: {
         name: "Systemic therapy and oncology",
-        definition: "Medical oncology review, chemotherapy, systemic treatment, pharmacy preparation, response assessment, and progression assessment.",
+        definition: "Medical oncology review, chemotherapy, immunotherapy or targeted treatment, pharmacy preparation, monitoring, response assessment, and progression assessment.",
         resourceFlows: ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Day-care chair time", "Laboratory monitoring", "Cytotoxic waste"]
       },
       EM07: {
         name: "Surgery",
-        definition: "Surgical procedure, anesthesia, operating room use, perioperative care, ward stay, and procedure-related waste.",
+        definition: "Endoscopic or operative treatment, including TURBT, organ resection, lymph-node dissection, urinary diversion, anesthesia, perioperative care, admission, and procedure-related waste.",
         resourceFlows: ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Ward or ICU stay", "Surgical waste"]
       },
       EM08: {
         name: "Radiotherapy",
-        definition: "Radiotherapy decision, planning, treatment fractions, chemoradiation, immobilization, and radiotherapy-related travel.",
+        definition: "Radiotherapy decision, planning, external-beam fractions, chemoradiation, brachytherapy, immobilization, and radiotherapy-related travel.",
         resourceFlows: ["Linear accelerator electricity", "Treatment planning", "Immobilization materials", "Fraction count", "Patient travel"]
       },
       EM09: {
         name: "Follow-up",
-        definition: "Surveillance, outpatient review, follow-up tests, recurrence monitoring, and return-route contacts.",
+        definition: "Treatment-specific surveillance, outpatient review, imaging or endoscopy, recurrence monitoring, diversion or stoma follow-up, and return-route contacts.",
         resourceFlows: ["Outpatient visit", "Surveillance tests", "Patient travel", "EHR use"]
       },
       EM10: {
@@ -2037,19 +2067,20 @@
 
     const buildingBlockRegistry = [
       block("EM01", "First specialist consultation", "per consultation", ["Patient travel", "Room use", "EHR use"]),
-      block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"]),
+      block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"], ["gastro"]),
 
       block("EM02", "Pathology slide review", "per review", ["Pathologist time", "Microscopy or digital pathology", "Report generation"]),
       block("EM02", "Specimen processing", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
-      block("EM02", "Biopsy or polyp pathology", "per specimen", ["Container", "Slides", "Staining reagents", "Pathology waste"]),
+      block("EM02", "Biopsy or polyp pathology", "per specimen", ["Container", "Slides", "Staining reagents", "Pathology waste"], ["gastro"]),
       block("EM02", "IHC or molecular pathology add-on", "per test", ["Reagents", "Equipment time", "Consumables", "Hazardous waste"]),
+      block("EM02", "Complex surgical specimen pathology", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
 
       block("EM03", "CT scan", "per scan", ["Scanner electricity", "Contrast media", "Disposables", "Radiology reporting"]),
       block("EM03", "MRI scan", "per scan", ["Scanner electricity", "Room time", "Radiology reporting", "Patient travel"]),
       block("EM03", "PET-CT scan", "per scan", ["Radiotracer", "Scanner electricity", "Uptake room time", "Waste"]),
-      block("EM03", "Colonoscopy", "per procedure", ["Procedure materials", "Sedation", "Endoscope reprocessing", "Water", "Waste"]),
-      block("EM03", "Polypectomy or endoscopic lesion removal", "per procedure", ["Polypectomy device", "Specimen container", "Procedure time", "Endoscopy waste"]),
-      block("EM03", "Cystoscopy", "per procedure", ["Scope use", "Consumables", "Reprocessing", "Procedure room time"]),
+      block("EM03", "Colonoscopy", "per procedure", ["Procedure materials", "Sedation", "Endoscope reprocessing", "Water", "Waste"], ["gastro"]),
+      block("EM03", "Polypectomy or endoscopic lesion removal", "per procedure", ["Polypectomy device", "Specimen container", "Procedure time", "Endoscopy waste"], ["gastro"]),
+      block("EM03", "Cystoscopy", "per procedure", ["Scope use", "Consumables", "Reprocessing", "Procedure room time"], ["urology"]),
       block("EM03", "Ultrasound", "per scan", ["Equipment electricity", "Gel and covers", "Clinical staff time"]),
 
       block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use", "Patient travel", "EHR use"]),
@@ -2057,15 +2088,20 @@
       block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
       block("EM05", "Shared decision-making session", "per session", ["Clinician time", "Decision aid material", "Patient communication"]),
       block("EM05", "Fitness or pre-treatment assessment", "per assessment", ["Assessment time", "Laboratory review", "EHR documentation"]),
-      block("EM05", "Polyp risk stratification", "per case classified", ["Pathology review", "Risk category assignment", "Patient communication"]),
+      block("EM05", "Polyp risk stratification", "per case classified", ["Pathology review", "Risk category assignment", "Patient communication"], ["gastro"]),
       block("EM05", "Response or progression assessment", "per assessment", ["Clinical review", "Imaging review", "Laboratory review"]),
 
       block("EM06", "Medical oncology consultation", "per visit", ["Oncologist time", "Room use", "Patient travel", "EHR use"]),
       block("EM06", "Chemotherapy infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Day-care chair time", "Cytotoxic waste"]),
+      block("EM06", "Immunotherapy or targeted infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Day-care chair time", "Monitoring"]),
       block("EM06", "Oral systemic therapy cycle", "per cycle", ["Drug dose", "Dispensing", "Monitoring", "Packaging"]),
       block("EM06", "Pharmacy preparation", "per preparation", ["Pharmacy staff time", "PPE", "Syringes or bags", "Cytotoxic waste"]),
       block("EM06", "Therapy monitoring laboratory set", "per monitoring set", ["Blood draw", "Lab reagents", "Analyzer electricity", "Reporting"]),
 
+      block("EM07", "TURBT procedure episode", "per procedure", ["Operating room time", "Irrigation fluid", "Urinary catheter", "Sterile instruments", "Surgical waste"], ["urology"]),
+      block("EM07", "Radical cystectomy procedure episode", "per procedure", ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Surgical waste"], ["urology"]),
+      block("EM07", "Urinary diversion procedure add-on", "per procedure", ["Additional operating room time", "Bowel anastomosis materials", "Ureteral stents or catheters", "Stoma starter supplies"], ["urology"]),
+      block("EM07", "Colorectal resection procedure episode", "per procedure", ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Stoma materials if used"], ["gastro"]),
       block("EM07", "Operating room time", "per OR hour", ["OR electricity", "Ventilation", "Lighting", "Equipment use"]),
       block("EM07", "Anesthesia episode", "per anesthesia", ["Anesthetic medicines", "Airway materials", "Monitoring consumables"]),
       block("EM07", "Sterile instrument set", "per set", ["CSSD processing", "Sterilization energy", "Packaging", "Transport"]),
@@ -2078,11 +2114,15 @@
       block("EM08", "Radiotherapy fraction", "per fraction", ["Linear accelerator electricity", "Machine time", "Patient travel"]),
       block("EM08", "Immobilization device", "per device", ["Thermoplastic mask or mold", "Setup materials", "Waste"]),
       block("EM08", "Chemoradiation co-treatment add-on", "per cycle or fraction set", ["Systemic therapy inputs", "Extra monitoring", "Combined visits"]),
+      block("EM08", "Brachytherapy treatment episode", "per episode", ["Applicator or catheter set", "Imaging guidance", "Source delivery time", "Anesthesia if used"], ["urology"]),
 
       block("EM09", "Outpatient follow-up visit", "per visit", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
       block("EM09", "Surveillance test set", "per surveillance round", ["Blood test", "Imaging or endoscopy", "Reporting"]),
-      block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing", "Patient travel"]),
-      block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"]),
+      block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing", "Patient travel"], ["gastro"]),
+      block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"], ["gastro"]),
+      block("EM09", "Post-cystectomy surveillance round", "per surveillance round", ["Clinical review", "Imaging if indicated", "Laboratory testing", "Patient travel"], ["urology"]),
+      block("EM09", "Bladder-preservation surveillance round", "per surveillance round", ["Cystoscopy", "Urine cytology", "Imaging if indicated", "Patient travel"], ["urology"]),
+      block("EM09", "Urinary diversion or stoma follow-up", "per visit", ["Ostomy appliances", "Urinary drainage supplies", "Skin care materials", "Clinical review"]),
       block("EM09", "Home-based follow-up kit", "per kit", ["Sampling material", "Shipping", "Laboratory processing", "Digital app use"]),
 
       block("EM10", "Patient travel", "per round trip", ["Distance", "Mode share", "Companion travel if included"]),
@@ -2125,6 +2165,7 @@
         uncertainty: defaults.uncertainty,
         factor,
         included: true,
+        applicability: item.applicability,
         gap: `Dummy aggregate coefficient. Replace with foreground LCI for ${item.resourceFlows.join(", ")} and documented LCIA mapping.`
       };
     });
@@ -2277,8 +2318,8 @@
           { y: 92, label: "ASZ or regional hospital: diagnosis and MIBC confirmation" },
           { y: 220, label: "Staging, referral package, and transfer to Erasmus MC" },
           { y: 348, label: "Erasmus MC review and multidisciplinary treatment planning" },
-          { y: 470, label: "Curative surgery and perioperative treatment" },
-          { y: 590, label: "Bladder preservation, advanced care, and follow-up" }
+          { y: 470, label: "Curative surgery and perioperative treatment", labelY: 360 },
+          { y: 590, label: "Bladder preservation and follow-up" }
         ],
         nodes: [
           activity("EMC-FC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral to regional urology after hematuria or another suspicion of bladder cancer.", "Joost described this as the operational start before the patient reaches Erasmus MC. Primary-care events are context; the modeled hospital boundary starts at regional urology.", ["Patient travel", "Outpatient room use", "EHR documentation"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
@@ -2665,6 +2706,31 @@
           edge("CRCDUTCH-TX07", "CRCDUTCH-FU05", "followup")
         ]
       }
+    };
+
+    const pathwayReferenceRegistry = {
+      emc: [
+        { label: "NVU: actuele richtlijnen", url: "https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/" },
+        { label: "NVU: kwaliteitsnormen uro-oncologische zorg", url: "https://portal.nvu.nl/WebserviceWordpress/qgws.asmx/nvu_get_document?id=939FDFE0-8BDB-E811-BEFA-005056B31E13" },
+        { label: "EAU MIBC 2026", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" },
+        { label: "ASZ: urologische oncologie", url: "https://www.asz.nl/specialismen/urologie/behandelingen/oncologie/" }
+      ],
+      eau: [
+        { label: "EAU MIBC 2026", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" },
+        { label: "EAU diagnostic evaluation", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer/chapter/diagnostic-evaluation" },
+        { label: "EAU disease management", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer/chapter/disease-management" }
+      ],
+      eauFull: [
+        { label: "EAU MIBC 2026", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" },
+        { label: "EAU diagnostic evaluation", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer/chapter/diagnostic-evaluation" },
+        { label: "EAU disease management", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer/chapter/disease-management" }
+      ],
+      crcDutch: [
+        { label: "Richtlijnendatabase: Colorectaal carcinoom (2026)", url: "https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html" },
+        { label: "RIVM: Bevolkingsonderzoek darmkanker", url: "https://www.rivm.nl/bevolkingsonderzoek-darmkanker/professionals" },
+        { label: "RIVM: Vervolgonderzoek na FIT", url: "https://www.rivm.nl/bevolkingsonderzoek-darmkanker/uitslag/vervolgonderzoek" },
+        { label: "Richtlijnendatabase: Coloscopie surveillance", url: "https://richtlijnendatabase.nl/richtlijn/coloscopie_surveillance/kwaliteit_van_coloscopie_algemene_aspecten.html" }
+      ]
     };
 
     const lcaCutoffNodeIds = new Set([
@@ -3475,7 +3541,12 @@
       dutchUrologyNote: "Operational lens: regional or ASZ diagnosis and staging, transfer after confirmed MIBC, then Erasmus MC multidisciplinary treatment and shared follow-up.",
       eauUrologyNote: "Guideline lens: institution-neutral EAU 2026 activity extraction. Use it to identify clinical-reference activities and differences, not to infer where Dutch care is delivered.",
       dutchUrologyDifference: "Dutch emphasis: cross-hospital handover, central review, shared follow-up, and the selected-patient brachytherapy option.",
-      eauUrologyDifference: "EAU emphasis: upper-tract assessment, formal health-status evaluation, current perioperative options, and treatment-specific follow-up."
+      eauUrologyDifference: "EAU emphasis: upper-tract assessment, formal health-status evaluation, current perioperative options, and treatment-specific follow-up.",
+      references: "References",
+      sharedBuildingBlock: "Shared building block",
+      urologyBuildingBlock: "Urology-specific candidate",
+      gastroBuildingBlock: "Gastroenterology-specific candidate",
+      buildingBlockMapIntro: "ECO-PATH modules are reusable modeling zones shared across specialties. Only shared building blocks and candidates applicable to the current pathway are shown; a pathway may use only part of a module. EM10 and EM11 remain optional cross-cutting support modules."
     });
 
     Object.assign(uiText.nl, {
@@ -3487,7 +3558,12 @@
       dutchUrologyNote: "Operationele weergave: diagnostiek en stadiering in ASZ of een regionaal ziekenhuis, overdracht na bevestigde MIBC en daarna multidisciplinaire behandeling en gedeelde follow-up via Erasmus MC.",
       eauUrologyNote: "Richtlijnweergave: instelling-onafhankelijke activiteitsextractie uit EAU 2026. Gebruik deze om klinische referentieactiviteiten en verschillen te bepalen, niet om de Nederlandse uitvoeringslocatie af te leiden.",
       dutchUrologyDifference: "Nederlandse nadruk: overdracht tussen ziekenhuizen, centrale review, gedeelde follow-up en brachytherapie voor geselecteerde patiënten.",
-      eauUrologyDifference: "EAU-nadruk: beoordeling van de bovenste urinewegen, formele gezondheidsbeoordeling, actuele perioperatieve opties en behandelspecifieke follow-up."
+      eauUrologyDifference: "EAU-nadruk: beoordeling van de bovenste urinewegen, formele gezondheidsbeoordeling, actuele perioperatieve opties en behandelspecifieke follow-up.",
+      references: "Referenties",
+      sharedBuildingBlock: "Gedeelde bouwsteen",
+      urologyBuildingBlock: "Urologiespecifieke kandidaat",
+      gastroBuildingBlock: "Gastro-enterologiespecifieke kandidaat",
+      buildingBlockMapIntro: "ECO-PATH-modules zijn herbruikbare modelleerzones die specialismen delen. Alleen gedeelde bouwstenen en kandidaten die op het huidige zorgpad van toepassing zijn worden getoond; een zorgpad kan slechts een deel van een module gebruiken. EM10 en EM11 blijven optionele transversale ondersteuningsmodules."
     });
 
     Object.assign(uiText.zh, {
@@ -3499,7 +3575,12 @@
       dutchUrologyNote: "运营视图：ASZ 或区域医院完成诊断和分期，确认 MIBC 后转诊，再由 Erasmus MC 开展多学科治疗和共享随访。",
       eauUrologyNote: "指南视图：不指定医疗机构的 EAU 2026 活动提取，用于识别临床参考活动和差异，不用于推断荷兰实际执行地点。",
       dutchUrologyDifference: "荷兰侧重点：跨医院交接、中心复核、共享随访，以及适用于特定患者的近距离放疗选项。",
-      eauUrologyDifference: "EAU 侧重点：上尿路评估、正式健康状态评估、当前围手术期方案和按治疗方式区分的随访。"
+      eauUrologyDifference: "EAU 侧重点：上尿路评估、正式健康状态评估、当前围手术期方案和按治疗方式区分的随访。",
+      references: "参考资料",
+      sharedBuildingBlock: "跨专科共享 building block",
+      urologyBuildingBlock: "泌尿科特异候选项",
+      gastroBuildingBlock: "胃肠科特异候选项",
+      buildingBlockMapIntro: "ECO-PATH modules 是跨专科共享的可复用建模区域。页面只显示共享 building blocks 和适用于当前路径的候选项；一条路径可以只使用某个 module 的一部分。EM10 和 EM11 仍为可选的跨活动支持模块。"
     });
 
     Object.assign(uiText.ja, {
@@ -3511,7 +3592,12 @@
       dutchUrologyNote: "運用表示：ASZ または地域病院で診断と病期評価を行い、MIBC 確定後に紹介し、Erasmus MC で多職種治療と共同フォローアップを行います。",
       eauUrologyNote: "ガイドライン表示：施設を特定しない EAU 2026 の活動抽出です。臨床参照活動と差異の確認に用い、オランダでの実施場所を推定するものではありません。",
       dutchUrologyDifference: "オランダ側の重点：病院間移行、中央レビュー、共同フォローアップ、選択患者の小線源治療です。",
-      eauUrologyDifference: "EAU 側の重点：上部尿路評価、正式な健康状態評価、現行の周術期選択肢、治療別フォローアップです。"
+      eauUrologyDifference: "EAU 側の重点：上部尿路評価、正式な健康状態評価、現行の周術期選択肢、治療別フォローアップです。",
+      references: "参考文献",
+      sharedBuildingBlock: "診療科共通 building block",
+      urologyBuildingBlock: "泌尿器科固有の候補",
+      gastroBuildingBlock: "消化器科固有の候補",
+      buildingBlockMapIntro: "ECO-PATH modules は診療科間で共有できる再利用可能なモデル領域です。現在のパスウェイに適用される共通 building blocks と候補のみを表示し、各パスウェイは module の一部だけを使用できます。EM10 と EM11 は任意の横断的支援 module です。"
     });
 
     Object.assign(uiText.es, {
@@ -3523,7 +3609,12 @@
       dutchUrologyNote: "Vista operativa: diagnóstico y estadificación en ASZ u hospital regional, transferencia tras confirmar MIBC y tratamiento multidisciplinario y seguimiento compartido en Erasmus MC.",
       eauUrologyNote: "Vista de guía: extracción de actividades EAU 2026 independiente de la institución. Sirve para identificar actividades clínicas de referencia y diferencias, no para inferir dónde se presta la atención neerlandesa.",
       dutchUrologyDifference: "Énfasis neerlandés: transferencia entre hospitales, revisión central, seguimiento compartido y braquiterapia en pacientes seleccionados.",
-      eauUrologyDifference: "Énfasis EAU: evaluación del tracto urinario superior, estado de salud formal, opciones perioperatorias actuales y seguimiento específico por tratamiento."
+      eauUrologyDifference: "Énfasis EAU: evaluación del tracto urinario superior, estado de salud formal, opciones perioperatorias actuales y seguimiento específico por tratamiento.",
+      references: "Referencias",
+      sharedBuildingBlock: "Building block compartido",
+      urologyBuildingBlock: "Candidato específico de urología",
+      gastroBuildingBlock: "Candidato específico de gastroenterología",
+      buildingBlockMapIntro: "Los modules ECO-PATH son zonas de modelado reutilizables y compartidas entre especialidades. Solo se muestran los building blocks compartidos y los candidatos aplicables a la vía actual; una vía puede utilizar solo una parte de un module. EM10 y EM11 siguen siendo modules transversales opcionales."
     });
 
     const pathwayText = {
@@ -3667,10 +3758,10 @@
         EM03: { name: "Beeldvorming en endoscopie", definition: "Radiologie, CT-herbeoordeling, MRI, PET-CT, cystoscopie, colonoscopie of andere pathwayspecifieke diagnostiek." },
         EM04: { name: "Joint clinic en MDO", definition: "Joint clinic, multidisciplinaire bespreking en interdisciplinaire besluitvorming." },
         EM05: { name: "Behandelplanning", definition: "Behandelintentie, geschiktheid, modaliteitskeuze en behandelplanningsbesluiten." },
-        EM06: { name: "Systemische therapie en oncologie", definition: "Medisch-oncologische beoordeling, chemotherapie, systemische behandeling, apotheekbereiding, responsbeoordeling en progressiebeoordeling." },
-        EM07: { name: "Chirurgie", definition: "Operatie, anesthesie, OK-gebruik, perioperatieve zorg, opname en proceduregerelateerd afval." },
-        EM08: { name: "Radiotherapie", definition: "Radiotherapiebesluit, planning, fracties, chemoradiatie, immobilisatie en radiotherapiegerelateerd reizen." },
-        EM09: { name: "Follow-up", definition: "Surveillance, poliklinische controle, follow-uptesten, recidiefmonitoring en retourcontacten." },
+        EM06: { name: "Systemische therapie en oncologie", definition: "Medisch-oncologische beoordeling, chemotherapie, immunotherapie of gerichte behandeling, apotheekbereiding, monitoring en respons- of progressiebeoordeling." },
+        EM07: { name: "Chirurgie", definition: "Endoscopische of operatieve behandeling, waaronder TURBT, orgaanresectie, lymfeklierdissectie en urinedeviatie, plus anesthesie, perioperatieve zorg, opname en afval." },
+        EM08: { name: "Radiotherapie", definition: "Radiotherapiebesluit, planning, uitwendige fracties, chemoradiatie, brachytherapie, immobilisatie en radiotherapiegerelateerd reizen." },
+        EM09: { name: "Follow-up", definition: "Behandelingsspecifieke surveillance, poliklinische controle, beeldvorming of endoscopie, recidiefmonitoring, follow-up van deviatie of stoma en retourcontacten." },
         EM10: { name: "Patientondersteuning", definition: "Patientgerichte ondersteunende processen die over meerdere activiteiten kunnen voorkomen en transparante allocatie vereisen." },
         EM11: { name: "Gedeelde ziekenhuisondersteuning", definition: "Gedeelde diensten en overheadprocessen die meerdere pathwayactiviteiten ondersteunen en allocatieregels vereisen." }
       },
@@ -3680,23 +3771,23 @@
         EM03: { name: "影像和内镜", definition: "放射影像、CT 复评、MRI、PET-CT、膀胱镜、结肠镜或其他路径特异性诊断程序。" },
         EM04: { name: "联合门诊和 MDT", definition: "联合门诊、多学科团队讨论和跨专科决策复核。" },
         EM05: { name: "治疗规划", definition: "治疗意图、适应性、治疗方式选择和治疗规划决策。" },
-        EM06: { name: "系统治疗和肿瘤学", definition: "肿瘤内科复核、化疗、系统治疗、药房配制、疗效评估和进展评估。" },
-        EM07: { name: "手术", definition: "外科手术、麻醉、手术室使用、围手术期照护、住院和手术相关废弃物。" },
-        EM08: { name: "放射治疗", definition: "放疗决策、计划、治疗分次、同步放化疗、固定装置和放疗相关出行。" },
-        EM09: { name: "随访", definition: "监测、门诊复查、随访检查、复发监测和返回路径联系。" },
+        EM06: { name: "系统治疗和肿瘤学", definition: "肿瘤内科复核、化疗、免疫或靶向治疗、药房配制、治疗监测以及疗效或进展评估。" },
+        EM07: { name: "手术", definition: "内镜或外科治疗，包括 TURBT、器官切除、淋巴结清扫和尿流改道，以及麻醉、围手术期照护、住院和相关废弃物。" },
+        EM08: { name: "放射治疗", definition: "放疗决策、计划、外照射分次、同步放化疗、近距离放疗、固定装置和放疗相关出行。" },
+        EM09: { name: "随访", definition: "按治疗方式设计的监测、门诊复查、影像或内镜、复发监测、尿流改道或造口随访以及返回路径联系。" },
         EM10: { name: "患者支持", definition: "可能跨多个活动出现的患者支持过程，需要透明分配规则。" },
         EM11: { name: "医院共享支持", definition: "支持多个路径活动的共享服务和管理过程，需要分配规则。" }
       },
       ja: {
         EM01: { name: "初回接触・受け入れ", definition: "初回専門医接触、受け入れ、診断または治療前の資源投入を伴う準備。" },
         EM02: { name: "病理", definition: "病理レビュー、検体関連評価、書類レビュー、診断再評価。" },
-        EM03: { name: "画像診断と内視鏡", definition: "放射線画像、CT 再評価、MRI、PET-CT、膀胱鏡、 colonoscopy、その他のパスウェイ特異的診断手順。" },
+        EM03: { name: "画像診断と内視鏡", definition: "放射線画像、CT 再評価、MRI、PET-CT、膀胱鏡、大腸内視鏡、その他のパスウェイ特異的診断手順。" },
         EM04: { name: "合同外来と MDT", definition: "合同外来、多職種チームレビュー、診療科横断の意思決定レビュー。" },
         EM05: { name: "治療計画", definition: "治療意図、適格性、治療モダリティ選択、治療計画の意思決定。" },
-        EM06: { name: "全身療法と腫瘍内科", definition: "腫瘍内科レビュー、化学療法、全身治療、薬剤調製、奏効評価、進行評価。" },
-        EM07: { name: "手術", definition: "手術、麻酔、手術室使用、周術期ケア、病棟滞在、処置関連廃棄物。" },
-        EM08: { name: "放射線治療", definition: "放射線治療の意思決定、計画、分割照射、化学放射線療法、固定具、通院。" },
-        EM09: { name: "フォローアップ", definition: "サーベイランス、外来レビュー、フォローアップ検査、再発モニタリング、返送連絡。" },
+        EM06: { name: "全身療法と腫瘍内科", definition: "腫瘍内科レビュー、化学療法、免疫療法または標的治療、薬剤調製、モニタリング、奏効・進行評価。" },
+        EM07: { name: "手術", definition: "TURBT、臓器切除、リンパ節郭清、尿路変向を含む内視鏡・外科治療、および麻酔、周術期ケア、入院、関連廃棄物。" },
+        EM08: { name: "放射線治療", definition: "放射線治療の意思決定、計画、外照射分割、化学放射線療法、小線源治療、固定具、通院。" },
+        EM09: { name: "フォローアップ", definition: "治療別サーベイランス、外来レビュー、画像・内視鏡、再発モニタリング、尿路変向またはストーマのフォローアップ、返送連絡。" },
         EM10: { name: "患者支援", definition: "複数の活動にまたがる患者向け支援プロセスで、透明な配分が必要です。" },
         EM11: { name: "病院共通支援", definition: "複数のパスウェイ活動を支える共通サービスと間接プロセスで、配分ルールが必要です。" }
       },
@@ -3706,10 +3797,10 @@
         EM03: { name: "Imagen y endoscopia", definition: "Radiologia, reevaluacion CT, MRI, PET-CT, cistoscopia, colonoscopia u otros procedimientos diagnosticos especificos de la via." },
         EM04: { name: "Clinica conjunta y MDT", definition: "Clinica conjunta, revision del equipo multidisciplinario y revision de decisiones entre especialidades." },
         EM05: { name: "Planificacion del tratamiento", definition: "Intencion terapeutica, elegibilidad, seleccion de modalidad y decisiones de planificacion." },
-        EM06: { name: "Terapia sistemica y oncologia", definition: "Revision de oncologia medica, quimioterapia, tratamiento sistemico, preparacion farmaceutica, evaluacion de respuesta y progresion." },
-        EM07: { name: "Cirugia", definition: "Procedimiento quirurgico, anestesia, uso de quirofano, cuidados perioperatorios, estancia y residuos asociados." },
-        EM08: { name: "Radioterapia", definition: "Decision, planificacion, fracciones, quimiorradiacion, inmovilizacion y viajes relacionados con radioterapia." },
-        EM09: { name: "Seguimiento", definition: "Vigilancia, consulta ambulatoria, pruebas de seguimiento, monitorizacion de recurrencia y contactos de retorno." },
+        EM06: { name: "Terapia sistemica y oncologia", definition: "Revision de oncologia medica, quimioterapia, inmunoterapia o terapia dirigida, preparacion farmaceutica, monitorizacion y evaluacion de respuesta o progresion." },
+        EM07: { name: "Cirugia", definition: "Tratamiento endoscopico u operatorio, incluidos TURBT, reseccion de organo, diseccion ganglionar y derivacion urinaria, mas anestesia, cuidados perioperatorios, ingreso y residuos." },
+        EM08: { name: "Radioterapia", definition: "Decision, planificacion, fracciones de haz externo, quimiorradiacion, braquiterapia, inmovilizacion y viajes relacionados con radioterapia." },
+        EM09: { name: "Seguimiento", definition: "Vigilancia especifica por tratamiento, consulta, imagen o endoscopia, recurrencia, seguimiento de derivacion o estoma y contactos de retorno." },
         EM10: { name: "Apoyo al paciente", definition: "Procesos de apoyo al paciente que pueden ocurrir en varias actividades y requieren asignacion transparente." },
         EM11: { name: "Soporte hospitalario compartido", definition: "Servicios compartidos y procesos de soporte para multiples actividades de la via que requieren reglas de asignacion." }
       }
@@ -4338,7 +4429,7 @@
 
     Object.assign(nodeLabelText.ja = nodeLabelText.ja || {}, {
       "Positive FIT hospital referral": "FIT 陽性後の病院紹介",
-      "Colonoscopy intake and bowel preparation": "内視鏡 intake と腸管前処置",
+      "Colonoscopy intake and bowel preparation": "大腸内視鏡前診察と腸管前処置",
       "Diagnostic colonoscopy": "診断的大腸内視鏡",
       "Lesion detection and polypectomy": "病変検出とポリペクトミー",
       "Pathology classification": "病理分類",
@@ -4508,7 +4599,7 @@
       "Staging, referral package, and transfer to Erasmus MC": "Stadiering, verwijspakket en overdracht naar Erasmus MC",
       "Erasmus MC review and multidisciplinary treatment planning": "Erasmus MC-review en multidisciplinaire behandelplanning",
       "Curative surgery and perioperative treatment": "Curatieve chirurgie en perioperatieve behandeling",
-      "Bladder preservation, advanced care, and follow-up": "Blaassparing, gevorderde zorg en follow-up"
+      "Bladder preservation and follow-up": "Blaassparing en follow-up"
     });
 
     Object.assign(laneLabelText.zh, {
@@ -4516,7 +4607,7 @@
       "Staging, referral package, and transfer to Erasmus MC": "分期、转诊资料和转入 Erasmus MC",
       "Erasmus MC review and multidisciplinary treatment planning": "Erasmus MC 复核和多学科治疗规划",
       "Curative surgery and perioperative treatment": "根治性手术和围手术期治疗",
-      "Bladder preservation, advanced care, and follow-up": "保膀胱、晚期照护和随访"
+      "Bladder preservation and follow-up": "保膀胱和随访"
     });
 
     Object.assign(laneLabelText.ja, {
@@ -4524,7 +4615,7 @@
       "Staging, referral package, and transfer to Erasmus MC": "病期評価、紹介資料、Erasmus MC への移行",
       "Erasmus MC review and multidisciplinary treatment planning": "Erasmus MC レビューと多職種治療計画",
       "Curative surgery and perioperative treatment": "根治手術と周術期治療",
-      "Bladder preservation, advanced care, and follow-up": "膀胱温存、進行期ケア、フォローアップ"
+      "Bladder preservation and follow-up": "膀胱温存とフォローアップ"
     });
 
     Object.assign(laneLabelText.es, {
@@ -4532,7 +4623,7 @@
       "Staging, referral package, and transfer to Erasmus MC": "Estadificación, paquete de referencia y transferencia a Erasmus MC",
       "Erasmus MC review and multidisciplinary treatment planning": "Revisión Erasmus MC y planificación multidisciplinaria",
       "Curative surgery and perioperative treatment": "Cirugía curativa y tratamiento perioperatorio",
-      "Bladder preservation, advanced care, and follow-up": "Preservación vesical, atención avanzada y seguimiento"
+      "Bladder preservation and follow-up": "Preservación vesical y seguimiento"
     });
 
     const shortNodeLabelText = {
@@ -5049,6 +5140,58 @@
       "Post-CRC treatment surveillance round": "Ronda de vigilancia tras tratamiento CRC"
     });
 
+    Object.assign(blockNameText.nl, {
+      "Complex surgical specimen pathology": "Pathologie van complex resectiepreparaat",
+      "Immunotherapy or targeted infusion cycle": "Immunotherapie- of gerichte infusiecyclus",
+      "TURBT procedure episode": "TURBT-procedure-episode",
+      "Radical cystectomy procedure episode": "Radicale cystectomie-episode",
+      "Urinary diversion procedure add-on": "Add-on voor urinedeviatie",
+      "Colorectal resection procedure episode": "Colorectale resectie-episode",
+      "Brachytherapy treatment episode": "Brachytherapiebehandeling",
+      "Post-cystectomy surveillance round": "Surveillanceronde na cystectomie",
+      "Bladder-preservation surveillance round": "Surveillanceronde na blaassparende behandeling",
+      "Urinary diversion or stoma follow-up": "Follow-up van urinedeviatie of stoma"
+    });
+
+    Object.assign(blockNameText.zh, {
+      "Complex surgical specimen pathology": "复杂手术标本病理",
+      "Immunotherapy or targeted infusion cycle": "免疫或靶向输注周期",
+      "TURBT procedure episode": "TURBT 操作过程",
+      "Radical cystectomy procedure episode": "根治性膀胱切除过程",
+      "Urinary diversion procedure add-on": "尿流改道附加过程",
+      "Colorectal resection procedure episode": "结直肠切除过程",
+      "Brachytherapy treatment episode": "近距离放疗过程",
+      "Post-cystectomy surveillance round": "膀胱切除后监测轮次",
+      "Bladder-preservation surveillance round": "保膀胱治疗后监测轮次",
+      "Urinary diversion or stoma follow-up": "尿流改道或造口随访"
+    });
+
+    Object.assign(blockNameText.ja, {
+      "Complex surgical specimen pathology": "複雑手術検体の病理",
+      "Immunotherapy or targeted infusion cycle": "免疫療法または標的薬の点滴サイクル",
+      "TURBT procedure episode": "TURBT 手技エピソード",
+      "Radical cystectomy procedure episode": "根治的膀胱全摘エピソード",
+      "Urinary diversion procedure add-on": "尿路変向術の追加項目",
+      "Colorectal resection procedure episode": "大腸切除手術エピソード",
+      "Brachytherapy treatment episode": "小線源治療エピソード",
+      "Post-cystectomy surveillance round": "膀胱全摘後サーベイランス回",
+      "Bladder-preservation surveillance round": "膀胱温存後サーベイランス回",
+      "Urinary diversion or stoma follow-up": "尿路変向またはストーマのフォローアップ"
+    });
+
+    Object.assign(blockNameText.es, {
+      "Complex surgical specimen pathology": "Patología de pieza quirúrgica compleja",
+      "Immunotherapy or targeted infusion cycle": "Ciclo de infusión de inmunoterapia o terapia dirigida",
+      "TURBT procedure episode": "Episodio de procedimiento TURBT",
+      "Radical cystectomy procedure episode": "Episodio de cistectomía radical",
+      "Urinary diversion procedure add-on": "Componente adicional de derivación urinaria",
+      "Colorectal resection procedure episode": "Episodio de resección colorrectal",
+      "Brachytherapy treatment episode": "Episodio de braquiterapia",
+      "Post-cystectomy surveillance round": "Ronda de vigilancia tras cistectomía",
+      "Bladder-preservation surveillance round": "Ronda de vigilancia tras preservación vesical",
+      "Urinary diversion or stoma follow-up": "Seguimiento de derivación urinaria o estoma"
+    });
+
     const unitText = {
       nl: {
         "per referral": "per verwijzing",
@@ -5083,7 +5226,7 @@
         "per handover": "per overdracht",
         "per round trip": "per retourreis",
         "per visit or day": "per bezoek of dag",
-        "per episode": "per episode",
+        "per episode": "per zorgepisode",
         "per room-hour or m2-hour": "per kameruur of m2-uur",
         "per room turnover": "per kamerwissel",
         "per kg textile": "per kg textiel",
@@ -5123,7 +5266,7 @@
         "per handover": "每次交接",
         "per round trip": "每次往返",
         "per visit or day": "每次就诊或每天",
-        "per episode": "每个 episode",
+        "per episode": "每个过程",
         "per room-hour or m2-hour": "每房间小时或 m2 小时",
         "per room turnover": "每次房间周转",
         "per kg textile": "每 kg 织物",
@@ -5651,7 +5794,7 @@
     });
 
     Object.assign(unitText.ja = unitText.ja || {}, {
-      "per colonoscopy intake": "大腸内視鏡 intake 1 件あたり",
+      "per colonoscopy intake": "大腸内視鏡事前評価 1 件あたり",
       "per case classified": "分類症例 1 件あたり",
       "per surveillance colonoscopy": "監視内視鏡 1 回あたり"
     });
@@ -6666,6 +6809,88 @@
       "Ward stay": "Estancia en planta"
     });
 
+    Object.assign(resourceFlowText.nl, {
+      "Operating room time": "Operatiekamertijd",
+      "Colonoscopy": "Coloscopie",
+      "Cystoscopy": "Cystoscopie",
+      "Irrigation fluid": "Spoelvloeistof",
+      "Urinary catheter": "Urinekatheter",
+      "Additional operating room time": "Extra operatietijd",
+      "Bowel anastomosis materials": "Materialen voor darmanastomose",
+      "Ureteral stents or catheters": "Ureterstents of katheters",
+      "Stoma starter supplies": "Startmaterialen voor stoma",
+      "Applicator or catheter set": "Applicator- of katheterset",
+      "Imaging guidance": "Beeldgeleiding",
+      "Source delivery time": "Bestralingsbrontijd",
+      "Anesthesia if used": "Anesthesie indien gebruikt",
+      "Urine cytology": "Urinecytologie",
+      "Ostomy appliances": "Stomahulpmiddelen",
+      "Urinary drainage supplies": "Materialen voor urineafvoer",
+      "Skin care materials": "Huidverzorgingsmaterialen"
+    });
+
+    Object.assign(resourceFlowText.zh, {
+      "Operating room time": "手术室时间",
+      "Colonoscopy": "结肠镜",
+      "Cystoscopy": "膀胱镜",
+      "Irrigation fluid": "冲洗液",
+      "Urinary catheter": "导尿管",
+      "Additional operating room time": "额外手术室时间",
+      "Bowel anastomosis materials": "肠吻合材料",
+      "Ureteral stents or catheters": "输尿管支架或导管",
+      "Stoma starter supplies": "造口初始用品",
+      "Applicator or catheter set": "施源器或导管套件",
+      "Imaging guidance": "影像引导",
+      "Source delivery time": "放射源治疗时间",
+      "Anesthesia if used": "如使用麻醉",
+      "Urine cytology": "尿细胞学",
+      "Ostomy appliances": "造口用品",
+      "Urinary drainage supplies": "尿液引流用品",
+      "Skin care materials": "皮肤护理材料"
+    });
+
+    Object.assign(resourceFlowText.ja, {
+      "Stoma materials if used": "必要時ストーマ材料",
+      "Colonoscopy": "大腸内視鏡",
+      "Laboratory testing": "臨床検査",
+      "Cystoscopy": "膀胱鏡",
+      "Irrigation fluid": "灌流液",
+      "Urinary catheter": "尿道カテーテル",
+      "Additional operating room time": "追加手術室時間",
+      "Bowel anastomosis materials": "腸管吻合材料",
+      "Ureteral stents or catheters": "尿管ステントまたはカテーテル",
+      "Stoma starter supplies": "ストーマ導入用品",
+      "Applicator or catheter set": "アプリケータまたはカテーテルセット",
+      "Imaging guidance": "画像誘導",
+      "Source delivery time": "線源照射時間",
+      "Anesthesia if used": "必要時麻酔",
+      "Urine cytology": "尿細胞診",
+      "Ostomy appliances": "ストーマ装具",
+      "Urinary drainage supplies": "尿路ドレナージ用品",
+      "Skin care materials": "皮膚ケア用品"
+    });
+
+    Object.assign(resourceFlowText.es, {
+      "Stoma materials if used": "Materiales de estoma si se usan",
+      "Colonoscopy": "Colonoscopia",
+      "Laboratory testing": "Pruebas de laboratorio",
+      "Cystoscopy": "Cistoscopia",
+      "Irrigation fluid": "Líquido de irrigación",
+      "Urinary catheter": "Catéter urinario",
+      "Additional operating room time": "Tiempo adicional de quirófano",
+      "Bowel anastomosis materials": "Materiales de anastomosis intestinal",
+      "Ureteral stents or catheters": "Stents ureterales o catéteres",
+      "Stoma starter supplies": "Suministros iniciales de estoma",
+      "Applicator or catheter set": "Juego de aplicador o catéter",
+      "Imaging guidance": "Guía por imagen",
+      "Source delivery time": "Tiempo de administración de la fuente",
+      "Anesthesia if used": "Anestesia si se usa",
+      "Urine cytology": "Citología urinaria",
+      "Ostomy appliances": "Dispositivos de ostomía",
+      "Urinary drainage supplies": "Suministros de drenaje urinario",
+      "Skin care materials": "Materiales para cuidado de la piel"
+    });
+
     function normaliseLanguage(value) {
       return languageOptions.some((item) => item.id === value) ? value : "en";
     }
@@ -6829,11 +7054,12 @@
       return t("dummyGapTemplate", { flows: localizedResourceFlowList(row.flow) });
     }
 
-    function block(module, name, unit, resourceFlows) {
+    function block(module, name, unit, resourceFlows, applicability = ["shared"]) {
       return {
         module,
         name,
         unit,
+        applicability,
         resourceFlows: resourceFlows.filter((flow) => !excludedHumanLaborFlowLabels.has(flow))
       };
     }
@@ -6892,6 +7118,25 @@
 
     function currentPathway() {
       return pathwayData[state.pathway];
+    }
+
+    function pathwayFamily(pathwayId = state.pathway) {
+      return pathwayId === "crcDutch" ? "gastro" : "urology";
+    }
+
+    function appliesToPathway(item, pathwayId = state.pathway) {
+      const applicability = item.applicability || ["shared"];
+      return applicability.includes("shared") || applicability.includes(pathwayFamily(pathwayId));
+    }
+
+    function currentBuildingBlocks() {
+      return buildingBlockRegistry.filter((item) => appliesToPathway(item));
+    }
+
+    function blockApplicabilityLabel(item) {
+      const applicability = item.applicability || ["shared"];
+      if (applicability.includes("shared")) return t("sharedBuildingBlock");
+      return applicability.includes("gastro") ? t("gastroBuildingBlock") : t("urologyBuildingBlock");
     }
 
     function moduleRegistryIds() {
@@ -6958,7 +7203,7 @@
       );
       return pathwayModuleIds()
         .filter((moduleId) => eligibleModules.has(moduleId))
-        .filter((moduleId) => lcaRows.some((row) => row.module === moduleId));
+        .filter((moduleId) => lcaRows.some((row) => row.module === moduleId && appliesToPathway(row)));
     }
 
     function isLcaCutoffNode(node) {
@@ -6968,7 +7213,7 @@
     function lcaSupportModuleIds() {
       return crossCuttingModuleIds
         .filter((moduleId) => moduleRegistry[moduleId])
-        .filter((moduleId) => lcaRows.some((row) => row.module === moduleId));
+        .filter((moduleId) => lcaRows.some((row) => row.module === moduleId && appliesToPathway(row)));
     }
 
     function lcaCalculationModuleIds() {
@@ -7351,6 +7596,35 @@
       if (fullscreenStatus) fullscreenStatus.textContent = localizedPathwayStatus();
     }
 
+    function renderPathwayReferences() {
+      const container = document.getElementById("pathwayReferences");
+      if (!container) return;
+      const references = pathwayReferenceRegistry[state.pathway] || [];
+      clear(container);
+      if (!references.length) {
+        container.hidden = true;
+        return;
+      }
+      container.hidden = false;
+      const heading = document.createElement("strong");
+      heading.textContent = `${t("references")}:`;
+      container.appendChild(heading);
+      references.forEach((reference, index) => {
+        const link = document.createElement("a");
+        link.href = reference.url;
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        link.textContent = reference.label;
+        container.appendChild(link);
+        if (index < references.length - 1) {
+          const separator = document.createElement("span");
+          separator.textContent = "·";
+          separator.setAttribute("aria-hidden", "true");
+          container.appendChild(separator);
+        }
+      });
+    }
+
     function renderPathwayScenarioControls() {
       const selectedCount = selectedScenarioNodes().length;
       const moduleCount = selectedScenarioModuleIds().length;
@@ -7435,15 +7709,23 @@
         line.setAttribute("opacity", "0.65");
         svg.appendChild(line);
         const laneText = localizedLaneLabel(lane.label);
-        const laneY = Math.max(24, lane.y - 50);
+        const laneLines = splitLaneLabel(laneText);
+        const laneY = Math.max(24, lane.labelY ?? lane.y - (laneLines.length > 1 ? 64 : 50));
         const label = createSvgElement("text", {
           x: 38,
           y: laneY,
           class: "lane-label"
         });
-        label.textContent = laneText;
+        laneLines.forEach((lineText, index) => {
+          const tspan = createSvgElement("tspan", {
+            x: 38,
+            dy: index === 0 ? 0 : 17
+          });
+          tspan.textContent = lineText;
+          label.appendChild(tspan);
+        });
         svg.appendChild(label);
-        laneLabelBoxes.push(laneLabelBounds(laneText, 38, laneY));
+        laneLabelBoxes.push(laneLabelBounds(laneLines, 38, laneY));
       });
 
       pathway.edges.forEach((edgeItem) => {
@@ -7836,11 +8118,17 @@
       if (node.id === "EMC-TX10") {
         return { x: node.x + 44, y: node.y - 50, dx: 1 };
       }
-      if (["EMC-TX16", "EMC-TX15"].includes(node.id)) {
+      if (node.id === "EMC-TX05") {
+        return { x: node.x - labelWidth / 2, y: node.y + 56, dx: 0 };
+      }
+      if (node.id === "EMC-TX15") {
         return { x: node.x - labelWidth / 2, y: node.y - 64, dx: 0 };
       }
-      if (["EMC-TX17", "EMC-FU02", "EMC-FU03"].includes(node.id)) {
+      if (["EMC-TX16", "EMC-TX17", "EMC-FU02", "EMC-FU03"].includes(node.id)) {
         return { x: node.x - labelWidth / 2, y: node.y + 42, dx: 0 };
+      }
+      if (node.id === "CRCDUTCH-FU03") {
+        return { x: node.x - labelWidth + 44, y: node.y + 64, dx: -1 };
       }
       return null;
     }
@@ -7851,12 +8139,12 @@
       return width * height;
     }
 
-    function laneLabelBounds(text, x, y) {
+    function laneLabelBounds(lines, x, y) {
       return {
         x,
         y: y - 15,
-        width: estimateLaneLabelWidth(text),
-        height: 22
+        width: Math.max(...lines.map(estimateLaneLabelWidth)),
+        height: 22 + Math.max(0, lines.length - 1) * 17
       };
     }
 
@@ -7869,6 +8157,32 @@
     function estimateLabelWidth(lines) {
       const maxLength = Math.max(...lines.map((line) => line.length), 8);
       return Math.max(68, Math.min(168, maxLength * 7.9));
+    }
+
+    function splitLaneLabel(label) {
+      const maxLength = /^(zh|ja)$/.test(state.language) ? 18 : 36;
+      if (!label.includes(" ")) {
+        const chunks = [];
+        for (let index = 0; index < label.length; index += maxLength) {
+          chunks.push(label.slice(index, index + maxLength));
+        }
+        return chunks.slice(0, 2);
+      }
+
+      const words = label.split(" ");
+      const lines = [];
+      let current = "";
+      words.forEach((word) => {
+        const next = current ? `${current} ${word}` : word;
+        if (next.length > maxLength && current && lines.length === 0) {
+          lines.push(current);
+          current = word;
+        } else {
+          current = next;
+        }
+      });
+      if (current) lines.push(current);
+      return lines.slice(0, 2);
     }
 
     function splitLabel(label, maxLength) {
@@ -8066,9 +8380,10 @@
 
       const pathwayModuleIdsForLca = lcaPathwayModuleIds();
       const supportModuleIdsForLca = lcaSupportModuleIds();
+      const applicableBlocks = currentBuildingBlocks();
       const moduleIds = lcaCalculationModuleIds()
-        .filter((moduleId) => buildingBlockRegistry.some((item) => item.module === moduleId));
-      const blockCount = buildingBlockRegistry
+        .filter((moduleId) => applicableBlocks.some((item) => item.module === moduleId));
+      const blockCount = applicableBlocks
         .filter((item) => moduleIds.includes(item.module))
         .length;
       count.textContent = t("candidateBlockCount", {
@@ -8078,7 +8393,7 @@
       });
 
       moduleIds.forEach((moduleId) => {
-        const blocks = buildingBlockRegistry.filter((item) => item.module === moduleId);
+        const blocks = applicableBlocks.filter((item) => item.module === moduleId);
         const zone = document.createElement("div");
         const hasOncologyBlock = blocks.some((item) => isOncologyBuildingBlock(item));
         zone.className = [
@@ -8107,6 +8422,7 @@
           ].filter(Boolean).join(" ");
           blockCard.innerHTML = `
             <strong>${escapeHtml(localizedBlockName(item.name))}</strong>
+            <span class="block-applicability">${escapeHtml(blockApplicabilityLabel(item))}</span>
             <span>${escapeHtml(t("unit"))}: ${escapeHtml(localizedUnit(item.unit))}</span>
             <span>${escapeHtml(t("resourceFlowsLabel"))}: ${escapeHtml(localizedResourceFlowList(item.resourceFlows))}</span>
           `;
@@ -8151,7 +8467,7 @@
         group.moduleIds.forEach((moduleId) => {
           const moduleRows = lcaRows
             .map((row, index) => ({ row, index }))
-            .filter((item) => item.row.module === moduleId);
+            .filter((item) => item.row.module === moduleId && appliesToPathway(item.row));
           const included = isLcaModuleIncluded(moduleId);
           const activeRows = included ? moduleRows.filter(({ row }) => isLcaRowIncluded(row)).length : 0;
           const selectedActivityCount = selectedScenarioNodes().filter((node) => node.module === moduleId).length;
@@ -8305,10 +8621,11 @@
           element.textContent = t("excludedFromTotal");
           return;
         }
-        const moduleTotal = lcaRows
+        const moduleRows = lcaVisibleRows().filter((row) => row.module === moduleId);
+        const moduleTotal = moduleRows
           .filter((row) => row.module === moduleId && isLcaRowIncluded(row))
           .reduce((sum, row) => sum + rowImpact(row, "base"), 0);
-        const moduleActiveRows = lcaRows.filter((row) => row.module === moduleId && isLcaRowIncluded(row)).length;
+        const moduleActiveRows = moduleRows.filter((row) => isLcaRowIncluded(row)).length;
         element.textContent = t("moduleSubtotal", { value: formatKg(moduleTotal), rows: moduleActiveRows });
       });
 
@@ -8435,7 +8752,7 @@
 
     function lcaVisibleRows() {
       const moduleIds = lcaCalculationModuleIds();
-      return lcaRows.filter((row) => moduleIds.includes(row.module));
+      return lcaRows.filter((row) => moduleIds.includes(row.module) && appliesToPathway(row));
     }
 
     function isLcaModuleIncluded(moduleId) {
@@ -8448,6 +8765,7 @@
 
     function isLcaRowActive(row) {
       return lcaCalculationModuleIds().includes(row.module) &&
+        appliesToPathway(row) &&
         isLcaModuleIncluded(row.module) &&
         isLcaRowIncluded(row);
     }
@@ -8516,7 +8834,7 @@
       const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
       const moduleIds = lcaCalculationModuleIds();
       const rows = lcaRows
-        .filter((row) => moduleIds.includes(row.module))
+        .filter((row) => moduleIds.includes(row.module) && appliesToPathway(row))
         .map((row) => {
           const moduleIncluded = isLcaModuleIncluded(row.module);
           const rowIncluded = isLcaRowIncluded(row);
@@ -8974,6 +9292,7 @@
       renderFilterOptions();
       renderHeader();
       renderUrologySourceLens();
+      renderPathwayReferences();
       renderPathwayScenarioControls();
       renderMap();
       renderDetail();

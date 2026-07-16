@@ -46,9 +46,22 @@ Public reference sources:
 - [NVU current guideline register](https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/)
 - [EAU muscle-invasive and metastatic bladder cancer guideline](https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer)
 
+## Shared Modules And Pathway-Specific Building Blocks
+
+The module registry is shared across specialties so that the same modeling zones can be reused and compared. A pathway does not need to activate every module. The current MIBC pathway uses nine pathway-linked modules plus the two optional support modules. The Dutch CRC pathway uses eight pathway-linked modules plus the two optional support modules because its meeting-only MDO node is retained for clinical logic but falls under the provisional LCA cut-off.
+
+Building blocks are filtered separately from modules. Shared blocks, such as CT, pathology processing, operating-room time, systemic therapy, and patient travel, can appear in both specialties. Urology-specific candidates include cystoscopy, TURBT, radical cystectomy, urinary diversion, brachytherapy, and MIBC surveillance. Gastroenterology-specific candidates include colonoscopy intake, colonoscopy, polypectomy, colorectal resection, polyp surveillance, and post-CRC surveillance. This prevents disease-specific blocks from being treated as universal components of every pathway.
+
 ## Methodological Scope
 
 The gastroenterology view has been rebuilt around Dutch national guideline sources and the screening-positive hospital boundary discussed with clinical input. It starts after an abnormal FIT result enters hospital follow-up and separates no-polyp, low-risk polyp, high-risk polyp surveillance, and confirmed colorectal cancer branches. It does not assume that an Erasmus MC internal local CRC workflow is available. Any local execution, department handover, treatment location, and surveillance time horizon still require expert confirmation.
+
+Public gastroenterology reference sources:
+
+- [Dutch colorectal cancer guideline, 2026](https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html)
+- [RIVM colorectal cancer screening process](https://www.rivm.nl/bevolkingsonderzoek-darmkanker/professionals)
+- [RIVM follow-up after a positive FIT result](https://www.rivm.nl/bevolkingsonderzoek-darmkanker/uitslag/vervolgonderzoek)
+- [Dutch colonoscopy surveillance guideline](https://richtlijnendatabase.nl/richtlijn/coloscopie_surveillance/kwaliteit_van_coloscopie_algemene_aspecten.html)
 
 The prototype applies a provisional qualitative LCA cut-off. Meeting-only MDT/MDO discussions, digital case review, digital letters, and purely administrative handovers remain visible when they are needed to preserve clinical pathway logic, but they do not activate LCA modules and are absent from the calculation rows when their only additional inputs are staff time and minor office or ICT energy. Human labor is not characterized as an environmental resource flow; activity duration may still be used to allocate room, equipment, or service inputs. Patient-facing visits, additional travel, procedures, diagnostics, materials, medicines, equipment use, and other material resource flows remain in scope. No numerical cut-off threshold has yet been validated, so all exclusions require documentation and sensitivity review during formal LCA modeling.
 

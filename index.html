@@ -694,6 +694,10 @@
     .station-label-text {
       font-size: 14.5px;
       fill: var(--ink);
+      stroke: var(--panel);
+      stroke-width: 5px;
+      stroke-linejoin: round;
+      paint-order: stroke fill;
       dominant-baseline: text-before-edge;
       pointer-events: none;
     }
@@ -701,6 +705,10 @@
     .lane-label {
       font-size: 14.5px;
       fill: var(--muted);
+      stroke: var(--panel);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+      paint-order: stroke fill;
       font-weight: 700;
     }
 
@@ -4959,9 +4967,10 @@
       "MIBC confirmation and referral decision": "MIBC-verwijzing",
       "Non-MIBC local pathway": "Lokale niet-MIBC-route",
       "Transfer to Erasmus MC": "Naar Erasmus MC",
+      "Return to referring hospital": "Terug regionaal",
       "Perioperative systemic therapy": "Perioperatieve therapie",
       "Response monitoring and salvage decision": "Respons / salvage",
-      "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / brachy"
+      "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / BT"
     });
 
     Object.assign(shortNodeLabelText.zh, {
@@ -4970,9 +4979,10 @@
       "MIBC confirmation and referral decision": "MIBC 转诊",
       "Non-MIBC local pathway": "非 MIBC 本地路径",
       "Transfer to Erasmus MC": "转入 Erasmus MC",
+      "Return to referring hospital": "返回转诊医院",
       "Perioperative systemic therapy": "围手术期系统治疗",
       "Response monitoring and salvage decision": "疗效 / 挽救",
-      "EBRT, chemoradiation, or brachytherapy": "EBRT / 放化疗 / 近距离"
+      "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / BT"
     });
 
     Object.assign(shortNodeLabelText.ja, {
@@ -4981,9 +4991,10 @@
       "MIBC confirmation and referral decision": "MIBC 紹介",
       "Non-MIBC local pathway": "非 MIBC 地域経路",
       "Transfer to Erasmus MC": "Erasmus MC へ",
+      "Return to referring hospital": "紹介病院へ",
       "Perioperative systemic therapy": "周術期全身療法",
       "Response monitoring and salvage decision": "奏効 / 救済",
-      "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / 小線源"
+      "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / BT"
     });
 
     Object.assign(shortNodeLabelText.es, {
@@ -4992,9 +5003,10 @@
       "MIBC confirmation and referral decision": "Referencia MIBC",
       "Non-MIBC local pathway": "Vía local no MIBC",
       "Transfer to Erasmus MC": "A Erasmus MC",
+      "Return to referring hospital": "Retorno hospital",
       "Perioperative systemic therapy": "Terapia perioperatoria",
       "Response monitoring and salvage decision": "Respuesta-rescate",
-      "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / braqui"
+      "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / BT"
     });
 
     const blockNameText = {
@@ -7423,6 +7435,9 @@
     }
 
     function pathForEdge(from, to) {
+      if (from.id === "EMC-TX02" && to.id === "EMC-TX17") {
+        return `M ${from.x} ${from.y} C ${from.x} ${to.y - 36}, ${from.x} ${to.y}, ${to.x} ${to.y}`;
+      }
       const dx = Math.abs(to.x - from.x);
       const dy = Math.abs(to.y - from.y);
       if (dx < 8 || dy < 8) {
@@ -7710,7 +7725,7 @@
         svg.appendChild(line);
         const laneText = localizedLaneLabel(lane.label);
         const laneLines = splitLaneLabel(laneText);
-        const laneY = Math.max(24, lane.labelY ?? lane.y - (laneLines.length > 1 ? 64 : 50));
+        const laneY = Math.max(24, lane.labelY ?? lane.y - (laneLines.length > 1 ? 48 : 36));
         const label = createSvgElement("text", {
           x: 38,
           y: laneY,
@@ -7747,10 +7762,15 @@
 
       const placedLabels = [...laneLabelBoxes];
       const markerBoxes = pathway.nodes.map((node) => markerBounds(node));
+      const edgeBoxes = pathway.edges.flatMap((edgeItem) => {
+        const from = nodeById(pathway, edgeItem.from);
+        const to = nodeById(pathway, edgeItem.to);
+        return from && to ? edgeSampleBoxes(from, to) : [];
+      });
       pathway.nodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
         const labelLines = splitLabel(shortStationLabel(node), 18);
-        const labelLayout = stationLabelLayout(node, labelLines, placedLabels, markerBoxes);
+        const labelLayout = stationLabelLayout(node, labelLines, placedLabels, markerBoxes, edgeBoxes);
         placedLabels.push({
           x: labelLayout.x,
           y: labelLayout.y,
@@ -7939,7 +7959,7 @@
         "MIBC confirmation and referral decision": "MIBC referral",
         "Non-MIBC local pathway": "Local non-MIBC route",
         "Transfer to Erasmus MC": "Transfer to Erasmus MC",
-        "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / brachytherapy",
+        "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / BT",
         "Return to referrer": "Return",
         "Repeat CT decision": "Repeat CT?",
         "CT reassessment": "CT reassessment",
@@ -8036,7 +8056,7 @@
       return shortNodeLabelText[state.language]?.[node.label] || localizedNodeLabel(node);
     }
 
-    function stationLabelLayout(node, lines, placedLabels, markerBoxes) {
+    function stationLabelLayout(node, lines, placedLabels, markerBoxes, edgeBoxes) {
       const labelWidth = estimateLabelWidth(lines);
       const labelHeight = lines.length * 18;
       const forcedCandidate = forcedStationLabelCandidate(node, labelWidth);
@@ -8064,7 +8084,7 @@
       const candidates = [
         { x: node.x + 34, y: node.y + 34, dx: 1 },
         { x: node.x - 34 - labelWidth, y: node.y + 34, dx: -1 },
-        { x: node.x - labelWidth / 2, y: node.y + 42, dx: 0 },
+        { x: node.x - labelWidth / 2, y: node.y + 54, dx: 0 },
         { x: node.x + 34, y: node.y - 58, dx: 1 },
         { x: node.x - 34 - labelWidth, y: node.y - 58, dx: -1 },
         { x: node.x - labelWidth / 2, y: node.y - 64, dx: 0 },
@@ -8079,11 +8099,12 @@
         const y = Math.max(14, Math.min(650 - labelHeight, candidate.y));
         const box = { x, y, width: labelWidth, height: labelHeight };
         const clampPenalty = Math.abs(x - candidate.x) * 2 + Math.abs(y - candidate.y) * 2;
-        const labelPenalty = placedLabels.reduce((total, placed) => total + overlapArea(box, placed) * 4, 0);
-        const markerPenalty = markerBoxes.reduce((total, marker) => total + overlapArea(box, marker) * 8, 0);
+        const labelPenalty = placedLabels.reduce((total, placed) => total + overlapArea(box, placed) * 30, 0);
+        const markerPenalty = markerBoxes.reduce((total, marker) => total + overlapArea(box, marker) * 40, 0);
+        const edgePenalty = edgeBoxes.reduce((total, edgeBox) => total + overlapArea(box, edgeBox), 0);
         const distancePenalty = Math.hypot(box.x + box.width / 2 - node.x, box.y + box.height / 2 - node.y) * 0.08;
         const preferencePenalty = index * 0.2 + (unclamped.x < 14 || unclamped.x + labelWidth > 1186 ? 80 : 0);
-        const penalty = clampPenalty + labelPenalty + markerPenalty + distancePenalty + preferencePenalty;
+        const penalty = clampPenalty + labelPenalty + markerPenalty + edgePenalty + distancePenalty + preferencePenalty;
         if (!best || penalty < best.penalty) {
           best = { ...box, dx: candidate.dx, penalty };
         }
@@ -8112,20 +8133,26 @@
       if (node.id === "EAUFULL-DX02") {
         return { x: node.x - labelWidth / 2, y: node.y - 58, dx: 0 };
       }
-      if (node.id === "EAUFULL-TX15") {
-        return { x: node.x + 44, y: node.y - 46, dx: 1 };
-      }
-      if (node.id === "EMC-TX10") {
-        return { x: node.x + 44, y: node.y - 50, dx: 1 };
-      }
       if (node.id === "EMC-TX05") {
         return { x: node.x - labelWidth / 2, y: node.y + 56, dx: 0 };
+      }
+      if (node.id === "EMC-TX10") {
+        return { x: node.x - 34 - labelWidth, y: node.y + 34, dx: -1 };
       }
       if (node.id === "EMC-TX15") {
         return { x: node.x - labelWidth / 2, y: node.y - 64, dx: 0 };
       }
-      if (["EMC-TX16", "EMC-TX17", "EMC-FU02", "EMC-FU03"].includes(node.id)) {
-        return { x: node.x - labelWidth / 2, y: node.y + 42, dx: 0 };
+      if (["EMC-TX16", "EMC-TX17", "EMC-FU02"].includes(node.id)) {
+        return { x: node.x - labelWidth / 2, y: node.y + 56, dx: 0 };
+      }
+      if (node.id === "EMC-FU03") {
+        return { x: node.x + 34, y: node.y + 34, dx: 1 };
+      }
+      if (node.id === "CRCDUTCH-TX05") {
+        return { x: node.x - 34 - labelWidth, y: node.y + 36, dx: -1 };
+      }
+      if (node.id === "CRCDUTCH-FU04") {
+        return { x: node.x - 34 - labelWidth, y: node.y - 10, dx: -1 };
       }
       if (node.id === "CRCDUTCH-FU03") {
         return { x: node.x - labelWidth + 44, y: node.y + 64, dx: -1 };
@@ -8137,6 +8164,34 @@
       const width = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
       const height = Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
       return width * height;
+    }
+
+    function edgeSampleBoxes(from, to) {
+      const boxes = [];
+      const dx = Math.abs(to.x - from.x);
+      const dy = Math.abs(to.y - from.y);
+      const midX = (from.x + to.x) / 2;
+      for (let step = 1; step < 20; step += 1) {
+        const t = step / 20;
+        let x;
+        let y;
+        if (dx < 8 || dy < 8) {
+          x = from.x + (to.x - from.x) * t;
+          y = from.y + (to.y - from.y) * t;
+        } else {
+          const inverse = 1 - t;
+          x = inverse ** 3 * from.x
+            + 3 * inverse ** 2 * t * midX
+            + 3 * inverse * t ** 2 * midX
+            + t ** 3 * to.x;
+          y = inverse ** 3 * from.y
+            + 3 * inverse ** 2 * t * from.y
+            + 3 * inverse * t ** 2 * to.y
+            + t ** 3 * to.y;
+        }
+        boxes.push({ x: x - 6, y: y - 6, width: 12, height: 12 });
+      }
+      return boxes;
     }
 
     function laneLabelBounds(lines, x, y) {
@@ -8186,7 +8241,8 @@
     }
 
     function splitLabel(label, maxLength) {
-      const effectiveMaxLength = /^(zh|ja)$/.test(state.language) ? 8 : maxLength;
+      const abbreviationSequence = /^(?:[A-Z]+\s*\/\s*)+[A-Z]+$/.test(label);
+      const effectiveMaxLength = abbreviationSequence ? maxLength : (/^(zh|ja)$/.test(state.language) ? 8 : maxLength);
       if (!label.includes(" ") && label.length > effectiveMaxLength) {
         const chunks = [];
         for (let index = 0; index < label.length; index += effectiveMaxLength) {

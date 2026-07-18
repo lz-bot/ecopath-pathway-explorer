@@ -2256,7 +2256,7 @@
           <select id="lcaImpactCategory"></select>
         </div>
         <div class="impact-category-context">
-          <span class="impact-method-chip">EF v3.1 no LT</span>
+          <span class="impact-method-chip" id="impactMethodChip">EF v3.1 no LT · demo</span>
           <strong id="lcaImpactCategoryName"></strong>
           <p id="lcaImpactCategoryDescription"></p>
           <p class="impact-category-method-note">
@@ -2509,50 +2509,155 @@
         id: "climate",
         nameKey: "impactClimate",
         descriptionKey: "impactClimateDescription",
-        unit: "kg CO2-eq"
+        unit: "kg CO2-eq",
+        groupKey: "impactGroupClimateAir",
+        demoScale: 1
+      },
+      {
+        id: "ozoneDepletion",
+        nameKey: "impactOzoneDepletion",
+        descriptionKey: "impactOzoneDepletionDescription",
+        unit: "kg CFC-11-eq",
+        groupKey: "impactGroupClimateAir",
+        demoScale: 2e-7
+      },
+      {
+        id: "photochemicalOzoneFormation",
+        nameKey: "impactPhotochemicalOzoneFormation",
+        descriptionKey: "impactPhotochemicalOzoneFormationDescription",
+        unit: "kg NMVOC-eq",
+        groupKey: "impactGroupClimateAir",
+        demoScale: 0.006
       },
       {
         id: "particulateMatter",
         nameKey: "impactParticulateMatter",
         descriptionKey: "impactParticulateMatterDescription",
-        unit: "disease incidence"
+        unit: "disease incidence",
+        groupKey: "impactGroupHumanHealth",
+        demoScale: 1e-8
       },
       {
         id: "humanToxicityCancer",
         nameKey: "impactHumanToxicityCancer",
         descriptionKey: "impactHumanToxicityCancerDescription",
-        unit: "CTUh"
+        unit: "CTUh",
+        groupKey: "impactGroupHumanHealth",
+        demoScale: 2e-9
       },
       {
         id: "humanToxicityNonCancer",
         nameKey: "impactHumanToxicityNonCancer",
         descriptionKey: "impactHumanToxicityNonCancerDescription",
-        unit: "CTUh"
+        unit: "CTUh",
+        groupKey: "impactGroupHumanHealth",
+        demoScale: 8e-8
       },
       {
         id: "ionisingRadiation",
         nameKey: "impactIonisingRadiation",
         descriptionKey: "impactIonisingRadiationDescription",
-        unit: "kBq U-235 eq"
+        unit: "kBq U-235-eq",
+        groupKey: "impactGroupHumanHealth",
+        demoScale: 0.02
+      },
+      {
+        id: "acidification",
+        nameKey: "impactAcidification",
+        descriptionKey: "impactAcidificationDescription",
+        unit: "mol H+-eq",
+        groupKey: "impactGroupEcosystems",
+        demoScale: 0.01
+      },
+      {
+        id: "eutrophicationTerrestrial",
+        nameKey: "impactEutrophicationTerrestrial",
+        descriptionKey: "impactEutrophicationTerrestrialDescription",
+        unit: "mol N-eq",
+        groupKey: "impactGroupEcosystems",
+        demoScale: 0.02
+      },
+      {
+        id: "eutrophicationFreshwater",
+        nameKey: "impactEutrophicationFreshwater",
+        descriptionKey: "impactEutrophicationFreshwaterDescription",
+        unit: "kg P-eq",
+        groupKey: "impactGroupEcosystems",
+        demoScale: 0.0002
+      },
+      {
+        id: "eutrophicationMarine",
+        nameKey: "impactEutrophicationMarine",
+        descriptionKey: "impactEutrophicationMarineDescription",
+        unit: "kg N-eq",
+        groupKey: "impactGroupEcosystems",
+        demoScale: 0.001
+      },
+      {
+        id: "ecotoxicityFreshwater",
+        nameKey: "impactEcotoxicityFreshwater",
+        descriptionKey: "impactEcotoxicityFreshwaterDescription",
+        unit: "CTUe",
+        groupKey: "impactGroupEcosystems",
+        demoScale: 0.5
+      },
+      {
+        id: "landUse",
+        nameKey: "impactLandUse",
+        descriptionKey: "impactLandUseDescription",
+        unit: "Pt",
+        groupKey: "impactGroupEcosystems",
+        demoScale: 1.2
+      },
+      {
+        id: "waterUse",
+        nameKey: "impactWaterUse",
+        descriptionKey: "impactWaterUseDescription",
+        unit: "m3 water-eq deprived",
+        groupKey: "impactGroupResources",
+        demoScale: 0.08
+      },
+      {
+        id: "resourceUseFossils",
+        nameKey: "impactResourceUseFossils",
+        descriptionKey: "impactResourceUseFossilsDescription",
+        unit: "MJ",
+        groupKey: "impactGroupResources",
+        demoScale: 2.5
+      },
+      {
+        id: "resourceUseMineralsMetals",
+        nameKey: "impactResourceUseMineralsMetals",
+        descriptionKey: "impactResourceUseMineralsMetalsDescription",
+        unit: "kg Sb-eq",
+        groupKey: "impactGroupResources",
+        demoScale: 1e-6
       }
     ];
 
+    const demoCoefficientUncertainty = 30;
+
     const moduleCalculationDefaults = {
-      EM01: { factor: 0.45, uncertainty: 55 },
-      EM02: { factor: 1.25, uncertainty: 60 },
-      EM03: { factor: 6.50, uncertainty: 65 },
-      EM04: { factor: 0.75, uncertainty: 55 },
-      EM05: { factor: 0.60, uncertainty: 55 },
-      EM06: { factor: 8.00, uncertainty: 75 },
-      EM07: { factor: 18.00, uncertainty: 80 },
-      EM08: { factor: 4.50, uncertainty: 75 },
-      EM09: { factor: 0.70, uncertainty: 60 },
-      EM10: { factor: 5.00, uncertainty: 80 },
-      EM11: { factor: 2.00, uncertainty: 75 }
+      EM01: { factor: 0.45 },
+      EM02: { factor: 1.25 },
+      EM03: { factor: 6.50 },
+      EM04: { factor: 0.75 },
+      EM05: { factor: 0.60 },
+      EM06: { factor: 8.00 },
+      EM07: { factor: 18.00 },
+      EM08: { factor: 4.50 },
+      EM09: { factor: 0.70 },
+      EM10: { factor: 5.00 },
+      EM11: { factor: 2.00 }
     };
 
+    function demoImpactCoefficient(category, climateFactor) {
+      if (category.id === "climate") return climateFactor;
+      return Number((climateFactor * category.demoScale).toPrecision(5));
+    }
+
     const lcaDefaultRows = buildingBlockRegistry.map((item, index) => {
-      const defaults = moduleCalculationDefaults[item.module] || { factor: 1, uncertainty: 70 };
+      const defaults = moduleCalculationDefaults[item.module] || { factor: 1 };
       const quantity = defaultQuantityForBlock(item);
       const factor = Number((defaults.factor * (1 + (index % 5) * 0.11)).toFixed(4));
       return {
@@ -2563,11 +2668,12 @@
         unit: item.unit,
         quantity,
         uncertainties: Object.fromEntries(
-          impactCategoryRegistry.map((category) => [category.id, category.id === "climate" ? defaults.uncertainty : 100])
+          impactCategoryRegistry.map((category) => [category.id, demoCoefficientUncertainty])
         ),
         factors: Object.fromEntries(
-          impactCategoryRegistry.map((category) => [category.id, category.id === "climate" ? factor : 0])
+          impactCategoryRegistry.map((category) => [category.id, demoImpactCoefficient(category, factor)])
         ),
+        editedFactors: {},
         included: true,
         applicability: item.applicability,
         gap: `Dummy aggregate coefficient. Replace with foreground LCI for ${item.resourceFlows.join(", ")} and documented LCIA mapping.`
@@ -2577,7 +2683,8 @@
     let lcaRows = lcaDefaultRows.map((row) => ({
       ...row,
       factors: { ...row.factors },
-      uncertainties: { ...row.uncertainties }
+      uncertainties: { ...row.uncertainties },
+      editedFactors: { ...row.editedFactors }
     }));
     const crossCuttingModuleIds = ["EM10", "EM11"];
     const lcaModuleIncluded = Object.fromEntries(
@@ -4249,9 +4356,18 @@
       formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. u_c is the relative uncertainty assigned to c only. N is cohort size.",
       helpStep5: "Review the impact-coefficient uncertainty range and unresolved quantity, pathway, scenario, and structural uncertainty, then export the report in the selected language.",
       impactCategoryLabel: "Impact category",
-      lcaIntro: "Editable calculation rows for candidate building blocks. Modules define the LCA boundary and row checkboxes define active building blocks. GWP contains dummy demonstration coefficients; the additional EF categories start as unmapped data gaps.",
+      impactMethodChip: "EF v3.1 no LT · demo",
+      impactGroupClimateAir: "Climate and air",
+      impactGroupHumanHealth: "Human health",
+      impactGroupEcosystems: "Ecosystems",
+      impactGroupResources: "Resource use",
+      lcaIntro: "Editable calculation rows for candidate building blocks. All 16 EF 3.1 categories contain synthetic demonstration coefficients and an editable 30% coefficient-uncertainty assumption. These values are not verified EF results.",
       impactClimate: "Climate change (GWP100)",
       impactClimateDescription: "Primary ECO-PATH view. Reports the 100-year global warming potential of life-cycle greenhouse-gas emissions.",
+      impactOzoneDepletion: "Ozone depletion",
+      impactOzoneDepletionDescription: "Potential depletion of the stratospheric ozone layer from life-cycle emissions.",
+      impactPhotochemicalOzoneFormation: "Photochemical ozone formation, human health",
+      impactPhotochemicalOzoneFormationDescription: "Potential human-health effects of ground-level ozone formed from precursor emissions.",
       impactParticulateMatter: "Particulate matter",
       impactParticulateMatterDescription: "Potential human-health burden from particulate matter and precursor emissions, reported as disease incidence.",
       impactHumanToxicityCancer: "Human toxicity, cancer",
@@ -4260,17 +4376,36 @@
       impactHumanToxicityNonCancerDescription: "Potential non-cancer toxicity from life-cycle environmental emissions. This is not a patient adverse-effect indicator.",
       impactIonisingRadiation: "Ionising radiation, human health",
       impactIonisingRadiationDescription: "Potential human-health impact of life-cycle ionising emissions under normal operating conditions. This is not the radiation dose delivered to a patient.",
-      impactMethodNote: "Category names and units follow EF 3.1. The exact 'no LT' Brightway method key, foreground inventory, and characterization-factor mapping must be verified before interpretation.",
+      impactAcidification: "Acidification",
+      impactAcidificationDescription: "Potential acidification of terrestrial and freshwater ecosystems from acidifying emissions.",
+      impactEutrophicationTerrestrial: "Eutrophication, terrestrial",
+      impactEutrophicationTerrestrialDescription: "Potential nutrient enrichment of terrestrial ecosystems, expressed as nitrogen equivalents.",
+      impactEutrophicationFreshwater: "Eutrophication, freshwater",
+      impactEutrophicationFreshwaterDescription: "Potential phosphorus-driven nutrient enrichment of freshwater ecosystems.",
+      impactEutrophicationMarine: "Eutrophication, marine",
+      impactEutrophicationMarineDescription: "Potential nitrogen-driven nutrient enrichment of marine ecosystems.",
+      impactEcotoxicityFreshwater: "Ecotoxicity, freshwater",
+      impactEcotoxicityFreshwaterDescription: "Potential toxic effects of life-cycle environmental emissions on freshwater ecosystems.",
+      impactLandUse: "Land use",
+      impactLandUseDescription: "Potential effects of land occupation and transformation on soil quality.",
+      impactWaterUse: "Water use",
+      impactWaterUseDescription: "Potential deprivation caused by water consumption, accounting for regional water scarcity.",
+      impactResourceUseFossils: "Resource use, fossils",
+      impactResourceUseFossilsDescription: "Potential depletion of fossil energy resources, reported in megajoules.",
+      impactResourceUseMineralsMetals: "Resource use, minerals and metals",
+      impactResourceUseMineralsMetalsDescription: "Potential depletion of mineral and metal resources, expressed as antimony equivalents.",
+      impactMethodNote: "Category names and units follow EF 3.1. The 30% coefficient uncertainty is a prototype assumption, not an EF default. Verify the exact 'no LT' Brightway method key, foreground inventory, characterization factors, and data-specific uncertainty before interpretation.",
       efReferenceLink: "EF 3.1 reference package",
       impactCoefficientDynamic: "Impact coefficient, {unit}/reference unit",
       impactCoefficientAria: "{block} {category} impact coefficient",
       categoryFactorGap: "No verified {category} coefficient is mapped. Enter a value only after foreground LCI and EF v3.1 no LT mapping.",
+      categoryDummyFactorGap: "Synthetic {category} demonstration coefficient with a +/- {uncertainty}% assumption. Replace it with documented foreground LCI and LCIA mapping.",
       categoryUserFactorGap: "User-entered {category} coefficient. Verify the EF v3.1 no LT dataset and characterization-factor mapping before use.",
-      climateDataWarning: "GWP is the default view. Quantities and GWP coefficients remain dummy demonstration data until replaced with validated foreground LCI and LCIA mappings.",
-      categoryDataWarning: "No verified {category} coefficients are connected. Results remain zero until category-specific EF v3.1 no LT coefficients are entered and documented.",
+      climateDataWarning: "GWP is the default view. Quantities and coefficients remain synthetic demonstration data until replaced with validated foreground LCI and LCIA mappings.",
+      categoryDataWarning: "{category} currently uses synthetic demonstration coefficients and a +/- {uncertainty}% coefficient range. This is not an EF default or a validated result.",
       noCategoryFactors: "No active building block has a non-zero {category} coefficient.",
       impactCategoryConfig: "Impact category",
-      categoryReportNote: "Selected category: {category} ({unit}). Coefficients are not verified EF results unless their foreground LCI and LCIA mappings are documented."
+      categoryReportNote: "Selected category: {category} ({unit}). Synthetic coefficients and the 30% uncertainty assumption are interface placeholders, not verified EF results."
     });
 
     Object.assign(uiText.nl, {
@@ -4294,9 +4429,18 @@
       formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is de impactcoëfficiënt. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
       helpStep5: "Beoordeel het onzekerheidsbereik van de impactcoëfficiënt en open onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur. Exporteer daarna het rapport in de gekozen taal.",
       impactCategoryLabel: "Impactcategorie",
-      lcaIntro: "Bewerkbare rekenregels voor kandidaatbouwstenen. Modules bepalen de LCA-grens en rijselecties bepalen actieve bouwstenen. GWP bevat dummycoëfficiënten voor demonstratie; de aanvullende EF-categorieën starten als niet-gekoppelde datagaten.",
+      impactMethodChip: "EF v3.1 no LT · demo",
+      impactGroupClimateAir: "Klimaat en lucht",
+      impactGroupHumanHealth: "Menselijke gezondheid",
+      impactGroupEcosystems: "Ecosystemen",
+      impactGroupResources: "Hulpbronnengebruik",
+      lcaIntro: "Bewerkbare rekenregels voor kandidaatbouwstenen. Alle 16 EF 3.1-categorieën bevatten synthetische demonstratiecoëfficiënten en een bewerkbare aanname van 30% coëfficiëntonzekerheid. Dit zijn geen geverifieerde EF-resultaten.",
       impactClimate: "Klimaatverandering (GWP100)",
       impactClimateDescription: "Primaire ECO-PATH-weergave. Toont het aardopwarmingsvermogen over 100 jaar van broeikasgasemissies in de levenscyclus.",
+      impactOzoneDepletion: "Ozonafbraak",
+      impactOzoneDepletionDescription: "Potentiële afbraak van de stratosferische ozonlaag door emissies in de levenscyclus.",
+      impactPhotochemicalOzoneFormation: "Fotochemische ozonvorming, menselijke gezondheid",
+      impactPhotochemicalOzoneFormationDescription: "Potentiële gezondheidseffecten van ozon op leefniveau dat uit voorlopers wordt gevormd.",
       impactParticulateMatter: "Fijnstof",
       impactParticulateMatterDescription: "Potentiële gezondheidsschade door fijnstof en voorlopers, uitgedrukt als ziekte-incidentie.",
       impactHumanToxicityCancer: "Humane toxiciteit, kanker",
@@ -4305,17 +4449,36 @@
       impactHumanToxicityNonCancerDescription: "Potentiële niet-kankergerelateerde toxiciteit door milieu-emissies in de levenscyclus. Dit is geen indicator voor bijwerkingen bij patiënten.",
       impactIonisingRadiation: "Ioniserende straling, menselijke gezondheid",
       impactIonisingRadiationDescription: "Potentiële gezondheidsschade door ioniserende emissies in de levenscyclus bij normaal bedrijf. Dit is niet de stralingsdosis voor een patiënt.",
-      impactMethodNote: "Categorienamen en eenheden volgen EF 3.1. De exacte Brightway-methodevariant 'no LT', voorgrondinventaris en karakterisatiefactorkoppeling moeten vóór interpretatie worden gecontroleerd.",
+      impactAcidification: "Verzuring",
+      impactAcidificationDescription: "Potentiële verzuring van terrestrische en zoetwaterecosystemen door verzurende emissies.",
+      impactEutrophicationTerrestrial: "Vermesting, terrestrisch",
+      impactEutrophicationTerrestrialDescription: "Potentiële nutriëntenverrijking van terrestrische ecosystemen, uitgedrukt als stikstofequivalenten.",
+      impactEutrophicationFreshwater: "Vermesting, zoetwater",
+      impactEutrophicationFreshwaterDescription: "Potentiële fosforgedreven nutriëntenverrijking van zoetwaterecosystemen.",
+      impactEutrophicationMarine: "Vermesting, marien",
+      impactEutrophicationMarineDescription: "Potentiële stikstofgedreven nutriëntenverrijking van mariene ecosystemen.",
+      impactEcotoxicityFreshwater: "Ecotoxiciteit, zoetwater",
+      impactEcotoxicityFreshwaterDescription: "Potentiële toxische effecten van milieu-emissies in de levenscyclus op zoetwaterecosystemen.",
+      impactLandUse: "Landgebruik",
+      impactLandUseDescription: "Potentiële effecten van landbezetting en landtransformatie op de bodemkwaliteit.",
+      impactWaterUse: "Watergebruik",
+      impactWaterUseDescription: "Potentiële waterdeprivatie door waterverbruik, rekening houdend met regionale waterschaarste.",
+      impactResourceUseFossils: "Hulpbronnengebruik, fossiel",
+      impactResourceUseFossilsDescription: "Potentiële uitputting van fossiele energiebronnen, uitgedrukt in megajoules.",
+      impactResourceUseMineralsMetals: "Hulpbronnengebruik, mineralen en metalen",
+      impactResourceUseMineralsMetalsDescription: "Potentiële uitputting van mineralen en metalen, uitgedrukt als antimoon-equivalenten.",
+      impactMethodNote: "Categorienamen en eenheden volgen EF 3.1. De coëfficiëntonzekerheid van 30% is een prototypeaanname en geen EF-standaard. Controleer vóór interpretatie de exacte Brightway-methodevariant 'no LT', voorgrondinventaris, karakterisatiefactoren en dataspecifieke onzekerheid.",
       efReferenceLink: "EF 3.1-referentiepakket",
       impactCoefficientDynamic: "Impactcoëfficiënt, {unit}/referentie-eenheid",
       impactCoefficientAria: "Impactcoëfficiënt {category} voor {block}",
       categoryFactorGap: "Er is geen geverifieerde coëfficiënt voor {category} gekoppeld. Voer alleen een waarde in na koppeling van voorgrond-LCI en EF v3.1 no LT.",
+      categoryDummyFactorGap: "Synthetische demonstratiecoëfficiënt voor {category} met een aanname van +/- {uncertainty}%. Vervang deze door gedocumenteerde voorgrond-LCI- en LCIA-koppeling.",
       categoryUserFactorGap: "Door gebruiker ingevoerde coëfficiënt voor {category}. Controleer dataset en karakterisatiefactorkoppeling van EF v3.1 no LT vóór gebruik.",
-      climateDataWarning: "GWP is de standaardweergave. Hoeveelheden en GWP-coëfficiënten blijven demonstratiedata totdat ze zijn vervangen door gevalideerde voorgrond-LCI- en LCIA-koppelingen.",
-      categoryDataWarning: "Er zijn geen geverifieerde coëfficiënten voor {category} gekoppeld. Resultaten blijven nul totdat categoriespecifieke EF v3.1 no LT-coëfficiënten zijn ingevoerd en gedocumenteerd.",
+      climateDataWarning: "GWP is de standaardweergave. Hoeveelheden en coëfficiënten blijven synthetische demonstratiedata totdat ze zijn vervangen door gevalideerde voorgrond-LCI- en LCIA-koppelingen.",
+      categoryDataWarning: "{category} gebruikt momenteel synthetische demonstratiecoëfficiënten en een coëfficiëntbereik van +/- {uncertainty}%. Dit is geen EF-standaard of gevalideerd resultaat.",
       noCategoryFactors: "Geen actieve bouwsteen heeft een niet-nulcoëfficiënt voor {category}.",
       impactCategoryConfig: "Impactcategorie",
-      categoryReportNote: "Geselecteerde categorie: {category} ({unit}). Coëfficiënten zijn geen geverifieerde EF-resultaten zonder gedocumenteerde voorgrond-LCI- en LCIA-koppeling."
+      categoryReportNote: "Geselecteerde categorie: {category} ({unit}). De synthetische coëfficiënten en 30%-onzekerheidsaanname zijn interface-placeholders, geen geverifieerde EF-resultaten."
     });
 
     Object.assign(uiText.zh, {
@@ -4339,9 +4502,18 @@
       formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为影响系数；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
       helpStep5: "检查影响系数不确定性范围，并单独记录数量、路径、情景和模型结构不确定性，然后使用当前语言导出报告。",
       impactCategoryLabel: "影响类别",
-      lcaIntro: "候选构建单元的可编辑计算行。模块定义 LCA 边界，行勾选定义当前使用的构建单元。GWP 保留 dummy 演示系数；新增 EF 类别初始均为尚未映射的数据缺口。",
+      impactMethodChip: "EF v3.1 no LT · 演示",
+      impactGroupClimateAir: "气候与空气",
+      impactGroupHumanHealth: "人类健康",
+      impactGroupEcosystems: "生态系统",
+      impactGroupResources: "资源使用",
+      lcaIntro: "候选构建单元的可编辑计算行。全部 16 类 EF 3.1 指标均含 synthetic 演示系数和可编辑的 30% 系数不确定性假设；这些数值不是经验证的 EF 结果。",
       impactClimate: "气候变化（GWP100）",
       impactClimateDescription: "ECO-PATH 的首选视图，表示生命周期温室气体排放的 100 年全球变暖潜势。",
+      impactOzoneDepletion: "臭氧层消耗",
+      impactOzoneDepletionDescription: "生命周期排放对平流层臭氧层造成的潜在消耗。",
+      impactPhotochemicalOzoneFormation: "光化学臭氧形成，人体健康",
+      impactPhotochemicalOzoneFormationDescription: "前体物排放形成近地面臭氧后造成的潜在人类健康影响。",
       impactParticulateMatter: "颗粒物",
       impactParticulateMatterDescription: "颗粒物及其前体排放造成的潜在人类健康负担，以疾病发生数表示。",
       impactHumanToxicityCancer: "人体毒性，致癌",
@@ -4350,17 +4522,36 @@
       impactHumanToxicityNonCancerDescription: "生命周期环境排放的潜在非致癌毒性，不是患者不良反应指标。",
       impactIonisingRadiation: "电离辐射，人体健康",
       impactIonisingRadiationDescription: "正常运行条件下生命周期电离排放的潜在人类健康影响，不表示患者接受的放射剂量。",
-      impactMethodNote: "类别名称和单位遵循 EF 3.1。正式解释前，必须核对 Brightway 中准确的 no LT 方法键、前景清单和表征因子映射。",
+      impactAcidification: "酸化",
+      impactAcidificationDescription: "酸性排放对陆地和淡水生态系统造成的潜在酸化。",
+      impactEutrophicationTerrestrial: "富营养化，陆地",
+      impactEutrophicationTerrestrialDescription: "陆地生态系统的潜在营养物富集，以氮当量表示。",
+      impactEutrophicationFreshwater: "富营养化，淡水",
+      impactEutrophicationFreshwaterDescription: "由磷驱动的淡水生态系统潜在营养物富集。",
+      impactEutrophicationMarine: "富营养化，海洋",
+      impactEutrophicationMarineDescription: "由氮驱动的海洋生态系统潜在营养物富集。",
+      impactEcotoxicityFreshwater: "生态毒性，淡水",
+      impactEcotoxicityFreshwaterDescription: "生命周期环境排放对淡水生态系统造成的潜在毒性影响。",
+      impactLandUse: "土地使用",
+      impactLandUseDescription: "土地占用和土地转化对土壤质量造成的潜在影响。",
+      impactWaterUse: "水资源使用",
+      impactWaterUseDescription: "考虑地区水资源稀缺程度后，耗水造成的潜在水资源剥夺。",
+      impactResourceUseFossils: "资源使用，化石",
+      impactResourceUseFossilsDescription: "化石能源资源的潜在消耗，以兆焦耳表示。",
+      impactResourceUseMineralsMetals: "资源使用，矿物和金属",
+      impactResourceUseMineralsMetalsDescription: "矿物和金属资源的潜在消耗，以锑当量表示。",
+      impactMethodNote: "类别名称和单位遵循 EF 3.1。30% 系数不确定性是 prototype 假设，不是 EF 默认值。正式解释前必须核对 Brightway 中准确的 no LT 方法键、前景清单、表征因子和数据特定不确定性。",
       efReferenceLink: "EF 3.1 参考包",
       impactCoefficientDynamic: "影响系数，{unit}/参考单位",
       impactCoefficientAria: "{block} 的 {category} 影响系数",
       categoryFactorGap: "尚未映射经过验证的 {category} 系数。仅在完成前景 LCI 与 EF v3.1 no LT 映射后输入。",
+      categoryDummyFactorGap: "{category} 的 synthetic 演示系数，采用 +/- {uncertainty}% 假设。需替换为有记录的前景 LCI 与 LCIA 映射。",
       categoryUserFactorGap: "用户输入的 {category} 系数。使用前需核对 EF v3.1 no LT 数据集和表征因子映射。",
-      climateDataWarning: "GWP 为默认视图。数量和 GWP 系数仍是演示数据，必须替换为经验证的前景 LCI 和 LCIA 映射。",
-      categoryDataWarning: "尚未连接经过验证的 {category} 系数。在输入并记录该类别的 EF v3.1 no LT 系数前，结果保持为零。",
+      climateDataWarning: "GWP 为默认视图。数量和系数仍是 synthetic 演示数据，必须替换为经验证的前景 LCI 和 LCIA 映射。",
+      categoryDataWarning: "{category} 当前使用 synthetic 演示系数及 +/- {uncertainty}% 系数范围。这不是 EF 默认值或经验证的结果。",
       noCategoryFactors: "当前活动构建单元中没有非零的 {category} 系数。",
       impactCategoryConfig: "影响类别",
-      categoryReportNote: "所选类别：{category}（{unit}）。若没有记录前景 LCI 与 LCIA 映射，这些系数不属于经验证的 EF 结果。"
+      categoryReportNote: "所选类别：{category}（{unit}）。Synthetic 系数和 30% 不确定性假设只是界面占位值，不是经验证的 EF 结果。"
     });
 
     Object.assign(uiText.ja, {
@@ -4384,9 +4575,18 @@
       formulaReportNote: "S は選択モジュール内の選択 building block です。q は回数または資源量、c は影響係数、u_c は c のみの相対不確実性、N はコホート人数です。",
       helpStep5: "影響係数の不確実性範囲と、数量、経路、シナリオ、構造に残る不確実性を確認し、選択言語で報告書を出力します。",
       impactCategoryLabel: "影響カテゴリ",
-      lcaIntro: "候補 building block の編集可能な計算行です。モジュールが LCA 境界を、行の選択が有効な building block を定義します。GWP にはデモ用ダミー係数があり、追加 EF カテゴリは未対応データギャップから開始します。",
+      impactMethodChip: "EF v3.1 no LT · デモ",
+      impactGroupClimateAir: "気候と大気",
+      impactGroupHumanHealth: "人の健康",
+      impactGroupEcosystems: "生態系",
+      impactGroupResources: "資源利用",
+      lcaIntro: "候補 building block の編集可能な計算行です。EF 3.1 の全16カテゴリに合成デモ係数と編集可能な30%の係数不確実性仮定があります。これらは検証済みEF結果ではありません。",
       impactClimate: "気候変動（GWP100）",
       impactClimateDescription: "ECO-PATH の既定表示です。ライフサイクル温室効果ガス排出の100年地球温暖化係数を示します。",
+      impactOzoneDepletion: "オゾン層破壊",
+      impactOzoneDepletionDescription: "ライフサイクル排出による成層圏オゾン層の潜在的な破壊を示します。",
+      impactPhotochemicalOzoneFormation: "光化学オゾン生成（人の健康）",
+      impactPhotochemicalOzoneFormationDescription: "前駆物質から形成される地表オゾンによる潜在的な健康影響を示します。",
       impactParticulateMatter: "粒子状物質",
       impactParticulateMatterDescription: "粒子状物質と前駆物質の排出による潜在的な健康負荷を疾病発生数で示します。",
       impactHumanToxicityCancer: "ヒト毒性（発がん）",
@@ -4395,17 +4595,36 @@
       impactHumanToxicityNonCancerDescription: "ライフサイクル環境排出による潜在的な非発がん毒性です。患者の有害事象指標ではありません。",
       impactIonisingRadiation: "電離放射線（人の健康）",
       impactIonisingRadiationDescription: "通常運転時のライフサイクル電離排出による潜在的な健康影響です。患者が受ける放射線量ではありません。",
-      impactMethodNote: "カテゴリ名と単位は EF 3.1 に準拠します。解釈前に Brightway の正確な no LT メソッドキー、フォアグラウンドインベントリ、特性化係数の対応を確認してください。",
+      impactAcidification: "酸性化",
+      impactAcidificationDescription: "酸性化排出による陸域および淡水生態系の潜在的な酸性化を示します。",
+      impactEutrophicationTerrestrial: "富栄養化（陸域）",
+      impactEutrophicationTerrestrialDescription: "陸域生態系の潜在的な栄養塩濃縮を窒素当量で示します。",
+      impactEutrophicationFreshwater: "富栄養化（淡水）",
+      impactEutrophicationFreshwaterDescription: "リンに起因する淡水生態系の潜在的な栄養塩濃縮を示します。",
+      impactEutrophicationMarine: "富栄養化（海洋）",
+      impactEutrophicationMarineDescription: "窒素に起因する海洋生態系の潜在的な栄養塩濃縮を示します。",
+      impactEcotoxicityFreshwater: "生態毒性（淡水）",
+      impactEcotoxicityFreshwaterDescription: "ライフサイクル環境排出による淡水生態系への潜在的な毒性影響を示します。",
+      impactLandUse: "土地利用",
+      impactLandUseDescription: "土地占有と土地改変による土壌品質への潜在的な影響を示します。",
+      impactWaterUse: "水利用",
+      impactWaterUseDescription: "地域の水不足を考慮した水消費による潜在的な水剥奪を示します。",
+      impactResourceUseFossils: "資源利用（化石）",
+      impactResourceUseFossilsDescription: "化石エネルギー資源の潜在的な枯渇をメガジュールで示します。",
+      impactResourceUseMineralsMetals: "資源利用（鉱物・金属）",
+      impactResourceUseMineralsMetalsDescription: "鉱物・金属資源の潜在的な枯渇をアンチモン当量で示します。",
+      impactMethodNote: "カテゴリ名と単位は EF 3.1 に準拠します。30%の係数不確実性はプロトタイプ仮定であり、EF既定値ではありません。解釈前に Brightway の正確な no LT メソッドキー、フォアグラウンドインベントリ、特性化係数、データ固有の不確実性を確認してください。",
       efReferenceLink: "EF 3.1 参照パッケージ",
       impactCoefficientDynamic: "影響係数、{unit}/参照単位",
       impactCoefficientAria: "{block} の {category} 影響係数",
       categoryFactorGap: "検証済みの {category} 係数は未対応です。フォアグラウンド LCI と EF v3.1 no LT の対応後にのみ入力してください。",
+      categoryDummyFactorGap: "{category} の合成デモ係数で、+/- {uncertainty}%を仮定しています。文書化したフォアグラウンドLCI・LCIA対応に置換してください。",
       categoryUserFactorGap: "ユーザー入力の {category} 係数です。使用前に EF v3.1 no LT データセットと特性化係数の対応を確認してください。",
-      climateDataWarning: "GWP が既定表示です。数量と GWP 係数は、検証済みのフォアグラウンド LCI・LCIA 対応に置換するまでデモデータです。",
-      categoryDataWarning: "検証済みの {category} 係数は接続されていません。カテゴリ別 EF v3.1 no LT 係数を入力し記録するまで結果はゼロです。",
+      climateDataWarning: "GWP が既定表示です。数量と係数は、検証済みのフォアグラウンド LCI・LCIA 対応に置換するまで合成デモデータです。",
+      categoryDataWarning: "{category} は現在、合成デモ係数と +/- {uncertainty}% の係数範囲を使用しています。EF既定値でも検証済み結果でもありません。",
       noCategoryFactors: "有効な building block にゼロ以外の {category} 係数がありません。",
       impactCategoryConfig: "影響カテゴリ",
-      categoryReportNote: "選択カテゴリ：{category}（{unit}）。フォアグラウンド LCI と LCIA の対応記録がない係数は、検証済み EF 結果ではありません。"
+      categoryReportNote: "選択カテゴリ：{category}（{unit}）。合成係数と30%不確実性仮定はインターフェース用のプレースホルダーであり、検証済みEF結果ではありません。"
     });
 
     Object.assign(uiText.es, {
@@ -4429,9 +4648,18 @@
       formulaReportNote: "S contiene los building blocks marcados dentro de módulos marcados. q es ocurrencia o cantidad de recurso. c es el coeficiente de impacto. u_c es la incertidumbre relativa solo de c. N es el tamaño de cohorte.",
       helpStep5: "Revise el rango de incertidumbre del coeficiente de impacto y documente por separado la incertidumbre de cantidades, vía, escenario y estructura. Exporte el informe en el idioma seleccionado.",
       impactCategoryLabel: "Categoría de impacto",
-      lcaIntro: "Filas editables para bloques candidatos. Los módulos definen el límite LCA y las casillas de fila definen los bloques activos. GWP contiene coeficientes ficticios de demostración; las categorías EF adicionales comienzan como lagunas sin mapear.",
+      impactMethodChip: "EF v3.1 no LT · demo",
+      impactGroupClimateAir: "Clima y aire",
+      impactGroupHumanHealth: "Salud humana",
+      impactGroupEcosystems: "Ecosistemas",
+      impactGroupResources: "Uso de recursos",
+      lcaIntro: "Filas editables para bloques candidatos. Las 16 categorías EF 3.1 contienen coeficientes sintéticos de demostración y una hipótesis editable de incertidumbre del 30%. No son resultados EF verificados.",
       impactClimate: "Cambio climático (GWP100)",
       impactClimateDescription: "Vista principal de ECO-PATH. Presenta el potencial de calentamiento global a 100 años de las emisiones del ciclo de vida.",
+      impactOzoneDepletion: "Agotamiento de la capa de ozono",
+      impactOzoneDepletionDescription: "Agotamiento potencial de la capa de ozono estratosférico por emisiones del ciclo de vida.",
+      impactPhotochemicalOzoneFormation: "Formación de ozono fotoquímico, salud humana",
+      impactPhotochemicalOzoneFormationDescription: "Efectos potenciales sobre la salud del ozono troposférico formado a partir de emisiones precursoras.",
       impactParticulateMatter: "Material particulado",
       impactParticulateMatterDescription: "Carga potencial sobre la salud por material particulado y emisiones precursoras, expresada como incidencia de enfermedad.",
       impactHumanToxicityCancer: "Toxicidad humana, cáncer",
@@ -4440,17 +4668,36 @@
       impactHumanToxicityNonCancerDescription: "Toxicidad no cancerígena potencial de emisiones ambientales del ciclo de vida. No es un indicador de efectos adversos del paciente.",
       impactIonisingRadiation: "Radiación ionizante, salud humana",
       impactIonisingRadiationDescription: "Impacto potencial sobre la salud de emisiones ionizantes del ciclo de vida en operación normal. No es la dosis de radiación administrada al paciente.",
-      impactMethodNote: "Los nombres y unidades siguen EF 3.1. Antes de interpretar, deben verificarse la clave exacta del método no LT en Brightway, el inventario de primer plano y el mapeo de factores de caracterización.",
+      impactAcidification: "Acidificación",
+      impactAcidificationDescription: "Acidificación potencial de ecosistemas terrestres y de agua dulce por emisiones acidificantes.",
+      impactEutrophicationTerrestrial: "Eutrofización, terrestre",
+      impactEutrophicationTerrestrialDescription: "Enriquecimiento potencial de nutrientes en ecosistemas terrestres, expresado como equivalentes de nitrógeno.",
+      impactEutrophicationFreshwater: "Eutrofización, agua dulce",
+      impactEutrophicationFreshwaterDescription: "Enriquecimiento potencial por fósforo en ecosistemas de agua dulce.",
+      impactEutrophicationMarine: "Eutrofización, marina",
+      impactEutrophicationMarineDescription: "Enriquecimiento potencial por nitrógeno en ecosistemas marinos.",
+      impactEcotoxicityFreshwater: "Ecotoxicidad, agua dulce",
+      impactEcotoxicityFreshwaterDescription: "Efectos tóxicos potenciales de emisiones ambientales del ciclo de vida en ecosistemas de agua dulce.",
+      impactLandUse: "Uso del suelo",
+      impactLandUseDescription: "Efectos potenciales de la ocupación y transformación del suelo sobre su calidad.",
+      impactWaterUse: "Uso del agua",
+      impactWaterUseDescription: "Privación potencial por consumo de agua considerando la escasez regional.",
+      impactResourceUseFossils: "Uso de recursos, fósiles",
+      impactResourceUseFossilsDescription: "Agotamiento potencial de recursos energéticos fósiles, expresado en megajulios.",
+      impactResourceUseMineralsMetals: "Uso de recursos, minerales y metales",
+      impactResourceUseMineralsMetalsDescription: "Agotamiento potencial de minerales y metales, expresado como equivalentes de antimonio.",
+      impactMethodNote: "Los nombres y unidades siguen EF 3.1. La incertidumbre del 30% es una hipótesis del prototipo, no un valor predeterminado de EF. Antes de interpretar, verifique la clave exacta no LT en Brightway, el inventario de primer plano, los factores de caracterización y la incertidumbre específica de los datos.",
       efReferenceLink: "Paquete de referencia EF 3.1",
       impactCoefficientDynamic: "Coeficiente de impacto, {unit}/unidad de referencia",
       impactCoefficientAria: "Coeficiente de {category} para {block}",
       categoryFactorGap: "No se ha mapeado un coeficiente verificado de {category}. Introduzca un valor solo tras mapear el LCI de primer plano y EF v3.1 no LT.",
+      categoryDummyFactorGap: "Coeficiente sintético de demostración para {category} con una hipótesis de +/- {uncertainty}%. Sustitúyalo por un mapeo documentado de LCI y LCIA.",
       categoryUserFactorGap: "Coeficiente de {category} introducido por el usuario. Verifique el conjunto EF v3.1 no LT y el mapeo de caracterización antes de usarlo.",
-      climateDataWarning: "GWP es la vista predeterminada. Las cantidades y coeficientes GWP siguen siendo datos de demostración hasta sustituirlos por mapeos LCI y LCIA validados.",
-      categoryDataWarning: "No hay coeficientes verificados de {category} conectados. Los resultados permanecen en cero hasta introducir y documentar coeficientes EF v3.1 no LT específicos.",
+      climateDataWarning: "GWP es la vista predeterminada. Las cantidades y coeficientes siguen siendo datos sintéticos de demostración hasta sustituirlos por mapeos LCI y LCIA validados.",
+      categoryDataWarning: "{category} usa actualmente coeficientes sintéticos de demostración y un rango de +/- {uncertainty}%. No es un valor predeterminado de EF ni un resultado validado.",
       noCategoryFactors: "Ningún bloque activo tiene un coeficiente distinto de cero para {category}.",
       impactCategoryConfig: "Categoría de impacto",
-      categoryReportNote: "Categoría seleccionada: {category} ({unit}). Los coeficientes no son resultados EF verificados sin mapeos documentados de LCI y LCIA."
+      categoryReportNote: "Categoría seleccionada: {category} ({unit}). Los coeficientes sintéticos y la hipótesis de incertidumbre del 30% son marcadores de interfaz, no resultados EF verificados."
     });
 
     const pathwayText = {
@@ -7917,14 +8164,22 @@
       const select = document.getElementById("lcaImpactCategory");
       if (!select) return;
       clear(select);
+      const groups = new Map();
       impactCategoryRegistry.forEach((category) => {
+        if (!groups.has(category.groupKey)) {
+          const group = document.createElement("optgroup");
+          group.label = t(category.groupKey);
+          groups.set(category.groupKey, group);
+          select.appendChild(group);
+        }
         const option = document.createElement("option");
         option.value = category.id;
         option.textContent = `${t(category.nameKey)} · ${category.unit}`;
-        select.appendChild(option);
+        groups.get(category.groupKey).appendChild(option);
       });
       select.value = currentImpactCategory().id;
       document.getElementById("lcaImpactCategoryLabel").textContent = t("impactCategoryLabel");
+      document.getElementById("impactMethodChip").textContent = t("impactMethodChip");
       document.getElementById("lcaImpactCategoryName").textContent = `${impactCategoryName()} · ${impactCategoryUnit()}`;
       document.getElementById("lcaImpactCategoryDescription").textContent = t(currentImpactCategory().descriptionKey);
       document.getElementById("lcaImpactMethodNote").textContent = `${t("impactMethodNote")} `;
@@ -8017,13 +8272,13 @@
     }
 
     function localizedGap(row) {
-      if (state.impactCategory !== "climate") {
-        return t(rowFactor(row) > 0 ? "categoryUserFactorGap" : "categoryFactorGap", {
-          category: impactCategoryName()
-        });
+      if (row.editedFactors?.[state.impactCategory]) {
+        return t("categoryUserFactorGap", { category: impactCategoryName() });
       }
-      if (state.language === "en") return row.gap;
-      return t("dummyGapTemplate", { flows: localizedResourceFlowList(row.flow) });
+      return t("categoryDummyFactorGap", {
+        category: impactCategoryName(),
+        uncertainty: formatNumber(rowUncertainty(row))
+      });
     }
 
     function block(module, name, unit, resourceFlows, applicability = ["shared"]) {
@@ -9605,6 +9860,7 @@
         const value = Math.max(0, Number(input.value) || 0);
         if (field === "factor") {
           lcaRows[rowIndex].factors[state.impactCategory] = value;
+          lcaRows[rowIndex].editedFactors[state.impactCategory] = true;
         } else if (field === "uncertainty") {
           lcaRows[rowIndex].uncertainties[state.impactCategory] = value;
         } else {
@@ -9719,9 +9975,10 @@
         </div>
       `;
 
-      document.getElementById("lcaDataWarning").textContent = state.impactCategory === "climate"
-        ? t("climateDataWarning")
-        : t("categoryDataWarning", { category: impactCategoryName() });
+      document.getElementById("lcaDataWarning").textContent = t("categoryDataWarning", {
+        category: impactCategoryName(),
+        uncertainty: formatNumber(demoCoefficientUncertainty)
+      });
       renderLcaPriorityList();
     }
 

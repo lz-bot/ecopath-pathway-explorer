@@ -35,6 +35,8 @@ The browser calculator uses the prototype formula `impact = quantity x impact co
 
 The Results step presents all 16 EF 3.1 categories in one table. Each row retains its own LCIA unit, low/base/high result per functional unit, and base cohort result. Raw values across different units are not ranked or combined. Selecting a category row updates the detailed result cards, coefficient table, and contribution view. The interactive Sankey shows the base-result flow from the pathway total to ECO-PATH modules and active building blocks for that selected category. Its `0.1%` to `1%` cut-off control aggregates smaller building-block contributions within their module as `Other`; it changes visual detail only and preserves the pathway total.
 
+The collapsible **Sensitivity and improvement explorer** performs a one-at-a-time screening for the selected impact category. It ranks positive building-block contributions, applies a user-selected `5%` to `50%` reduction to either the activity quantity or the impact intensity of one block at a time, and reports the modeled change in the pathway total. For the linear prototype, the pathway response equals the building block's contribution share multiplied by the tested parameter change. The calculation does not alter the baseline scenario. Quantity scenarios are not recommendations to reduce care and require guideline support, clinical equivalence, patient acceptability, and expert approval. Operational intensity prompts must preserve safety, infection control, access, and clinical function. This screening is not a substitute for global sensitivity analysis, Monte Carlo uncertainty analysis, or comparative clinical assessment.
+
 ## One-click Brightway calculation
 
 GitHub Pages is a static website and cannot run Brightway or distribute licensed background databases. For direct calculation, run the explorer through the local companion service in the Python environment that has access to the intended Brightway project:
@@ -70,7 +72,7 @@ See the official [Brightway installation guide](https://docs.brightway.dev/en/la
      --mapping brightway/mapping.local.json
    ```
 
-5. The service opens `http://127.0.0.1:8765/`. Build the pathway scenario and select **Calculate with Brightway**. Mapping coverage and method coverage are checked before calculation, and the results return directly to the page.
+5. The service opens `http://127.0.0.1:8765/`. Build the pathway scenario and select **Calculate with Brightway**. Mapping coverage and method coverage are checked before calculation, and the results return directly to the page. The service also requests building-block contributions for the currently selected impact category so the sensitivity explorer can use Brightway results instead of browser demonstration coefficients.
 
 The service binds to the loopback interface only, uses a per-session token, rejects cross-origin calculation requests, and reads existing Brightway projects and databases without modifying them. It refuses missing mappings by default. A mapping is model infrastructure that should be prepared and reviewed once by the ECO-PATH LCA team; end users should not need to edit it for each calculation.
 
@@ -105,7 +107,7 @@ The file workflow remains available for audit, reproducibility, and environments
 
 6. Import `brightway-results.json` in the Results step. Imported results are displayed separately and included as a separate section in the exported report.
 
-Add `--with-contributions` to calculate building-block contributions for each configured method. Add `--allow-missing` only for an explicitly documented partial model; missing active mappings and missing requested method mappings fail by default. The runner only reads existing projects and databases. It does not create, import, delete, relink, or modify Brightway data.
+Add `--with-contributions` to calculate building-block contributions. Exported scenarios request contributions for the impact category that was selected in the browser; scenarios without that option calculate contributions for every configured method. Add `--allow-missing` only for an explicitly documented partial model; missing active mappings and missing requested method mappings fail by default. The runner only reads existing projects and databases. It does not create, import, delete, relink, or modify Brightway data.
 
 The example mapping deliberately contains placeholders. Exact EF method tuples depend on the methods installed in the local Brightway project and must not be guessed. Scenario and result contracts are documented in [`schemas/ecopath-scenario.schema.json`](schemas/ecopath-scenario.schema.json) and [`schemas/ecopath-results.schema.json`](schemas/ecopath-results.schema.json).
 

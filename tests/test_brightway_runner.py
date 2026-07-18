@@ -63,6 +63,16 @@ class BrightwayRunnerValidationTest(unittest.TestCase):
         with self.assertRaisesRegex(RUNNER.ConfigurationError, "No enabled building block"):
             RUNNER.validation_summary(self.scenario, self.mapping)
 
+    def test_contribution_categories_can_be_limited_by_scenario(self):
+        self.scenario["calculation_options"] = {
+            "with_contributions": True,
+            "contribution_categories": ["climate"],
+        }
+        selected = RUNNER.contribution_category_ids(
+            self.scenario, {"climate", "water-use"}
+        )
+        self.assertEqual(selected, {"climate"})
+
 
 if __name__ == "__main__":
     unittest.main()

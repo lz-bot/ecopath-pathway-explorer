@@ -101,11 +101,16 @@ class EcopathRequestHandler(SimpleHTTPRequestHandler):
                     validation_summary(scenario, self.context.mapping, self.context.allow_missing),
                 )
                 return
+            calculation_options = scenario.get("calculation_options")
+            with_contributions = (
+                isinstance(calculation_options, dict)
+                and calculation_options.get("with_contributions") is True
+            )
             result = self.context.calculator(
                 scenario,
                 self.context.mapping,
                 self.context.allow_missing,
-                False,
+                with_contributions,
             )
             self.send_json(HTTPStatus.OK, result)
         except ConfigurationError as exc:

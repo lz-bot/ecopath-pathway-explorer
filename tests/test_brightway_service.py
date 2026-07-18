@@ -25,6 +25,10 @@ class BrightwayServiceTest(unittest.TestCase):
         cls.scenario = json.loads(
             (ROOT / "examples" / "brightway" / "scenario.example.json").read_text()
         )
+        cls.scenario["calculation_options"] = {
+            "with_contributions": True,
+            "contribution_categories": ["climate"],
+        }
         cls.mapping = json.loads((ROOT / "brightway" / "mapping.example.json").read_text())
 
         def fake_inspector(mapping):
@@ -53,6 +57,7 @@ class BrightwayServiceTest(unittest.TestCase):
                         "score_for_cohort": 1.25,
                     }
                 ],
+                "with_contributions": with_contributions,
                 "provenance": {"project": mapping["project"], "databases": ["test-db"]},
                 "warnings": [],
             }
@@ -111,6 +116,7 @@ class BrightwayServiceTest(unittest.TestCase):
             payload = self.read_json(response)
         self.assertEqual(payload["scenario_id"], self.scenario["scenario_id"])
         self.assertEqual(payload["methods"][0]["score_per_functional_unit"], 1.25)
+        self.assertTrue(payload["with_contributions"])
 
 
 if __name__ == "__main__":

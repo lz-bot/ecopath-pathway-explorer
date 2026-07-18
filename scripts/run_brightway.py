@@ -113,6 +113,22 @@ def requested_category_ids(scenario: dict[str, Any]) -> list[str]:
     ]
 
 
+def contribution_category_ids(
+    scenario: dict[str, Any], available_category_ids: set[str]
+) -> set[str]:
+    options = scenario.get("calculation_options")
+    if not isinstance(options, dict):
+        return set(available_category_ids)
+    requested = options.get("contribution_categories")
+    if not isinstance(requested, list) or not requested:
+        return set(available_category_ids)
+    return {
+        category_id
+        for category_id in requested
+        if isinstance(category_id, str) and category_id in available_category_ids
+    }
+
+
 def validation_summary(
     scenario: dict[str, Any], mapping: dict[str, Any], allow_missing: bool = False
 ) -> dict[str, Any]:
@@ -281,6 +297,7 @@ def calculate(
         for item in scenario.get("impact_method_request", {}).get("categories", [])
         if isinstance(item, dict)
     }
+    contribution_categories = contribution_category_ids(scenario, set(methods))
     for category_id, configured_method in methods.items():
         method = tuple(configured_method)
         if method not in bd.methods:
@@ -301,7 +318,7 @@ def calculate(
                 "score_for_cohort": score * cohort_size,
             }
         )
-        if with_contributions:
+        if with_contributions and category_id in contribution_categories:
             for block in mapped_blocks:
                 key = block["mapping_key"]
                 block_demand = {nodes[key]: float(block["quantity_per_functional_unit"])}

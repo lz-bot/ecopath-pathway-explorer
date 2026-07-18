@@ -13,6 +13,18 @@
       "properties": { "statement": { "type": "string", "minLength": 1 } }
     },
     "cohort_size": { "type": "number", "exclusiveMinimum": 0 },
+    "calculation_options": {
+      "type": "object",
+      "properties": {
+        "with_contributions": { "type": "boolean" },
+        "contribution_categories": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
     "building_blocks": {
       "type": "array",
       "items": {

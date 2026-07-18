@@ -2173,6 +2173,187 @@
       white-space: pre-line;
     }
 
+    .sensitivity-panel {
+      margin: 14px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .sensitivity-content {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .sensitivity-controls {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.7fr) minmax(260px, 0.5fr);
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .sensitivity-control-label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sensitivity-mode-control {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border: 1px solid var(--accent);
+    }
+
+    .sensitivity-mode-control button {
+      min-height: 40px;
+      border: 0;
+      border-right: 1px solid var(--accent);
+      border-radius: 0;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-weight: 700;
+    }
+
+    .sensitivity-mode-control button:last-child {
+      border-right: 0;
+    }
+
+    .sensitivity-mode-control button[aria-pressed="true"] {
+      color: #ffffff;
+      background: var(--accent-dark);
+    }
+
+    .sensitivity-reduction-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 6px 10px;
+      align-items: center;
+    }
+
+    .sensitivity-reduction-control .sensitivity-control-label {
+      grid-column: 1 / -1;
+      margin-bottom: 0;
+    }
+
+    .sensitivity-reduction-control input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-dark);
+    }
+
+    .sensitivity-reduction-control output {
+      min-width: 54px;
+      color: var(--accent-dark);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .sensitivity-method-note {
+      margin: 0 0 12px;
+      border-left: 4px solid var(--accent);
+      padding: 8px 10px;
+      color: var(--muted);
+      background: var(--accent-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .sensitivity-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .sensitivity-summary-item {
+      border-left: 4px solid var(--accent);
+      padding: 8px 10px;
+      background: var(--panel-soft);
+    }
+
+    .sensitivity-summary-item strong,
+    .sensitivity-summary-item span {
+      display: block;
+    }
+
+    .sensitivity-summary-item strong {
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .sensitivity-summary-item span {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .sensitivity-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+    }
+
+    .sensitivity-table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      background: var(--panel);
+      font-size: 12px;
+    }
+
+    .sensitivity-table th,
+    .sensitivity-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .sensitivity-table th {
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-weight: 700;
+    }
+
+    .sensitivity-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .sensitivity-table .numeric {
+      white-space: nowrap;
+    }
+
+    .sensitivity-table .scenario-prompt {
+      min-width: 300px;
+      line-height: 1.4;
+    }
+
+    .sensitivity-table .sensitivity-response span {
+      display: block;
+      white-space: nowrap;
+    }
+
+    .sensitivity-table .sensitivity-response span + span {
+      margin-top: 3px;
+    }
+
+    .sensitivity-safeguard {
+      display: block;
+      margin-top: 5px;
+      color: #775a00;
+      font-weight: 700;
+    }
+
+    .sensitivity-empty {
+      margin: 0;
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+
     .lca-warning {
       margin-top: 10px;
       border: 1px solid var(--warn-line);
@@ -2451,7 +2632,7 @@
         display: none;
       }
 
-      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .impact-category-bar, .goal-scope-grid, .brightway-result-grid {
+      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .impact-category-bar, .goal-scope-grid, .brightway-result-grid, .sensitivity-controls, .sensitivity-summary {
         grid-template-columns: 1fr;
       }
 
@@ -2958,6 +3139,34 @@
             <div id="lcaSankey"></div>
           </div>
           <div class="sankey-tooltip" id="sankeyTooltip" role="tooltip" hidden></div>
+        </div>
+      </details>
+
+      <details class="sensitivity-panel" data-workspace-panel="results" aria-labelledby="sensitivityTitle">
+        <summary class="collapse-panel-summary">
+          <span>
+            <strong id="sensitivityTitle">Sensitivity and improvement explorer</strong>
+            <small id="sensitivityIntro"></small>
+          </span>
+        </summary>
+        <div class="sensitivity-content">
+          <div class="sensitivity-controls">
+            <div>
+              <span class="sensitivity-control-label" id="sensitivityModeLabel">Scenario lever</span>
+              <div class="sensitivity-mode-control" role="group" aria-labelledby="sensitivityModeLabel">
+                <button type="button" id="sensitivityIntensityMode" data-sensitivity-mode="intensity" aria-pressed="true">Impact intensity</button>
+                <button type="button" id="sensitivityQuantityMode" data-sensitivity-mode="quantity" aria-pressed="false">Activity quantity</button>
+              </div>
+            </div>
+            <div class="sensitivity-reduction-control">
+              <label class="sensitivity-control-label" for="sensitivityReduction" id="sensitivityReductionLabel">Tested reduction</label>
+              <input id="sensitivityReduction" type="range" min="5" max="50" step="5" value="20">
+              <output id="sensitivityReductionValue" for="sensitivityReduction">20%</output>
+            </div>
+          </div>
+          <p class="sensitivity-method-note" id="sensitivityMethodNote"></p>
+          <div class="sensitivity-summary" id="sensitivitySummary"></div>
+          <div class="sensitivity-table-wrap" id="sensitivityResults"></div>
         </div>
       </details>
 
@@ -5976,6 +6185,279 @@
       sankeyContribution: "{value} · {share}% del total de la vía",
       sankeyFlow: "{from} a {to}"
     });
+
+    Object.assign(uiText.en, {
+      helpStep5: "Define the functional unit, review automatic building blocks, and calculate results. Use contribution analysis to locate hotspots and the sensitivity explorer to test one parameter at a time. Quantity changes require guideline support, clinical equivalence, and expert approval. Use the local Brightway companion for mapped results; browser coefficients remain demonstration data.",
+      sensitivityTitle: "Sensitivity and improvement explorer",
+      sensitivityIntro: "Run a one-at-a-time screening of active building blocks and review quality-protected improvement prompts.",
+      sensitivityModeLabel: "Scenario lever",
+      sensitivityIntensityMode: "Impact intensity",
+      sensitivityQuantityMode: "Activity quantity",
+      sensitivityReductionLabel: "Tested reduction",
+      sensitivityMethodBrowser: "Screening only: results use synthetic browser coefficients. Treat the ranking as a data-collection and scenario-testing priority, not an intervention recommendation.",
+      sensitivityMethodBrightway: "Uses imported Brightway building-block contributions for the selected category. Each row tests one parameter at a time with all other parameters fixed.",
+      sensitivityMethodBrightwayFallback: "A Brightway total is available, but matching building-block contributions are unavailable or stale. The screening therefore uses browser demonstration contributions.",
+      sensitivityBaseline: "Baseline pathway result",
+      sensitivitySource: "Contribution source",
+      sensitivityCoverage: "Contribution coverage",
+      sensitivityTopOpportunity: "Largest modeled response",
+      sensitivityNoData: "Select activities with active building blocks and positive contributions to run the screening.",
+      sensitivityRank: "Rank",
+      sensitivityBuildingBlock: "Building block",
+      sensitivityContribution: "Baseline contribution",
+      sensitivityTest: "OAT test",
+      sensitivityResultChange: "Pathway reduction",
+      sensitivityNewTotal: "Modeled pathway result",
+      sensitivityScenarioPrompt: "Improvement prompt",
+      sensitivityShare: "{value}% of pathway",
+      sensitivityReductionTest: "Reduce by {value}%",
+      sensitivityPathwayReduction: "-{value}% of pathway",
+      sensitivityOperationalSafeguard: "Operational intensity scenarios must preserve clinical function, patient safety, infection control, access, and regulatory requirements.",
+      sensitivityClinicalSafeguard: "Quantity scenarios are not recommendations to reduce care. Test them only with guideline support, clinical equivalence, patient acceptability, and expert approval.",
+      sensitivityPositiveOnly: "Only positive contributions are ranked; avoided burdens and negative credits require separate interpretation.",
+      sensitivityReportTitle: "Sensitivity and improvement screening",
+      sensitivityReportNote: "One-at-a-time screening only. The modeled change is not a clinical recommendation and does not represent global, probabilistic, or multi-parameter sensitivity analysis.",
+      sensitivityDataSourceBrowser: "Browser demonstration coefficients",
+      sensitivityDataSourceBrightway: "Brightway contributions",
+      sensitivityCoverageValue: "{value}% of the selected-category total represented"
+    });
+
+    Object.assign(uiText.nl, {
+      helpStep5: "Definieer de functionele eenheid, controleer automatische bouwstenen en bereken resultaten. Gebruik de bijdrageanalyse voor hotspots en de gevoeligheidsverkenner om één parameter per keer te testen. Hoeveelheidswijzigingen vereisen richtlijnonderbouwing, klinische gelijkwaardigheid en goedkeuring door experts. Gebruik de lokale Brightway-koppeling voor gekoppelde resultaten; browsercoëfficiënten blijven demonstratiedata.",
+      sensitivityTitle: "Gevoeligheids- en verbeterverkenner",
+      sensitivityIntro: "Voer een één-voor-één-screening van actieve bouwstenen uit en bekijk verbetermogelijkheden met behoud van zorgkwaliteit.",
+      sensitivityModeLabel: "Scenarioparameter",
+      sensitivityIntensityMode: "Impactintensiteit",
+      sensitivityQuantityMode: "Activiteitsvolume",
+      sensitivityReductionLabel: "Geteste reductie",
+      sensitivityMethodBrowser: "Alleen screening: de resultaten gebruiken synthetische browsercoëfficiënten. Gebruik de rangschikking als prioriteit voor dataverzameling en scenariotesten, niet als interventieadvies.",
+      sensitivityMethodBrightway: "Gebruikt geïmporteerde Brightway-bijdragen per bouwsteen voor de geselecteerde categorie. Elke rij test één parameter afzonderlijk en houdt alle andere parameters constant.",
+      sensitivityMethodBrightwayFallback: "Er is een Brightway-totaal beschikbaar, maar passende bouwsteenbijdragen ontbreken of zijn verouderd. De screening gebruikt daarom demonstratiebijdragen uit de browser.",
+      sensitivityBaseline: "Basisresultaat zorgpad",
+      sensitivitySource: "Bron van bijdragen",
+      sensitivityCoverage: "Dekking van bijdragen",
+      sensitivityTopOpportunity: "Grootste gemodelleerde respons",
+      sensitivityNoData: "Selecteer activiteiten met actieve bouwstenen en positieve bijdragen om de screening uit te voeren.",
+      sensitivityRank: "Rang",
+      sensitivityBuildingBlock: "Bouwsteen",
+      sensitivityContribution: "Basisbijdrage",
+      sensitivityTest: "OAT-test",
+      sensitivityResultChange: "Reductie zorgpad",
+      sensitivityNewTotal: "Gemodelleerd zorgpadresultaat",
+      sensitivityScenarioPrompt: "Verbeteroptie",
+      sensitivityShare: "{value}% van zorgpad",
+      sensitivityReductionTest: "Verlaag met {value}%",
+      sensitivityPathwayReduction: "-{value}% van zorgpad",
+      sensitivityOperationalSafeguard: "Scenario's voor impactintensiteit moeten de klinische functie, patiëntveiligheid, infectiepreventie, toegankelijkheid en regelgeving behouden.",
+      sensitivityClinicalSafeguard: "Volumescenario's zijn geen advies om zorg te verminderen. Test ze alleen met richtlijnonderbouwing, klinische gelijkwaardigheid, patiëntacceptatie en goedkeuring door experts.",
+      sensitivityPositiveOnly: "Alleen positieve bijdragen worden gerangschikt; vermeden lasten en negatieve credits vereisen afzonderlijke interpretatie.",
+      sensitivityReportTitle: "Screening van gevoeligheid en verbetering",
+      sensitivityReportNote: "Alleen een één-voor-één-screening. De gemodelleerde verandering is geen klinisch advies en geen globale, probabilistische of multivariabele gevoeligheidsanalyse.",
+      sensitivityDataSourceBrowser: "Demonstratiecoëfficiënten uit de browser",
+      sensitivityDataSourceBrightway: "Brightway-bijdragen",
+      sensitivityCoverageValue: "{value}% van het totaal van de geselecteerde categorie weergegeven"
+    });
+
+    Object.assign(uiText.zh, {
+      helpStep5: "定义功能单位，检查自动启用的 building blocks 并计算结果。使用贡献分析定位热点，再用敏感性探索器逐一测试参数。活动数量变化必须有指南依据、临床等效性和专家批准。正式映射结果应使用本地 Brightway 连接；浏览器系数仍是演示数据。",
+      sensitivityTitle: "敏感性与改进探索器",
+      sensitivityIntro: "对已启用的 building blocks 进行单因素筛查，并查看以医疗质量为前提的改进方向。",
+      sensitivityModeLabel: "情景参数",
+      sensitivityIntensityMode: "单位影响强度",
+      sensitivityQuantityMode: "活动数量",
+      sensitivityReductionLabel: "测试降幅",
+      sensitivityMethodBrowser: "仅用于筛查：结果使用浏览器中的合成演示系数。该排序用于确定数据收集和情景测试优先级，不是干预建议。",
+      sensitivityMethodBrightway: "使用所选影响类别的 Brightway building-block 贡献。每次只测试一个参数，其余参数保持不变。",
+      sensitivityMethodBrightwayFallback: "已有 Brightway 总结果，但缺少匹配的 building-block 贡献或贡献已过期，因此本次筛查使用浏览器演示贡献。",
+      sensitivityBaseline: "路径基准结果",
+      sensitivitySource: "贡献数据来源",
+      sensitivityCoverage: "贡献覆盖率",
+      sensitivityTopOpportunity: "最大模拟响应",
+      sensitivityNoData: "请选择具有已启用 building blocks 和正贡献的 activities 后再进行筛查。",
+      sensitivityRank: "排序",
+      sensitivityBuildingBlock: "Building block",
+      sensitivityContribution: "基准贡献",
+      sensitivityTest: "单因素测试",
+      sensitivityResultChange: "路径降幅",
+      sensitivityNewTotal: "模拟后的路径结果",
+      sensitivityScenarioPrompt: "改进方向",
+      sensitivityShare: "占路径 {value}%",
+      sensitivityReductionTest: "降低 {value}%",
+      sensitivityPathwayReduction: "路径降低 {value}%",
+      sensitivityOperationalSafeguard: "单位影响强度情景必须保持临床功能、患者安全、感染控制、医疗可及性并符合监管要求。",
+      sensitivityClinicalSafeguard: "活动数量情景不是减少医疗服务的建议。只有在指南支持、临床等效、患者可接受且经专家批准时才能测试。",
+      sensitivityPositiveOnly: "这里只排序正贡献；避免负荷和负值抵扣需要单独解释。",
+      sensitivityReportTitle: "敏感性与改进筛查",
+      sensitivityReportNote: "本功能仅为单因素筛查。模拟变化不是临床建议，也不代表全局、概率或多参数敏感性分析。",
+      sensitivityDataSourceBrowser: "浏览器演示系数",
+      sensitivityDataSourceBrightway: "Brightway 贡献",
+      sensitivityCoverageValue: "已覆盖所选类别总结果的 {value}%"
+    });
+
+    Object.assign(uiText.ja, {
+      helpStep5: "機能単位を定義し、自動選択された building blocks を確認して計算します。寄与分析でホットスポットを特定し、感度エクスプローラーで一つずつパラメータを試験します。活動量変更にはガイドライン、臨床的同等性、専門家承認が必要です。マッピング済み結果にはローカル Brightway を使い、ブラウザ係数はデモデータとして扱います。",
+      sensitivityTitle: "感度・改善エクスプローラー",
+      sensitivityIntro: "有効な building blocks を一因子ずつスクリーニングし、医療の質を守る改善候補を確認します。",
+      sensitivityModeLabel: "シナリオ変数",
+      sensitivityIntensityMode: "影響原単位",
+      sensitivityQuantityMode: "活動量",
+      sensitivityReductionLabel: "試験する削減率",
+      sensitivityMethodBrowser: "スクリーニング専用です。結果はブラウザの合成デモ係数を使用します。順位はデータ収集とシナリオ試験の優先度であり、介入の推奨ではありません。",
+      sensitivityMethodBrightway: "選択カテゴリについて、取り込んだ Brightway の building-block 寄与を使用します。他のパラメータを固定し、各行で一つのパラメータだけを試験します。",
+      sensitivityMethodBrightwayFallback: "Brightway 合計はありますが、一致する building-block 寄与がないか古いため、ブラウザのデモ寄与を使用します。",
+      sensitivityBaseline: "パスウェイ基準結果",
+      sensitivitySource: "寄与データ源",
+      sensitivityCoverage: "寄与のカバー率",
+      sensitivityTopOpportunity: "最大のモデル応答",
+      sensitivityNoData: "有効な building blocks と正の寄与を持つ activities を選択してください。",
+      sensitivityRank: "順位",
+      sensitivityBuildingBlock: "Building block",
+      sensitivityContribution: "基準寄与",
+      sensitivityTest: "一因子試験",
+      sensitivityResultChange: "パスウェイ削減率",
+      sensitivityNewTotal: "モデル後のパスウェイ結果",
+      sensitivityScenarioPrompt: "改善の着眼点",
+      sensitivityShare: "パスウェイの {value}%",
+      sensitivityReductionTest: "{value}% 削減",
+      sensitivityPathwayReduction: "パスウェイの -{value}%",
+      sensitivityOperationalSafeguard: "影響原単位シナリオでは、臨床機能、患者安全、感染管理、アクセス、規制要件を維持する必要があります。",
+      sensitivityClinicalSafeguard: "活動量シナリオは医療削減の推奨ではありません。ガイドライン、臨床的同等性、患者受容性、専門家承認がある場合のみ試験してください。",
+      sensitivityPositiveOnly: "正の寄与だけを順位付けします。回避負荷や負のクレジットは別に解釈する必要があります。",
+      sensitivityReportTitle: "感度・改善スクリーニング",
+      sensitivityReportNote: "一因子スクリーニングに限ります。モデル変化は臨床推奨ではなく、グローバル、確率的、多変数の感度分析でもありません。",
+      sensitivityDataSourceBrowser: "ブラウザのデモ係数",
+      sensitivityDataSourceBrightway: "Brightway 寄与",
+      sensitivityCoverageValue: "選択カテゴリ合計の {value}% を表示"
+    });
+
+    Object.assign(uiText.es, {
+      helpStep5: "Defina la unidad funcional, revise los bloques de construcción automáticos y calcule los resultados. Use el análisis de contribuciones para localizar puntos críticos y el explorador de sensibilidad para probar un parámetro cada vez. Los cambios de cantidad requieren respaldo de guías, equivalencia clínica y aprobación experta. Use Brightway local para resultados mapeados; los coeficientes del navegador siguen siendo datos de demostración.",
+      sensitivityTitle: "Explorador de sensibilidad y mejora",
+      sensitivityIntro: "Realice un cribado de un factor cada vez sobre los bloques de construcción activos y revise opciones de mejora que protegen la calidad asistencial.",
+      sensitivityModeLabel: "Palanca del escenario",
+      sensitivityIntensityMode: "Intensidad de impacto",
+      sensitivityQuantityMode: "Cantidad de actividad",
+      sensitivityReductionLabel: "Reducción probada",
+      sensitivityMethodBrowser: "Solo para cribado: los resultados usan coeficientes sintéticos del navegador. La clasificación indica prioridades de datos y pruebas de escenario, no recomendaciones de intervención.",
+      sensitivityMethodBrightway: "Utiliza contribuciones Brightway por bloque de construcción para la categoría seleccionada. Cada fila prueba un parámetro y mantiene constantes los demás.",
+      sensitivityMethodBrightwayFallback: "Hay un total Brightway, pero faltan contribuciones coincidentes por bloque de construcción o están desactualizadas. Por ello se usan contribuciones de demostración del navegador.",
+      sensitivityBaseline: "Resultado base de la vía",
+      sensitivitySource: "Fuente de contribuciones",
+      sensitivityCoverage: "Cobertura de contribuciones",
+      sensitivityTopOpportunity: "Mayor respuesta modelada",
+      sensitivityNoData: "Seleccione activities con building blocks activos y contribuciones positivas para ejecutar el cribado.",
+      sensitivityRank: "Rango",
+      sensitivityBuildingBlock: "Bloque de construcción",
+      sensitivityContribution: "Contribución base",
+      sensitivityTest: "Prueba OAT",
+      sensitivityResultChange: "Reducción de la vía",
+      sensitivityNewTotal: "Resultado modelado de la vía",
+      sensitivityScenarioPrompt: "Opción de mejora",
+      sensitivityShare: "{value}% de la vía",
+      sensitivityReductionTest: "Reducir un {value}%",
+      sensitivityPathwayReduction: "-{value}% de la vía",
+      sensitivityOperationalSafeguard: "Los escenarios de intensidad deben conservar la función clínica, la seguridad, el control de infecciones, el acceso y los requisitos regulatorios.",
+      sensitivityClinicalSafeguard: "Los escenarios de cantidad no recomiendan reducir la atención. Pruébelos solo con respaldo de guías, equivalencia clínica, aceptación del paciente y aprobación experta.",
+      sensitivityPositiveOnly: "Solo se clasifican contribuciones positivas; las cargas evitadas y los créditos negativos requieren interpretación separada.",
+      sensitivityReportTitle: "Cribado de sensibilidad y mejora",
+      sensitivityReportNote: "Solo es un cribado de un factor cada vez. El cambio modelado no es una recomendación clínica ni un análisis global, probabilístico o multiparamétrico.",
+      sensitivityDataSourceBrowser: "Coeficientes de demostración del navegador",
+      sensitivityDataSourceBrightway: "Contribuciones Brightway",
+      sensitivityCoverageValue: "Representado el {value}% del total de la categoría seleccionada"
+    });
+
+    const sensitivityPromptText = {
+      en: {
+        travel: {
+          intensity: "Test lower-carbon travel modes, nearer care locations, route planning, or coordinated appointments.",
+          quantity: "Test consolidated or remote contacts only where clinical access, equity, and outcomes are maintained."
+        },
+        followup: {
+          intensity: "Test lower-impact delivery of each follow-up round, including shared diagnostics, remote review, and efficient room or equipment use.",
+          quantity: "Test visit frequency or surveillance duration only against guideline evidence, recurrence risk, and clinical equivalence."
+        },
+        imaging: {
+          intensity: "Test equipment idle-energy controls, efficient scheduling, renewable electricity, and lower-impact consumables without changing image quality.",
+          quantity: "Test avoidance of duplicate imaging or shared prior images only when diagnostic adequacy is confirmed."
+        },
+        endoscopyLab: {
+          intensity: "Test batching, equipment shutdown, reprocessing efficiency, consumable choice, and waste prevention under infection-control requirements.",
+          quantity: "Test avoidance of duplicate tests or procedures only when diagnostic and surveillance requirements remain satisfied."
+        },
+        surgery: {
+          intensity: "Test operating-room HVAC setback when unoccupied, efficient scheduling, reusable or optimized packs, anesthetic choices, and waste segregation under safety rules.",
+          quantity: "Do not infer that surgery should be omitted. Test alternative pathways only after confirming the same clinical decision context and outcome equivalence."
+        },
+        systemic: {
+          intensity: "Test drug-waste prevention, dose preparation, vial sharing where permitted, lower-impact procurement, and infusion-material efficiency.",
+          quantity: "Test cycle, dose, or monitoring changes only if supported by the regimen, guideline, and oncology team."
+        },
+        radiotherapy: {
+          intensity: "Test machine scheduling, idle-energy control, renewable electricity, treatment-room efficiency, and material optimization.",
+          quantity: "Test fractionation changes only where an evidence-based clinically equivalent regimen applies."
+        },
+        facility: {
+          intensity: "Test lighting and HVAC controls, switch-off protocols, cleaning or laundry efficiency, and allocation based on measured use.",
+          quantity: "Use service-demand or allocation scenarios; do not reduce clinically required care to lower shared overhead."
+        },
+        consult: {
+          intensity: "Test lower-impact room, ICT, and appointment delivery; combine operational services where this does not impair access or care quality.",
+          quantity: "Test consolidated or remote contacts only after confirming clinical appropriateness, access, and patient preference."
+        },
+        generic: {
+          intensity: "Test lower-impact energy, materials, procurement, reuse, and waste prevention for the same delivered clinical function.",
+          quantity: "Test duplicate-activity avoidance or pathway redesign only after confirming clinical necessity and outcome equivalence."
+        }
+      },
+      nl: {
+        travel: { intensity: "Test vervoer met minder uitstoot, zorg dichterbij, routeplanning of gecombineerde afspraken.", quantity: "Test gecombineerde of digitale contacten alleen als toegang, gelijkheid en uitkomsten behouden blijven." },
+        followup: { intensity: "Test follow-up met minder impact via gedeelde diagnostiek, digitale beoordeling en efficiënt ruimte- of apparatuurgebruik.", quantity: "Test bezoekfrequentie of surveillanceduur alleen op basis van richtlijnen, recidiefrisico en klinische gelijkwaardigheid." },
+        imaging: { intensity: "Test energieregeling in stand-by, efficiënte planning, hernieuwbare elektriciteit en materiaalkeuzes zonder verlies van beeldkwaliteit.", quantity: "Test het voorkomen van dubbele beeldvorming of hergebruik van eerdere beelden alleen als diagnostische kwaliteit is bevestigd." },
+        endoscopyLab: { intensity: "Test bundeling, uitschakelen van apparatuur, efficiënte reiniging, materiaalkeuze en afvalpreventie binnen infectiepreventie-eisen.", quantity: "Test het voorkomen van dubbele onderzoeken alleen als diagnostiek en surveillance volledig blijven." },
+        surgery: { intensity: "Test OK-HVAC-verlaging bij leegstand, efficiënte planning, herbruikbare of geoptimaliseerde sets, anesthesiekeuzes en afvalscheiding binnen veiligheidsregels.", quantity: "Leid hier niet uit af dat chirurgie kan worden weggelaten. Test alternatieve routes alleen bij dezelfde klinische besliscontext en gelijkwaardige uitkomsten." },
+        systemic: { intensity: "Test preventie van geneesmiddelverspilling, dosisbereiding, toegestaan delen van flacons, duurzamere inkoop en efficiënte infusiematerialen.", quantity: "Test wijzigingen in cycli, dosis of monitoring alleen met steun van het regime, de richtlijn en het oncologieteam." },
+        radiotherapy: { intensity: "Test machineplanning, beperking van stationair energiegebruik, hernieuwbare elektriciteit en materiaaloptimalisatie.", quantity: "Test andere fractionering alleen als een evidence-based klinisch gelijkwaardig regime bestaat." },
+        facility: { intensity: "Test licht- en HVAC-regeling, uitschakelprotocollen, efficiënte schoonmaak of wasserij en allocatie op basis van gemeten gebruik.", quantity: "Gebruik vraag- of allocatiescenario's; verminder geen klinisch noodzakelijke zorg om overhead te verlagen." },
+        consult: { intensity: "Test kamers, ICT en afspraken met minder impact; combineer diensten alleen zonder verlies van toegang of zorgkwaliteit.", quantity: "Test gecombineerde of digitale contacten alleen na bevestiging van klinische geschiktheid, toegang en patiëntvoorkeur." },
+        generic: { intensity: "Test energie, materialen, inkoop, hergebruik en afvalpreventie met minder impact voor dezelfde klinische functie.", quantity: "Test het voorkomen van dubbele activiteiten of herontwerp alleen na bevestiging van klinische noodzaak en gelijkwaardige uitkomsten." }
+      },
+      zh: {
+        travel: { intensity: "测试低碳出行方式、就近医疗、路线优化或合并预约。", quantity: "只有在医疗可及性、公平性和临床结局不受影响时，才测试合并就诊或远程联系。" },
+        followup: { intensity: "测试共享检查、远程评估以及更高效的诊室和设备使用，以降低每次随访的影响。", quantity: "只有依据指南、复发风险和临床等效性，才测试随访频率或随访年限。" },
+        imaging: { intensity: "在不降低影像质量的前提下，测试设备待机节能、高效排程、可再生电力和低影响耗材。", quantity: "只有确认诊断充分性后，才测试避免重复影像或共享既往影像。" },
+        endoscopyLab: { intensity: "在满足感染控制要求的前提下，测试批次安排、设备关机、再处理效率、耗材选择和废物预防。", quantity: "只有在诊断和监测要求仍得到满足时，才测试避免重复检查或操作。" },
+        surgery: { intensity: "在安全规范下，测试空置时手术室 HVAC 调节、高效排程、可重复或优化器械包、麻醉选择和废物分类。", quantity: "不能据此推断应取消手术。只有确认临床决策情境相同且结局等效后，才测试替代路径。" },
+        systemic: { intensity: "测试减少药物浪费、优化配药、在允许时共享药瓶、低影响采购和输注材料效率。", quantity: "只有治疗方案、指南和肿瘤团队支持时，才测试疗程、剂量或监测频率变化。" },
+        radiotherapy: { intensity: "测试设备排程、待机节能、可再生电力、治疗室效率和材料优化。", quantity: "只有存在有证据支持且临床等效的方案时，才测试分割次数变化。" },
+        facility: { intensity: "测试照明和 HVAC 控制、关机规范、清洁或洗衣效率，以及按实测使用量分配。", quantity: "使用服务需求或分配情景；不要为了降低共享开销而减少临床必要服务。" },
+        consult: { intensity: "测试低影响诊室、ICT 和预约方式；只有不损害可及性和医疗质量时才合并服务。", quantity: "只有确认临床适宜性、医疗可及性和患者偏好后，才测试合并或远程联系。" },
+        generic: { intensity: "在保持相同临床功能的前提下，测试低影响能源、材料、采购、重复使用和废物预防。", quantity: "只有确认临床必要性和结局等效后，才测试避免重复活动或路径重新设计。" }
+      },
+      ja: {
+        travel: { intensity: "低炭素な移動手段、近隣施設、経路最適化、予約集約を試験します。", quantity: "アクセス、公平性、臨床結果が維持される場合に限り、受診集約や遠隔連絡を試験します。" },
+        followup: { intensity: "検査共有、遠隔レビュー、部屋・機器の効率利用による各フォローアップの低影響化を試験します。", quantity: "ガイドライン、再発リスク、臨床的同等性に基づく場合のみ、頻度や期間を試験します。" },
+        imaging: { intensity: "画質を変えずに、待機電力管理、効率的日程、再生可能電力、低影響消耗品を試験します。", quantity: "診断の妥当性を確認した場合のみ、重複画像の回避や既存画像共有を試験します。" },
+        endoscopyLab: { intensity: "感染管理を守り、バッチ処理、機器停止、再処理効率、消耗品、廃棄物予防を試験します。", quantity: "診断・監視要件を満たす場合のみ、重複検査・処置の回避を試験します。" },
+        surgery: { intensity: "安全規則を守り、未使用時の手術室 HVAC、日程、再使用・最適化セット、麻酔、廃棄物分別を試験します。", quantity: "手術省略を示すものではありません。同じ意思決定状況と結果の同等性を確認後に代替経路を試験します。" },
+        systemic: { intensity: "薬剤廃棄予防、調製、許可されたバイアル共有、低影響調達、輸液材料効率を試験します。", quantity: "レジメン、ガイドライン、腫瘍チームが支持する場合のみ、周期、用量、監視変更を試験します。" },
+        radiotherapy: { intensity: "機器日程、待機電力、再生可能電力、治療室効率、材料最適化を試験します。", quantity: "根拠のある臨床的同等レジメンがある場合のみ分割変更を試験します。" },
+        facility: { intensity: "照明・HVAC 制御、停止手順、清掃・洗濯効率、実測使用量による配賦を試験します。", quantity: "サービス需要・配賦シナリオを使い、共通負荷削減のために必要な医療を減らしません。" },
+        consult: { intensity: "低影響な部屋、ICT、予約運用を試験し、アクセスや質を損なわない場合のみ業務を集約します。", quantity: "臨床的適切性、アクセス、患者選好を確認後に受診集約や遠隔連絡を試験します。" },
+        generic: { intensity: "同じ臨床機能について、低影響エネルギー、材料、調達、再使用、廃棄物予防を試験します。", quantity: "臨床的必要性と結果同等性を確認後に、重複回避や経路再設計を試験します。" }
+      },
+      es: {
+        travel: { intensity: "Probar modos de viaje con menos carbono, atención más cercana, rutas optimizadas o citas coordinadas.", quantity: "Probar contactos agrupados o remotos solo si se mantienen acceso, equidad y resultados." },
+        followup: { intensity: "Probar seguimiento de menor impacto mediante diagnóstico compartido, revisión remota y uso eficiente de salas o equipos.", quantity: "Probar frecuencia o duración de vigilancia solo según guías, riesgo de recurrencia y equivalencia clínica." },
+        imaging: { intensity: "Probar control de energía inactiva, programación eficiente, electricidad renovable y consumibles de menor impacto sin cambiar la calidad de imagen.", quantity: "Probar evitar imágenes duplicadas o compartir estudios previos solo si se confirma la suficiencia diagnóstica." },
+        endoscopyLab: { intensity: "Probar lotes, apagado de equipos, reprocesamiento eficiente, consumibles y prevención de residuos con control de infecciones.", quantity: "Probar evitar pruebas repetidas solo si se mantienen los requisitos diagnósticos y de vigilancia." },
+        surgery: { intensity: "Probar reducción de HVAC en quirófano vacío, programación, packs reutilizables u optimizados, anestesia y segregación de residuos bajo normas de seguridad.", quantity: "No implica omitir cirugía. Probar vías alternativas solo tras confirmar el mismo contexto clínico y resultados equivalentes." },
+        systemic: { intensity: "Probar prevención de residuos de fármacos, preparación de dosis, uso compartido permitido de viales, compras de menor impacto y materiales de infusión.", quantity: "Probar cambios de ciclos, dosis o monitorización solo con respaldo del régimen, la guía y el equipo oncológico." },
+        radiotherapy: { intensity: "Probar programación de equipos, energía en espera, electricidad renovable, eficiencia de sala y optimización de materiales.", quantity: "Probar cambios de fraccionamiento solo si existe un régimen equivalente con evidencia." },
+        facility: { intensity: "Probar controles de iluminación y HVAC, apagado, eficiencia de limpieza o lavandería y asignación según uso medido.", quantity: "Usar escenarios de demanda o asignación; no reducir atención necesaria para bajar cargas compartidas." },
+        consult: { intensity: "Probar salas, ICT y citas de menor impacto; combinar servicios solo sin perjudicar acceso o calidad.", quantity: "Probar contactos agrupados o remotos solo tras confirmar idoneidad clínica, acceso y preferencia del paciente." },
+        generic: { intensity: "Probar energía, materiales, compras, reutilización y prevención de residuos de menor impacto para la misma función clínica.", quantity: "Probar evitar duplicidades o rediseñar la vía solo tras confirmar necesidad clínica y equivalencia de resultados." }
+      }
+    };
 
     const pathwayText = {
       en: {
@@ -9478,6 +9960,8 @@
       impactCategory: "climate",
       lcaResultView: "all",
       sankeyCutoffPercent: 0.5,
+      sensitivityMode: "intensity",
+      sensitivityReductionPercent: 20,
       lcaExpandedModules: {},
       functionalUnits: {},
       brightwayResult: null,
@@ -10077,6 +10561,12 @@
       setText("allImpactTableNote", "allImpactTableNote");
       setText("sankeyCutoffLabel", "sankeyCutoffLabel");
       setText("sankeyCutoffHelp", "sankeyCutoffHelp");
+      setText("sensitivityTitle", "sensitivityTitle");
+      setText("sensitivityIntro", "sensitivityIntro");
+      setText("sensitivityModeLabel", "sensitivityModeLabel");
+      setText("sensitivityIntensityMode", "sensitivityIntensityMode");
+      setText("sensitivityQuantityMode", "sensitivityQuantityMode");
+      setText("sensitivityReductionLabel", "sensitivityReductionLabel");
       setText("brightwayBridgeTitle", "brightwayBridgeTitle");
       setText("brightwayBridgeIntro", "brightwayBridgeIntro");
       setText("calculateWithBrightway", "calculateWithBrightway");
@@ -11606,6 +12096,217 @@
       });
     }
 
+    function brightwaySensitivityContributionData() {
+      const result = state.brightwayResult;
+      if (!result || !Array.isArray(result.methods)) return null;
+      const method = result.methods.find((item) => item.category_id === state.impactCategory);
+      if (!method) return null;
+      const mismatch = state.lastExportedScenarioId && result.scenario_id !== state.lastExportedScenarioId;
+      const contributions = Array.isArray(result.contributions)
+        ? result.contributions.filter((item) => item.category_id === state.impactCategory)
+        : [];
+      if (mismatch || contributions.length === 0) return null;
+      const total = Number(method.score_per_functional_unit);
+      if (!Number.isFinite(total) || total <= 0) return null;
+      const mappedSum = contributions.reduce((sum, item) => {
+        const value = Number(item.score_per_functional_unit);
+        return Number.isFinite(value) ? sum + value : sum;
+      }, 0);
+      return {
+        source: "brightway",
+        total,
+        unit: method.unit || impactCategoryUnit(),
+        coverage: Math.max(0, (mappedSum / total) * 100),
+        items: contributions
+          .map((item) => {
+            const value = Number(item.score_per_functional_unit);
+            const row = lcaRows.find((candidate) => candidate.id === item.mapping_key);
+            return {
+              mappingKey: item.mapping_key,
+              module: item.module_id || row?.module || "",
+              block: row ? localizedBlockName(row.block) : (item.name || item.mapping_key),
+              classifierText: `${row?.block || item.name || ""} ${row?.flow || ""} ${item.module_id || row?.module || ""}`,
+              value,
+              row
+            };
+          })
+          .filter((item) => Number.isFinite(item.value) && item.value > 0)
+      };
+    }
+
+    function browserSensitivityContributionData() {
+      const items = lcaRows
+        .filter((row) => isLcaRowActive(row))
+        .map((row) => ({
+          mappingKey: row.id,
+          module: row.module,
+          block: localizedBlockName(row.block),
+          classifierText: `${row.block} ${row.flow} ${row.module}`,
+          value: rowImpact(row, "base"),
+          row
+        }))
+        .filter((item) => Number.isFinite(item.value) && item.value > 0);
+      return {
+        source: "browser",
+        total: items.reduce((sum, item) => sum + item.value, 0),
+        unit: impactCategoryUnit(),
+        coverage: 100,
+        items
+      };
+    }
+
+    function sensitivityContributionData() {
+      const brightway = brightwaySensitivityContributionData();
+      if (brightway) return brightway;
+      const browser = browserSensitivityContributionData();
+      const result = state.brightwayResult;
+      browser.brightwayFallback = Boolean(
+        result?.methods?.some((item) => item.category_id === state.impactCategory)
+      );
+      return browser;
+    }
+
+    function sensitivityPromptCategory(item) {
+      const text = String(item.classifierText || "").toLowerCase();
+      if (/patient travel|caregiver travel|travel|transport/.test(text)) return "travel";
+      if (/follow-up|followup|surveillance|outpatient/.test(text)) return "followup";
+      if (/radiotherap|brachy|ebrt|fraction|immobilization|linear accelerator/.test(text)) return "radiotherapy";
+      if (/ct scan|mri|pet-ct|pet ct|ultrasound|imaging|radiology|scanner/.test(text)) return "imaging";
+      if (/colonoscopy|cystoscopy|endoscopy|polypectomy|pathology|specimen|laboratory|microscopy|ihc|histology/.test(text)) return "endoscopyLab";
+      if (/surgery|surgical|cystectomy|turbt|operating room|anesthesia|anaesthesia|ward|icu|diversion|instrument/.test(text)) return "surgery";
+      if (/chemotherapy|systemic|oncology|pharmacy|infusion|drug|medicine|therapy monitoring/.test(text)) return "systemic";
+      if (/building|cleaning|laundry|waste|sterilization|sterilisation|energy|electricity|hvac|lighting/.test(text)) return "facility";
+      if (/consultation|clinic|intake|appointment/.test(text)) return "consult";
+      return "generic";
+    }
+
+    function sensitivityPromptForItem(item) {
+      const languagePrompts = sensitivityPromptText[state.language] || sensitivityPromptText.en;
+      const category = sensitivityPromptCategory(item);
+      return languagePrompts[category]?.[state.sensitivityMode]
+        || languagePrompts.generic[state.sensitivityMode];
+    }
+
+    function formatSensitivityImpact(value, analysis) {
+      return analysis.source === "brightway"
+        ? formatExternalImpact(value, analysis.unit)
+        : `${formatImpactNumber(value)} ${analysis.unit}`;
+    }
+
+    function collectSensitivityAnalysis(limit = 5) {
+      const sourceData = sensitivityContributionData();
+      const reductionPercent = Math.min(50, Math.max(5, Number(state.sensitivityReductionPercent) || 20));
+      const reductionRate = reductionPercent / 100;
+      const total = Number(sourceData.total) || 0;
+      const rows = total > 0
+        ? sourceData.items
+          .map((item) => {
+            const reduction = item.value * reductionRate;
+            return {
+              ...item,
+              sharePercent: (item.value / total) * 100,
+              reduction,
+              pathwayReductionPercent: (reduction / total) * 100,
+              newTotal: total - reduction,
+              prompt: sensitivityPromptForItem(item)
+            };
+          })
+          .sort((a, b) => b.reduction - a.reduction)
+          .slice(0, limit)
+        : [];
+      return {
+        ...sourceData,
+        total,
+        reductionPercent,
+        mode: state.sensitivityMode,
+        rows,
+        safeguard: state.sensitivityMode === "quantity"
+          ? t("sensitivityClinicalSafeguard")
+          : t("sensitivityOperationalSafeguard")
+      };
+    }
+
+    function renderSensitivityExplorer() {
+      const summary = document.getElementById("sensitivitySummary");
+      const results = document.getElementById("sensitivityResults");
+      const methodNote = document.getElementById("sensitivityMethodNote");
+      const slider = document.getElementById("sensitivityReduction");
+      const sliderValue = document.getElementById("sensitivityReductionValue");
+      if (!summary || !results || !methodNote || !slider || !sliderValue) return;
+
+      document.querySelectorAll("[data-sensitivity-mode]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.sensitivityMode === state.sensitivityMode));
+      });
+      slider.value = String(state.sensitivityReductionPercent);
+      sliderValue.textContent = `${state.sensitivityReductionPercent}%`;
+
+      const analysis = collectSensitivityAnalysis(5);
+      const sourceLabel = analysis.source === "brightway"
+        ? t("sensitivityDataSourceBrightway")
+        : t("sensitivityDataSourceBrowser");
+      const methodText = analysis.source === "brightway"
+        ? t("sensitivityMethodBrightway")
+        : analysis.brightwayFallback
+          ? `${t("sensitivityMethodBrightwayFallback")} ${t("sensitivityMethodBrowser")}`
+          : t("sensitivityMethodBrowser");
+      methodNote.textContent = `${methodText} ${t("sensitivityPositiveOnly")}`;
+
+      if (!analysis.rows.length || analysis.total <= 0) {
+        summary.innerHTML = "";
+        results.innerHTML = `<p class="sensitivity-empty">${escapeHtml(t("sensitivityNoData"))}</p>`;
+        return;
+      }
+
+      const top = analysis.rows[0];
+      summary.innerHTML = `
+        <div class="sensitivity-summary-item">
+          <strong>${escapeHtml(t("sensitivityBaseline"))}</strong>
+          <span>${escapeHtml(formatSensitivityImpact(analysis.total, analysis))}</span>
+        </div>
+        <div class="sensitivity-summary-item">
+          <strong>${escapeHtml(t("sensitivitySource"))}</strong>
+          <span>${escapeHtml(sourceLabel)}</span>
+        </div>
+        <div class="sensitivity-summary-item">
+          <strong>${escapeHtml(t("sensitivityCoverage"))}</strong>
+          <span>${escapeHtml(t("sensitivityCoverageValue", { value: formatDecimal(analysis.coverage, 1) }))}</span>
+        </div>
+        <div class="sensitivity-summary-item">
+          <strong>${escapeHtml(t("sensitivityTopOpportunity"))}</strong>
+          <span>${escapeHtml(`${top.module} ${top.block}: ${t("sensitivityPathwayReduction", { value: formatDecimal(top.pathwayReductionPercent, 2) })}`)}</span>
+        </div>
+      `;
+
+      const rows = analysis.rows.map((item, index) => `
+        <tr>
+          <td class="numeric">${index + 1}</td>
+          <td><strong>${escapeHtml(`${item.module} ${item.block}`)}</strong></td>
+          <td class="numeric">${escapeHtml(formatSensitivityImpact(item.value, analysis))}<br><small>${escapeHtml(t("sensitivityShare", { value: formatDecimal(item.sharePercent, 1) }))}</small></td>
+          <td class="sensitivity-response">
+            <span><strong>${escapeHtml(t("sensitivityReductionTest", { value: analysis.reductionPercent }))}</strong></span>
+            <span>${escapeHtml(t("sensitivityResultChange"))}: ${escapeHtml(t("sensitivityPathwayReduction", { value: formatDecimal(item.pathwayReductionPercent, 2) }))}</span>
+            <span>${escapeHtml(t("sensitivityNewTotal"))}: ${escapeHtml(formatSensitivityImpact(item.newTotal, analysis))}</span>
+          </td>
+          <td class="scenario-prompt">${escapeHtml(item.prompt)}</td>
+        </tr>
+      `).join("");
+      results.innerHTML = `
+        <table class="sensitivity-table">
+          <thead>
+            <tr>
+              <th>${escapeHtml(t("sensitivityRank"))}</th>
+              <th>${escapeHtml(t("sensitivityBuildingBlock"))}</th>
+              <th>${escapeHtml(t("sensitivityContribution"))}</th>
+              <th>${escapeHtml(t("sensitivityTest"))}</th>
+              <th>${escapeHtml(t("sensitivityScenarioPrompt"))}</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p class="sensitivity-safeguard">${escapeHtml(analysis.safeguard)}</p>
+      `;
+    }
+
     function bindLcaControls() {
       const moduleCalculations = document.getElementById("lcaModuleCalculations");
       document.getElementById("lcaCaseCount").addEventListener("input", renderLcaOutputs);
@@ -11621,6 +12322,16 @@
       document.getElementById("sankeyCutoff").addEventListener("input", (event) => {
         state.sankeyCutoffPercent = Math.min(1, Math.max(0.1, Number(event.target.value) || 0.5));
         renderContributionSankey();
+      });
+      document.querySelectorAll("[data-sensitivity-mode]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.sensitivityMode = button.dataset.sensitivityMode === "quantity" ? "quantity" : "intensity";
+          renderSensitivityExplorer();
+        });
+      });
+      document.getElementById("sensitivityReduction").addEventListener("input", (event) => {
+        state.sensitivityReductionPercent = Math.min(50, Math.max(5, Number(event.target.value) || 20));
+        renderSensitivityExplorer();
       });
       moduleCalculations.addEventListener("toggle", (event) => {
         const details = event.target;
@@ -11759,6 +12470,7 @@
       renderAllImpactResults(caseCount);
       renderContributionSankey();
       renderLcaResultView();
+      renderSensitivityExplorer();
     }
 
     function renderLcaPriorityList() {
@@ -12022,6 +12734,10 @@
             unit: category.unit
           }))
         },
+        calculation_options: {
+          with_contributions: true,
+          contribution_categories: [state.impactCategory]
+        },
         browser_prototype: {
           included: false,
           note: "Browser dummy coefficients and their uncertainty ranges are deliberately excluded from the Brightway demand and results."
@@ -12180,6 +12896,7 @@
         summary.innerHTML = "";
         clearButton.hidden = true;
         if (!status.textContent) status.textContent = t("brightwayImportPrompt");
+        renderSensitivityExplorer();
         return;
       }
 
@@ -12225,6 +12942,7 @@
         </div>
         ${warnings.length ? `<p><strong>${escapeHtml(t("brightwayWarnings"))}:</strong> ${escapeHtml(warnings.join(" | "))}</p>` : ""}
       `;
+      renderSensitivityExplorer();
     }
 
     async function importBrightwayResults(file) {
@@ -12337,7 +13055,8 @@
         rows,
         modules,
         totals,
-        topRows
+        topRows,
+        sensitivity: collectSensitivityAnalysis(5)
       };
     }
 
@@ -12400,6 +13119,21 @@
           <td>${row.included ? escapeHtml(formatImpact(row.baseContribution)) : escapeHtml(t("excluded"))}</td>
         </tr>
       `).join("");
+      const sensitivityRows = data.sensitivity.rows.length
+        ? data.sensitivity.rows.map((row, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(`${row.module} ${row.block}`)}</td>
+            <td>${escapeHtml(formatSensitivityImpact(row.value, data.sensitivity))}<br><small>${escapeHtml(t("sensitivityShare", { value: formatDecimal(row.sharePercent, 1) }))}</small></td>
+            <td>
+              <strong>${escapeHtml(t("sensitivityReductionTest", { value: data.sensitivity.reductionPercent }))}</strong><br>
+              ${escapeHtml(t("sensitivityResultChange"))}: ${escapeHtml(t("sensitivityPathwayReduction", { value: formatDecimal(row.pathwayReductionPercent, 2) }))}<br>
+              ${escapeHtml(t("sensitivityNewTotal"))}: ${escapeHtml(formatSensitivityImpact(row.newTotal, data.sensitivity))}
+            </td>
+            <td>${escapeHtml(row.prompt)}</td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="5">${escapeHtml(t("sensitivityNoData"))}</td></tr>`;
       const brightwayReportSection = data.brightwayResult
         ? (() => {
           const result = data.brightwayResult;
@@ -12646,6 +13380,19 @@
         </thead>
         <tbody>${topRows}</tbody>
       </table>
+    </section>
+
+    <section>
+      <h2>${escapeHtml(t("sensitivityReportTitle"))}</h2>
+      <p class="muted">${escapeHtml(t("sensitivityReportNote"))}</p>
+      <p><strong>${escapeHtml(t("sensitivitySource"))}:</strong> ${escapeHtml(data.sensitivity.source === "brightway" ? t("sensitivityDataSourceBrightway") : t("sensitivityDataSourceBrowser"))}. <strong>${escapeHtml(t("sensitivityModeLabel"))}:</strong> ${escapeHtml(data.sensitivity.mode === "quantity" ? t("sensitivityQuantityMode") : t("sensitivityIntensityMode"))}.</p>
+      <table>
+        <thead>
+          <tr><th>${escapeHtml(t("sensitivityRank"))}</th><th>${escapeHtml(t("sensitivityBuildingBlock"))}</th><th>${escapeHtml(t("sensitivityContribution"))}</th><th>${escapeHtml(t("sensitivityTest"))}</th><th>${escapeHtml(t("sensitivityScenarioPrompt"))}</th></tr>
+        </thead>
+        <tbody>${sensitivityRows}</tbody>
+      </table>
+      <p class="note">${escapeHtml(data.sensitivity.safeguard)}</p>
     </section>
 
     <section>

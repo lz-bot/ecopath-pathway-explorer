@@ -33,9 +33,34 @@ Route colors distinguish diagnostic and first-contact movement, treatment moveme
 
 The browser calculator uses the prototype formula `impact = quantity x impact coefficient` for a selected EF category. It sums active building blocks into a pathway scenario and multiplies this result by the cohort size. Browser coefficients are synthetic demonstration data and are kept separate from imported Brightway results.
 
-## Brightway Calculation Bridge
+## One-click Brightway calculation
 
-GitHub Pages is a static website and cannot run Brightway or distribute licensed background databases. The explorer therefore uses a file-based bridge:
+GitHub Pages is a static website and cannot run Brightway or distribute licensed background databases. For direct calculation, run the explorer through the local companion service in the Python environment that has access to the intended Brightway project:
+
+1. Copy the mapping template to the ignored local mapping file:
+
+   ```bash
+   cp brightway/mapping.example.json brightway/mapping.local.json
+   ```
+
+2. Complete `brightway/mapping.local.json` once. Use existing foreground activity database/code identifiers and exact installed EF 3.1 no long-term method tuples. Do not use name-based fuzzy matching for formal results.
+
+3. Start the local service from the Brightway or Activity Browser Python environment:
+
+   ```bash
+   python scripts/serve_brightway.py \
+     --mapping brightway/mapping.local.json
+   ```
+
+4. The service opens `http://127.0.0.1:8765/`. Build the pathway scenario and select **Calculate with Brightway**. Mapping coverage and method coverage are checked before calculation, and the results return directly to the page.
+
+The service binds to the loopback interface only, uses a per-session token, rejects cross-origin calculation requests, and reads existing Brightway projects and databases without modifying them. It refuses missing mappings by default. A mapping is model infrastructure that should be prepared and reviewed once by the ECO-PATH LCA team; end users should not need to edit it for each calculation.
+
+Candidate building blocks are not included automatically when a module becomes active. The user must confirm the blocks and quantities that occur in the selected clinical scenario. This prevents mutually exclusive surgery, radiotherapy, systemic therapy, and surveillance resources from entering the same result merely because they share a module.
+
+## JSON audit and fallback workflow
+
+The file workflow remains available for audit, reproducibility, and environments where the local service cannot be used:
 
 1. Define the functional unit and select the pathway activities, modules, building blocks, and quantities in the web interface.
 2. Select **Export scenario JSON** in the Results step.
@@ -60,11 +85,11 @@ GitHub Pages is a static website and cannot run Brightway or distribute licensed
 
 6. Import `brightway-results.json` in the Results step. Imported results are displayed separately and included as a separate section in the exported report.
 
-Add `--with-contributions` to calculate building-block contributions for each configured method. Add `--allow-missing` only for an explicitly documented partial model; missing active mappings fail by default. The runner only reads existing projects and databases. It does not create, import, delete, relink, or modify Brightway data.
+Add `--with-contributions` to calculate building-block contributions for each configured method. Add `--allow-missing` only for an explicitly documented partial model; missing active mappings and missing requested method mappings fail by default. The runner only reads existing projects and databases. It does not create, import, delete, relink, or modify Brightway data.
 
 The example mapping deliberately contains placeholders. Exact EF method tuples depend on the methods installed in the local Brightway project and must not be guessed. Scenario and result contracts are documented in [`schemas/ecopath-scenario.schema.json`](schemas/ecopath-scenario.schema.json) and [`schemas/ecopath-results.schema.json`](schemas/ecopath-results.schema.json).
 
-This bridge supports an auditable ISO 14040/14044 workflow, but use of the bridge does not establish ISO conformance. A formal study still needs documented goal and scope, functional unit, system boundary, allocation and cut-off rules, inventory provenance, LCIA method version, interpretation, sensitivity and uncertainty analyses, critical review where applicable, and reproducible model records.
+The local service and file workflow support an auditable ISO 14040/14044 process, but use of either interface does not establish ISO conformance. A formal study still needs documented goal and scope, functional unit, system boundary, allocation and cut-off rules, inventory provenance, LCIA method version, interpretation, sensitivity and uncertainty analyses, critical review where applicable, and reproducible model records.
 
 ## Urology Source Views
 

@@ -1643,6 +1643,57 @@
       gap: 8px;
     }
 
+    .brightway-service-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .brightway-service-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border: 1px solid rgba(0, 90, 160, 0.28);
+      border-radius: 999px;
+      padding: 4px 10px;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .brightway-service-badge.unavailable {
+      border-color: var(--line);
+      color: var(--muted);
+      background: var(--panel);
+    }
+
+    .brightway-service-detail {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .brightway-primary-action {
+      border-color: var(--accent-dark);
+      color: var(--panel);
+      background: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .brightway-primary-action:hover {
+      color: var(--accent-dark);
+      background: var(--accent-soft-strong);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
     .brightway-status {
       margin: 10px 0 0;
       color: var(--muted);
@@ -2526,11 +2577,17 @@
             <p class="scope-note" id="brightwayBridgeIntro"></p>
           </div>
           <div class="brightway-bridge-actions">
+            <button type="button" class="brightway-primary-action" id="calculateWithBrightway" disabled>Calculate with Brightway</button>
+            <button type="button" id="checkBrightwayConnection">Check connection</button>
             <button type="button" id="exportBrightwayScenario">Export scenario JSON</button>
             <button type="button" id="importBrightwayResults">Import Brightway results</button>
             <button type="button" id="clearBrightwayResults" hidden>Clear imported results</button>
             <input id="brightwayResultsFile" type="file" accept="application/json,.json" hidden>
           </div>
+        </div>
+        <div class="brightway-service-line">
+          <span class="brightway-service-badge unavailable" id="brightwayServiceBadge">Local Brightway not connected</span>
+          <span class="brightway-service-detail" id="brightwayServiceDetail"></span>
         </div>
         <p class="brightway-status" id="brightwayBridgeStatus" aria-live="polite"></p>
         <div class="brightway-result-summary" id="brightwayResultSummary" hidden></div>
@@ -2907,7 +2964,7 @@
           impactCategoryRegistry.map((category) => [category.id, demoImpactCoefficient(category, factor)])
         ),
         editedFactors: {},
-        included: true,
+        included: false,
         applicability: item.applicability,
         gap: `Dummy aggregate coefficient. Replace with foreground LCI for ${item.resourceFlows.join(", ")} and documented LCIA mapping.`
       };
@@ -4587,14 +4644,14 @@
       formulaUncertainty: "Impact coefficient range",
       formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u_c = relative uncertainty assigned to c only, N = cohort size. Quantity, pathway, scenario, and structural uncertainty are not represented by this field.",
       formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. u_c is the relative uncertainty assigned to c only. N is cohort size.",
-      helpStep5: "Review the impact-coefficient uncertainty range and unresolved quantity, pathway, scenario, and structural uncertainty, then export the report in the selected language.",
+      helpStep5: "Review uncertainty and data gaps. When the local Brightway service is connected, calculate directly in the Results step; otherwise use JSON export and import. Then export the report in the selected language.",
       impactCategoryLabel: "Impact category",
       impactMethodChip: "EF v3.1 no LT · demo",
       impactGroupClimateAir: "Climate and air",
       impactGroupHumanHealth: "Human health",
       impactGroupEcosystems: "Ecosystems",
       impactGroupResources: "Resource use",
-      lcaIntro: "Editable calculation rows for candidate building blocks. All 16 EF 3.1 categories contain synthetic demonstration coefficients and an editable 30% coefficient-uncertainty assumption. These values are not verified EF results.",
+      lcaIntro: "Candidate building blocks are off by default and must be confirmed for the selected clinical scenario. All 16 EF 3.1 categories contain synthetic demonstration coefficients and an editable 30% coefficient-uncertainty assumption. These values are not verified EF results.",
       impactClimate: "Climate change (GWP100)",
       impactClimateDescription: "Primary ECO-PATH view. Reports the 100-year global warming potential of life-cycle greenhouse-gas emissions.",
       impactOzoneDepletion: "Ozone depletion",
@@ -4660,14 +4717,14 @@
       formulaUncertainty: "Bereik impactcoëfficiënt",
       formulaNote: "S = aangevinkte bouwstenen binnen aangevinkte modules. q = aantal of hulpbronhoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u_c = relatieve onzekerheid uitsluitend van c, N = cohortgrootte. Onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur staat niet in dit veld.",
       formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is de impactcoëfficiënt. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
-      helpStep5: "Beoordeel het onzekerheidsbereik van de impactcoëfficiënt en open onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur. Exporteer daarna het rapport in de gekozen taal.",
+      helpStep5: "Beoordeel onzekerheid en datalacunes. Bereken direct in Resultaten wanneer de lokale Brightway-service is verbonden; gebruik anders JSON-export en -import. Exporteer daarna het rapport in de gekozen taal.",
       impactCategoryLabel: "Impactcategorie",
       impactMethodChip: "EF v3.1 no LT · demo",
       impactGroupClimateAir: "Klimaat en lucht",
       impactGroupHumanHealth: "Menselijke gezondheid",
       impactGroupEcosystems: "Ecosystemen",
       impactGroupResources: "Hulpbronnengebruik",
-      lcaIntro: "Bewerkbare rekenregels voor kandidaatbouwstenen. Alle 16 EF 3.1-categorieën bevatten synthetische demonstratiecoëfficiënten en een bewerkbare aanname van 30% coëfficiëntonzekerheid. Dit zijn geen geverifieerde EF-resultaten.",
+      lcaIntro: "Kandidaatbouwstenen staan standaard uit en moeten voor het gekozen klinische scenario worden bevestigd. Alle 16 EF 3.1-categorieën bevatten synthetische demonstratiecoëfficiënten en een bewerkbare aanname van 30% coëfficiëntonzekerheid. Dit zijn geen geverifieerde EF-resultaten.",
       impactClimate: "Klimaatverandering (GWP100)",
       impactClimateDescription: "Primaire ECO-PATH-weergave. Toont het aardopwarmingsvermogen over 100 jaar van broeikasgasemissies in de levenscyclus.",
       impactOzoneDepletion: "Ozonafbraak",
@@ -4733,14 +4790,14 @@
       formulaUncertainty: "影响系数范围",
       formulaNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为 LCIA 影响系数；j 为影响类别；u_c 仅表示 c 的相对不确定性；N 为队列人数。本字段不表示数量、路径、情景或模型结构不确定性。",
       formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为影响系数；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
-      helpStep5: "检查影响系数不确定性范围，并单独记录数量、路径、情景和模型结构不确定性，然后使用当前语言导出报告。",
+      helpStep5: "检查不确定性与数据缺口。本地 Brightway service 已连接时可在结果步骤直接计算；否则使用 JSON 导入导出。随后以当前语言导出报告。",
       impactCategoryLabel: "影响类别",
       impactMethodChip: "EF v3.1 no LT · 演示",
       impactGroupClimateAir: "气候与空气",
       impactGroupHumanHealth: "人类健康",
       impactGroupEcosystems: "生态系统",
       impactGroupResources: "资源使用",
-      lcaIntro: "候选构建单元的可编辑计算行。全部 16 类 EF 3.1 指标均含 synthetic 演示系数和可编辑的 30% 系数不确定性假设；这些数值不是经验证的 EF 结果。",
+      lcaIntro: "候选 building blocks 默认不纳入，必须根据所选临床情景逐项确认。全部 16 类 EF 3.1 指标均含 synthetic 演示系数和可编辑的 30% 系数不确定性假设；这些数值不是经验证的 EF 结果。",
       impactClimate: "气候变化（GWP100）",
       impactClimateDescription: "ECO-PATH 的首选视图，表示生命周期温室气体排放的 100 年全球变暖潜势。",
       impactOzoneDepletion: "臭氧层消耗",
@@ -4806,14 +4863,14 @@
       formulaUncertainty: "影響係数の範囲",
       formulaNote: "S は選択モジュール内の選択 building block、q は発生回数または資源量、c は LCIA 影響係数、j は影響カテゴリ、u_c は c のみに割り当てた相対不確実性、N はコホート人数です。数量、経路、シナリオ、構造的不確実性はこの欄に含みません。",
       formulaReportNote: "S は選択モジュール内の選択 building block です。q は回数または資源量、c は影響係数、u_c は c のみの相対不確実性、N はコホート人数です。",
-      helpStep5: "影響係数の不確実性範囲と、数量、経路、シナリオ、構造に残る不確実性を確認し、選択言語で報告書を出力します。",
+      helpStep5: "不確実性とデータギャップを確認します。ローカル Brightway service 接続時は結果ステップで直接計算し、未接続時は JSON 入出力を使用します。その後、選択言語で報告書を出力します。",
       impactCategoryLabel: "影響カテゴリ",
       impactMethodChip: "EF v3.1 no LT · デモ",
       impactGroupClimateAir: "気候と大気",
       impactGroupHumanHealth: "人の健康",
       impactGroupEcosystems: "生態系",
       impactGroupResources: "資源利用",
-      lcaIntro: "候補 building block の編集可能な計算行です。EF 3.1 の全16カテゴリに合成デモ係数と編集可能な30%の係数不確実性仮定があります。これらは検証済みEF結果ではありません。",
+      lcaIntro: "候補 building block は既定で無効で、選択した臨床シナリオごとに確認する必要があります。EF 3.1 の全16カテゴリに合成デモ係数と編集可能な30%の係数不確実性仮定があります。これらは検証済みEF結果ではありません。",
       impactClimate: "気候変動（GWP100）",
       impactClimateDescription: "ECO-PATH の既定表示です。ライフサイクル温室効果ガス排出の100年地球温暖化係数を示します。",
       impactOzoneDepletion: "オゾン層破壊",
@@ -4879,14 +4936,14 @@
       formulaUncertainty: "Rango del coeficiente de impacto",
       formulaNote: "S = building blocks marcados dentro de módulos marcados. q = ocurrencia o cantidad de recurso, c = coeficiente LCIA, j = categoría de impacto, u_c = incertidumbre relativa asignada solo a c, N = tamaño de cohorte. Este campo no representa incertidumbre de cantidades, vía, escenario o estructura.",
       formulaReportNote: "S contiene los building blocks marcados dentro de módulos marcados. q es ocurrencia o cantidad de recurso. c es el coeficiente de impacto. u_c es la incertidumbre relativa solo de c. N es el tamaño de cohorte.",
-      helpStep5: "Revise el rango de incertidumbre del coeficiente de impacto y documente por separado la incertidumbre de cantidades, vía, escenario y estructura. Exporte el informe en el idioma seleccionado.",
+      helpStep5: "Revise la incertidumbre y las lagunas de datos. Calcule directamente en Resultados cuando el servicio Brightway local esté conectado; en caso contrario use exportación e importación JSON. Después exporte el informe en el idioma seleccionado.",
       impactCategoryLabel: "Categoría de impacto",
       impactMethodChip: "EF v3.1 no LT · demo",
       impactGroupClimateAir: "Clima y aire",
       impactGroupHumanHealth: "Salud humana",
       impactGroupEcosystems: "Ecosistemas",
       impactGroupResources: "Uso de recursos",
-      lcaIntro: "Filas editables para bloques candidatos. Las 16 categorías EF 3.1 contienen coeficientes sintéticos de demostración y una hipótesis editable de incertidumbre del 30%. No son resultados EF verificados.",
+      lcaIntro: "Los building blocks candidatos están desactivados por defecto y deben confirmarse para el escenario clínico seleccionado. Las 16 categorías EF 3.1 contienen coeficientes sintéticos de demostración y una hipótesis editable de incertidumbre del 30%. No son resultados EF verificados.",
       impactClimate: "Cambio climático (GWP100)",
       impactClimateDescription: "Vista principal de ECO-PATH. Presenta el potencial de calentamiento global a 100 años de las emisiones del ciclo de vida.",
       impactOzoneDepletion: "Agotamiento de la capa de ozono",
@@ -4947,17 +5004,27 @@
       fuComparability: "Clinical comparability condition",
       functionalUnitStatement: "{amount} {unit}: {function}; population: {population}; boundary: {start} to {end}; time horizon: {horizon}; geography: {geography}. Comparability: {comparability}",
       brightwayBridgeTitle: "Brightway calculation bridge",
-      brightwayBridgeIntro: "Export the selected pathway, functional unit, active modules, and building-block quantities. Run the local Brightway script with licensed databases, then import its results JSON. Browser dummy results remain separate.",
+      brightwayBridgeIntro: "When opened through the local companion service, the selected pathway can be validated and calculated directly with the configured Brightway project. JSON export and import remain available for audit and fallback use. Browser dummy results remain separate.",
+      calculateWithBrightway: "Calculate with Brightway",
+      checkBrightwayConnection: "Check connection",
+      brightwayServiceChecking: "Checking local Brightway",
+      brightwayServiceConnected: "Local Brightway connected",
+      brightwayServiceConnectedDetail: "{project} · {blocks} mapped blocks · {methods} methods",
+      brightwayServiceUnavailable: "Local Brightway not connected",
+      brightwayServiceUnavailableDetail: "Start the local companion service to enable one-click calculation.",
+      brightwayCalculating: "Validating mappings and calculating all configured impact categories...",
+      brightwayCalculationSuccess: "Brightway calculation completed for scenario {scenario}.",
+      brightwayCalculationError: "Brightway calculation could not be completed: {message}",
       exportBrightwayScenario: "Export scenario JSON",
       importBrightwayResults: "Import Brightway results",
-      clearBrightwayResults: "Clear imported results",
+      clearBrightwayResults: "Clear Brightway results",
       brightwayScenarioExported: "Scenario exported: {filename}",
-      brightwayImportPrompt: "No Brightway result is loaded. Export a scenario and calculate it with the local runner.",
+      brightwayImportPrompt: "No Brightway result is available. Connect the local service for direct calculation, or use the JSON fallback workflow.",
       brightwayImportError: "The selected file is not a valid ECO-PATH Brightway result: {message}",
       brightwayImportSuccess: "Brightway results loaded for {scenario}.",
       brightwayScenarioMismatch: "Results loaded, but their scenario ID differs from the last scenario exported in this browser.",
-      brightwayResultsCleared: "Imported Brightway results cleared.",
-      brightwayResultTitle: "Imported Brightway result",
+      brightwayResultsCleared: "Brightway results cleared.",
+      brightwayResultTitle: "Brightway result",
       brightwayEngine: "Calculation engine",
       brightwayFunctionalUnit: "Functional unit",
       brightwayCurrentCategory: "Current category",
@@ -4966,10 +5033,10 @@
       brightwayCohort: "Cohort result",
       brightwayProvenance: "Project / database provenance",
       brightwayWarnings: "Warnings",
-      brightwayNotCalculated: "Not calculated in the imported result",
+      brightwayNotCalculated: "Not calculated in the Brightway result",
       functionalUnitReportTitle: "Functional unit",
       browserPrototypeResults: "Browser prototype results",
-      brightwayVerifiedResults: "Imported Brightway results"
+      brightwayVerifiedResults: "Brightway results"
     });
 
     Object.assign(uiText.nl, {
@@ -4986,17 +5053,27 @@
       fuComparability: "Voorwaarde voor klinische vergelijkbaarheid",
       functionalUnitStatement: "{amount} {unit}: {function}; populatie: {population}; grens: {start} tot {end}; tijdshorizon: {horizon}; geografie: {geography}. Vergelijkbaarheid: {comparability}",
       brightwayBridgeTitle: "Brightway-rekenkoppeling",
-      brightwayBridgeIntro: "Exporteer het geselecteerde zorgpad, de functionele eenheid, actieve modules en bouwsteenhoeveelheden. Voer het lokale Brightway-script uit met gelicentieerde databases en importeer daarna het resultatenbestand. Dummyresultaten in de browser blijven apart.",
+      brightwayBridgeIntro: "Wanneer de pagina via de lokale companion service wordt geopend, kan het geselecteerde zorgpad direct met het geconfigureerde Brightway-project worden gevalideerd en berekend. JSON-export en -import blijven beschikbaar voor audit en als terugvaloptie. Dummyresultaten blijven apart.",
+      calculateWithBrightway: "Berekenen met Brightway",
+      checkBrightwayConnection: "Verbinding controleren",
+      brightwayServiceChecking: "Lokale Brightway wordt gecontroleerd",
+      brightwayServiceConnected: "Lokale Brightway verbonden",
+      brightwayServiceConnectedDetail: "{project} · {blocks} gekoppelde bouwstenen · {methods} methoden",
+      brightwayServiceUnavailable: "Lokale Brightway niet verbonden",
+      brightwayServiceUnavailableDetail: "Start de lokale companion service om berekening met één klik mogelijk te maken.",
+      brightwayCalculating: "Koppelingen worden gevalideerd en alle geconfigureerde impactcategorieën worden berekend...",
+      brightwayCalculationSuccess: "Brightway-berekening voltooid voor scenario {scenario}.",
+      brightwayCalculationError: "Brightway-berekening kon niet worden voltooid: {message}",
       exportBrightwayScenario: "Scenario-JSON exporteren",
       importBrightwayResults: "Brightway-resultaten importeren",
-      clearBrightwayResults: "Geïmporteerde resultaten wissen",
+      clearBrightwayResults: "Brightway-resultaten wissen",
       brightwayScenarioExported: "Scenario geëxporteerd: {filename}",
-      brightwayImportPrompt: "Er is geen Brightway-resultaat geladen. Exporteer een scenario en bereken dit met de lokale runner.",
+      brightwayImportPrompt: "Er is geen Brightway-resultaat beschikbaar. Verbind de lokale service voor directe berekening of gebruik de JSON-terugvalworkflow.",
       brightwayImportError: "Het gekozen bestand is geen geldig ECO-PATH Brightway-resultaat: {message}",
       brightwayImportSuccess: "Brightway-resultaten geladen voor {scenario}.",
       brightwayScenarioMismatch: "Resultaten geladen, maar het scenario-ID wijkt af van het laatste in deze browser geëxporteerde scenario.",
-      brightwayResultsCleared: "Geïmporteerde Brightway-resultaten gewist.",
-      brightwayResultTitle: "Geïmporteerd Brightway-resultaat",
+      brightwayResultsCleared: "Brightway-resultaten gewist.",
+      brightwayResultTitle: "Brightway-resultaat",
       brightwayEngine: "Rekenengine",
       brightwayFunctionalUnit: "Functionele eenheid",
       brightwayCurrentCategory: "Huidige categorie",
@@ -5005,10 +5082,10 @@
       brightwayCohort: "Cohortresultaat",
       brightwayProvenance: "Project- / databaseherkomst",
       brightwayWarnings: "Waarschuwingen",
-      brightwayNotCalculated: "Niet berekend in het geïmporteerde resultaat",
+      brightwayNotCalculated: "Niet berekend in het Brightway-resultaat",
       functionalUnitReportTitle: "Functionele eenheid",
       browserPrototypeResults: "Browserprototype-resultaten",
-      brightwayVerifiedResults: "Geïmporteerde Brightway-resultaten"
+      brightwayVerifiedResults: "Brightway-resultaten"
     });
 
     Object.assign(uiText.zh, {
@@ -5025,17 +5102,27 @@
       fuComparability: "临床可比性条件",
       functionalUnitStatement: "{amount} {unit}：{function}；人群：{population}；边界：从 {start} 到 {end}；时间范围：{horizon}；地理范围：{geography}。可比性：{comparability}",
       brightwayBridgeTitle: "Brightway 计算桥接",
-      brightwayBridgeIntro: "导出当前选择的路径、功能单位、启用模块和 building block 数量；使用含授权数据库的本地 Brightway 脚本计算后，再导入结果 JSON。浏览器 dummy 结果会与 Brightway 结果分开显示。",
+      brightwayBridgeIntro: "通过本地 companion service 打开页面后，可直接使用已配置的 Brightway 项目验证并计算所选路径。JSON 导入导出继续作为审计记录和备用方式；浏览器 dummy 结果与正式结果分开显示。",
+      calculateWithBrightway: "使用 Brightway 计算",
+      checkBrightwayConnection: "检查连接",
+      brightwayServiceChecking: "正在检查本地 Brightway",
+      brightwayServiceConnected: "已连接本地 Brightway",
+      brightwayServiceConnectedDetail: "{project} · 已映射 {blocks} 个 building blocks · {methods} 个方法",
+      brightwayServiceUnavailable: "未连接本地 Brightway",
+      brightwayServiceUnavailableDetail: "启动本地 companion service 后即可一键计算。",
+      brightwayCalculating: "正在验证映射并计算所有已配置的影响类别...",
+      brightwayCalculationSuccess: "场景 {scenario} 的 Brightway 计算已完成。",
+      brightwayCalculationError: "无法完成 Brightway 计算：{message}",
       exportBrightwayScenario: "导出场景 JSON",
       importBrightwayResults: "导入 Brightway 结果",
-      clearBrightwayResults: "清除导入结果",
+      clearBrightwayResults: "清除 Brightway 结果",
       brightwayScenarioExported: "已导出场景：{filename}",
-      brightwayImportPrompt: "尚未载入 Brightway 结果。请先导出场景并使用本地 runner 计算。",
+      brightwayImportPrompt: "尚无 Brightway 结果。可连接本地 service 直接计算，或使用 JSON 备用流程。",
       brightwayImportError: "所选文件不是有效的 ECO-PATH Brightway 结果：{message}",
       brightwayImportSuccess: "已载入场景 {scenario} 的 Brightway 结果。",
       brightwayScenarioMismatch: "结果已载入，但 scenario ID 与本浏览器最后导出的场景不同。",
-      brightwayResultsCleared: "已清除导入的 Brightway 结果。",
-      brightwayResultTitle: "导入的 Brightway 结果",
+      brightwayResultsCleared: "已清除 Brightway 结果。",
+      brightwayResultTitle: "Brightway 结果",
       brightwayEngine: "计算引擎",
       brightwayFunctionalUnit: "功能单位",
       brightwayCurrentCategory: "当前类别",
@@ -5044,10 +5131,10 @@
       brightwayCohort: "队列结果",
       brightwayProvenance: "项目 / 数据库来源",
       brightwayWarnings: "警告",
-      brightwayNotCalculated: "导入结果中未计算该类别",
+      brightwayNotCalculated: "Brightway 结果中未计算该类别",
       functionalUnitReportTitle: "功能单位",
       browserPrototypeResults: "浏览器原型结果",
-      brightwayVerifiedResults: "导入的 Brightway 结果"
+      brightwayVerifiedResults: "Brightway 结果"
     });
 
     Object.assign(uiText.ja, {
@@ -5064,17 +5151,27 @@
       fuComparability: "臨床的比較可能性の条件",
       functionalUnitStatement: "{amount} {unit}: {function}; 対象集団: {population}; 境界: {start} から {end}; 時間範囲: {horizon}; 地理: {geography}。比較可能性: {comparability}",
       brightwayBridgeTitle: "Brightway 計算ブリッジ",
-      brightwayBridgeIntro: "選択したパスウェイ、機能単位、有効なモジュール、building block 数量を出力します。ライセンス済みデータベースを持つローカル Brightway スクリプトで計算し、結果 JSON を再読み込みします。ブラウザの dummy 結果とは分離されます。",
+      brightwayBridgeIntro: "ローカル companion service からページを開くと、設定済み Brightway プロジェクトで選択パスウェイを直接検証・計算できます。JSON の入出力は監査と予備手段として残り、ブラウザの dummy 結果とは分離されます。",
+      calculateWithBrightway: "Brightway で計算",
+      checkBrightwayConnection: "接続を確認",
+      brightwayServiceChecking: "ローカル Brightway を確認中",
+      brightwayServiceConnected: "ローカル Brightway 接続済み",
+      brightwayServiceConnectedDetail: "{project} · {blocks} building blocks 接続済み · {methods} メソッド",
+      brightwayServiceUnavailable: "ローカル Brightway 未接続",
+      brightwayServiceUnavailableDetail: "ローカル companion service を起動するとワンクリック計算が有効になります。",
+      brightwayCalculating: "マッピングを検証し、設定済み影響カテゴリを計算しています...",
+      brightwayCalculationSuccess: "シナリオ {scenario} の Brightway 計算が完了しました。",
+      brightwayCalculationError: "Brightway 計算を完了できませんでした: {message}",
       exportBrightwayScenario: "シナリオ JSON を出力",
       importBrightwayResults: "Brightway 結果を読込",
-      clearBrightwayResults: "読込結果を消去",
+      clearBrightwayResults: "Brightway 結果を消去",
       brightwayScenarioExported: "シナリオを出力しました: {filename}",
-      brightwayImportPrompt: "Brightway 結果は未読込です。シナリオを出力し、ローカル runner で計算してください。",
+      brightwayImportPrompt: "Brightway 結果はありません。ローカル service に接続して直接計算するか、JSON の予備手順を使用してください。",
       brightwayImportError: "選択ファイルは有効な ECO-PATH Brightway 結果ではありません: {message}",
       brightwayImportSuccess: "シナリオ {scenario} の Brightway 結果を読み込みました。",
       brightwayScenarioMismatch: "結果を読み込みましたが、scenario ID がこのブラウザで最後に出力したものと異なります。",
-      brightwayResultsCleared: "読み込んだ Brightway 結果を消去しました。",
-      brightwayResultTitle: "読み込んだ Brightway 結果",
+      brightwayResultsCleared: "Brightway 結果を消去しました。",
+      brightwayResultTitle: "Brightway 結果",
       brightwayEngine: "計算エンジン",
       brightwayFunctionalUnit: "機能単位",
       brightwayCurrentCategory: "現在のカテゴリ",
@@ -5083,10 +5180,10 @@
       brightwayCohort: "コホート結果",
       brightwayProvenance: "プロジェクト / データベース由来",
       brightwayWarnings: "警告",
-      brightwayNotCalculated: "読み込んだ結果では未計算です",
+      brightwayNotCalculated: "Brightway 結果では未計算です",
       functionalUnitReportTitle: "機能単位",
       browserPrototypeResults: "ブラウザプロトタイプ結果",
-      brightwayVerifiedResults: "読み込んだ Brightway 結果"
+      brightwayVerifiedResults: "Brightway 結果"
     });
 
     Object.assign(uiText.es, {
@@ -5103,17 +5200,27 @@
       fuComparability: "Condición de comparabilidad clínica",
       functionalUnitStatement: "{amount} {unit}: {function}; población: {population}; límite: de {start} a {end}; horizonte: {horizon}; geografía: {geography}. Comparabilidad: {comparability}",
       brightwayBridgeTitle: "Puente de cálculo Brightway",
-      brightwayBridgeIntro: "Exporte la vía seleccionada, la unidad funcional, los módulos activos y las cantidades de building blocks. Ejecute el script local de Brightway con bases licenciadas e importe el JSON de resultados. Los resultados dummy del navegador permanecen separados.",
+      brightwayBridgeIntro: "Al abrir la página mediante el servicio local complementario, la vía seleccionada se valida y calcula directamente con el proyecto Brightway configurado. La exportación e importación JSON permanecen disponibles para auditoría y respaldo. Los resultados dummy siguen separados.",
+      calculateWithBrightway: "Calcular con Brightway",
+      checkBrightwayConnection: "Comprobar conexión",
+      brightwayServiceChecking: "Comprobando Brightway local",
+      brightwayServiceConnected: "Brightway local conectado",
+      brightwayServiceConnectedDetail: "{project} · {blocks} bloques mapeados · {methods} métodos",
+      brightwayServiceUnavailable: "Brightway local no conectado",
+      brightwayServiceUnavailableDetail: "Inicie el servicio local complementario para habilitar el cálculo con un clic.",
+      brightwayCalculating: "Validando mapeos y calculando todas las categorías configuradas...",
+      brightwayCalculationSuccess: "Cálculo Brightway completado para el escenario {scenario}.",
+      brightwayCalculationError: "No se pudo completar el cálculo Brightway: {message}",
       exportBrightwayScenario: "Exportar escenario JSON",
       importBrightwayResults: "Importar resultados Brightway",
-      clearBrightwayResults: "Borrar resultados importados",
+      clearBrightwayResults: "Borrar resultados Brightway",
       brightwayScenarioExported: "Escenario exportado: {filename}",
-      brightwayImportPrompt: "No hay un resultado Brightway cargado. Exporte un escenario y calcúlelo con el runner local.",
+      brightwayImportPrompt: "No hay resultados Brightway. Conecte el servicio local para calcular directamente o use el flujo JSON de respaldo.",
       brightwayImportError: "El archivo seleccionado no es un resultado ECO-PATH Brightway válido: {message}",
       brightwayImportSuccess: "Resultados Brightway cargados para {scenario}.",
       brightwayScenarioMismatch: "Los resultados se cargaron, pero su scenario ID difiere del último exportado en este navegador.",
-      brightwayResultsCleared: "Resultados Brightway importados borrados.",
-      brightwayResultTitle: "Resultado Brightway importado",
+      brightwayResultsCleared: "Resultados Brightway borrados.",
+      brightwayResultTitle: "Resultado Brightway",
       brightwayEngine: "Motor de cálculo",
       brightwayFunctionalUnit: "Unidad funcional",
       brightwayCurrentCategory: "Categoría actual",
@@ -5122,10 +5229,10 @@
       brightwayCohort: "Resultado de cohorte",
       brightwayProvenance: "Procedencia del proyecto / base de datos",
       brightwayWarnings: "Advertencias",
-      brightwayNotCalculated: "No calculado en el resultado importado",
+      brightwayNotCalculated: "No calculado en el resultado Brightway",
       functionalUnitReportTitle: "Unidad funcional",
       browserPrototypeResults: "Resultados del prototipo del navegador",
-      brightwayVerifiedResults: "Resultados Brightway importados"
+      brightwayVerifiedResults: "Resultados Brightway"
     });
 
     Object.assign(uiText.en, { formulaLibrary: "Selected pathway scenario" });
@@ -8615,7 +8722,15 @@
       lcaExpandedModules: {},
       functionalUnits: {},
       brightwayResult: null,
-      lastExportedScenarioId: null
+      lastExportedScenarioId: null,
+      brightwayCalculating: false,
+      brightwayService: {
+        checking: false,
+        connected: false,
+        token: "",
+        info: null,
+        error: ""
+      }
     };
 
     let detailSyncQueued = false;
@@ -9163,6 +9278,8 @@
       setText("dataToCollectHeading", "dataToCollect");
       setText("brightwayBridgeTitle", "brightwayBridgeTitle");
       setText("brightwayBridgeIntro", "brightwayBridgeIntro");
+      setText("calculateWithBrightway", "calculateWithBrightway");
+      setText("checkBrightwayConnection", "checkBrightwayConnection");
       setText("exportBrightwayScenario", "exportBrightwayScenario");
       setText("importBrightwayResults", "importBrightwayResults");
       setText("clearBrightwayResults", "clearBrightwayResults");
@@ -10790,8 +10907,106 @@
       const scenario = collectBrightwayScenario();
       const filename = `ecopath-brightway-scenario-${slugify(currentPathway().label)}-${reportDateStamp()}.json`;
       downloadJson(scenario, filename);
+      setBrightwayBridgeStatus(t("brightwayScenarioExported", { filename }));
+    }
+
+    function setBrightwayBridgeStatus(message, isError = false) {
       const status = document.getElementById("brightwayBridgeStatus");
-      if (status) status.textContent = t("brightwayScenarioExported", { filename });
+      if (!status) return;
+      status.textContent = message;
+      status.classList.toggle("error", isError);
+    }
+
+    function renderBrightwayServiceStatus() {
+      const service = state.brightwayService;
+      const badge = document.getElementById("brightwayServiceBadge");
+      const detail = document.getElementById("brightwayServiceDetail");
+      const calculateButton = document.getElementById("calculateWithBrightway");
+      const checkButton = document.getElementById("checkBrightwayConnection");
+      if (!badge || !detail || !calculateButton || !checkButton) return;
+
+      badge.classList.toggle("unavailable", !service.connected);
+      if (service.checking) {
+        badge.textContent = t("brightwayServiceChecking");
+        detail.textContent = "";
+      } else if (service.connected) {
+        badge.textContent = t("brightwayServiceConnected");
+        detail.textContent = t("brightwayServiceConnectedDetail", {
+          project: service.info?.project || "Brightway",
+          blocks: service.info?.mapped_building_blocks ?? 0,
+          methods: service.info?.mapped_methods ?? 0
+        });
+      } else {
+        badge.textContent = t("brightwayServiceUnavailable");
+        detail.textContent = service.error || t("brightwayServiceUnavailableDetail");
+      }
+      calculateButton.disabled = !service.connected || service.checking || state.brightwayCalculating;
+      checkButton.disabled = service.checking || state.brightwayCalculating;
+    }
+
+    async function checkBrightwayService() {
+      const service = state.brightwayService;
+      service.checking = true;
+      service.error = "";
+      renderBrightwayServiceStatus();
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 2500);
+      try {
+        const response = await fetch("/api/health", {
+          cache: "no-store",
+          headers: { Accept: "application/json" },
+          signal: controller.signal
+        });
+        const contentType = response.headers.get("content-type") || "";
+        if (!response.ok || !contentType.includes("application/json")) throw new Error("service unavailable");
+        const info = await response.json();
+        service.connected = info.ready === true && Boolean(info.session_token);
+        service.token = service.connected ? info.session_token : "";
+        service.info = info;
+        service.error = service.connected ? "" : (info.error || t("brightwayServiceUnavailableDetail"));
+      } catch {
+        service.connected = false;
+        service.token = "";
+        service.info = null;
+        service.error = t("brightwayServiceUnavailableDetail");
+      } finally {
+        window.clearTimeout(timeout);
+        service.checking = false;
+        renderBrightwayServiceStatus();
+      }
+      return service.connected;
+    }
+
+    async function calculateDirectlyWithBrightway() {
+      if (!state.brightwayService.connected && !(await checkBrightwayService())) return;
+      state.brightwayCalculating = true;
+      renderBrightwayServiceStatus();
+      setBrightwayBridgeStatus(t("brightwayCalculating"));
+      try {
+        const scenario = collectBrightwayScenario();
+        const response = await fetch("/api/calculate", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Ecopath-Token": state.brightwayService.token
+          },
+          body: JSON.stringify(scenario)
+        });
+        const contentType = response.headers.get("content-type") || "";
+        const payload = contentType.includes("application/json") ? await response.json() : {};
+        if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+        state.brightwayResult = validateBrightwayResult(payload);
+        setBrightwayBridgeStatus(t("brightwayCalculationSuccess", { scenario: payload.scenario_id }));
+        renderBrightwayResults();
+      } catch (error) {
+        state.brightwayResult = null;
+        setBrightwayBridgeStatus(t("brightwayCalculationError", { message: error.message }), true);
+        renderBrightwayResults();
+      } finally {
+        state.brightwayCalculating = false;
+        renderBrightwayServiceStatus();
+      }
     }
 
     function validateBrightwayResult(data) {
@@ -10856,7 +11071,12 @@
       }).join("");
       const warnings = Array.isArray(result.warnings) ? result.warnings : [];
       const engine = typeof result.engine === "object"
-        ? [result.engine.name, result.engine.version].filter(Boolean).join(" ")
+        ? [
+            result.engine.name,
+            result.engine.version,
+            result.engine.bw2data_version ? `bw2data ${result.engine.bw2data_version}` : "",
+            result.engine.bw2calc_version ? `bw2calc ${result.engine.bw2calc_version}` : ""
+          ].filter(Boolean).join(" · ")
         : String(result.engine || "Brightway");
       const functionalUnit = result.functional_unit?.statement || functionalUnitText();
       summary.innerHTML = `
@@ -10883,12 +11103,14 @@
         const result = validateBrightwayResult(JSON.parse(await file.text()));
         state.brightwayResult = result;
         const mismatch = state.lastExportedScenarioId && result.scenario_id !== state.lastExportedScenarioId;
+        status.classList.remove("error");
         status.textContent = mismatch
           ? t("brightwayScenarioMismatch")
           : t("brightwayImportSuccess", { scenario: result.scenario_id });
         renderBrightwayResults();
       } catch (error) {
         state.brightwayResult = null;
+        status.classList.add("error");
         status.textContent = t("brightwayImportError", { message: error.message });
         renderBrightwayResults();
       }
@@ -10897,7 +11119,10 @@
     function clearBrightwayResult() {
       state.brightwayResult = null;
       const status = document.getElementById("brightwayBridgeStatus");
-      if (status) status.textContent = t("brightwayResultsCleared");
+      if (status) {
+        status.classList.remove("error");
+        status.textContent = t("brightwayResultsCleared");
+      }
       renderBrightwayResults();
     }
 
@@ -11416,6 +11641,8 @@
         });
       });
       document.getElementById("exportBrightwayScenario").addEventListener("click", exportBrightwayScenario);
+      document.getElementById("calculateWithBrightway").addEventListener("click", calculateDirectlyWithBrightway);
+      document.getElementById("checkBrightwayConnection").addEventListener("click", checkBrightwayService);
       document.getElementById("importBrightwayResults").addEventListener("click", () => {
         document.getElementById("brightwayResultsFile").click();
       });
@@ -11456,6 +11683,7 @@
       renderLcaTable();
       renderLcaOutputs();
       renderBrightwayResults();
+      renderBrightwayServiceStatus();
       renderFullscreenView();
       renderWorkspaceStep();
       updateStickyWorkspaceOffset();
@@ -11471,6 +11699,7 @@
     bindLcaControls();
     state.selected = currentPathway().defaultSelected;
     render();
+    checkBrightwayService();
   </script>
 </body>
 </html>

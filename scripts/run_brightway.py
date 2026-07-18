@@ -104,8 +104,103 @@ def mapping_coverage(
     return mapped, missing
 
 
+def requested_category_ids(scenario: dict[str, Any]) -> list[str]:
+    categories = scenario.get("impact_method_request", {}).get("categories", [])
+    return [
+        item["category_id"]
+        for item in categories
+        if isinstance(item, dict) and isinstance(item.get("category_id"), str)
+    ]
+
+
+def validation_summary(
+    scenario: dict[str, Any], mapping: dict[str, Any], allow_missing: bool = False
+) -> dict[str, Any]:
+    active_blocks = validate_scenario(scenario)
+    _, block_mapping, methods = validate_mapping(mapping)
+    mapped, missing_blocks = mapping_coverage(active_blocks, block_mapping)
+    missing_methods = sorted(set(requested_category_ids(scenario)) - set(methods))
+    valid = (allow_missing or not missing_blocks) and not missing_methods
+    return {
+        "valid": valid,
+        "scenario_id": scenario["scenario_id"],
+        "active_building_blocks": len(active_blocks),
+        "mapped_building_blocks": len(mapped),
+        "missing_mapping_keys": missing_blocks,
+        "requested_methods": len(requested_category_ids(scenario)),
+        "mapped_methods": len(set(requested_category_ids(scenario)) & set(methods)),
+        "missing_method_mappings": missing_methods,
+    }
+
+
 def installed_project_names(bd: Any) -> set[str]:
     return {getattr(item, "name", str(item)) for item in bd.projects}
+
+
+def import_brightway() -> tuple[Any, Any]:
+    try:
+        import bw2calc as bc
+        import bw2data as bd
+    except ImportError as exc:
+        raise ConfigurationError(
+            "Brightway is not installed in this Python environment. "
+            "Install bw2data and bw2calc, or run this script in the Activity Browser environment."
+        ) from exc
+    return bd, bc
+
+
+def inspect_brightway_environment(mapping: dict[str, Any]) -> dict[str, Any]:
+    project, block_mapping, methods = validate_mapping(mapping)
+    bd, bc = import_brightway()
+    projects = installed_project_names(bd)
+    if project not in projects:
+        raise ConfigurationError(
+            f"Brightway project '{project}' does not exist. Available projects: "
+            + ", ".join(sorted(projects))
+        )
+    bd.projects.set_current(project)
+
+    missing_methods = [
+        category_id
+        for category_id, configured_method in methods.items()
+        if tuple(configured_method) not in bd.methods
+    ]
+    if missing_methods:
+        raise ConfigurationError(
+            "Configured Brightway methods are not installed for: " + ", ".join(missing_methods)
+        )
+
+    databases: set[str] = set()
+    missing_nodes: list[str] = []
+    for mapping_key, reference in block_mapping.items():
+        databases.add(reference["database"])
+        try:
+            bd.get_node(database=reference["database"], code=reference["code"])
+        except Exception:
+            missing_nodes.append(mapping_key)
+    if missing_nodes:
+        raise ConfigurationError(
+            "Configured Brightway nodes do not exist for: " + ", ".join(missing_nodes)
+        )
+
+    database_versions = {
+        name: (bd.databases.get(name, {}) or {}).get("version", "unknown")
+        for name in sorted(databases)
+    }
+    return {
+        "ready": True,
+        "project": project,
+        "databases": sorted(databases),
+        "database_versions": database_versions,
+        "mapped_building_blocks": len(block_mapping),
+        "mapped_methods": len(methods),
+        "engine": {
+            "name": "Brightway",
+            "bw2data_version": getattr(bd, "__version__", "unknown"),
+            "bw2calc_version": getattr(bc, "__version__", "unknown"),
+            "python_version": platform.python_version(),
+        },
+    }
 
 
 def calculate_score(bd: Any, bc: Any, demand: dict[Any, float], method: tuple[str, ...]) -> float:
@@ -152,6 +247,7 @@ def calculate(
     allow_missing: bool,
     with_contributions: bool,
 ) -> dict[str, Any]:
+    summary = validation_summary(scenario, mapping, allow_missing)
     active_blocks = validate_scenario(scenario)
     project, block_mapping, methods = validate_mapping(mapping)
     mapped_blocks, missing = mapping_coverage(active_blocks, block_mapping)
@@ -161,15 +257,13 @@ def calculate(
         )
     if not mapped_blocks:
         raise ConfigurationError("No active building block has a Brightway mapping")
-
-    try:
-        import bw2calc as bc
-        import bw2data as bd
-    except ImportError as exc:
+    if summary["missing_method_mappings"]:
         raise ConfigurationError(
-            "Brightway is not installed in this Python environment. "
-            "Install bw2data and bw2calc, or run this script in the Activity Browser environment."
-        ) from exc
+            "Missing method mappings for requested impact categories: "
+            + ", ".join(summary["missing_method_mappings"])
+        )
+
+    bd, bc = import_brightway()
 
     if project not in installed_project_names(bd):
         raise ConfigurationError(
@@ -266,17 +360,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         scenario = load_json(args.scenario)
         mapping = load_json(args.mapping)
-        active_blocks = validate_scenario(scenario)
-        _, block_mapping, _ = validate_mapping(mapping)
-        mapped, missing = mapping_coverage(active_blocks, block_mapping)
         if args.validate_only:
-            summary = {
-                "valid": not missing or args.allow_missing,
-                "scenario_id": scenario["scenario_id"],
-                "active_building_blocks": len(active_blocks),
-                "mapped_building_blocks": len(mapped),
-                "missing_mapping_keys": missing,
-            }
+            summary = validation_summary(scenario, mapping, args.allow_missing)
             print(json.dumps(summary, indent=2))
             return 0 if summary["valid"] else 2
 

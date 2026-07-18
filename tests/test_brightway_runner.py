@@ -51,6 +51,18 @@ class BrightwayRunnerValidationTest(unittest.TestCase):
             )
             self.assertEqual(result, 0)
 
+    def test_missing_requested_method_is_rejected(self):
+        self.mapping["methods"].pop("climate")
+        summary = RUNNER.validation_summary(self.scenario, self.mapping)
+        self.assertFalse(summary["valid"])
+        self.assertEqual(summary["missing_method_mappings"], ["climate"])
+
+    def test_scenario_without_confirmed_building_blocks_is_rejected(self):
+        for block in self.scenario["building_blocks"]:
+            block["enabled"] = False
+        with self.assertRaisesRegex(RUNNER.ConfigurationError, "No enabled building block"):
+            RUNNER.validation_summary(self.scenario, self.mapping)
+
 
 if __name__ == "__main__":
     unittest.main()

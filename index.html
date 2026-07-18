@@ -1137,9 +1137,55 @@
       padding-bottom: 12px;
     }
 
-    .lca-module-map {
+    details.lca-module-map {
       margin-top: 14px;
       margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      overflow: hidden;
+    }
+
+    .building-block-summary {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 44px 12px 14px;
+      cursor: pointer;
+      list-style: none;
+      background: var(--panel);
+    }
+
+    .building-block-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .building-block-summary::after {
+      position: absolute;
+      right: 16px;
+      content: "+";
+      color: var(--accent-dark);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    details.lca-module-map[open] > .building-block-summary::after {
+      content: "−";
+    }
+
+    .building-block-summary h3 {
+      margin: 0 0 3px;
+    }
+
+    .building-block-summary .scope-note {
+      max-width: 900px;
+    }
+
+    .building-block-map-content {
+      padding: 12px 14px 14px;
+      border-top: 1px solid var(--line);
     }
 
     .module-map-grid {
@@ -1430,6 +1476,65 @@
       max-width: 320px;
       overflow-wrap: anywhere;
       white-space: normal;
+    }
+
+    .impact-category-bar {
+      display: grid;
+      grid-template-columns: minmax(340px, 0.44fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      margin: 14px 0;
+      padding: 12px 14px;
+      border: 1px solid rgba(111, 207, 241, 0.75);
+      border-radius: var(--radius);
+      background: var(--accent-soft);
+    }
+
+    .impact-category-bar .field {
+      margin: 0;
+    }
+
+    .impact-category-context {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 5px 10px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .impact-method-chip {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      border: 1px solid rgba(0, 90, 160, 0.35);
+      border-radius: 999px;
+      padding: 3px 8px;
+      color: var(--accent-dark);
+      background: rgba(255, 255, 255, 0.72);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .impact-category-context strong {
+      overflow-wrap: anywhere;
+    }
+
+    .impact-category-context p {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .impact-category-method-note {
+      grid-column: 1 / -1;
+      border-top: 1px solid rgba(0, 90, 160, 0.16);
+      padding-top: 6px;
+    }
+
+    .impact-category-method-note a {
+      color: var(--accent-dark);
+      font-weight: 700;
     }
 
     .export-status {
@@ -1810,8 +1915,12 @@
         display: none;
       }
 
-      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid {
+      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .impact-category-bar {
         grid-template-columns: 1fr;
+      }
+
+      .building-block-summary {
+        grid-template-columns: minmax(0, 1fr);
       }
 
       .lca-module-calculation-header {
@@ -2141,21 +2250,39 @@
         </div>
       </div>
 
-      <div class="lca-module-map" aria-label="LCA building block map" data-workspace-panel="lca">
-        <div class="panel-heading">
+      <div class="impact-category-bar" data-workspace-panel="lca results">
+        <div class="field">
+          <label for="lcaImpactCategory" id="lcaImpactCategoryLabel">Impact category</label>
+          <select id="lcaImpactCategory"></select>
+        </div>
+        <div class="impact-category-context">
+          <span class="impact-method-chip">EF v3.1 no LT</span>
+          <strong id="lcaImpactCategoryName"></strong>
+          <p id="lcaImpactCategoryDescription"></p>
+          <p class="impact-category-method-note">
+            <span id="lcaImpactMethodNote"></span>
+            <a id="efReferenceLink" href="https://eplca.jrc.ec.europa.eu/LCDN/developerEF.html" target="_blank" rel="noreferrer">EF 3.1 reference package</a>
+          </p>
+        </div>
+      </div>
+
+      <details class="lca-module-map" id="buildingBlockMapSection" aria-label="LCA building block map" data-workspace-panel="lca">
+        <summary class="building-block-summary">
           <div>
             <h3 id="buildingBlockMapHeading">Candidate building blocks by LCA module</h3>
             <p class="scope-note" id="buildingBlockMapIntro">Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
           </div>
           <span class="status-chip" id="buildingBlockCount"></span>
+        </summary>
+        <div class="building-block-map-content">
+          <div class="candidate-legend" aria-label="Candidate component legend">
+            <span><i class="candidate-swatch module" aria-hidden="true"></i><span id="moduleZoneLegendLabel">Module zone</span></span>
+            <span><i class="candidate-swatch block" aria-hidden="true"></i><span id="candidateBlockLegendLabel">Candidate building block</span></span>
+          </div>
+          <p class="cutoff-summary" id="lcaCutoffSummary"></p>
+          <div class="module-map-grid" id="buildingBlockMap"></div>
         </div>
-        <div class="candidate-legend" aria-label="Candidate component legend">
-          <span><i class="candidate-swatch module" aria-hidden="true"></i><span id="moduleZoneLegendLabel">Module zone</span></span>
-          <span><i class="candidate-swatch block" aria-hidden="true"></i><span id="candidateBlockLegendLabel">Candidate building block</span></span>
-        </div>
-        <p class="cutoff-summary" id="lcaCutoffSummary"></p>
-        <div class="module-map-grid" id="buildingBlockMap"></div>
-      </div>
+      </details>
 
       <div class="lca-summary-grid" data-workspace-panel="results">
         <div>
@@ -2377,6 +2504,39 @@
       block("EM11", "Shared sterilization support", "per sterilization cycle", ["Autoclave energy", "Water", "Packaging", "CSSD allocation"])
     ];
 
+    const impactCategoryRegistry = [
+      {
+        id: "climate",
+        nameKey: "impactClimate",
+        descriptionKey: "impactClimateDescription",
+        unit: "kg CO2-eq"
+      },
+      {
+        id: "particulateMatter",
+        nameKey: "impactParticulateMatter",
+        descriptionKey: "impactParticulateMatterDescription",
+        unit: "disease incidence"
+      },
+      {
+        id: "humanToxicityCancer",
+        nameKey: "impactHumanToxicityCancer",
+        descriptionKey: "impactHumanToxicityCancerDescription",
+        unit: "CTUh"
+      },
+      {
+        id: "humanToxicityNonCancer",
+        nameKey: "impactHumanToxicityNonCancer",
+        descriptionKey: "impactHumanToxicityNonCancerDescription",
+        unit: "CTUh"
+      },
+      {
+        id: "ionisingRadiation",
+        nameKey: "impactIonisingRadiation",
+        descriptionKey: "impactIonisingRadiationDescription",
+        unit: "kBq U-235 eq"
+      }
+    ];
+
     const moduleCalculationDefaults = {
       EM01: { factor: 0.45, uncertainty: 55 },
       EM02: { factor: 1.25, uncertainty: 60 },
@@ -2402,15 +2562,23 @@
         flow: item.resourceFlows.join("; "),
         unit: item.unit,
         quantity,
-        uncertainty: defaults.uncertainty,
-        factor,
+        uncertainties: Object.fromEntries(
+          impactCategoryRegistry.map((category) => [category.id, category.id === "climate" ? defaults.uncertainty : 100])
+        ),
+        factors: Object.fromEntries(
+          impactCategoryRegistry.map((category) => [category.id, category.id === "climate" ? factor : 0])
+        ),
         included: true,
         applicability: item.applicability,
         gap: `Dummy aggregate coefficient. Replace with foreground LCI for ${item.resourceFlows.join(", ")} and documented LCIA mapping.`
       };
     });
 
-    let lcaRows = lcaDefaultRows.map((row) => ({ ...row }));
+    let lcaRows = lcaDefaultRows.map((row) => ({
+      ...row,
+      factors: { ...row.factors },
+      uncertainties: { ...row.uncertainties }
+    }));
     const crossCuttingModuleIds = ["EM10", "EM11"];
     const lcaModuleIncluded = Object.fromEntries(
       Object.keys(moduleRegistry).map((moduleId) => [moduleId, false])
@@ -4079,7 +4247,30 @@
       formulaUncertainty: "Impact coefficient range",
       formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u_c = relative uncertainty assigned to c only, N = cohort size. Quantity, pathway, scenario, and structural uncertainty are not represented by this field.",
       formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. u_c is the relative uncertainty assigned to c only. N is cohort size.",
-      helpStep5: "Review the impact-coefficient uncertainty range and unresolved quantity, pathway, scenario, and structural uncertainty, then export the report in the selected language."
+      helpStep5: "Review the impact-coefficient uncertainty range and unresolved quantity, pathway, scenario, and structural uncertainty, then export the report in the selected language.",
+      impactCategoryLabel: "Impact category",
+      lcaIntro: "Editable calculation rows for candidate building blocks. Modules define the LCA boundary and row checkboxes define active building blocks. GWP contains dummy demonstration coefficients; the additional EF categories start as unmapped data gaps.",
+      impactClimate: "Climate change (GWP100)",
+      impactClimateDescription: "Primary ECO-PATH view. Reports the 100-year global warming potential of life-cycle greenhouse-gas emissions.",
+      impactParticulateMatter: "Particulate matter",
+      impactParticulateMatterDescription: "Potential human-health burden from particulate matter and precursor emissions, reported as disease incidence.",
+      impactHumanToxicityCancer: "Human toxicity, cancer",
+      impactHumanToxicityCancerDescription: "Potential cancer-related toxicity from life-cycle environmental emissions. This is not clinical cancer risk or treatment toxicity.",
+      impactHumanToxicityNonCancer: "Human toxicity, non-cancer",
+      impactHumanToxicityNonCancerDescription: "Potential non-cancer toxicity from life-cycle environmental emissions. This is not a patient adverse-effect indicator.",
+      impactIonisingRadiation: "Ionising radiation, human health",
+      impactIonisingRadiationDescription: "Potential human-health impact of life-cycle ionising emissions under normal operating conditions. This is not the radiation dose delivered to a patient.",
+      impactMethodNote: "Category names and units follow EF 3.1. The exact 'no LT' Brightway method key, foreground inventory, and characterization-factor mapping must be verified before interpretation.",
+      efReferenceLink: "EF 3.1 reference package",
+      impactCoefficientDynamic: "Impact coefficient, {unit}/reference unit",
+      impactCoefficientAria: "{block} {category} impact coefficient",
+      categoryFactorGap: "No verified {category} coefficient is mapped. Enter a value only after foreground LCI and EF v3.1 no LT mapping.",
+      categoryUserFactorGap: "User-entered {category} coefficient. Verify the EF v3.1 no LT dataset and characterization-factor mapping before use.",
+      climateDataWarning: "GWP is the default view. Quantities and GWP coefficients remain dummy demonstration data until replaced with validated foreground LCI and LCIA mappings.",
+      categoryDataWarning: "No verified {category} coefficients are connected. Results remain zero until category-specific EF v3.1 no LT coefficients are entered and documented.",
+      noCategoryFactors: "No active building block has a non-zero {category} coefficient.",
+      impactCategoryConfig: "Impact category",
+      categoryReportNote: "Selected category: {category} ({unit}). Coefficients are not verified EF results unless their foreground LCI and LCIA mappings are documented."
     });
 
     Object.assign(uiText.nl, {
@@ -4101,7 +4292,30 @@
       formulaUncertainty: "Bereik impactcoëfficiënt",
       formulaNote: "S = aangevinkte bouwstenen binnen aangevinkte modules. q = aantal of hulpbronhoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u_c = relatieve onzekerheid uitsluitend van c, N = cohortgrootte. Onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur staat niet in dit veld.",
       formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is de impactcoëfficiënt. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
-      helpStep5: "Beoordeel het onzekerheidsbereik van de impactcoëfficiënt en open onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur. Exporteer daarna het rapport in de gekozen taal."
+      helpStep5: "Beoordeel het onzekerheidsbereik van de impactcoëfficiënt en open onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur. Exporteer daarna het rapport in de gekozen taal.",
+      impactCategoryLabel: "Impactcategorie",
+      lcaIntro: "Bewerkbare rekenregels voor kandidaatbouwstenen. Modules bepalen de LCA-grens en rijselecties bepalen actieve bouwstenen. GWP bevat dummycoëfficiënten voor demonstratie; de aanvullende EF-categorieën starten als niet-gekoppelde datagaten.",
+      impactClimate: "Klimaatverandering (GWP100)",
+      impactClimateDescription: "Primaire ECO-PATH-weergave. Toont het aardopwarmingsvermogen over 100 jaar van broeikasgasemissies in de levenscyclus.",
+      impactParticulateMatter: "Fijnstof",
+      impactParticulateMatterDescription: "Potentiële gezondheidsschade door fijnstof en voorlopers, uitgedrukt als ziekte-incidentie.",
+      impactHumanToxicityCancer: "Humane toxiciteit, kanker",
+      impactHumanToxicityCancerDescription: "Potentiële kankergerelateerde toxiciteit door milieu-emissies in de levenscyclus. Dit is geen klinisch kankerrisico of behandelingstoxiciteit.",
+      impactHumanToxicityNonCancer: "Humane toxiciteit, niet-kanker",
+      impactHumanToxicityNonCancerDescription: "Potentiële niet-kankergerelateerde toxiciteit door milieu-emissies in de levenscyclus. Dit is geen indicator voor bijwerkingen bij patiënten.",
+      impactIonisingRadiation: "Ioniserende straling, menselijke gezondheid",
+      impactIonisingRadiationDescription: "Potentiële gezondheidsschade door ioniserende emissies in de levenscyclus bij normaal bedrijf. Dit is niet de stralingsdosis voor een patiënt.",
+      impactMethodNote: "Categorienamen en eenheden volgen EF 3.1. De exacte Brightway-methodevariant 'no LT', voorgrondinventaris en karakterisatiefactorkoppeling moeten vóór interpretatie worden gecontroleerd.",
+      efReferenceLink: "EF 3.1-referentiepakket",
+      impactCoefficientDynamic: "Impactcoëfficiënt, {unit}/referentie-eenheid",
+      impactCoefficientAria: "Impactcoëfficiënt {category} voor {block}",
+      categoryFactorGap: "Er is geen geverifieerde coëfficiënt voor {category} gekoppeld. Voer alleen een waarde in na koppeling van voorgrond-LCI en EF v3.1 no LT.",
+      categoryUserFactorGap: "Door gebruiker ingevoerde coëfficiënt voor {category}. Controleer dataset en karakterisatiefactorkoppeling van EF v3.1 no LT vóór gebruik.",
+      climateDataWarning: "GWP is de standaardweergave. Hoeveelheden en GWP-coëfficiënten blijven demonstratiedata totdat ze zijn vervangen door gevalideerde voorgrond-LCI- en LCIA-koppelingen.",
+      categoryDataWarning: "Er zijn geen geverifieerde coëfficiënten voor {category} gekoppeld. Resultaten blijven nul totdat categoriespecifieke EF v3.1 no LT-coëfficiënten zijn ingevoerd en gedocumenteerd.",
+      noCategoryFactors: "Geen actieve bouwsteen heeft een niet-nulcoëfficiënt voor {category}.",
+      impactCategoryConfig: "Impactcategorie",
+      categoryReportNote: "Geselecteerde categorie: {category} ({unit}). Coëfficiënten zijn geen geverifieerde EF-resultaten zonder gedocumenteerde voorgrond-LCI- en LCIA-koppeling."
     });
 
     Object.assign(uiText.zh, {
@@ -4123,7 +4337,30 @@
       formulaUncertainty: "影响系数范围",
       formulaNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为 LCIA 影响系数；j 为影响类别；u_c 仅表示 c 的相对不确定性；N 为队列人数。本字段不表示数量、路径、情景或模型结构不确定性。",
       formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为影响系数；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
-      helpStep5: "检查影响系数不确定性范围，并单独记录数量、路径、情景和模型结构不确定性，然后使用当前语言导出报告。"
+      helpStep5: "检查影响系数不确定性范围，并单独记录数量、路径、情景和模型结构不确定性，然后使用当前语言导出报告。",
+      impactCategoryLabel: "影响类别",
+      lcaIntro: "候选构建单元的可编辑计算行。模块定义 LCA 边界，行勾选定义当前使用的构建单元。GWP 保留 dummy 演示系数；新增 EF 类别初始均为尚未映射的数据缺口。",
+      impactClimate: "气候变化（GWP100）",
+      impactClimateDescription: "ECO-PATH 的首选视图，表示生命周期温室气体排放的 100 年全球变暖潜势。",
+      impactParticulateMatter: "颗粒物",
+      impactParticulateMatterDescription: "颗粒物及其前体排放造成的潜在人类健康负担，以疾病发生数表示。",
+      impactHumanToxicityCancer: "人体毒性，致癌",
+      impactHumanToxicityCancerDescription: "生命周期环境排放的潜在致癌毒性，不表示临床癌症风险或治疗毒性。",
+      impactHumanToxicityNonCancer: "人体毒性，非致癌",
+      impactHumanToxicityNonCancerDescription: "生命周期环境排放的潜在非致癌毒性，不是患者不良反应指标。",
+      impactIonisingRadiation: "电离辐射，人体健康",
+      impactIonisingRadiationDescription: "正常运行条件下生命周期电离排放的潜在人类健康影响，不表示患者接受的放射剂量。",
+      impactMethodNote: "类别名称和单位遵循 EF 3.1。正式解释前，必须核对 Brightway 中准确的 no LT 方法键、前景清单和表征因子映射。",
+      efReferenceLink: "EF 3.1 参考包",
+      impactCoefficientDynamic: "影响系数，{unit}/参考单位",
+      impactCoefficientAria: "{block} 的 {category} 影响系数",
+      categoryFactorGap: "尚未映射经过验证的 {category} 系数。仅在完成前景 LCI 与 EF v3.1 no LT 映射后输入。",
+      categoryUserFactorGap: "用户输入的 {category} 系数。使用前需核对 EF v3.1 no LT 数据集和表征因子映射。",
+      climateDataWarning: "GWP 为默认视图。数量和 GWP 系数仍是演示数据，必须替换为经验证的前景 LCI 和 LCIA 映射。",
+      categoryDataWarning: "尚未连接经过验证的 {category} 系数。在输入并记录该类别的 EF v3.1 no LT 系数前，结果保持为零。",
+      noCategoryFactors: "当前活动构建单元中没有非零的 {category} 系数。",
+      impactCategoryConfig: "影响类别",
+      categoryReportNote: "所选类别：{category}（{unit}）。若没有记录前景 LCI 与 LCIA 映射，这些系数不属于经验证的 EF 结果。"
     });
 
     Object.assign(uiText.ja, {
@@ -4145,7 +4382,30 @@
       formulaUncertainty: "影響係数の範囲",
       formulaNote: "S は選択モジュール内の選択 building block、q は発生回数または資源量、c は LCIA 影響係数、j は影響カテゴリ、u_c は c のみに割り当てた相対不確実性、N はコホート人数です。数量、経路、シナリオ、構造的不確実性はこの欄に含みません。",
       formulaReportNote: "S は選択モジュール内の選択 building block です。q は回数または資源量、c は影響係数、u_c は c のみの相対不確実性、N はコホート人数です。",
-      helpStep5: "影響係数の不確実性範囲と、数量、経路、シナリオ、構造に残る不確実性を確認し、選択言語で報告書を出力します。"
+      helpStep5: "影響係数の不確実性範囲と、数量、経路、シナリオ、構造に残る不確実性を確認し、選択言語で報告書を出力します。",
+      impactCategoryLabel: "影響カテゴリ",
+      lcaIntro: "候補 building block の編集可能な計算行です。モジュールが LCA 境界を、行の選択が有効な building block を定義します。GWP にはデモ用ダミー係数があり、追加 EF カテゴリは未対応データギャップから開始します。",
+      impactClimate: "気候変動（GWP100）",
+      impactClimateDescription: "ECO-PATH の既定表示です。ライフサイクル温室効果ガス排出の100年地球温暖化係数を示します。",
+      impactParticulateMatter: "粒子状物質",
+      impactParticulateMatterDescription: "粒子状物質と前駆物質の排出による潜在的な健康負荷を疾病発生数で示します。",
+      impactHumanToxicityCancer: "ヒト毒性（発がん）",
+      impactHumanToxicityCancerDescription: "ライフサイクル環境排出による潜在的な発がん毒性です。臨床的ながんリスクや治療毒性ではありません。",
+      impactHumanToxicityNonCancer: "ヒト毒性（非発がん）",
+      impactHumanToxicityNonCancerDescription: "ライフサイクル環境排出による潜在的な非発がん毒性です。患者の有害事象指標ではありません。",
+      impactIonisingRadiation: "電離放射線（人の健康）",
+      impactIonisingRadiationDescription: "通常運転時のライフサイクル電離排出による潜在的な健康影響です。患者が受ける放射線量ではありません。",
+      impactMethodNote: "カテゴリ名と単位は EF 3.1 に準拠します。解釈前に Brightway の正確な no LT メソッドキー、フォアグラウンドインベントリ、特性化係数の対応を確認してください。",
+      efReferenceLink: "EF 3.1 参照パッケージ",
+      impactCoefficientDynamic: "影響係数、{unit}/参照単位",
+      impactCoefficientAria: "{block} の {category} 影響係数",
+      categoryFactorGap: "検証済みの {category} 係数は未対応です。フォアグラウンド LCI と EF v3.1 no LT の対応後にのみ入力してください。",
+      categoryUserFactorGap: "ユーザー入力の {category} 係数です。使用前に EF v3.1 no LT データセットと特性化係数の対応を確認してください。",
+      climateDataWarning: "GWP が既定表示です。数量と GWP 係数は、検証済みのフォアグラウンド LCI・LCIA 対応に置換するまでデモデータです。",
+      categoryDataWarning: "検証済みの {category} 係数は接続されていません。カテゴリ別 EF v3.1 no LT 係数を入力し記録するまで結果はゼロです。",
+      noCategoryFactors: "有効な building block にゼロ以外の {category} 係数がありません。",
+      impactCategoryConfig: "影響カテゴリ",
+      categoryReportNote: "選択カテゴリ：{category}（{unit}）。フォアグラウンド LCI と LCIA の対応記録がない係数は、検証済み EF 結果ではありません。"
     });
 
     Object.assign(uiText.es, {
@@ -4167,7 +4427,30 @@
       formulaUncertainty: "Rango del coeficiente de impacto",
       formulaNote: "S = building blocks marcados dentro de módulos marcados. q = ocurrencia o cantidad de recurso, c = coeficiente LCIA, j = categoría de impacto, u_c = incertidumbre relativa asignada solo a c, N = tamaño de cohorte. Este campo no representa incertidumbre de cantidades, vía, escenario o estructura.",
       formulaReportNote: "S contiene los building blocks marcados dentro de módulos marcados. q es ocurrencia o cantidad de recurso. c es el coeficiente de impacto. u_c es la incertidumbre relativa solo de c. N es el tamaño de cohorte.",
-      helpStep5: "Revise el rango de incertidumbre del coeficiente de impacto y documente por separado la incertidumbre de cantidades, vía, escenario y estructura. Exporte el informe en el idioma seleccionado."
+      helpStep5: "Revise el rango de incertidumbre del coeficiente de impacto y documente por separado la incertidumbre de cantidades, vía, escenario y estructura. Exporte el informe en el idioma seleccionado.",
+      impactCategoryLabel: "Categoría de impacto",
+      lcaIntro: "Filas editables para bloques candidatos. Los módulos definen el límite LCA y las casillas de fila definen los bloques activos. GWP contiene coeficientes ficticios de demostración; las categorías EF adicionales comienzan como lagunas sin mapear.",
+      impactClimate: "Cambio climático (GWP100)",
+      impactClimateDescription: "Vista principal de ECO-PATH. Presenta el potencial de calentamiento global a 100 años de las emisiones del ciclo de vida.",
+      impactParticulateMatter: "Material particulado",
+      impactParticulateMatterDescription: "Carga potencial sobre la salud por material particulado y emisiones precursoras, expresada como incidencia de enfermedad.",
+      impactHumanToxicityCancer: "Toxicidad humana, cáncer",
+      impactHumanToxicityCancerDescription: "Toxicidad cancerígena potencial de emisiones ambientales del ciclo de vida. No representa riesgo clínico de cáncer ni toxicidad del tratamiento.",
+      impactHumanToxicityNonCancer: "Toxicidad humana, no cáncer",
+      impactHumanToxicityNonCancerDescription: "Toxicidad no cancerígena potencial de emisiones ambientales del ciclo de vida. No es un indicador de efectos adversos del paciente.",
+      impactIonisingRadiation: "Radiación ionizante, salud humana",
+      impactIonisingRadiationDescription: "Impacto potencial sobre la salud de emisiones ionizantes del ciclo de vida en operación normal. No es la dosis de radiación administrada al paciente.",
+      impactMethodNote: "Los nombres y unidades siguen EF 3.1. Antes de interpretar, deben verificarse la clave exacta del método no LT en Brightway, el inventario de primer plano y el mapeo de factores de caracterización.",
+      efReferenceLink: "Paquete de referencia EF 3.1",
+      impactCoefficientDynamic: "Coeficiente de impacto, {unit}/unidad de referencia",
+      impactCoefficientAria: "Coeficiente de {category} para {block}",
+      categoryFactorGap: "No se ha mapeado un coeficiente verificado de {category}. Introduzca un valor solo tras mapear el LCI de primer plano y EF v3.1 no LT.",
+      categoryUserFactorGap: "Coeficiente de {category} introducido por el usuario. Verifique el conjunto EF v3.1 no LT y el mapeo de caracterización antes de usarlo.",
+      climateDataWarning: "GWP es la vista predeterminada. Las cantidades y coeficientes GWP siguen siendo datos de demostración hasta sustituirlos por mapeos LCI y LCIA validados.",
+      categoryDataWarning: "No hay coeficientes verificados de {category} conectados. Los resultados permanecen en cero hasta introducir y documentar coeficientes EF v3.1 no LT específicos.",
+      noCategoryFactors: "Ningún bloque activo tiene un coeficiente distinto de cero para {category}.",
+      impactCategoryConfig: "Categoría de impacto",
+      categoryReportNote: "Categoría seleccionada: {category} ({unit}). Los coeficientes no son resultados EF verificados sin mapeos documentados de LCI y LCIA."
     });
 
     const pathwayText = {
@@ -7600,10 +7883,53 @@
       mapFullscreenOpen: false,
       activitiesCollapsed: false,
       workspaceStep: "pathway",
+      impactCategory: "climate",
       lcaExpandedModules: {}
     };
 
     let detailSyncQueued = false;
+
+    function currentImpactCategory() {
+      return impactCategoryRegistry.find((category) => category.id === state.impactCategory) || impactCategoryRegistry[0];
+    }
+
+    function impactCategoryName() {
+      return t(currentImpactCategory().nameKey);
+    }
+
+    function impactCategoryUnit() {
+      return currentImpactCategory().unit;
+    }
+
+    function impactCoefficientLabel() {
+      return t("impactCoefficientDynamic", { unit: impactCategoryUnit() });
+    }
+
+    function rowFactor(row) {
+      return Math.max(0, Number(row.factors?.[state.impactCategory]) || 0);
+    }
+
+    function rowUncertainty(row) {
+      return Math.max(0, Number(row.uncertainties?.[state.impactCategory]) || 0);
+    }
+
+    function renderImpactCategoryControl() {
+      const select = document.getElementById("lcaImpactCategory");
+      if (!select) return;
+      clear(select);
+      impactCategoryRegistry.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id;
+        option.textContent = `${t(category.nameKey)} · ${category.unit}`;
+        select.appendChild(option);
+      });
+      select.value = currentImpactCategory().id;
+      document.getElementById("lcaImpactCategoryLabel").textContent = t("impactCategoryLabel");
+      document.getElementById("lcaImpactCategoryName").textContent = `${impactCategoryName()} · ${impactCategoryUnit()}`;
+      document.getElementById("lcaImpactCategoryDescription").textContent = t(currentImpactCategory().descriptionKey);
+      document.getElementById("lcaImpactMethodNote").textContent = `${t("impactMethodNote")} `;
+      document.getElementById("efReferenceLink").textContent = t("efReferenceLink");
+    }
 
     function localizedPathwayField(pathwayId, field) {
       const languageText = pathwayText[state.language] || pathwayText.en;
@@ -7691,6 +8017,11 @@
     }
 
     function localizedGap(row) {
+      if (state.impactCategory !== "climate") {
+        return t(rowFactor(row) > 0 ? "categoryUserFactorGap" : "categoryFactorGap", {
+          category: impactCategoryName()
+        });
+      }
       if (state.language === "en") return row.gap;
       return t("dummyGapTemplate", { flows: localizedResourceFlowList(row.flow) });
     }
@@ -9211,7 +9542,7 @@
                   <th>${escapeHtml(t("resourceFlowsToModel"))}</th>
                   <th>${escapeHtml(t("unit"))}</th>
                   <th>${escapeHtml(t("baseQuantity"))}</th>
-                  <th>${escapeHtml(t("impactCoefficient"))}</th>
+                  <th>${escapeHtml(impactCoefficientLabel())}</th>
                   <th>${escapeHtml(t("uncertainty"))}</th>
                   <th>${escapeHtml(t("defaultStatusGap"))}</th>
                   <th>${escapeHtml(t("baseContribution"))}</th>
@@ -9235,8 +9566,8 @@
                     <td>${escapeHtml(localizedResourceFlowList(row.flow))}</td>
                     <td>${escapeHtml(localizedUnit(row.unit))}</td>
                     <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(t("baseQuantityAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
-                    <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(t("impactCoefficientAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
-                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(t("uncertaintyAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
+                    <td><input type="number" min="0" step="any" inputmode="decimal" value="${escapeHtml(rowFactor(row))}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(t("impactCoefficientAria", { block: localizedBlockName(row.block), category: impactCategoryName() }))}"${rowDisabledAttr}></td>
+                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(rowUncertainty(row))}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(t("uncertaintyAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
                     <td class="lca-source-cell">${escapeHtml(localizedGap(row))}</td>
                     <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
                   </tr>
@@ -9254,6 +9585,13 @@
     function bindLcaControls() {
       const moduleCalculations = document.getElementById("lcaModuleCalculations");
       document.getElementById("lcaCaseCount").addEventListener("input", renderLcaOutputs);
+      document.getElementById("lcaImpactCategory").addEventListener("change", (event) => {
+        if (!impactCategoryRegistry.some((category) => category.id === event.target.value)) return;
+        state.impactCategory = event.target.value;
+        renderImpactCategoryControl();
+        renderLcaTable();
+        renderLcaOutputs();
+      });
       moduleCalculations.addEventListener("toggle", (event) => {
         const details = event.target;
         if (!(details instanceof HTMLDetailsElement) || !details.dataset.lcaModule) return;
@@ -9264,7 +9602,18 @@
         const rowIndex = Number(input.dataset.lcaRow);
         const field = input.dataset.lcaField;
         if (!Number.isInteger(rowIndex) || !field || !lcaRows[rowIndex]) return;
-        lcaRows[rowIndex][field] = Math.max(0, Number(input.value) || 0);
+        const value = Math.max(0, Number(input.value) || 0);
+        if (field === "factor") {
+          lcaRows[rowIndex].factors[state.impactCategory] = value;
+        } else if (field === "uncertainty") {
+          lcaRows[rowIndex].uncertainties[state.impactCategory] = value;
+        } else {
+          lcaRows[rowIndex][field] = value;
+        }
+        if (field === "factor") {
+          const sourceCell = input.closest("tr")?.querySelector(".lca-source-cell");
+          if (sourceCell) sourceCell.textContent = localizedGap(lcaRows[rowIndex]);
+        }
         renderLcaOutputs();
       });
       moduleCalculations.addEventListener("change", (event) => {
@@ -9300,9 +9649,10 @@
         return `
           <div class="lca-result-card">
             <strong>${escapeHtml(scenario.label)} ${escapeHtml(t("scenario"))}</strong>
-            <span>${formatKg(values.cohortExpected)}</span>
+            <span>${formatImpact(values.cohortExpected)}</span>
+            <small>${escapeHtml(impactCategoryName())}</small>
             <small>${escapeHtml(t("demoLibraryTotal", { count: formatNumber(caseCount) }))}</small>
-            <small>${escapeHtml(t("perPathway", { value: formatKg(values.perPathway) }))}</small>
+            <small>${escapeHtml(t("perPathway", { value: formatImpact(values.perPathway) }))}</small>
             <small>${escapeHtml(t("includedModulesRows", {
               modules: includedModules,
               moduleTotal: calculationModuleIds.length,
@@ -9321,7 +9671,7 @@
 
       lcaRows.forEach((row) => {
         const element = document.getElementById(`lcaContribution-${row.id}`);
-        if (element) element.textContent = isLcaRowActive(row) ? formatKg(rowImpact(row, "base")) : t("excluded");
+        if (element) element.textContent = isLcaRowActive(row) ? formatImpact(rowImpact(row, "base")) : t("excluded");
       });
 
       calculationModuleIds.forEach((moduleId) => {
@@ -9336,7 +9686,7 @@
           .filter((row) => row.module === moduleId && isLcaRowIncluded(row))
           .reduce((sum, row) => sum + rowImpact(row, "base"), 0);
         const moduleActiveRows = moduleRows.filter((row) => isLcaRowIncluded(row)).length;
-        element.textContent = t("moduleSubtotal", { value: formatKg(moduleTotal), rows: moduleActiveRows });
+        element.textContent = t("moduleSubtotal", { value: formatImpact(moduleTotal), rows: moduleActiveRows });
       });
 
       document.getElementById("lcaFormula").innerHTML = `
@@ -9369,13 +9719,15 @@
         </div>
       `;
 
-      document.getElementById("lcaDataWarning").textContent = t("lcaWarning");
+      document.getElementById("lcaDataWarning").textContent = state.impactCategory === "climate"
+        ? t("climateDataWarning")
+        : t("categoryDataWarning", { category: impactCategoryName() });
       renderLcaPriorityList();
     }
 
     function renderLcaPriorityList() {
       const priorityRows = lcaRows
-        .filter((row) => isLcaRowActive(row))
+        .filter((row) => isLcaRowActive(row) && rowFactor(row) > 0)
         .map((row) => ({
           ...row,
           weightedImpact: rowImpact(row, "base")
@@ -9386,7 +9738,9 @@
       clear(list);
       if (priorityRows.length === 0) {
         const item = document.createElement("li");
-        item.textContent = t("noActiveRows");
+        item.textContent = lcaRows.some((row) => isLcaRowActive(row))
+          ? t("noCategoryFactors", { category: impactCategoryName() })
+          : t("noActiveRows");
         list.appendChild(item);
         return;
       }
@@ -9395,7 +9749,7 @@
         item.textContent = t("priorityRow", {
           module: row.module,
           block: localizedBlockName(row.block),
-          impact: formatKg(row.weightedImpact),
+          impact: formatImpact(row.weightedImpact),
           gap: localizedGap(row)
         });
         list.appendChild(item);
@@ -9481,8 +9835,8 @@
     }
 
     function rowImpact(row, scenario) {
-      const base = Math.max(0, row.quantity) * Math.max(0, row.factor);
-      const uncertainty = Math.max(0, row.uncertainty) / 100;
+      const base = Math.max(0, row.quantity) * rowFactor(row);
+      const uncertainty = rowUncertainty(row) / 100;
       if (scenario === "low") return Math.max(0, base * (1 - uncertainty));
       if (scenario === "high") return base * (1 + uncertainty);
       return base;
@@ -9493,9 +9847,20 @@
       return Number.isFinite(value) ? value : fallback;
     }
 
-    function formatKg(value) {
-      const digits = value >= 100 ? 0 : value >= 10 ? 1 : 2;
-      return `${value.toFixed(digits)} kg CO2-eq`;
+    function formatImpact(value) {
+      const number = Math.max(0, Number(value) || 0);
+      const absolute = Math.abs(number);
+      let formatted;
+      if (absolute === 0) {
+        formatted = "0";
+      } else if (absolute < 0.001 || absolute >= 1000000) {
+        formatted = number.toExponential(3);
+      } else {
+        formatted = number.toLocaleString(localeForCurrentLanguage(), {
+          maximumSignificantDigits: 4
+        });
+      }
+      return `${formatted} ${impactCategoryUnit()}`;
     }
 
     function formatNumber(value) {
@@ -9551,6 +9916,8 @@
           const included = moduleIncluded && rowIncluded;
           return {
             ...row,
+            factor: rowFactor(row),
+            uncertainty: rowUncertainty(row),
             moduleName: moduleRegistry[row.module] ? moduleName(row.module) : "",
             displayBlock: localizedBlockName(row.block),
             displayFlow: localizedResourceFlowList(row.flow),
@@ -9587,10 +9954,13 @@
         high: lcaScenarioValues("high", caseCount)
       };
       const topRows = rows
-        .filter((row) => row.included)
+        .filter((row) => row.included && row.baseContribution > 0)
         .sort((a, b) => b.baseContribution - a.baseContribution)
         .slice(0, 8);
       return {
+        impactCategoryId: currentImpactCategory().id,
+        impactCategoryName: impactCategoryName(),
+        impactCategoryUnit: impactCategoryUnit(),
         pathwayLabel: localizedPathwayLabel(),
         pathwayTitle: localizedPathwayTitle(),
         pathwayScope: localizedPathwayScope(),
@@ -9625,8 +9995,8 @@
       ].map(([label, values]) => `
         <div class="metric">
           <strong>${escapeHtml(label)}</strong>
-          <span>${escapeHtml(formatKg(values.cohortExpected))}</span>
-          <small>${escapeHtml(t("perPathway", { value: formatKg(values.perPathway) }))}</small>
+          <span>${escapeHtml(formatImpact(values.cohortExpected))}</span>
+          <small>${escapeHtml(t("perPathway", { value: formatImpact(values.perPathway) }))}</small>
         </div>
       `).join("");
       const moduleRows = data.modules.map((module) => `
@@ -9636,7 +10006,7 @@
           <td>${escapeHtml(module.role)}</td>
           <td>${module.included ? escapeHtml(t("included")) : escapeHtml(t("excluded"))}</td>
           <td>${escapeHtml(formatNumber(module.activeRowCount))} / ${escapeHtml(formatNumber(module.rowCount))}</td>
-          <td>${module.included ? escapeHtml(formatKg(module.subtotal)) : escapeHtml(t("excluded"))}</td>
+          <td>${module.included ? escapeHtml(formatImpact(module.subtotal)) : escapeHtml(t("excluded"))}</td>
         </tr>
       `).join("");
       const topRows = data.topRows.length
@@ -9644,7 +10014,7 @@
           <tr>
             <td>${escapeHtml(row.module)} ${escapeHtml(row.moduleName)}</td>
             <td>${escapeHtml(row.displayBlock)}</td>
-            <td>${escapeHtml(formatKg(row.baseContribution))}</td>
+            <td>${escapeHtml(formatImpact(row.baseContribution))}</td>
             <td>${escapeHtml(row.displayGap)}</td>
           </tr>
         `).join("")
@@ -9669,7 +10039,7 @@
           <td>${escapeHtml(formatDecimal(row.quantity, 3))}</td>
           <td>${escapeHtml(formatDecimal(row.factor, 4))}</td>
           <td>${escapeHtml(formatDecimal(row.uncertainty, 1))}%</td>
-          <td>${row.included ? escapeHtml(formatKg(row.baseContribution)) : escapeHtml(t("excluded"))}</td>
+          <td>${row.included ? escapeHtml(formatImpact(row.baseContribution)) : escapeHtml(t("excluded"))}</td>
         </tr>
       `).join("");
       return `<!doctype html>
@@ -9832,6 +10202,7 @@
       <p>${escapeHtml(data.pathwayScope)}</p>
       <div class="config">
         <div><strong>${escapeHtml(t("pathwayStatusLabel"))}</strong><br>${escapeHtml(data.pathwayStatus)}</div>
+        <div><strong>${escapeHtml(t("impactCategoryConfig"))}</strong><br>${escapeHtml(data.impactCategoryName)} (${escapeHtml(data.impactCategoryUnit)})</div>
         <div><strong>${escapeHtml(t("cohortSize"))}</strong><br>${escapeHtml(formatNumber(data.caseCount))}</div>
         <div><strong>${escapeHtml(t("checkedModules"))}</strong><br>${escapeHtml(formatNumber(data.includedModuleCount))} / ${escapeHtml(formatNumber(data.moduleCount))}</div>
         <div><strong>${escapeHtml(t("rowsCounted"))}</strong><br>${escapeHtml(formatNumber(data.rows.filter((row) => row.included).length))} / ${escapeHtml(formatNumber(data.rows.length))}</div>
@@ -9842,7 +10213,10 @@
     <section>
       <h2>${escapeHtml(t("scenarioResults"))}</h2>
       <div class="metrics">${resultCards}</div>
-      <p class="muted">${escapeHtml(t("valuesDummyNote"))}</p>
+      <p class="muted">${escapeHtml(t("categoryReportNote", {
+        category: data.impactCategoryName,
+        unit: data.impactCategoryUnit
+      }))}</p>
     </section>
 
     <section>
@@ -9885,7 +10259,7 @@
       <h2>${escapeHtml(t("fullCalculationRows"))}</h2>
       <table>
         <thead>
-          <tr><th>${escapeHtml(t("module"))}</th><th>${escapeHtml(t("buildingBlock"))}</th><th>${escapeHtml(t("status"))}</th><th>${escapeHtml(t("resourceFlowsLabel"))}</th><th>${escapeHtml(t("unit"))}</th><th>${escapeHtml(t("baseQuantity"))}</th><th>${escapeHtml(t("impactCoefficient"))}</th><th>${escapeHtml(t("uncertainty"))}</th><th>${escapeHtml(t("baseContribution"))}</th></tr>
+          <tr><th>${escapeHtml(t("module"))}</th><th>${escapeHtml(t("buildingBlock"))}</th><th>${escapeHtml(t("status"))}</th><th>${escapeHtml(t("resourceFlowsLabel"))}</th><th>${escapeHtml(t("unit"))}</th><th>${escapeHtml(t("baseQuantity"))}</th><th>${escapeHtml(impactCoefficientLabel())}</th><th>${escapeHtml(t("uncertainty"))}</th><th>${escapeHtml(t("baseContribution"))}</th></tr>
         </thead>
         <tbody>${calculationRows}</tbody>
       </table>
@@ -9906,7 +10280,7 @@
 
     function exportLcaReport() {
       const reportHtml = buildLcaReportHtml();
-      const filename = `ecopath-lca-report-${slugify(currentPathway().label)}-${reportDateStamp()}.html`;
+      const filename = `ecopath-lca-report-${slugify(currentPathway().label)}-${state.impactCategory}-${reportDateStamp()}.html`;
       const blob = new Blob([reportHtml], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -10010,6 +10384,7 @@
       renderPathwayScenarioControls();
       renderMap();
       renderDetail();
+      renderImpactCategoryControl();
       renderBuildingBlockMap();
       renderActivityList();
       renderActivityPanelState();

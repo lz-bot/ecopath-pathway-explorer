@@ -939,6 +939,26 @@
       stroke-dasharray: 8 8;
     }
 
+    .edge-direction-marker {
+      pointer-events: none;
+    }
+
+    .edge-direction-halo,
+    .edge-direction-chevron {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .edge-direction-halo {
+      stroke: var(--panel);
+      stroke-width: 7;
+    }
+
+    .edge-direction-chevron {
+      stroke-width: 3;
+    }
+
     .map-node {
       cursor: pointer;
       outline: none;
@@ -2058,6 +2078,49 @@
       font-size: 12px;
     }
 
+    .formula-glossary {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .formula-glossary-title {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .formula-symbol-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 16px;
+      margin-top: 8px;
+    }
+
+    .formula-symbol-item {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 8px;
+      align-items: baseline;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .formula-symbol {
+      color: var(--accent-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .formula-scope-note {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     .lca-results {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2965,6 +3028,9 @@
       .formula-expression {
         font-size: 15px;
       }
+      .formula-symbol-grid {
+        grid-template-columns: 1fr;
+      }
       .source-lens-panel {
         margin-inline: 12px;
       }
@@ -3239,7 +3305,7 @@
             <p class="assessment-validation" id="assessmentValidationStatus" aria-live="polite"></p>
           </div>
           <div class="legend" aria-label="Route legend">
-            <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="routeDirectionLabel">Arrows show pathway direction</span></span>
+            <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="routeDirectionLabel">Arrowheads on routes show direction</span></span>
             <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="routeSequenceLabel">Numbers show selected order</span></span>
             <span class="legend-item"><span class="swatch diagnostic"></span><span id="diagnosticRouteLabel">Diagnostic and first-contact route</span></span>
             <span class="legend-item"><span class="swatch treatment"></span><span id="treatmentRouteLabel">Treatment route</span></span>
@@ -3495,7 +3561,7 @@
           </svg>
         </div>
         <div class="legend" aria-label="Route legend">
-          <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="fullscreenRouteDirectionLabel">Arrows show pathway direction</span></span>
+          <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="fullscreenRouteDirectionLabel">Arrowheads on routes show direction</span></span>
           <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="fullscreenRouteSequenceLabel">Numbers show selected order</span></span>
           <span class="legend-item"><span class="swatch diagnostic"></span><span id="fullscreenDiagnosticRouteLabel">Diagnostic and first-contact route</span></span>
           <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
@@ -5141,7 +5207,7 @@
         pathwayScenario: "Pathway scenario",
         pathwayScenarioSubtitle: "One patient route; competing treatment branches replace each other",
         selectedActivitiesStatus: "{count} selected activities; {modules} pathway modules active",
-        routeDirection: "Arrows show pathway direction",
+        routeDirection: "Arrowheads on routes show direction",
         routeSequence: "Numbers show the selected activity order",
         diagnosticRoute: "Diagnostic and first-contact route",
         treatmentRoute: "Treatment route",
@@ -5317,7 +5383,7 @@
         pathwayScenario: "Zorgpadscenario",
         pathwayScenarioSubtitle: "Eén patiënttraject; concurrerende behandelroutes vervangen elkaar",
         selectedActivitiesStatus: "{count} geselecteerde activiteiten; {modules} actieve zorgpadmodules",
-        routeDirection: "Pijlen tonen de richting van het zorgpad",
+        routeDirection: "Pijlpunten op routes tonen de richting",
         routeSequence: "Nummers tonen de volgorde van geselecteerde activiteiten",
         diagnosticRoute: "Diagnostische en eerste-contactroute",
         treatmentRoute: "Behandelroute",
@@ -5498,7 +5564,7 @@
           pathwayScenario: "路径情景",
           pathwayScenarioSubtitle: "一次只构建一条患者路径；竞争治疗分支会相互替换",
           selectedActivitiesStatus: "已选 {count} 个活动；{modules} 个路径模块已启用",
-          routeDirection: "箭头表示路径方向",
+          routeDirection: "线路上的箭头表示前进方向",
           routeSequence: "数字表示所选活动的先后顺序",
           diagnosticRoute: "诊断和首次接触路线",
           treatmentRoute: "治疗路线",
@@ -5671,7 +5737,7 @@
           pathwayScenario: "パスウェイシナリオ",
           pathwayScenarioSubtitle: "患者一人分のルート；競合する治療分岐は相互に置換",
           selectedActivitiesStatus: "{count} 件の活動を選択；{modules} 件のパスウェイモジュールが有効",
-          routeDirection: "矢印はパスウェイの方向を示します",
+          routeDirection: "経路上の矢印が進行方向を示します",
           routeSequence: "番号は選択した活動の順序を示します",
           diagnosticRoute: "診断・初回接触ルート",
           treatmentRoute: "治療ルート",
@@ -5799,7 +5865,7 @@
           pathwayScenario: "Escenario de vía",
           pathwayScenarioSubtitle: "Una ruta de paciente; las ramas terapéuticas competidoras se sustituyen",
           selectedActivitiesStatus: "{count} actividades seleccionadas; {modules} módulos de vía activos",
-          routeDirection: "Las flechas indican la dirección de la vía",
+          routeDirection: "Las flechas sobre las rutas indican la dirección",
           routeSequence: "Los números muestran el orden de las actividades seleccionadas",
           diagnosticRoute: "Ruta diagnóstica y de primer contacto",
           treatmentRoute: "Ruta de tratamiento",
@@ -5995,6 +6061,14 @@
       uncertainty: "Impact coefficient uncertainty, +/- %",
       uncertaintyAria: "{block} impact coefficient uncertainty percent",
       formulaUncertainty: "Impact coefficient range",
+      formulaParameters: "Parameter meanings",
+      formulaSymbolS: "Building-block rows included in the calculation",
+      formulaSymbolQ: "Occurrences or resource amount for row i",
+      formulaSymbolC: "Impact coefficient for row i in category j",
+      formulaSymbolJ: "Selected EF impact category",
+      formulaSymbolU: "Relative uncertainty assigned only to the impact coefficient",
+      formulaSymbolN: "Number of patient pathways in the cohort",
+      formulaExcludedUncertainty: "Not covered by this field: quantity, pathway, scenario, or structural uncertainty.",
       formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u_c = relative uncertainty assigned to c only, N = cohort size. Quantity, pathway, scenario, and structural uncertainty are not represented by this field.",
       formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. u_c is the relative uncertainty assigned to c only. N is cohort size.",
       helpStep5: "Define the functional unit and review all provisional quantities, uncertainty assumptions, and data gaps. Start the local Brightway companion with a reviewed mapping to calculate directly in Results; JSON remains an audit and fallback route. Export the report in the selected language.",
@@ -6037,7 +6111,7 @@
       impactResourceUseFossilsDescription: "Potential depletion of fossil energy resources, reported in megajoules.",
       impactResourceUseMineralsMetals: "Resource use, minerals and metals",
       impactResourceUseMineralsMetalsDescription: "Potential depletion of mineral and metal resources, expressed as antimony equivalents.",
-      impactMethodNote: "Category names and units follow EF 3.1. The 30% coefficient uncertainty is a prototype assumption, not an EF default. Verify the exact 'no LT' Brightway method key, foreground inventory, characterization factors, and data-specific uncertainty before interpretation.",
+      impactMethodNote: "Category names and units follow EF 3.1. Verify the exact 'no LT' Brightway method key, foreground inventory, characterization factors, and data-specific uncertainty before interpretation.",
       efReferenceLink: "EF 3.1 reference package",
       impactCoefficientDynamic: "Impact coefficient, {unit}/reference unit",
       impactCoefficientAria: "{block} {category} impact coefficient",
@@ -6068,6 +6142,14 @@
       uncertainty: "Onzekerheid impactcoëfficiënt, +/- %",
       uncertaintyAria: "Onzekerheidspercentage impactcoëfficiënt voor {block}",
       formulaUncertainty: "Bereik impactcoëfficiënt",
+      formulaParameters: "Betekenis van de parameters",
+      formulaSymbolS: "Bouwsteenrijen die in de berekening zijn opgenomen",
+      formulaSymbolQ: "Aantal of hulpbronhoeveelheid voor rij i",
+      formulaSymbolC: "Impactcoëfficiënt voor rij i in categorie j",
+      formulaSymbolJ: "Geselecteerde EF-impactcategorie",
+      formulaSymbolU: "Relatieve onzekerheid uitsluitend van de impactcoëfficiënt",
+      formulaSymbolN: "Aantal patiënttrajecten in het cohort",
+      formulaExcludedUncertainty: "Niet opgenomen in dit veld: onzekerheid in hoeveelheid, zorgpad, scenario of modelstructuur.",
       formulaNote: "S = aangevinkte bouwstenen binnen aangevinkte modules. q = aantal of hulpbronhoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u_c = relatieve onzekerheid uitsluitend van c, N = cohortgrootte. Onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur staat niet in dit veld.",
       formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is de impactcoëfficiënt. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
       helpStep5: "Definieer de functionele eenheid en controleer alle voorlopige hoeveelheden, onzekerheidsaannames en datalacunes. Start de lokale Brightway-companion met een beoordeelde mapping om direct in Resultaten te rekenen; JSON blijft beschikbaar voor audit en als terugvalroute. Exporteer het rapport in de gekozen taal.",
@@ -6110,7 +6192,7 @@
       impactResourceUseFossilsDescription: "Potentiële uitputting van fossiele energiebronnen, uitgedrukt in megajoules.",
       impactResourceUseMineralsMetals: "Hulpbronnengebruik, mineralen en metalen",
       impactResourceUseMineralsMetalsDescription: "Potentiële uitputting van mineralen en metalen, uitgedrukt als antimoon-equivalenten.",
-      impactMethodNote: "Categorienamen en eenheden volgen EF 3.1. De coëfficiëntonzekerheid van 30% is een prototypeaanname en geen EF-standaard. Controleer vóór interpretatie de exacte Brightway-methodevariant 'no LT', voorgrondinventaris, karakterisatiefactoren en dataspecifieke onzekerheid.",
+      impactMethodNote: "Categorienamen en eenheden volgen EF 3.1. Controleer vóór interpretatie de exacte Brightway-methodevariant 'no LT', voorgrondinventaris, karakterisatiefactoren en dataspecifieke onzekerheid.",
       efReferenceLink: "EF 3.1-referentiepakket",
       impactCoefficientDynamic: "Impactcoëfficiënt, {unit}/referentie-eenheid",
       impactCoefficientAria: "Impactcoëfficiënt {category} voor {block}",
@@ -6141,6 +6223,14 @@
       uncertainty: "影响系数不确定性，+/- %",
       uncertaintyAria: "{block} 的影响系数不确定性百分比",
       formulaUncertainty: "影响系数范围",
+      formulaParameters: "参数含义",
+      formulaSymbolS: "纳入计算的 building block 行",
+      formulaSymbolQ: "第 i 行的发生次数或资源量",
+      formulaSymbolC: "第 i 行在影响类别 j 下的影响系数",
+      formulaSymbolJ: "当前选择的 EF 影响类别",
+      formulaSymbolU: "仅分配给影响系数的相对不确定性",
+      formulaSymbolN: "队列中的患者路径数量",
+      formulaExcludedUncertainty: "本字段不包括：数量、路径、情景或模型结构不确定性。",
       formulaNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为 LCIA 影响系数；j 为影响类别；u_c 仅表示 c 的相对不确定性；N 为队列人数。本字段不表示数量、路径、情景或模型结构不确定性。",
       formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为影响系数；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
       helpStep5: "定义 functional unit，并检查所有临时数量、不确定性假设和数据缺口。使用经复核的 mapping 启动本地 Brightway companion 后，可在结果步骤直接计算；JSON 保留为审计与备用流程。随后以当前语言导出报告。",
@@ -6183,7 +6273,7 @@
       impactResourceUseFossilsDescription: "化石能源资源的潜在消耗，以兆焦耳表示。",
       impactResourceUseMineralsMetals: "资源使用，矿物和金属",
       impactResourceUseMineralsMetalsDescription: "矿物和金属资源的潜在消耗，以锑当量表示。",
-      impactMethodNote: "类别名称和单位遵循 EF 3.1。30% 系数不确定性是 prototype 假设，不是 EF 默认值。正式解释前必须核对 Brightway 中准确的 no LT 方法键、前景清单、表征因子和数据特定不确定性。",
+      impactMethodNote: "类别名称和单位遵循 EF 3.1。正式解释前必须核对 Brightway 中准确的 no LT 方法键、前景清单、表征因子和数据特定不确定性。",
       efReferenceLink: "EF 3.1 参考包",
       impactCoefficientDynamic: "影响系数，{unit}/参考单位",
       impactCoefficientAria: "{block} 的 {category} 影响系数",
@@ -6215,6 +6305,14 @@
       uncertainty: "影響係数の不確実性、+/- %",
       uncertaintyAria: "{block} の影響係数不確実性パーセント",
       formulaUncertainty: "影響係数の範囲",
+      formulaParameters: "パラメータの意味",
+      formulaSymbolS: "計算に含める building block 行",
+      formulaSymbolQ: "行 i の発生回数または資源量",
+      formulaSymbolC: "カテゴリ j における行 i の影響係数",
+      formulaSymbolJ: "選択した EF 影響カテゴリ",
+      formulaSymbolU: "影響係数のみに割り当てた相対不確実性",
+      formulaSymbolN: "コホート内の患者パスウェイ数",
+      formulaExcludedUncertainty: "この欄に含まれないもの：数量、経路、シナリオ、モデル構造の不確実性。",
       formulaNote: "S は選択モジュール内の選択 building block、q は発生回数または資源量、c は LCIA 影響係数、j は影響カテゴリ、u_c は c のみに割り当てた相対不確実性、N はコホート人数です。数量、経路、シナリオ、構造的不確実性はこの欄に含みません。",
       formulaReportNote: "S は選択モジュール内の選択 building block です。q は回数または資源量、c は影響係数、u_c は c のみの相対不確実性、N はコホート人数です。",
       helpStep5: "機能単位を定義し、暫定数量、不確実性の仮定、データギャップを確認します。レビュー済み mapping でローカル Brightway companion を起動すると結果画面から直接計算でき、JSON は監査用および代替手段として残ります。選択言語で報告書を出力します。",
@@ -6258,7 +6356,7 @@
       impactResourceUseFossilsDescription: "化石エネルギー資源の潜在的な枯渇をメガジュールで示します。",
       impactResourceUseMineralsMetals: "資源利用（鉱物・金属）",
       impactResourceUseMineralsMetalsDescription: "鉱物・金属資源の潜在的な枯渇をアンチモン当量で示します。",
-      impactMethodNote: "カテゴリ名と単位は EF 3.1 に準拠します。30%の係数不確実性はプロトタイプ仮定であり、EF既定値ではありません。解釈前に Brightway の正確な no LT メソッドキー、フォアグラウンドインベントリ、特性化係数、データ固有の不確実性を確認してください。",
+      impactMethodNote: "カテゴリ名と単位は EF 3.1 に準拠します。解釈前に Brightway の正確な no LT メソッドキー、フォアグラウンドインベントリ、特性化係数、データ固有の不確実性を確認してください。",
       efReferenceLink: "EF 3.1 参照パッケージ",
       impactCoefficientDynamic: "影響係数、{unit}/参照単位",
       impactCoefficientAria: "{block} の {category} 影響係数",
@@ -6290,6 +6388,14 @@
       uncertainty: "Incertidumbre del coeficiente de impacto, +/- %",
       uncertaintyAria: "Porcentaje de incertidumbre del coeficiente de impacto de {block}",
       formulaUncertainty: "Rango del coeficiente de impacto",
+      formulaParameters: "Significado de los parámetros",
+      formulaSymbolS: "Filas de building blocks incluidas en el cálculo",
+      formulaSymbolQ: "Ocurrencias o cantidad de recurso de la fila i",
+      formulaSymbolC: "Coeficiente de impacto de la fila i en la categoría j",
+      formulaSymbolJ: "Categoría de impacto EF seleccionada",
+      formulaSymbolU: "Incertidumbre relativa asignada solo al coeficiente",
+      formulaSymbolN: "Número de vías de paciente en la cohorte",
+      formulaExcludedUncertainty: "Este campo no incluye incertidumbre de cantidad, vía, escenario o estructura del modelo.",
       formulaNote: "S = building blocks marcados dentro de módulos marcados. q = ocurrencia o cantidad de recurso, c = coeficiente LCIA, j = categoría de impacto, u_c = incertidumbre relativa asignada solo a c, N = tamaño de cohorte. Este campo no representa incertidumbre de cantidades, vía, escenario o estructura.",
       formulaReportNote: "S contiene los building blocks marcados dentro de módulos marcados. q es ocurrencia o cantidad de recurso. c es el coeficiente de impacto. u_c es la incertidumbre relativa solo de c. N es el tamaño de cohorte.",
       helpStep5: "Defina la unidad funcional y revise las cantidades provisionales, los supuestos de incertidumbre y las lagunas de datos. Inicie el companion local de Brightway con un mapping revisado para calcular directamente en Resultados; JSON se conserva para auditoría y como alternativa. Exporte el informe en el idioma seleccionado.",
@@ -6333,7 +6439,7 @@
       impactResourceUseFossilsDescription: "Agotamiento potencial de recursos energéticos fósiles, expresado en megajulios.",
       impactResourceUseMineralsMetals: "Uso de recursos, minerales y metales",
       impactResourceUseMineralsMetalsDescription: "Agotamiento potencial de minerales y metales, expresado como equivalentes de antimonio.",
-      impactMethodNote: "Los nombres y unidades siguen EF 3.1. La incertidumbre del 30% es una hipótesis del prototipo, no un valor predeterminado de EF. Antes de interpretar, verifique la clave exacta no LT en Brightway, el inventario de primer plano, los factores de caracterización y la incertidumbre específica de los datos.",
+      impactMethodNote: "Los nombres y unidades siguen EF 3.1. Antes de interpretar, verifique la clave exacta no LT en Brightway, el inventario de primer plano, los factores de caracterización y la incertidumbre específica de los datos.",
       efReferenceLink: "Paquete de referencia EF 3.1",
       impactCoefficientDynamic: "Coeficiente de impacto, {unit}/unidad de referencia",
       impactCoefficientAria: "Coeficiente de {category} para {block}",
@@ -11934,30 +12040,35 @@
       return `M ${startX} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${endX} ${to.y}`;
     }
 
-    function mapEdgeMarkerId(svgId, route) {
-      return `${svgId}-${route}-direction`;
-    }
-
-    function appendMapEdgeMarkers(svg, svgId) {
-      const defs = createSvgElement("defs");
-      ["diagnostic", "treatment", "followup", "return"].forEach((route) => {
-        const marker = createSvgElement("marker", {
-          id: mapEdgeMarkerId(svgId, route),
-          viewBox: "0 0 8 8",
-          markerWidth: 7,
-          markerHeight: 7,
-          refX: 7,
-          refY: 4,
-          orient: "auto",
-          markerUnits: "userSpaceOnUse"
-        });
-        marker.appendChild(createSvgElement("path", {
-          d: "M 0 0 L 8 4 L 0 8 Z",
-          fill: routeColor(route)
-        }));
-        defs.appendChild(marker);
+    function appendEdgeDirectionMarker(svg, edgePath, route, opacity = 0.92) {
+      let length;
+      try {
+        length = edgePath.getTotalLength();
+      } catch (error) {
+        return;
+      }
+      if (!Number.isFinite(length) || length < 20) return;
+      const markerOffset = length * 0.52;
+      const point = edgePath.getPointAtLength(markerOffset);
+      const before = edgePath.getPointAtLength(Math.max(0, markerOffset - 3));
+      const after = edgePath.getPointAtLength(Math.min(length, markerOffset + 3));
+      const angle = Math.atan2(after.y - before.y, after.x - before.x) * 180 / Math.PI;
+      const marker = createSvgElement("g", {
+        class: "edge-direction-marker",
+        transform: `translate(${point.x} ${point.y}) rotate(${angle})`,
+        opacity
       });
-      svg.appendChild(defs);
+      const chevronPath = "M -6 -5 L 1 0 L -6 5";
+      marker.appendChild(createSvgElement("path", {
+        d: chevronPath,
+        class: "edge-direction-halo"
+      }));
+      marker.appendChild(createSvgElement("path", {
+        d: chevronPath,
+        class: "edge-direction-chevron",
+        stroke: routeColor(route)
+      }));
+      svg.appendChild(marker);
     }
 
     function pathwaySourceGroups() {
@@ -12266,7 +12377,6 @@
       clear(svg);
       svg.appendChild(createSvgElement("title", { id: titleId })).textContent = localizedPathwayTitle();
       svg.appendChild(createSvgElement("desc", { id: descId })).textContent = localizedPathwayScope();
-      appendMapEdgeMarkers(svg, svgId);
 
       const laneLabelBoxes = [];
       pathway.lanes.forEach((lane) => {
@@ -12332,14 +12442,15 @@
           class: `map-edge ${edgeItem.route === "return" ? "return" : ""} ${scenarioEdge ? "scenario-edge" : ""}`,
           stroke: routeColor(edgeItem.route),
           "stroke-width": scenarioEdge ? 9 : edgeItem.route === "diagnostic" ? 7 : 6,
-          "marker-end": `url(#${mapEdgeMarkerId(svgId, edgeItem.route)})`,
           "data-edge-from": edgeItem.from,
           "data-edge-to": edgeItem.to
         });
-        if (!visibleIds.has(from.id) || !visibleIds.has(to.id)) {
+        const edgeVisible = visibleIds.has(from.id) && visibleIds.has(to.id);
+        if (!edgeVisible) {
           path.setAttribute("opacity", "0.16");
         }
         svg.appendChild(path);
+        appendEdgeDirectionMarker(svg, path, edgeItem.route, edgeVisible ? (scenarioEdge ? 1 : 0.92) : 0.16);
       });
 
       (pathway.parallelGateways || []).forEach((gateway) => {
@@ -14010,12 +14121,21 @@
         </div>
         <div class="formula-line">
           <span class="formula-label">${escapeHtml(t("formulaCohort"))}</span>
-          <span>
-            <span class="formula-expression">
-              I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>pathway,j</sub>
-            </span>
-            <span class="formula-note">${escapeHtml(t("formulaNote"))}</span>
+          <span class="formula-expression">
+            I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>pathway,j</sub>
           </span>
+        </div>
+        <div class="formula-glossary">
+          <div class="formula-glossary-title">${escapeHtml(t("formulaParameters"))}</div>
+          <div class="formula-symbol-grid" role="list">
+            <div class="formula-symbol-item" role="listitem"><span class="formula-symbol">S</span><span>${escapeHtml(t("formulaSymbolS"))}</span></div>
+            <div class="formula-symbol-item" role="listitem"><span class="formula-symbol">q<sub>i</sub></span><span>${escapeHtml(t("formulaSymbolQ"))}</span></div>
+            <div class="formula-symbol-item" role="listitem"><span class="formula-symbol">c<sub>i,j</sub></span><span>${escapeHtml(t("formulaSymbolC"))}</span></div>
+            <div class="formula-symbol-item" role="listitem"><span class="formula-symbol">j</span><span>${escapeHtml(t("formulaSymbolJ"))}</span></div>
+            <div class="formula-symbol-item" role="listitem"><span class="formula-symbol">u<sub>c,i</sub></span><span>${escapeHtml(t("formulaSymbolU"))}</span></div>
+            <div class="formula-symbol-item" role="listitem"><span class="formula-symbol">N</span><span>${escapeHtml(t("formulaSymbolN"))}</span></div>
+          </div>
+          <p class="formula-scope-note">${escapeHtml(t("formulaExcludedUncertainty"))}</p>
         </div>
       `;
       document.getElementById("lcaDataWarning").textContent = t("categoryDataWarning", {

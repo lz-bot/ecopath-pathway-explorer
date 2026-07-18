@@ -726,6 +726,54 @@
       padding: 16px;
     }
 
+    .collapse-panel-summary {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 14px;
+      color: var(--ink);
+      background: var(--panel-soft);
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .collapse-panel-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .collapse-panel-summary::after {
+      content: "+";
+      flex: 0 0 auto;
+      color: var(--accent-dark);
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    details[open] > .collapse-panel-summary::after {
+      content: "−";
+    }
+
+    .collapse-panel-summary:focus-visible {
+      outline: 3px solid rgba(111, 207, 241, 0.48);
+      outline-offset: -3px;
+    }
+
+    .collapse-panel-summary h3,
+    .collapse-panel-summary strong {
+      display: block;
+      margin: 0 0 3px;
+    }
+
+    .collapse-panel-summary .scope-note,
+    .collapse-panel-summary small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
     .detail-panel {
       align-self: start;
       transition: margin-top 180ms ease;
@@ -733,6 +781,40 @@
 
     .map-panel {
       padding: 12px;
+    }
+
+    .pathway-context-panel {
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+    }
+
+    .pathway-context-content {
+      padding: 12px;
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .pathway-context-content .panel-heading {
+      margin-bottom: 10px;
+    }
+
+    .pathway-context-summary-copy {
+      min-width: 0;
+    }
+
+    .pathway-context-summary-copy small {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .map-display-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin: 0 0 8px;
     }
 
     .map-actions {
@@ -1624,17 +1706,15 @@
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel-soft);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .brightway-bridge-content {
       padding: 14px;
+      border-top: 1px solid var(--line);
+      background: var(--panel-soft);
     }
-
-    .brightway-bridge-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .brightway-bridge-header h3 { margin: 0 0 4px; }
 
     .brightway-bridge-actions {
       display: flex;
@@ -1860,22 +1940,12 @@
       overflow: hidden;
     }
 
-    .lca-analysis-header {
+    .lca-analysis-toolbar {
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 14px;
+      justify-content: flex-end;
+      padding: 8px 14px 0;
       border-bottom: 1px solid var(--line);
       background: var(--panel-soft);
-    }
-
-    .lca-analysis-header h3 {
-      margin: 0 0 4px;
-    }
-
-    .lca-analysis-header p {
-      margin: 0;
     }
 
     .lca-result-tabs {
@@ -2387,11 +2457,6 @@
 
       .goal-scope-grid .field-wide { grid-column: auto; }
 
-      .brightway-bridge-header {
-        display: grid;
-      }
-
-      .lca-analysis-header,
       .sankey-toolbar {
         display: grid;
         grid-template-columns: 1fr;
@@ -2682,30 +2747,42 @@
     <section class="layout">
       <div>
         <section class="panel map-panel" data-workspace-panel="pathway">
-          <div class="panel-heading">
-            <div>
-              <h2 id="pathwayTitle"></h2>
-              <p class="scope-note" id="pathwayScope"></p>
-            </div>
-            <div class="map-actions">
-              <span class="status-chip" id="pathwayStatus"></span>
-              <button type="button" id="openMapFullscreen" aria-expanded="false">Fullscreen map</button>
-            </div>
-          </div>
-          <div class="source-lens-panel" id="urologySourceLens" hidden>
-            <div class="source-lens-copy">
-              <strong id="urologySourceLensTitle">Pathway source view</strong>
-              <p id="urologySourceLensNote"></p>
-              <p class="source-lens-difference" id="urologySourceDifference"></p>
-              <div class="source-lens-links">
-                <a href="https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/" target="_blank" rel="noreferrer">NVU Dutch guidance</a>
-                <a href="https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" target="_blank" rel="noreferrer">EAU MIBC 2026</a>
+          <details class="pathway-context-panel" id="pathwayContextPanel">
+            <summary class="collapse-panel-summary">
+              <span class="pathway-context-summary-copy">
+                <strong id="pathwayContextTitle">Pathway overview and source</strong>
+                <small id="pathwayContextSummaryText"></small>
+              </span>
+            </summary>
+            <div class="pathway-context-content">
+              <div class="panel-heading">
+                <div>
+                  <h2 id="pathwayTitle"></h2>
+                  <p class="scope-note" id="pathwayScope"></p>
+                </div>
+                <div class="map-actions">
+                  <span class="status-chip" id="pathwayStatus"></span>
+                </div>
+              </div>
+              <div class="source-lens-panel" id="urologySourceLens" hidden>
+                <div class="source-lens-copy">
+                  <strong id="urologySourceLensTitle">Pathway source view</strong>
+                  <p id="urologySourceLensNote"></p>
+                  <p class="source-lens-difference" id="urologySourceDifference"></p>
+                  <div class="source-lens-links">
+                    <a href="https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/" target="_blank" rel="noreferrer">NVU Dutch guidance</a>
+                    <a href="https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" target="_blank" rel="noreferrer">EAU MIBC 2026</a>
+                  </div>
+                </div>
+                <div class="source-lens-actions" role="group" aria-label="Urology pathway source view">
+                  <button class="source-lens-button" type="button" data-urology-pathway="emc" id="showDutchUrology">Dutch pathway</button>
+                  <button class="source-lens-button" type="button" data-urology-pathway="eauFull" id="showEauUrology">EAU 2026 reference</button>
+                </div>
               </div>
             </div>
-            <div class="source-lens-actions" role="group" aria-label="Urology pathway source view">
-              <button class="source-lens-button" type="button" data-urology-pathway="emc" id="showDutchUrology">Dutch pathway</button>
-              <button class="source-lens-button" type="button" data-urology-pathway="eauFull" id="showEauUrology">EAU 2026 reference</button>
-            </div>
+          </details>
+          <div class="map-display-toolbar">
+            <button type="button" id="openMapFullscreen" aria-expanded="false">Fullscreen map</button>
           </div>
           <div class="map-wrap">
             <svg id="pathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="svgTitle svgDesc">
@@ -2848,12 +2925,14 @@
         </div>
       </div>
 
-      <section class="lca-analysis-panel" data-workspace-panel="results" aria-labelledby="lcaAnalysisTitle">
-        <div class="lca-analysis-header">
-          <div>
-            <h3 id="lcaAnalysisTitle">Impact result analysis</h3>
-            <p class="scope-note" id="lcaAnalysisIntro"></p>
-          </div>
+      <details class="lca-analysis-panel" data-workspace-panel="results" aria-labelledby="lcaAnalysisTitle">
+        <summary class="collapse-panel-summary">
+          <span>
+            <strong id="lcaAnalysisTitle">Impact result analysis</strong>
+            <small id="lcaAnalysisIntro"></small>
+          </span>
+        </summary>
+        <div class="lca-analysis-toolbar">
           <div class="lca-result-tabs" role="tablist" aria-label="Impact result views">
             <button class="lca-result-tab" type="button" id="allImpactTab" role="tab" aria-selected="true" aria-controls="allImpactView">All EF categories</button>
             <button class="lca-result-tab" type="button" id="sankeyTab" role="tab" aria-selected="false" aria-controls="sankeyView">Contribution Sankey</button>
@@ -2880,14 +2959,16 @@
           </div>
           <div class="sankey-tooltip" id="sankeyTooltip" role="tooltip" hidden></div>
         </div>
-      </section>
+      </details>
 
-      <section class="brightway-bridge" data-workspace-panel="results" aria-labelledby="brightwayBridgeTitle">
-        <div class="brightway-bridge-header">
-          <div>
-            <h3 id="brightwayBridgeTitle">Brightway calculation bridge</h3>
-            <p class="scope-note" id="brightwayBridgeIntro"></p>
-          </div>
+      <details class="brightway-bridge" data-workspace-panel="results" aria-labelledby="brightwayBridgeTitle">
+        <summary class="collapse-panel-summary">
+          <span>
+            <strong id="brightwayBridgeTitle">Brightway calculation bridge</strong>
+            <small id="brightwayBridgeIntro"></small>
+          </span>
+        </summary>
+        <div class="brightway-bridge-content">
           <div class="brightway-bridge-actions">
             <button type="button" class="brightway-primary-action" id="calculateWithBrightway" disabled>Calculate with Brightway</button>
             <button type="button" id="checkBrightwayConnection">Check connection</button>
@@ -2896,14 +2977,14 @@
             <button type="button" id="clearBrightwayResults" hidden>Clear imported results</button>
             <input id="brightwayResultsFile" type="file" accept="application/json,.json" hidden>
           </div>
+          <div class="brightway-service-line">
+            <span class="brightway-service-badge unavailable" id="brightwayServiceBadge">Local Brightway not connected</span>
+            <span class="brightway-service-detail" id="brightwayServiceDetail"></span>
+          </div>
+          <p class="brightway-status" id="brightwayBridgeStatus" aria-live="polite"></p>
+          <div class="brightway-result-summary" id="brightwayResultSummary" hidden></div>
         </div>
-        <div class="brightway-service-line">
-          <span class="brightway-service-badge unavailable" id="brightwayServiceBadge">Local Brightway not connected</span>
-          <span class="brightway-service-detail" id="brightwayServiceDetail"></span>
-        </div>
-        <p class="brightway-status" id="brightwayBridgeStatus" aria-live="polite"></p>
-        <div class="brightway-result-summary" id="brightwayResultSummary" hidden></div>
-      </section>
+      </details>
 
       <div class="lca-module-calculations" id="lcaModuleCalculations" data-workspace-panel="lca"></div>
     </section>
@@ -5787,6 +5868,7 @@
     Object.assign(uiText.es, { formulaLibrary: "Escenario de vía seleccionado" });
 
     Object.assign(uiText.en, {
+      pathwayContextTitle: "Pathway overview and source",
       lcaAnalysisTitle: "Impact result analysis",
       lcaAnalysisIntro: "Review all EF categories in one unit-preserving table or inspect the contribution structure for the currently selected category.",
       allImpactTab: "All EF categories",
@@ -5808,6 +5890,7 @@
     });
 
     Object.assign(uiText.nl, {
+      pathwayContextTitle: "Zorgpadoverzicht en bron",
       lcaAnalysisTitle: "Analyse van impactresultaten",
       lcaAnalysisIntro: "Bekijk alle EF-categorieën in één tabel met behoud van eenheden of analyseer de bijdragen voor de geselecteerde categorie.",
       allImpactTab: "Alle EF-categorieën",
@@ -5829,6 +5912,7 @@
     });
 
     Object.assign(uiText.zh, {
+      pathwayContextTitle: "路径概览和来源",
       lcaAnalysisTitle: "影响结果分析",
       lcaAnalysisIntro: "在保留各自单位的总表中查看全部 EF 类别，或分析当前所选类别的贡献结构。",
       allImpactTab: "全部 EF 类别",
@@ -5850,6 +5934,7 @@
     });
 
     Object.assign(uiText.ja, {
+      pathwayContextTitle: "パスウェイ概要と情報源",
       lcaAnalysisTitle: "影響結果の分析",
       lcaAnalysisIntro: "単位を保持した一覧表で全 EF カテゴリを確認するか、選択中カテゴリの寄与構造を分析します。",
       allImpactTab: "全 EF カテゴリ",
@@ -5871,6 +5956,7 @@
     });
 
     Object.assign(uiText.es, {
+      pathwayContextTitle: "Resumen y fuente de la vía",
       lcaAnalysisTitle: "Análisis de resultados de impacto",
       lcaAnalysisIntro: "Revise todas las categorías EF en una tabla que conserva sus unidades o analice las contribuciones de la categoría seleccionada.",
       allImpactTab: "Todas las categorías EF",
@@ -9949,6 +10035,7 @@
       setText("fuReferenceAmountLabel", "fuReferenceAmount");
       setText("fuReferenceUnitLabel", "fuReferenceUnit");
       setText("fuComparabilityLabel", "fuComparability");
+      setText("pathwayContextTitle", "pathwayContextTitle");
       setText("pathwayScenarioTitle", "pathwayScenario");
       setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
       setText("diagnosticRouteLabel", "diagnosticRoute");
@@ -10247,6 +10334,8 @@
       document.getElementById("pathwayTitle").textContent = localizedPathwayTitle();
       document.getElementById("pathwayScope").textContent = localizedPathwayScope();
       document.getElementById("pathwayStatus").textContent = localizedPathwayStatus();
+      const contextSummary = document.getElementById("pathwayContextSummaryText");
+      if (contextSummary) contextSummary.textContent = localizedPathwayTitle();
       const fullscreenTitle = document.getElementById("fullscreenPathwayTitle");
       const fullscreenScope = document.getElementById("fullscreenPathwayScope");
       const fullscreenStatus = document.getElementById("fullscreenPathwayStatus");

@@ -15,7 +15,7 @@ These views are intended to support protocol-to-activity mapping, clinical exper
 
 The page also includes an interactive LCA building-block calculator. Selecting pathway activities automatically activates their explicitly mapped modules, building blocks, and provisional quantities. Repeated activities aggregate quantities. The calculator demonstrates modular calculation logic for all 16 EF 3.1 impact categories using editable provisional quantities, synthetic impact coefficients, and low/base/high coefficient-uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
 
-The goal, scope, and functional-unit panel defines the quantified healthcare service represented by one pathway result. Its contents are included in the browser report and in the Brightway scenario export. Clinical comparability still requires explicit confirmation; the interface does not assume that all visible treatment branches are interchangeable.
+The goal, scope, and functional-unit panel defines the quantified healthcare service represented by one pathway result. Its fields are manually editable and are included in the browser report and Brightway scenario export. They document the model definition but do not automatically alter selected activities, modules, building-block quantities, or calculated results. All building-block quantities must therefore be entered per declared functional unit. Clinical comparability still requires explicit confirmation; the interface does not assume that all visible treatment branches are interchangeable.
 
 A multilingual **How to use** dialog in the page header explains pathway selection, activity review, scenario construction, module activation, LCA inputs, provisional cut-off rules, and report export.
 
@@ -31,7 +31,7 @@ The interactive map represents pathway elements as metro-style stations:
 
 Route colors distinguish diagnostic and first-contact movement, treatment movement, follow-up movement, and conditional or return routes. Selecting a station opens its activity interpretation, ECO-PATH module assignment, candidate resource flows, and open questions for expert confirmation.
 
-The browser calculator uses the prototype formula `impact = quantity x impact coefficient` for a selected EF category. It sums active building blocks into a pathway scenario and multiplies this result by the cohort size. Browser coefficients are synthetic demonstration data and are kept separate from imported Brightway results.
+The browser calculator uses the prototype formula `impact = quantity x impact coefficient` for a selected EF category. It sums active building blocks into one pathway result and optionally multiplies this result by the cohort size. The cohort defaults to `1`, so the initial total corresponds to one declared functional unit. Changing the cohort size scales only the cohort total and does not redefine the functional unit. Browser coefficients are synthetic demonstration data and are kept separate from imported Brightway results.
 
 ## One-click Brightway calculation
 

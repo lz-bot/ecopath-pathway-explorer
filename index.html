@@ -2369,6 +2369,7 @@
       </summary>
       <div class="goal-scope-content">
         <p class="scope-note" id="goalScopeIntro"></p>
+        <p class="scope-note" id="goalScopeModelEffect"></p>
         <div class="goal-scope-grid">
           <div class="field field-wide">
             <label for="fuClinicalFunction" id="fuClinicalFunctionLabel">Clinical function</label>
@@ -2565,7 +2566,8 @@
           <div class="lca-control-grid" aria-label="LCA scenario inputs">
             <div class="field">
               <label for="lcaCaseCount" id="lcaCaseCountLabel">Cohort size, patients</label>
-              <input id="lcaCaseCount" type="number" min="1" step="1" value="100">
+              <input id="lcaCaseCount" type="number" min="1" step="1" value="1" aria-describedby="cohortSizeHelp">
+              <small id="cohortSizeHelp"></small>
             </div>
           </div>
           <div class="lca-formula" id="lcaFormula"></div>
@@ -5225,6 +5227,8 @@
     Object.assign(uiText.en, {
       goalScopeTitle: "Goal, scope and functional unit",
       goalScopeIntro: "Define the quantified healthcare service represented by one pathway result. These fields are exported to Brightway and included in the report; they do not establish clinical equivalence by themselves.",
+      goalScopeModelEffect: "Model effect: editing these fields changes the scenario definition, report, and Brightway metadata. It does not automatically change selected activities, modules, building-block quantities, or browser results. Enter all building-block quantities per declared functional unit.",
+      cohortSizeHelp: "Optional result scaling. A value of 1 reports one functional unit; changing N multiplies the cohort total but does not change the functional unit.",
       fuClinicalFunction: "Clinical function",
       fuPopulation: "Patient population",
       fuStartPoint: "Start point",
@@ -5274,6 +5278,8 @@
     Object.assign(uiText.nl, {
       goalScopeTitle: "Doel, scope en functionele eenheid",
       goalScopeIntro: "Definieer de gekwantificeerde zorgdienst die door één zorgpadresultaat wordt vertegenwoordigd. Deze velden worden naar Brightway geëxporteerd en in het rapport opgenomen; zij bewijzen op zichzelf geen klinische vergelijkbaarheid.",
+      goalScopeModelEffect: "Modeleffect: wijzigingen in deze velden veranderen de scenariodefinitie, het rapport en de Brightway-metadata. Ze wijzigen niet automatisch geselecteerde activiteiten, modules, bouwsteenhoeveelheden of browserresultaten. Voer alle bouwsteenhoeveelheden per opgegeven functionele eenheid in.",
+      cohortSizeHelp: "Optionele resultaatschaling. Waarde 1 rapporteert één functionele eenheid; N vermenigvuldigt alleen het cohorttotaal en verandert de functionele eenheid niet.",
       fuClinicalFunction: "Klinische functie",
       fuPopulation: "Patiëntenpopulatie",
       fuStartPoint: "Startpunt",
@@ -5323,6 +5329,8 @@
     Object.assign(uiText.zh, {
       goalScopeTitle: "目标、范围与功能单位",
       goalScopeIntro: "定义一个路径结果所代表的量化医疗服务。这些字段会导出到 Brightway 并写入报告，但本身不能证明不同临床方案具有可比性。",
+      goalScopeModelEffect: "对模型的影响：修改这些字段会改变场景定义、报告和 Brightway 元数据，但不会自动改变所选 activities、modules、building-block 数量或浏览器计算结果。所有 building-block 数量都应按声明的功能单位填写。",
+      cohortSizeHelp: "可选的结果缩放参数。数值 1 表示一个功能单位；改变 N 只会放大队列总结果，不会改变功能单位。",
       fuClinicalFunction: "临床功能",
       fuPopulation: "患者人群",
       fuStartPoint: "起点",
@@ -5372,6 +5380,8 @@
     Object.assign(uiText.ja, {
       goalScopeTitle: "目的、範囲、機能単位",
       goalScopeIntro: "1つのパスウェイ結果が表す定量化された医療サービスを定義します。これらの項目は Brightway と報告書に出力されますが、臨床的同等性を単独で証明するものではありません。",
+      goalScopeModelEffect: "モデルへの影響：これらの項目を変更すると、シナリオ定義、報告書、Brightway メタデータが変わります。選択した activities、modules、building-block 数量、ブラウザ計算結果は自動変更されません。すべての building-block 数量は宣言した機能単位当たりで入力してください。",
+      cohortSizeHelp: "任意の結果スケーリングです。1 は1機能単位を示し、N の変更はコホート合計のみを乗算し、機能単位は変更しません。",
       fuClinicalFunction: "臨床機能",
       fuPopulation: "患者集団",
       fuStartPoint: "開始点",
@@ -5421,6 +5431,8 @@
     Object.assign(uiText.es, {
       goalScopeTitle: "Objetivo, alcance y unidad funcional",
       goalScopeIntro: "Defina el servicio sanitario cuantificado representado por un resultado de vía. Estos campos se exportan a Brightway y al informe, pero no demuestran por sí solos la comparabilidad clínica.",
+      goalScopeModelEffect: "Efecto en el modelo: estos campos modifican la definición del escenario, el informe y los metadatos de Brightway. No cambian automáticamente las activities, los modules, las cantidades de building blocks ni los resultados del navegador. Introduzca todas las cantidades por unidad funcional declarada.",
+      cohortSizeHelp: "Escalado opcional del resultado. El valor 1 representa una unidad funcional; cambiar N multiplica solo el total de la cohorte y no cambia la unidad funcional.",
       fuClinicalFunction: "Función clínica",
       fuPopulation: "Población de pacientes",
       fuStartPoint: "Punto inicial",
@@ -9515,6 +9527,7 @@
       setText("oncologyLensSubtitle", "oncologySubtitle");
       setText("goalScopeTitle", "goalScopeTitle");
       setText("goalScopeIntro", "goalScopeIntro");
+      setText("goalScopeModelEffect", "goalScopeModelEffect");
       setText("fuClinicalFunctionLabel", "fuClinicalFunction");
       setText("fuPopulationLabel", "fuPopulation");
       setText("fuStartPointLabel", "fuStartPoint");
@@ -9556,6 +9569,7 @@
       setText("candidateBlockLegendLabel", "candidateBuildingBlock");
       setText("lcaCutoffSummary", "lcaCutoffSummary");
       setText("lcaCaseCountLabel", "cohortSize");
+      setText("cohortSizeHelp", "cohortSizeHelp");
       setText("dataToCollectHeading", "dataToCollect");
       setText("brightwayBridgeTitle", "brightwayBridgeTitle");
       setText("brightwayBridgeIntro", "brightwayBridgeIntro");
@@ -10826,7 +10840,7 @@
     }
 
     function renderLcaOutputs() {
-      const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
+      const caseCount = Math.max(1, readNumber("lcaCaseCount", 1));
       const calculationModuleIds = lcaCalculationModuleIds();
       const activeRows = lcaRows.filter((row) => isLcaRowActive(row)).length;
       const includedModules = calculationModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
@@ -11406,7 +11420,7 @@
 
     function collectLcaReportData() {
       const pathway = currentPathway();
-      const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
+      const caseCount = Math.max(1, readNumber("lcaCaseCount", 1));
       const moduleIds = lcaCalculationModuleIds();
       const rows = lcaRows
         .filter((row) => moduleIds.includes(row.module) && appliesToPathway(row))

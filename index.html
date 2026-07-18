@@ -2059,8 +2059,17 @@
     }
 
     .lca-block-cell {
+      display: block;
       font-weight: 700;
       color: var(--ink);
+    }
+
+    .lca-auto-note {
+      display: block;
+      margin-top: 3px;
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 700;
     }
 
     .lca-source-cell {
@@ -2724,10 +2733,12 @@
 
     const buildingBlockRegistry = [
       block("EM01", "First specialist consultation", "per consultation", ["Patient travel", "Room use", "EHR use"]),
+      block("EM01", "Inter-hospital clinical transfer", "per transfer", ["Patient travel", "Specimen transport", "Imaging transfer", "EHR documentation"]),
       block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"], ["gastro"]),
 
       block("EM02", "Pathology slide review", "per review", ["Pathologist time", "Microscopy or digital pathology", "Report generation"]),
       block("EM02", "Specimen processing", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
+      block("EM02", "Diagnostic laboratory set", "per diagnostic set", ["Blood or urine collection", "Laboratory reagents", "Analyzer electricity", "Reporting"]),
       block("EM02", "Biopsy or polyp pathology", "per specimen", ["Container", "Slides", "Staining reagents", "Pathology waste"], ["gastro"]),
       block("EM02", "IHC or molecular pathology add-on", "per test", ["Reagents", "Equipment time", "Consumables", "Hazardous waste"]),
       block("EM02", "Complex surgical specimen pathology", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
@@ -2793,6 +2804,205 @@
       block("EM11", "General waste handling", "per kg waste", ["Waste mass", "Treatment route", "Transport"]),
       block("EM11", "Shared sterilization support", "per sterilization cycle", ["Autoclave energy", "Water", "Packaging", "CSSD allocation"])
     ];
+
+    const activityBuildingBlockRegistry = {};
+
+    function automaticBlock(name, quantity = 1) {
+      return { name, quantity };
+    }
+
+    function registerActivityBuildingBlocks(activityIds, selections) {
+      activityIds.forEach((activityId) => {
+        activityBuildingBlockRegistry[activityId] = [
+          ...(activityBuildingBlockRegistry[activityId] || []),
+          ...selections.map((selection) => ({ ...selection }))
+        ];
+      });
+    }
+
+    registerActivityBuildingBlocks(
+      ["EAU-AC01", "EAU-DX01", "EAUFULL-AC01", "EAUFULL-DX01", "EMC-FC01", "EMC-DX01", "CRCDUTCH-FC01"],
+      [automaticBlock("First specialist consultation")]
+    );
+    registerActivityBuildingBlocks(
+      ["EMC-FC02"],
+      [automaticBlock("Inter-hospital clinical transfer")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-DX02", "EAUFULL-DX02"],
+      [automaticBlock("Diagnostic laboratory set")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-DX03", "EAUFULL-DX03", "EMC-DX02"],
+      [automaticBlock("Cystoscopy")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-DX04", "EAUFULL-DX04", "EAUFULL-TX12", "EMC-DX03", "EMC-TX12"],
+      [automaticBlock("TURBT procedure episode")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-DX05", "EAUFULL-DX05", "EMC-DX04"],
+      [automaticBlock("Pathology slide review"), automaticBlock("Specimen processing")]
+    );
+    registerActivityBuildingBlocks(
+      ["EMC-DX08"],
+      [automaticBlock("Pathology slide review")]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-DX02"],
+      [automaticBlock("Biopsy or polyp pathology"), automaticBlock("Specimen processing")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-DX06", "EAUFULL-DX06", "EAUFULL-DX07", "EAUFULL-TX05", "EMC-DX06", "EMC-TX05", "CRCDUTCH-DX03"],
+      [automaticBlock("CT scan")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-DX08", "EMC-DX07", "CRCDUTCH-TX05"],
+      [automaticBlock("MRI scan")]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-DX01"],
+      [automaticBlock("Colonoscopy intake and bowel preparation"), automaticBlock("Colonoscopy")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-DX07", "EAUFULL-TX01", "EMC-TX01"],
+      [automaticBlock("Fitness or pre-treatment assessment")]
+    );
+    registerActivityBuildingBlocks(
+      ["EMC-JM01"],
+      [automaticBlock("Joint outpatient clinic")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-TX01", "EAU-TX05", "EAU-TX07", "EAUFULL-TX03", "EAUFULL-TX11", "EMC-DX05", "EMC-TX02", "EMC-TX11", "CRCDUTCH-TX02", "CRCDUTCH-TX07"],
+      [automaticBlock("Treatment planning consultation")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-TX01", "EAUFULL-TX03", "EMC-TX02", "CRCDUTCH-TX02"],
+      [automaticBlock("Shared decision-making session")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-TX02", "EAUFULL-TX02", "EAUFULL-TX10", "EMC-TX03", "EMC-TX10"],
+      [automaticBlock("Medical oncology consultation")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-TX03", "EAUFULL-TX04", "EMC-TX04", "CRCDUTCH-TX04"],
+      [
+        automaticBlock("Medical oncology consultation"),
+        automaticBlock("Chemotherapy infusion cycle", 4),
+        automaticBlock("Pharmacy preparation", 4),
+        automaticBlock("Therapy monitoring laboratory set", 4)
+      ]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX17", "EMC-TX16"],
+      [
+        automaticBlock("Medical oncology consultation"),
+        automaticBlock("Immunotherapy or targeted infusion cycle", 4),
+        automaticBlock("Pharmacy preparation", 4),
+        automaticBlock("Therapy monitoring laboratory set", 4)
+      ]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-TX04"],
+      [
+        automaticBlock("Radical cystectomy procedure episode"),
+        automaticBlock("Urinary diversion procedure add-on"),
+        automaticBlock("Complex surgical specimen pathology"),
+        automaticBlock("Ward admission day", 7)
+      ]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX06", "EMC-TX06"],
+      [automaticBlock("Radical cystectomy procedure episode"), automaticBlock("Complex surgical specimen pathology")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX07", "EMC-TX07"],
+      [automaticBlock("Operating room time")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX08", "EMC-TX08"],
+      [automaticBlock("Urinary diversion procedure add-on")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX09", "EMC-TX09"],
+      [automaticBlock("Ward admission day", 7)]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-TX03", "CRCDUTCH-TX06"],
+      [
+        automaticBlock("Colorectal resection procedure episode"),
+        automaticBlock("Complex surgical specimen pathology"),
+        automaticBlock("Ward admission day", 5)
+      ]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-TX06"],
+      [
+        automaticBlock("Radiotherapy planning"),
+        automaticBlock("Immobilization device"),
+        automaticBlock("Radiotherapy fraction", 20),
+        automaticBlock("Chemoradiation co-treatment add-on")
+      ]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX13", "EMC-TX13"],
+      [automaticBlock("Radiotherapy planning"), automaticBlock("Immobilization device")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX14", "EMC-TX14"],
+      [automaticBlock("Radiotherapy fraction", 20), automaticBlock("Chemoradiation co-treatment add-on")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX16", "EMC-TX17"],
+      [automaticBlock("Radiotherapy planning"), automaticBlock("Radiotherapy fraction", 5)]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-TX05"],
+      [
+        automaticBlock("Radiotherapy planning"),
+        automaticBlock("Immobilization device"),
+        automaticBlock("Radiotherapy fraction", 20),
+        automaticBlock("Chemoradiation co-treatment add-on")
+      ]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX15", "EMC-TX15"],
+      [automaticBlock("Response or progression assessment")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAU-FU01", "EMC-FU02"],
+      [automaticBlock("Outpatient follow-up visit"), automaticBlock("Surveillance test set")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-FU01"],
+      [automaticBlock("Post-cystectomy surveillance round")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-FU02"],
+      [automaticBlock("Bladder-preservation surveillance round")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-FU03"],
+      [automaticBlock("Urinary diversion or stoma follow-up")]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-FU04", "CRCDUTCH-FU05"],
+      [automaticBlock("Post-CRC treatment surveillance round")]
+    );
+
+    function validateActivityBuildingBlockRegistry() {
+      const knownBlocks = new Set(buildingBlockRegistry.map((item) => item.name));
+      const invalidMappings = Object.entries(activityBuildingBlockRegistry).flatMap(([activityId, selections]) =>
+        selections
+          .filter((selection) => !knownBlocks.has(selection.name))
+          .map((selection) => `${activityId}: ${selection.name}`)
+      );
+      if (invalidMappings.length) {
+        throw new Error(`Unknown automatic building block mappings: ${invalidMappings.join(", ")}`);
+      }
+    }
+
+    validateActivityBuildingBlockRegistry();
 
     const impactCategoryRegistry = [
       {
@@ -2964,6 +3174,10 @@
           impactCategoryRegistry.map((category) => [category.id, demoImpactCoefficient(category, factor)])
         ),
         editedFactors: {},
+        defaultQuantity: quantity,
+        automaticQuantity: 0,
+        quantityEdited: false,
+        automaticallyIncluded: false,
         included: false,
         applicability: item.applicability,
         gap: `Dummy aggregate coefficient. Replace with foreground LCI for ${item.resourceFlows.join(", ")} and documented LCIA mapping.`
@@ -2996,7 +3210,7 @@
         nodes: [
           activity("EAU-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 80, 112, "Entry to the guideline-level MIBC workup after suspected bladder cancer or referral.", "This is a guideline reference entry point. It does not specify which hospital performs the first contact.", ["Patient travel", "Administrative ICT", "Referral communication"], ["Should ECO-PATH start at first presentation, first cystoscopy, confirmed MIBC, or referral to a tertiary center?"]),
           activity("EAU-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 220, 112, "Clinical assessment before definitive staging and treatment selection.", "Included because health status and baseline assessment affect treatment eligibility and downstream route selection.", ["Outpatient room use", "Clinician time", "Patient travel"], ["Which elements are repeated locally after referral?"]),
-          activity("EAU-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM03", "diagnostic", 360, 112, "Laboratory and urine-based diagnostic information used in the diagnostic pathway.", "This may be relevant for upstream pathway scope, but may fall outside a post-referral Erasmus MC boundary.", ["Laboratory materials", "Specimen transport", "Staff time"], ["Are these tests repeated at Erasmus MC or only reviewed from referring hospitals?"]),
+          activity("EAU-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM02", "diagnostic", 360, 112, "Laboratory and urine-based diagnostic information used in the diagnostic pathway.", "This may be relevant for upstream pathway scope, but may fall outside a post-referral Erasmus MC boundary.", ["Laboratory materials", "Specimen transport", "Staff time"], ["Are these tests repeated at Erasmus MC or only reviewed from referring hospitals?"]),
           activity("EAU-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 500, 112, "Endoscopic visualization used in bladder cancer diagnosis and surveillance logic.", "Included in the guideline pathway. It should not be added to the EMC local map unless local experts confirm it occurs in the selected boundary.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy a pre-pathway activity for the current MIBC case?"]),
           activity("EAU-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 640, 112, "Transurethral resection provides tissue diagnosis and staging information.", "Important guideline activity, but likely upstream of the current EMC Bladder Cancer Center workflow unless repeated or reviewed.", ["Operating room time", "Anesthesia", "Instruments", "Pathology sample", "Waste"], ["Does the ECO-PATH MIBC model include TURBT or only pathology review after referral?"]),
           activity("EAU-DX05", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 780, 112, "Pathological confirmation and staging information used for treatment selection.", "This can map to pathology review in the local pathway if Erasmus MC performs revision or reassessment.", ["Pathology staff time", "Slides or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
@@ -3049,7 +3263,7 @@
         nodes: [
           activity("EAUFULL-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Guideline entry after suspected bladder cancer, presentation, or referral into MIBC workup.", "This entry point is retained for scoping. It does not define which hospital performs referral intake or triage.", ["Patient travel", "Administrative ICT", "Referral communication"], ["Define whether ECO-PATH starts at first presentation, first specialist referral, confirmed MIBC, or tertiary referral."]),
           activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "EAU includes baseline clinical assessment because it informs diagnosis, staging interpretation, and treatment eligibility.", ["Clinician time", "Outpatient room use", "EHR documentation"], ["Which baseline assessments are repeated after referral?"]),
-          activity("EAUFULL-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM03", "diagnostic", 290, 92, "Urine cytology and laboratory workup used in diagnostic assessment and treatment planning.", "This can affect resource use if tests are repeated locally or added before treatment.", ["Laboratory testing", "Specimen transport", "Staff time"], ["Are these tests performed locally or only reviewed from referring hospitals?"]),
+          activity("EAUFULL-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM02", "diagnostic", 290, 92, "Urine cytology and laboratory workup used in diagnostic assessment and treatment planning.", "This can affect resource use if tests are repeated locally or added before treatment.", ["Laboratory testing", "Specimen transport", "Staff time"], ["Are these tests performed locally or only reviewed from referring hospitals?"]),
           activity("EAUFULL-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 400, 92, "Endoscopic visualization and documentation of bladder tumor characteristics.", "Cystoscopy is guideline-relevant, but it may be outside a post-referral Erasmus MC boundary unless repeated locally.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy inside the selected pathway boundary?"]),
           activity("EAUFULL-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 510, 92, "Transurethral resection used for histopathological diagnosis and staging.", "TURBT is resource-intensive and should be explicit if the ECO-PATH boundary starts before confirmed MIBC.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Does the MIBC model include TURBT or only review of TURBT results?"]),
           activity("EAUFULL-DX05", "Pathology report and specimen review", "Diagnostics", "activity", "EM02", "diagnostic", 620, 92, "Pathology report review, grade and invasion depth confirmation, and specimen adequacy assessment.", "Pathology is separated because EAU provides explicit diagnostic requirements and local workflows may include pathology revision.", ["Pathologist time", "Microscopy or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
@@ -3745,8 +3959,25 @@
       "EAU-JM01",
       "EAUFULL-JM01",
       "EMC-JM02",
+      "EMC-DX09",
+      "EMC-FU01",
+      "EMC-FU03",
       "CRCDUTCH-JM01"
     ]);
+
+    function validateAutomaticActivityCoverage() {
+      const uncovered = Object.entries(pathwayData).flatMap(([pathwayId, pathway]) =>
+        pathway.nodes
+          .filter((node) => !lcaCutoffNodeIds.has(node.id))
+          .filter((node) => !(activityBuildingBlockRegistry[node.id] || []).length)
+          .map((node) => `${pathwayId}: ${node.id}`)
+      );
+      if (uncovered.length) {
+        throw new Error(`Activities without an automatic building block or explicit cut-off: ${uncovered.join(", ")}`);
+      }
+    }
+
+    validateAutomaticActivityCoverage();
 
     const languageOptions = [
       { id: "en", label: "English", htmlLang: "en" },
@@ -3775,7 +4006,7 @@
         helpStep1: "Choose a specialty and a guideline or local workflow source from the pathway menu.",
         helpStep2: "Hover over or click an activity to review its clinical interpretation, module assignment, resource flows, and open questions.",
         helpStep3: "Select the activities that form the pathway scenario of interest. Relevant LCA modules are checked automatically, except activities under the provisional cut-off.",
-        helpStep4: "In the LCA section, keep only the modules and building blocks that occur in the scenario. Replace every dummy quantity and impact coefficient before using results as evidence.",
+        helpStep4: "Selecting an activity automatically activates its mapped modules, building blocks, and provisional quantities. Review route alternatives, occurrence counts, and any manual additions before calculation.",
         helpStep5: "Review uncertainty and data gaps, then export the report in the currently selected language.",
         helpCutoffTitle: "Provisional LCA cut-off",
         helpCutoffText: "Clinical decision nodes remain on the map, but meeting-only, digital-letter, and purely administrative activities are excluded from calculation when they add only staff time and minor office or ICT energy. Human labor is not characterized as an environmental resource flow; time may still be used to allocate room or equipment inputs. No numerical cut-off threshold has yet been validated, so this exclusion must be documented and revisited during formal LCA modeling.",
@@ -3853,7 +4084,8 @@
         methodLciTitle: "LCI / LCIA link",
         methodLciText: "Resource flows are mapped to inventory data and impact coefficients for calculation.",
         lcaHeading: "Modular LCA calculation demo",
-        lcaIntro: "Editable calculation rows for candidate building blocks. Modules define the LCA boundary; row checkboxes define which building blocks are active in the current scenario. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.",
+        lcaIntro: "Selected activities automatically activate their mapped modules, building blocks, and provisional quantities. Review the automatic selection and edit route-dependent quantities before calculation.",
+        automaticFromActivities: "Auto from selected activities",
         exportReport: "Export LCA report",
         buildingBlockMapHeading: "Candidate building blocks by LCA module",
         buildingBlockMapIntro: "Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.",
@@ -3871,7 +4103,7 @@
         uncertaintyAria: "{block} uncertainty percent",
         impactCoefficientAria: "{block} impact coefficient",
         pathwayLinkedTitle: "Pathway-linked modules from current map",
-        pathwayLinkedDescription: "These modules are available in the current activity map. Selecting pathway activities on the map automatically checks the corresponding module.",
+        pathwayLinkedDescription: "These modules are available in the current activity map. Selecting an activity on the map or in the activity list activates its explicitly mapped module, building blocks, and provisional quantities.",
         supportModulesTitle: "Optional cross-cutting support modules",
         supportModulesDescription: "These modules are not stations on the pathway map. Use them for patient support and shared hospital support if they are inside the LCA boundary.",
         rolePathwayLinked: "Pathway-linked",
@@ -3900,7 +4132,7 @@
         formulaLibrary: "Building block library",
         formulaCohort: "Cohort impact",
         formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.",
-        lcaWarning: "Only checked modules and checked building block rows are editable and counted in the totals. The selected pathway scenario on the map automatically checks pathway-linked modules; EM10 and EM11 remain optional support modules in the LCA boundary. Row checkboxes define which candidate building blocks are active in the current scenario, because a guideline or local pathway may use only part of a module such as EM06. All default quantities and impact coefficients are illustrative dummy values. Replace these values with hospital activity data, local LCI measurements, background database mappings, allocation rules, and documented LCIA coefficients before using the result as evidence.",
+        lcaWarning: "Selected activities automatically activate their explicitly mapped pathway modules, building blocks, and provisional quantities. Repeated activities aggregate quantities, such as two selected CT activities producing two CT scans. EM10 and EM11 remain optional support modules. Alternative regimens, imaging choices, fraction counts, cycle counts, admission days, and all dummy impact coefficients require review before the result is used as evidence.",
         noActiveRows: "No building block row is active. Check at least one module and one building block row to include it in the calculation.",
         priorityRow: "{module} {block}: {impact} per demo pathway instance. {gap}",
         reportTitle: "ECO-PATH LCA report: {pathway}",
@@ -3948,7 +4180,7 @@
         helpStep1: "Kies in het zorgpadmenu een specialisme en een richtlijn of lokale workflowbron.",
         helpStep2: "Beweeg over of klik op een activiteit om de klinische interpretatie, moduletoewijzing, hulpbronnen en open vragen te bekijken.",
         helpStep3: "Selecteer de activiteiten die het gewenste zorgpadscenario vormen. Relevante LCA-modules worden automatisch aangevinkt, behalve activiteiten onder de voorlopige cut-off.",
-        helpStep4: "Behoud in het LCA-gedeelte alleen modules en bouwstenen die in het scenario voorkomen. Vervang alle dummyhoeveelheden en impactcoëfficiënten voordat resultaten als bewijs worden gebruikt.",
+        helpStep4: "Een geselecteerde activiteit activeert automatisch de gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer routealternatieven, aantallen en handmatige aanvullingen voor de berekening.",
         helpStep5: "Controleer onzekerheid en datalacunes en exporteer daarna het rapport in de gekozen taal.",
         helpCutoffTitle: "Voorlopige LCA-cut-off",
         helpCutoffText: "Klinische beslispunten blijven op de kaart staan. Activiteiten die alleen uit overleg, digitale brieven of administratie bestaan, worden uitgesloten als ze uitsluitend personeeltijd en gering kantoor- of ICT-energiegebruik toevoegen. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan wel als allocatiesleutel voor ruimte- of apparatuurinputs dienen. Er is nog geen numerieke drempel gevalideerd; deze uitsluiting moet bij formele LCA-modellering worden vastgelegd en opnieuw beoordeeld.",
@@ -4026,7 +4258,8 @@
         methodLciTitle: "LCI / LCIA-koppeling",
         methodLciText: "Resourceflows worden gekoppeld aan inventarisdata en impactcoëfficiënten voor berekening.",
         lcaHeading: "Modulaire LCA-berekeningsdemo",
-        lcaIntro: "Bewerkbare berekeningsrijen voor kandidaatbouwstenen. Modules definiëren de LCA-grens; rijselecties bepalen welke bouwstenen actief zijn in het huidige scenario. Elke rij gebruikt een placeholder-aantal en dummy impactcoëfficiënt om de rekenlogica en databehoefte te tonen.",
+        lcaIntro: "Geselecteerde activiteiten activeren automatisch hun gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer de automatische selectie en pas routeafhankelijke hoeveelheden aan voor de berekening.",
+        automaticFromActivities: "Automatisch uit geselecteerde activiteiten",
         exportReport: "LCA-rapport exporteren",
         buildingBlockMapHeading: "Kandidaatbouwstenen per LCA-module",
         buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken, bijvoorbeeld alleen consultatie en monitoring binnen EM06. EM10 en EM11 zijn optionele ondersteunende modules, geen stations op de zorgpadkaart.",
@@ -4044,7 +4277,7 @@
         uncertaintyAria: "{block} onzekerheidspercentage",
         impactCoefficientAria: "{block} impactcoefficient",
         pathwayLinkedTitle: "Zorgpadgebonden modules uit de huidige kaart",
-        pathwayLinkedDescription: "Deze modules zijn beschikbaar in de huidige activiteitenkaart. Geselecteerde zorgpadactiviteiten zetten automatisch de bijbehorende module aan.",
+        pathwayLinkedDescription: "Deze modules zijn beschikbaar in de huidige activiteitenkaart. Een activiteit selecteren op de kaart of in de lijst activeert automatisch de expliciet gekoppelde module, bouwstenen en voorlopige hoeveelheden.",
         supportModulesTitle: "Optionele overkoepelende ondersteunende modules",
         supportModulesDescription: "Deze modules zijn geen stations op de zorgpadkaart. Gebruik ze voor patiëntondersteuning en gedeelde ziekenhuisondersteuning als ze binnen de LCA-grens vallen.",
         rolePathwayLinked: "Zorgpadgebonden",
@@ -4073,7 +4306,7 @@
         formulaLibrary: "Bouwsteenbibliotheek",
         formulaCohort: "Cohortimpact",
         formulaNote: "S = aangevinkte bouwsteenrijen binnen aangevinkte modules. q = aantal of resourcehoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u = relatieve onzekerheid, N = cohortgrootte. Dit is een demobibliotheek, geen definitief zorgpadscenario.",
-        lcaWarning: "Alleen aangevinkte modules en bouwsteenrijen zijn bewerkbaar en tellen mee in de totalen. Het geselecteerde zorgpadscenario op de kaart zet zorgpadgebonden modules automatisch aan; EM10 en EM11 blijven optionele ondersteunende modules binnen de LCA-grens. Rijselecties bepalen welke kandidaatbouwstenen actief zijn. Standaardhoeveelheden en impactcoëfficiënten zijn dummywaarden.",
+        lcaWarning: "Geselecteerde activiteiten activeren automatisch de expliciet gekoppelde zorgpadmodules, bouwstenen en voorlopige hoeveelheden. Herhaalde activiteiten worden opgeteld, bijvoorbeeld twee CT-activiteiten als twee CT-scans. EM10 en EM11 blijven optionele ondersteunende modules. Alternatieve regimes, beeldvorming, fracties, cycli, opnamedagen en dummy-impactcoëfficiënten moeten worden gecontroleerd.",
         noActiveRows: "Geen bouwsteenrij is actief. Vink ten minste één module en één bouwsteenrij aan om deze mee te nemen.",
         priorityRow: "{module} {block}: {impact} per demo-zorgpadinstantie. {gap}",
         reportTitle: "ECO-PATH LCA-rapport: {pathway}",
@@ -4127,7 +4360,7 @@
           helpStep1: "从路径菜单中选择专科，以及指南或本地工作流来源。",
           helpStep2: "将鼠标悬停在活动上或点击活动，查看临床解释、模块分配、候选资源流和待确认问题。",
           helpStep3: "选择组成目标路径情景的活动。相关 LCA 模块会自动勾选，但暂定 cut-off 范围内的活动不会激活模块。",
-          helpStep4: "在 LCA 部分仅保留该情景实际发生的模块和构建块。结果用于证据前，必须替换所有 dummy 数量和影响系数。",
+          helpStep4: "选择 activity 后会自动启用对应 modules、building blocks 和临时数量。计算前请检查治疗路线、发生次数和手动补充项。",
           helpStep5: "检查不确定性和数据缺口，然后以当前所选语言导出报告。",
           helpCutoffTitle: "暂定 LCA cut-off",
           helpCutoffText: "临床决策节点仍保留在路径图中。如果会议、数字信函或纯行政活动仅增加人力以及少量办公室或 ICT 用电，则不进入计算。人力本身不作为环境资源流进行表征；活动时间仍可用于分配房间或设备投入。目前尚未验证数值 cut-off 阈值，因此正式 LCA 建模时必须记录并重新检查这些排除项。",
@@ -4204,7 +4437,8 @@
           methodLciTitle: "LCI / LCIA 连接",
           methodLciText: "资源流会映射到清单数据和影响系数，用于计算。",
           lcaHeading: "模块化 LCA 计算演示",
-          lcaIntro: "这里列出候选构建块的可编辑计算行。模块定义 LCA 边界；行复选框定义当前情景中启用哪些构建块。每一行使用占位发生次数和示例影响系数，用于展示计算逻辑，并标出后续需要收集的数据。",
+          lcaIntro: "所选 activities 会自动启用其映射的 modules、building blocks 和临时数量。计算前请检查自动选择并调整与具体路线有关的数量。",
+          automaticFromActivities: "由所选 activities 自动启用",
           exportReport: "导出 LCA 报告",
           buildingBlockMapHeading: "按 LCA 模块分组的候选构建块",
           buildingBlockMapIntro: "按模块分组显示候选 ECO-PATH 构建块。一个已选路径可能只使用某个模块的一部分，例如 EM06 中的会诊和监测。EM10 与 EM11 是可选的跨活动支持模块，不是路径图上的站点模块。",
@@ -4222,7 +4456,7 @@
           uncertaintyAria: "{block} 不确定性百分比",
           impactCoefficientAria: "{block} 影响系数",
           pathwayLinkedTitle: "当前路径图中的路径关联模块",
-          pathwayLinkedDescription: "这些模块来自当前活动图。用户在图中选择活动后，对应模块会自动勾选。",
+          pathwayLinkedDescription: "这些模块来自当前活动图。在地图或 activity 列表中选择 activity 后，会自动启用其显式映射的 module、building blocks 和临时数量。",
           supportModulesTitle: "可选的跨活动支持模块",
           supportModulesDescription: "这些模块不是路径图上的站点。若患者支持或医院共享支持处于 LCA 边界内，可以在这里选择。",
           rolePathwayLinked: "路径关联",
@@ -4251,7 +4485,7 @@
           formulaLibrary: "构建块库",
           formulaCohort: "队列影响",
           formulaNote: "S = 已勾选模块内的已勾选构建块行。q = 发生次数或资源数量，c = LCIA 影响系数，j = 影响类别，u = 相对不确定性，N = 队列规模。这里是候选构建块库演示，不是最终路径情景。",
-          lcaWarning: "只有已勾选模块和已勾选构建块行可以编辑并计入总结果。图中选择的路径情景会自动勾选路径关联模块；EM10 和 EM11 仍是 LCA 边界中的可选支持模块。行复选框决定当前情景中哪些候选构建块启用。所有默认数量和影响系数都是示例值，正式使用前需要替换为医院活动数据、本地 LCI 测量、背景数据库映射、分配规则和已记录的 LCIA 系数。",
+          lcaWarning: "所选 activities 会自动启用显式映射的路径 modules、building blocks 和临时数量；重复 activity 会累计数量，例如两次 CT activity 会得到两次 CT scan。EM10 和 EM11 仍为可选支持 modules。治疗方案、影像选择、放疗分次、治疗周期、住院日和 dummy 影响系数均需在正式使用前复核。",
           noActiveRows: "当前没有启用的构建块行。请至少勾选一个模块和一个构建块行。",
           priorityRow: "{module} {block}：每个演示路径实例 {impact}。{gap}",
           reportTitle: "ECO-PATH LCA 报告：{pathway}",
@@ -4298,7 +4532,7 @@
           helpStep1: "パスウェイメニューから診療科とガイドラインまたはローカルワークフローを選択します。",
           helpStep2: "活動にカーソルを合わせるかクリックして、臨床的解釈、モジュール割当、資源フロー、確認事項を確認します。",
           helpStep3: "確認したいパスウェイシナリオを構成する活動を選択します。暫定 cut-off 対象を除き、関連 LCA モジュールが自動的に選択されます。",
-          helpStep4: "LCA セクションでは、シナリオで実際に発生するモジュールと構成ブロックだけを残します。結果を根拠として使う前に、すべてのダミー数量と影響係数を置き換えてください。",
+          helpStep4: "activity を選択すると、対応する modules、building blocks、暫定数量が自動的に有効になります。計算前に治療経路、回数、手動追加を確認してください。",
           helpStep5: "不確実性とデータギャップを確認し、現在選択されている言語でレポートを出力します。",
           helpCutoffTitle: "暫定 LCA cut-off",
           helpCutoffText: "臨床上の意思決定点は図に残します。会議、デジタル文書、純粋な事務作業が人員時間とわずかなオフィスまたは ICT 電力しか追加しない場合、計算から除外します。人的労働そのものは環境資源フローとして評価せず、時間は部屋や機器投入の配分にのみ使用できます。数値的な cut-off 閾値はまだ検証されていないため、正式な LCA では除外項目を記録し、再評価する必要があります。",
@@ -4370,7 +4604,8 @@
           methodLciTitle: "LCI / LCIA リンク",
           methodLciText: "リソースフローは計算用のインベントリデータと影響係数に対応付けられます。",
           lcaHeading: "モジュール型 LCA 計算デモ",
-          lcaIntro: "候補構成ブロックの編集可能な計算行です。モジュールが LCA 境界を定義し、行チェックボックスが現在のシナリオで有効な構成ブロックを定義します。",
+          lcaIntro: "選択した activities に対応する modules、building blocks、暫定数量が自動的に有効になります。計算前に自動選択と経路依存の数量を確認してください。",
+          automaticFromActivities: "選択 activities から自動設定",
           exportReport: "LCA レポートを出力",
           buildingBlockMapHeading: "LCA モジュール別の候補構成ブロック",
           buildingBlockMapIntro: "候補 ECO-PATH 構成ブロックをモジュール別に表示します。選択したパスウェイは、EM06 の診察とモニタリングなど、モジュールの一部だけを使用する場合があります。",
@@ -4422,7 +4657,7 @@
           helpStep1: "Seleccione una especialidad y una guía o fuente de flujo local en el menú de vías.",
           helpStep2: "Pase el cursor o haga clic en una actividad para revisar su interpretación clínica, módulo, flujos de recursos y preguntas abiertas.",
           helpStep3: "Seleccione las actividades que forman el escenario de interés. Los módulos LCA relacionados se marcan automáticamente, excepto las actividades bajo el cut-off provisional.",
-          helpStep4: "En la sección LCA, conserve solo los módulos y bloques que ocurren en el escenario. Sustituya todas las cantidades y coeficientes de impacto dummy antes de usar los resultados como evidencia.",
+          helpStep4: "Al seleccionar una actividad se activan automáticamente sus módulos, building blocks y cantidades provisionales. Revise las alternativas, frecuencias y adiciones manuales antes del cálculo.",
           helpStep5: "Revise la incertidumbre y las lagunas de datos y exporte el informe en el idioma seleccionado.",
           helpCutoffTitle: "Cut-off LCA provisional",
           helpCutoffText: "Los puntos de decisión clínica permanecen en el mapa. Las reuniones, cartas digitales y actividades puramente administrativas se excluyen cuando solo añaden tiempo del personal y un consumo menor de energía de oficina o TIC. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse para asignar consumos de sala o equipos. Todavía no se ha validado un umbral numérico, por lo que la exclusión debe documentarse y revisarse durante el modelado LCA formal.",
@@ -4494,7 +4729,8 @@
           methodLciTitle: "Enlace LCI / LCIA",
           methodLciText: "Los flujos de recursos se asignan a datos de inventario y coeficientes de impacto para el cálculo.",
           lcaHeading: "Demostración de cálculo LCA modular",
-          lcaIntro: "Filas de cálculo editables para bloques constructivos candidatos. Los módulos definen el límite LCA; las casillas de fila definen qué bloques están activos en el escenario actual.",
+          lcaIntro: "Las activities seleccionadas activan automáticamente sus modules, building blocks y cantidades provisionales. Revise la selección automática y ajuste las cantidades dependientes de la ruta antes del cálculo.",
+          automaticFromActivities: "Automático desde activities seleccionadas",
           exportReport: "Exportar informe LCA",
           buildingBlockMapHeading: "Bloques constructivos candidatos por módulo LCA",
           buildingBlockMapIntro: "Bloques constructivos ECO-PATH candidatos agrupados por módulo. Una vía seleccionada puede usar solo parte de un módulo, por ejemplo consulta y monitorización dentro de EM06.",
@@ -4632,7 +4868,7 @@
       workflowActivitiesTitle: "Activities",
       workflowActivitiesHint: "Build the scenario",
       workflowLcaTitle: "LCA model",
-      workflowLcaHint: "Select modules and blocks",
+      workflowLcaHint: "Review automatic blocks",
       workflowResultsTitle: "Results",
       workflowResultsHint: "Review and export",
       moduleFilterSummary: "LCA module filter (advanced)",
@@ -4644,14 +4880,14 @@
       formulaUncertainty: "Impact coefficient range",
       formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u_c = relative uncertainty assigned to c only, N = cohort size. Quantity, pathway, scenario, and structural uncertainty are not represented by this field.",
       formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. u_c is the relative uncertainty assigned to c only. N is cohort size.",
-      helpStep5: "Review uncertainty and data gaps. When the local Brightway service is connected, calculate directly in the Results step; otherwise use JSON export and import. Then export the report in the selected language.",
+      helpStep5: "Define the functional unit and review all provisional quantities, uncertainty assumptions, and data gaps. Start the local Brightway companion with a reviewed mapping to calculate directly in Results; JSON remains an audit and fallback route. Export the report in the selected language.",
       impactCategoryLabel: "Impact category",
       impactMethodChip: "EF v3.1 no LT · demo",
       impactGroupClimateAir: "Climate and air",
       impactGroupHumanHealth: "Human health",
       impactGroupEcosystems: "Ecosystems",
       impactGroupResources: "Resource use",
-      lcaIntro: "Candidate building blocks are off by default and must be confirmed for the selected clinical scenario. All 16 EF 3.1 categories contain synthetic demonstration coefficients and an editable 30% coefficient-uncertainty assumption. These values are not verified EF results.",
+      lcaIntro: "Selected activities automatically activate explicitly mapped modules, building blocks, and provisional quantities. Review alternatives and quantities before calculation. All 16 EF 3.1 categories still use synthetic demonstration coefficients and an editable 30% coefficient-uncertainty assumption until verified Brightway mappings are supplied.",
       impactClimate: "Climate change (GWP100)",
       impactClimateDescription: "Primary ECO-PATH view. Reports the 100-year global warming potential of life-cycle greenhouse-gas emissions.",
       impactOzoneDepletion: "Ozone depletion",
@@ -4705,7 +4941,7 @@
       workflowActivitiesTitle: "Activiteiten",
       workflowActivitiesHint: "Bouw het scenario",
       workflowLcaTitle: "LCA-model",
-      workflowLcaHint: "Kies modules en bouwstenen",
+      workflowLcaHint: "Controleer automatische bouwstenen",
       workflowResultsTitle: "Resultaten",
       workflowResultsHint: "Beoordeel en exporteer",
       moduleFilterSummary: "LCA-modulefilter (geavanceerd)",
@@ -4717,14 +4953,14 @@
       formulaUncertainty: "Bereik impactcoëfficiënt",
       formulaNote: "S = aangevinkte bouwstenen binnen aangevinkte modules. q = aantal of hulpbronhoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u_c = relatieve onzekerheid uitsluitend van c, N = cohortgrootte. Onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur staat niet in dit veld.",
       formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is de impactcoëfficiënt. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
-      helpStep5: "Beoordeel onzekerheid en datalacunes. Bereken direct in Resultaten wanneer de lokale Brightway-service is verbonden; gebruik anders JSON-export en -import. Exporteer daarna het rapport in de gekozen taal.",
+      helpStep5: "Definieer de functionele eenheid en controleer alle voorlopige hoeveelheden, onzekerheidsaannames en datalacunes. Start de lokale Brightway-companion met een beoordeelde mapping om direct in Resultaten te rekenen; JSON blijft beschikbaar voor audit en als terugvalroute. Exporteer het rapport in de gekozen taal.",
       impactCategoryLabel: "Impactcategorie",
       impactMethodChip: "EF v3.1 no LT · demo",
       impactGroupClimateAir: "Klimaat en lucht",
       impactGroupHumanHealth: "Menselijke gezondheid",
       impactGroupEcosystems: "Ecosystemen",
       impactGroupResources: "Hulpbronnengebruik",
-      lcaIntro: "Kandidaatbouwstenen staan standaard uit en moeten voor het gekozen klinische scenario worden bevestigd. Alle 16 EF 3.1-categorieën bevatten synthetische demonstratiecoëfficiënten en een bewerkbare aanname van 30% coëfficiëntonzekerheid. Dit zijn geen geverifieerde EF-resultaten.",
+      lcaIntro: "Geselecteerde activiteiten activeren automatisch expliciet gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer alternatieven en hoeveelheden voor de berekening. De 16 EF 3.1-categorieën gebruiken synthetische demonstratiecoëfficiënten en 30% coëfficiëntonzekerheid totdat geverifieerde Brightway-koppelingen beschikbaar zijn.",
       impactClimate: "Klimaatverandering (GWP100)",
       impactClimateDescription: "Primaire ECO-PATH-weergave. Toont het aardopwarmingsvermogen over 100 jaar van broeikasgasemissies in de levenscyclus.",
       impactOzoneDepletion: "Ozonafbraak",
@@ -4778,7 +5014,7 @@
       workflowActivitiesTitle: "活动",
       workflowActivitiesHint: "组成情景路径",
       workflowLcaTitle: "LCA 模型",
-      workflowLcaHint: "选择模块和构建单元",
+      workflowLcaHint: "复核自动选择的构建单元",
       workflowResultsTitle: "结果",
       workflowResultsHint: "检查并导出",
       moduleFilterSummary: "LCA 模块筛选（高级）",
@@ -4790,14 +5026,14 @@
       formulaUncertainty: "影响系数范围",
       formulaNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为 LCIA 影响系数；j 为影响类别；u_c 仅表示 c 的相对不确定性；N 为队列人数。本字段不表示数量、路径、情景或模型结构不确定性。",
       formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为影响系数；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
-      helpStep5: "检查不确定性与数据缺口。本地 Brightway service 已连接时可在结果步骤直接计算；否则使用 JSON 导入导出。随后以当前语言导出报告。",
+      helpStep5: "定义 functional unit，并检查所有临时数量、不确定性假设和数据缺口。使用经复核的 mapping 启动本地 Brightway companion 后，可在结果步骤直接计算；JSON 保留为审计与备用流程。随后以当前语言导出报告。",
       impactCategoryLabel: "影响类别",
       impactMethodChip: "EF v3.1 no LT · 演示",
       impactGroupClimateAir: "气候与空气",
       impactGroupHumanHealth: "人类健康",
       impactGroupEcosystems: "生态系统",
       impactGroupResources: "资源使用",
-      lcaIntro: "候选 building blocks 默认不纳入，必须根据所选临床情景逐项确认。全部 16 类 EF 3.1 指标均含 synthetic 演示系数和可编辑的 30% 系数不确定性假设；这些数值不是经验证的 EF 结果。",
+      lcaIntro: "所选 activities 会自动启用显式映射的 modules、building blocks 和临时数量。计算前请检查治疗路线和数量。在提供经验证的 Brightway 映射前，16 类 EF 3.1 指标仍使用 synthetic 演示系数和可编辑的 30% 系数不确定性假设。",
       impactClimate: "气候变化（GWP100）",
       impactClimateDescription: "ECO-PATH 的首选视图，表示生命周期温室气体排放的 100 年全球变暖潜势。",
       impactOzoneDepletion: "臭氧层消耗",
@@ -4851,7 +5087,8 @@
       workflowActivitiesTitle: "活動",
       workflowActivitiesHint: "シナリオを構成",
       workflowLcaTitle: "LCA モデル",
-      workflowLcaHint: "モジュールとブロックを選択",
+      workflowLcaHint: "自動選択ブロックを確認",
+      pathwayLinkedDescription: "現在の activity map で利用可能な modules です。map または activity list で activity を選択すると、明示的に対応付けられた module、building blocks、暫定数量が自動的に有効になります。",
       workflowResultsTitle: "結果",
       workflowResultsHint: "確認して出力",
       moduleFilterSummary: "LCA モジュールフィルター（詳細）",
@@ -4863,14 +5100,15 @@
       formulaUncertainty: "影響係数の範囲",
       formulaNote: "S は選択モジュール内の選択 building block、q は発生回数または資源量、c は LCIA 影響係数、j は影響カテゴリ、u_c は c のみに割り当てた相対不確実性、N はコホート人数です。数量、経路、シナリオ、構造的不確実性はこの欄に含みません。",
       formulaReportNote: "S は選択モジュール内の選択 building block です。q は回数または資源量、c は影響係数、u_c は c のみの相対不確実性、N はコホート人数です。",
-      helpStep5: "不確実性とデータギャップを確認します。ローカル Brightway service 接続時は結果ステップで直接計算し、未接続時は JSON 入出力を使用します。その後、選択言語で報告書を出力します。",
+      helpStep5: "機能単位を定義し、暫定数量、不確実性の仮定、データギャップを確認します。レビュー済み mapping でローカル Brightway companion を起動すると結果画面から直接計算でき、JSON は監査用および代替手段として残ります。選択言語で報告書を出力します。",
+      lcaWarning: "選択した activities は、明示的に対応付けられた pathway modules、building blocks、暫定数量を自動的に有効化します。同じ種類の activity を複数選ぶと数量が加算されます。EM10 と EM11 は任意の支援モジュールです。治療レジメン、画像検査、放射線分割数、サイクル数、入院日数、ダミー影響係数は、エビデンスとして使用する前に確認してください。",
       impactCategoryLabel: "影響カテゴリ",
       impactMethodChip: "EF v3.1 no LT · デモ",
       impactGroupClimateAir: "気候と大気",
       impactGroupHumanHealth: "人の健康",
       impactGroupEcosystems: "生態系",
       impactGroupResources: "資源利用",
-      lcaIntro: "候補 building block は既定で無効で、選択した臨床シナリオごとに確認する必要があります。EF 3.1 の全16カテゴリに合成デモ係数と編集可能な30%の係数不確実性仮定があります。これらは検証済みEF結果ではありません。",
+      lcaIntro: "選択した activities により、明示的に対応付けた modules、building blocks、暫定数量が自動的に有効になります。計算前に経路と数量を確認してください。検証済み Brightway マッピングが提供されるまでは、EF 3.1 の全16カテゴリに合成デモ係数と編集可能な30%の係数不確実性を使用します。",
       impactClimate: "気候変動（GWP100）",
       impactClimateDescription: "ECO-PATH の既定表示です。ライフサイクル温室効果ガス排出の100年地球温暖化係数を示します。",
       impactOzoneDepletion: "オゾン層破壊",
@@ -4924,7 +5162,8 @@
       workflowActivitiesTitle: "Actividades",
       workflowActivitiesHint: "Construir el escenario",
       workflowLcaTitle: "Modelo LCA",
-      workflowLcaHint: "Elegir módulos y bloques",
+      workflowLcaHint: "Revisar bloques automáticos",
+      pathwayLinkedDescription: "Estos modules están disponibles en el mapa actual. Al seleccionar una activity en el mapa o en la lista se activan automáticamente su module, building blocks y cantidades provisionales con mapeo explícito.",
       workflowResultsTitle: "Resultados",
       workflowResultsHint: "Revisar y exportar",
       moduleFilterSummary: "Filtro de módulo LCA (avanzado)",
@@ -4936,14 +5175,15 @@
       formulaUncertainty: "Rango del coeficiente de impacto",
       formulaNote: "S = building blocks marcados dentro de módulos marcados. q = ocurrencia o cantidad de recurso, c = coeficiente LCIA, j = categoría de impacto, u_c = incertidumbre relativa asignada solo a c, N = tamaño de cohorte. Este campo no representa incertidumbre de cantidades, vía, escenario o estructura.",
       formulaReportNote: "S contiene los building blocks marcados dentro de módulos marcados. q es ocurrencia o cantidad de recurso. c es el coeficiente de impacto. u_c es la incertidumbre relativa solo de c. N es el tamaño de cohorte.",
-      helpStep5: "Revise la incertidumbre y las lagunas de datos. Calcule directamente en Resultados cuando el servicio Brightway local esté conectado; en caso contrario use exportación e importación JSON. Después exporte el informe en el idioma seleccionado.",
+      helpStep5: "Defina la unidad funcional y revise las cantidades provisionales, los supuestos de incertidumbre y las lagunas de datos. Inicie el companion local de Brightway con un mapping revisado para calcular directamente en Resultados; JSON se conserva para auditoría y como alternativa. Exporte el informe en el idioma seleccionado.",
+      lcaWarning: "Las activities seleccionadas activan automáticamente los pathway modules, building blocks y cantidades provisionales con mapeo explícito. Las activities repetidas acumulan cantidades. EM10 y EM11 siguen siendo módulos de apoyo opcionales. Revise los regímenes, las pruebas de imagen, las fracciones, los ciclos, los días de ingreso y todos los coeficientes de impacto dummy antes de usar los resultados como evidencia.",
       impactCategoryLabel: "Categoría de impacto",
       impactMethodChip: "EF v3.1 no LT · demo",
       impactGroupClimateAir: "Clima y aire",
       impactGroupHumanHealth: "Salud humana",
       impactGroupEcosystems: "Ecosistemas",
       impactGroupResources: "Uso de recursos",
-      lcaIntro: "Los building blocks candidatos están desactivados por defecto y deben confirmarse para el escenario clínico seleccionado. Las 16 categorías EF 3.1 contienen coeficientes sintéticos de demostración y una hipótesis editable de incertidumbre del 30%. No son resultados EF verificados.",
+      lcaIntro: "Las activities seleccionadas activan automáticamente los modules, building blocks y cantidades provisionales con mapeo explícito. Revise las rutas y cantidades antes del cálculo. Las 16 categorías EF 3.1 mantienen coeficientes sintéticos y una incertidumbre editable del 30% hasta disponer de mapeos Brightway verificados.",
       impactClimate: "Cambio climático (GWP100)",
       impactClimateDescription: "Vista principal de ECO-PATH. Presenta el potencial de calentamiento global a 100 años de las emisiones del ciclo de vida.",
       impactOzoneDepletion: "Agotamiento de la capa de ozono",
@@ -6710,12 +6950,14 @@
     const blockNameText = {
       nl: {
         "First specialist consultation": "Eerste specialistische consult",
+        "Inter-hospital clinical transfer": "Klinische overdracht tussen ziekenhuizen",
         "Referral processing": "Verwijzingsverwerking",
         "Triage review": "Triagebeoordeling",
         "Intake scheduling": "Intakeplanning",
         "Return-to-referrer handover": "Overdracht terug naar verwijzer",
         "Pathology slide review": "Beoordeling van pathologieslides",
         "Specimen processing": "Monsterverwerking",
+        "Diagnostic laboratory set": "Diagnostische laboratoriumset",
         "Biopsy or polyp pathology": "Biopsie- of polieppathologie",
         "IHC or molecular pathology add-on": "IHC of moleculaire pathologie add-on",
         "CT scan": "CT-scan",
@@ -6764,12 +7006,14 @@
       },
       zh: {
         "First specialist consultation": "首次专科会诊",
+        "Inter-hospital clinical transfer": "医院间临床转诊",
         "Referral processing": "转诊处理",
         "Triage review": "分诊复核",
         "Intake scheduling": "接收和预约安排",
         "Return-to-referrer handover": "返回转诊方交接",
         "Pathology slide review": "病理切片复核",
         "Specimen processing": "标本处理",
+        "Diagnostic laboratory set": "诊断实验室组合",
         "Biopsy or polyp pathology": "活检或息肉病理",
         "IHC or molecular pathology add-on": "IHC 或分子病理附加检测",
         "CT scan": "CT 扫描",
@@ -7301,12 +7545,14 @@
 
     Object.assign(blockNameText.ja = blockNameText.ja || {}, {
       "First specialist consultation": "初回専門医診察",
+      "Inter-hospital clinical transfer": "病院間の臨床移送",
       "Referral processing": "紹介処理",
       "Triage review": "トリアージ確認",
       "Intake scheduling": "初回受付予約",
       "Return-to-referrer handover": "紹介元への引き継ぎ",
       "Pathology slide review": "病理スライドレビュー",
       "Specimen processing": "検体処理",
+      "Diagnostic laboratory set": "診断検査セット",
       "Biopsy or polyp pathology": "生検またはポリープ病理",
       "IHC or molecular pathology add-on": "IHC または分子病理の追加",
       "CT scan": "CT 検査",
@@ -7356,12 +7602,14 @@
 
     Object.assign(blockNameText.es = blockNameText.es || {}, {
       "First specialist consultation": "Primera consulta con especialista",
+      "Inter-hospital clinical transfer": "Traslado clínico interhospitalario",
       "Referral processing": "Procesamiento de referencia",
       "Triage review": "Revisión de triaje",
       "Intake scheduling": "Programación de ingreso",
       "Return-to-referrer handover": "Transferencia al referente",
       "Pathology slide review": "Revisión de láminas de patología",
       "Specimen processing": "Procesamiento de muestras",
+      "Diagnostic laboratory set": "Conjunto de laboratorio diagnóstico",
       "Biopsy or polyp pathology": "Patología de biopsia o pólipo",
       "IHC or molecular pathology add-on": "Adición de IHC o patología molecular",
       "CT scan": "Tomografía CT",
@@ -8703,6 +8951,19 @@
       }
     };
 
+    function validateAutomaticActivityIds() {
+      const knownActivityIds = new Set(
+        Object.values(pathwayData).flatMap((pathway) => pathway.nodes.map((node) => node.id))
+      );
+      const unknownActivityIds = Object.keys(activityBuildingBlockRegistry)
+        .filter((activityId) => !knownActivityIds.has(activityId));
+      if (unknownActivityIds.length) {
+        throw new Error(`Unknown activities in automatic building block registry: ${unknownActivityIds.join(", ")}`);
+      }
+    }
+
+    validateAutomaticActivityIds();
+
     const state = {
       pathway: "emc",
       selected: null,
@@ -9032,13 +9293,41 @@
           .filter((node) => !isLcaCutoffNode(node))
           .map((node) => node.module)
       );
+      const automaticQuantities = automaticBuildingBlockQuantities();
+      lcaRows.forEach((row) => {
+        if ((automaticQuantities.get(row.block) || 0) > 0) modules.add(row.module);
+      });
       return pathwayModuleIds().filter((moduleId) => modules.has(moduleId));
+    }
+
+    function automaticBuildingBlockQuantities() {
+      const quantities = new Map();
+      selectedScenarioNodes().forEach((node) => {
+        const selections = activityBuildingBlockRegistry[node.id] || [];
+        selections.forEach((selection) => {
+          const quantity = Number(selection.quantity);
+          if (!Number.isFinite(quantity) || quantity <= 0) return;
+          quantities.set(selection.name, (quantities.get(selection.name) || 0) + quantity);
+        });
+      });
+      return quantities;
     }
 
     function syncPathwayModulesFromScenario() {
       const selectedModules = new Set(selectedScenarioModuleIds());
       lcaPathwayModuleIds().forEach((moduleId) => {
         lcaModuleIncluded[moduleId] = selectedModules.has(moduleId);
+      });
+      const automaticQuantities = automaticBuildingBlockQuantities();
+      lcaRows.forEach((row) => {
+        if (crossCuttingModuleIds.includes(row.module)) return;
+        const quantity = automaticQuantities.get(row.block) || 0;
+        row.automaticQuantity = quantity;
+        row.automaticallyIncluded = quantity > 0;
+        row.included = row.automaticallyIncluded;
+        if (!row.quantityEdited) {
+          row.quantity = row.automaticallyIncluded ? quantity : row.defaultQuantity;
+        }
       });
     }
 
@@ -9612,11 +9901,11 @@
       scheduleDetailPanelSync();
     }
 
-    function selectMapNode(nodeId) {
+    function selectMapNode(nodeId, detailAnchor = "map") {
       const node = nodeById(currentPathway(), nodeId);
       if (!node) return;
       state.selected = node.id;
-      state.detailAnchor = "map";
+      state.detailAnchor = detailAnchor;
       if (state.scenarioBuildMode) toggleScenarioNode(node.id);
       renderMap("pathwaySvg");
       if (state.mapFullscreenOpen) renderMap("fullscreenPathwaySvg");
@@ -10288,14 +10577,7 @@
           state.oncologyLens && node.oncology ? "oncology-highlight" : ""
         ].filter(Boolean).join(" ");
         button.dataset.nodeId = node.id;
-        button.addEventListener("click", () => {
-          state.selected = node.id;
-          state.detailAnchor = "list";
-          renderMap();
-          renderDetail();
-          updateActivityListSelection();
-          scheduleDetailPanelSync();
-        });
+        button.addEventListener("click", () => selectMapNode(node.id, "list"));
         button.innerHTML = `
           <span class="code-pill">${escapeHtml(displayCode(node))}</span>
           <span class="activity-name">
@@ -10473,7 +10755,10 @@
                     <td>
                       <input type="checkbox" data-lca-row-toggle="${index}" ${rowIncluded ? "checked" : ""} aria-label="${escapeHtml(t("use"))} ${escapeHtml(localizedBlockName(row.block))}"${moduleDisabledAttr}>
                     </td>
-                    <td><span class="lca-block-cell">${escapeHtml(localizedBlockName(row.block))}</span></td>
+                    <td>
+                      <span class="lca-block-cell">${escapeHtml(localizedBlockName(row.block))}</span>
+                      ${row.automaticallyIncluded ? `<small class="lca-auto-note">${escapeHtml(t("automaticFromActivities"))}</small>` : ""}
+                    </td>
                     <td>${escapeHtml(localizedResourceFlowList(row.flow))}</td>
                     <td>${escapeHtml(localizedUnit(row.unit))}</td>
                     <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(t("baseQuantityAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
@@ -10522,6 +10807,7 @@
           lcaRows[rowIndex].uncertainties[state.impactCategory] = value;
         } else {
           lcaRows[rowIndex][field] = value;
+          if (field === "quantity") lcaRows[rowIndex].quantityEdited = true;
         }
         if (field === "factor") {
           const sourceCell = input.closest("tr")?.querySelector(".lca-source-cell");

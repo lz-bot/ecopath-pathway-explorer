@@ -13,7 +13,7 @@ The current prototype includes urology and gastroenterology examples:
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
 
-The page also includes an interactive LCA building-block calculator. It demonstrates modular calculation logic for all 16 EF 3.1 impact categories using editable dummy quantities, synthetic impact coefficients, selected activities, module inclusion, and low/base/high coefficient-uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
+The page also includes an interactive LCA building-block calculator. Selecting pathway activities automatically activates their explicitly mapped modules, building blocks, and provisional quantities. Repeated activities aggregate quantities. The calculator demonstrates modular calculation logic for all 16 EF 3.1 impact categories using editable provisional quantities, synthetic impact coefficients, and low/base/high coefficient-uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
 
 The goal, scope, and functional-unit panel defines the quantified healthcare service represented by one pathway result. Its contents are included in the browser report and in the Brightway scenario export. Clinical comparability still requires explicit confirmation; the interface does not assume that all visible treatment branches are interchangeable.
 
@@ -37,32 +37,50 @@ The browser calculator uses the prototype formula `impact = quantity x impact co
 
 GitHub Pages is a static website and cannot run Brightway or distribute licensed background databases. For direct calculation, run the explorer through the local companion service in the Python environment that has access to the intended Brightway project:
 
-1. Copy the mapping template to the ignored local mapping file:
+See the official [Brightway installation guide](https://docs.brightway.dev/en/latest/content/installation/) and [project activation reference](https://docs.brightway.dev/en/latest/content/cheatsheet/projects.html) for the current environment requirements and project commands.
+
+1. Use an existing Activity Browser or Brightway environment, or create one. Current Brightway documentation supports Python 3.9 or later. On Apple Silicon, the documented Conda setup is:
+
+   ```bash
+   conda create -n brightway -c conda-forge \
+     brightway25 scikit-umfpack 'numpy>=2' 'scikit-umfpack>=0.4.2'
+   conda activate brightway
+   ```
+
+   An existing Activity Browser environment can be used instead if it already imports `bw2data` and `bw2calc` and contains the required project. Check it without changing project data:
+
+   ```bash
+   python -c "import bw2data as bd, bw2calc; print('Current:', bd.projects.current); print('Projects:', sorted(bd.projects))"
+   ```
+
+2. Copy the mapping template to the ignored local mapping file:
 
    ```bash
    cp brightway/mapping.example.json brightway/mapping.local.json
    ```
 
-2. Complete `brightway/mapping.local.json` once. Use existing foreground activity database/code identifiers and exact installed EF 3.1 no long-term method tuples. Do not use name-based fuzzy matching for formal results.
+3. Complete `brightway/mapping.local.json` once. Use existing foreground activity database/code identifiers and exact installed EF 3.1 no long-term method tuples. Do not use name-based fuzzy matching for formal results.
 
-3. Start the local service from the Brightway or Activity Browser Python environment:
+4. Start the local service from the Brightway or Activity Browser Python environment:
 
    ```bash
    python scripts/serve_brightway.py \
      --mapping brightway/mapping.local.json
    ```
 
-4. The service opens `http://127.0.0.1:8765/`. Build the pathway scenario and select **Calculate with Brightway**. Mapping coverage and method coverage are checked before calculation, and the results return directly to the page.
+5. The service opens `http://127.0.0.1:8765/`. Build the pathway scenario and select **Calculate with Brightway**. Mapping coverage and method coverage are checked before calculation, and the results return directly to the page.
 
 The service binds to the loopback interface only, uses a per-session token, rejects cross-origin calculation requests, and reads existing Brightway projects and databases without modifying them. It refuses missing mappings by default. A mapping is model infrastructure that should be prepared and reviewed once by the ECO-PATH LCA team; end users should not need to edit it for each calculation.
 
-Candidate building blocks are not included automatically when a module becomes active. The user must confirm the blocks and quantities that occur in the selected clinical scenario. This prevents mutually exclusive surgery, radiotherapy, systemic therapy, and surveillance resources from entering the same result merely because they share a module.
+Activity selection is the scenario-construction action. Each selected activity activates only the building blocks listed in the explicit activity-to-building-block registry, not every candidate block in its module. The interface also assigns provisional quantities, such as one scan per selected imaging activity or a configurable default number of treatment cycles or radiotherapy fractions. Users must review these quantities and route alternatives before calculation. Activities under the provisional cut-off may activate no calculation row. EM10 patient support and EM11 shared hospital support remain optional because their allocation depends on the study boundary.
+
+Installing Brightway is not sufficient for a formal ECO-PATH calculation. The selected Brightway project must also contain a reviewed ECO-PATH foreground model linked to appropriate background inventory data, and the local mapping must cover every active building block and requested EF method. Missing mappings fail by default instead of silently using browser dummy coefficients.
 
 ## JSON audit and fallback workflow
 
 The file workflow remains available for audit, reproducibility, and environments where the local service cannot be used:
 
-1. Define the functional unit and select the pathway activities, modules, building blocks, and quantities in the web interface.
+1. Define the functional unit and select the pathway activities. Review the automatically activated modules, building blocks, and provisional quantities, and add optional support modules only when they are inside the study boundary.
 2. Select **Export scenario JSON** in the Results step.
 3. Copy [`brightway/mapping.example.json`](brightway/mapping.example.json) to a local, untracked mapping file. Replace every placeholder with an existing Brightway project, foreground activity database/code, and exact installed EF 3.1 no long-term method tuple.
 4. Validate the scenario and mapping without loading Brightway:

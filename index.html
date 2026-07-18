@@ -1227,7 +1227,7 @@
       overflow: auto;
     }
 
-    .map-fullscreen-map-wrap svg {
+    .map-fullscreen-map-wrap > svg {
       min-height: calc(100vh - 210px);
     }
 
@@ -2802,7 +2802,7 @@
         grid-template-columns: 1fr;
       }
 
-      .map-fullscreen-map-wrap svg {
+      .map-fullscreen-map-wrap > svg {
         min-height: 520px;
       }
 
@@ -3363,12 +3363,19 @@
         <span class="status-chip" id="fullscreenPathwayStatus"></span>
         <span class="status-chip" id="fullscreenScenarioStatus"></span>
         <button type="button" id="clearPathwayScenarioFullscreen">Clear selected pathway</button>
-        <button type="button" id="closeMapFullscreen">Close full screen</button>
       </div>
     </div>
     <div class="map-fullscreen-shell">
       <section class="map-fullscreen-map-panel" aria-label="Fullscreen metro pathway map">
         <div class="map-wrap map-fullscreen-map-wrap">
+          <button class="map-fullscreen-trigger" type="button" id="closeMapFullscreen" aria-label="Close full screen" title="Close full screen">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4 14h6v6"></path>
+              <path d="M20 10h-6V4"></path>
+              <path d="m14 10 7-7"></path>
+              <path d="m3 21 7-7"></path>
+            </svg>
+          </button>
           <svg id="fullscreenPathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="fullscreenSvgTitle fullscreenSvgDesc">
             <title id="fullscreenSvgTitle">Pathway activity map</title>
             <desc id="fullscreenSvgDesc">Fullscreen interactive pathway map with coded activities and ECO-PATH modules.</desc>
@@ -11001,7 +11008,10 @@
         openButton.title = t("fullscreenMap");
       }
       const closeButton = document.getElementById("closeMapFullscreen");
-      if (closeButton) closeButton.textContent = t("closeFullscreen");
+      if (closeButton) {
+        closeButton.setAttribute("aria-label", t("closeFullscreen"));
+        closeButton.title = t("closeFullscreen");
+      }
       const clearButton = document.getElementById("clearPathwayScenario");
       if (clearButton) clearButton.textContent = t("clearPathway");
       const clearFullscreenButton = document.getElementById("clearPathwayScenarioFullscreen");

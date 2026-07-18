@@ -1093,6 +1093,42 @@
       line-height: 1;
     }
 
+    .parallel-gateway-key {
+      display: inline-grid;
+      place-items: center;
+      width: 15px;
+      height: 15px;
+      border: 2px solid var(--treatment);
+      background: var(--panel);
+      color: var(--ink);
+      transform: rotate(45deg);
+      flex: 0 0 auto;
+    }
+
+    .parallel-gateway-key::after {
+      content: "+";
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1;
+      transform: rotate(-45deg);
+    }
+
+    .parallel-gateway-shape {
+      fill: var(--panel);
+      stroke-width: 3;
+      filter: drop-shadow(0 2px 3px rgba(28, 48, 45, 0.10));
+    }
+
+    .parallel-gateway-symbol {
+      fill: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
     .code-legend {
       display: flex;
       flex-wrap: wrap;
@@ -3128,6 +3164,7 @@
           <div class="legend" aria-label="Route legend">
             <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="routeDirectionLabel">Arrows show pathway direction</span></span>
             <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="routeSequenceLabel">Numbers show selected order</span></span>
+            <span class="legend-item"><span class="parallel-gateway-key" aria-hidden="true"></span><span id="parallelRouteLabel">Parallel paths: not an either-or decision</span></span>
             <span class="legend-item"><span class="swatch diagnostic"></span><span id="diagnosticRouteLabel">Diagnostic and first-contact route</span></span>
             <span class="legend-item"><span class="swatch treatment"></span><span id="treatmentRouteLabel">Treatment route</span></span>
             <span class="legend-item"><span class="swatch followup"></span><span id="followupRouteLabel">Follow-up route</span></span>
@@ -3384,6 +3421,7 @@
         <div class="legend" aria-label="Route legend">
           <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="fullscreenRouteDirectionLabel">Arrows show pathway direction</span></span>
           <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="fullscreenRouteSequenceLabel">Numbers show selected order</span></span>
+          <span class="legend-item"><span class="parallel-gateway-key" aria-hidden="true"></span><span id="fullscreenParallelRouteLabel">Parallel paths: not an either-or decision</span></span>
           <span class="legend-item"><span class="swatch diagnostic"></span><span id="fullscreenDiagnosticRouteLabel">Diagnostic and first-contact route</span></span>
           <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
           <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
@@ -3991,6 +4029,9 @@
           { y: 462, label: "Bladder-sparing and radiotherapy" },
           { y: 578, label: "Follow-up and advanced care" }
         ],
+        parallelGateways: [
+          { id: "EAUFULL-PG01", from: "EAUFULL-TX09", x: 1110, y: 405, route: "treatment" }
+        ],
         nodes: [
           activity("EAUFULL-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Guideline entry after suspected bladder cancer, presentation, or referral into MIBC workup.", "This entry point is retained for scoping. It does not define which hospital performs referral intake or triage.", ["Patient travel", "Administrative ICT", "Referral communication"], ["Define whether ECO-PATH starts at first presentation, first specialist referral, confirmed MIBC, or tertiary referral."]),
           activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "EAU includes baseline clinical assessment because it informs diagnosis, staging interpretation, and treatment eligibility.", ["Clinician time", "Outpatient room use", "EHR documentation"], ["Which baseline assessments are repeated after referral?"]),
@@ -4042,8 +4083,8 @@
           edge("EAUFULL-TX06", "EAUFULL-TX07", "treatment"),
           edge("EAUFULL-TX07", "EAUFULL-TX08", "treatment"),
           edge("EAUFULL-TX08", "EAUFULL-TX09", "treatment"),
-          edge("EAUFULL-TX09", "EAUFULL-FU03", "followup"),
-          edge("EAUFULL-TX09", "EAUFULL-TX10", "treatment"),
+          edge("EAUFULL-TX09", "EAUFULL-FU03", "followup", { startGateway: "EAUFULL-PG01" }),
+          edge("EAUFULL-TX09", "EAUFULL-TX10", "treatment", { startGateway: "EAUFULL-PG01" }),
           edge("EAUFULL-TX10", "EAUFULL-FU01", "followup"),
           edge("EAUFULL-TX03", "EAUFULL-TX11", "treatment"),
           edge("EAUFULL-TX11", "EAUFULL-TX12", "treatment"),
@@ -4826,7 +4867,8 @@
         pathwayScenarioSubtitle: "One patient route; competing treatment branches replace each other",
         selectedActivitiesStatus: "{count} selected activities; {modules} pathway modules active",
         routeDirection: "Arrows show pathway direction",
-        routeSequence: "Numbers show selected order",
+        routeSequence: "Numbers show pathway order; equal numbers are parallel",
+        parallelRoute: "Parallel paths: not an either-or decision",
         diagnosticRoute: "Diagnostic and first-contact route",
         treatmentRoute: "Treatment route",
         followupRoute: "Follow-up route",
@@ -5002,7 +5044,8 @@
         pathwayScenarioSubtitle: "Eén patiënttraject; concurrerende behandelroutes vervangen elkaar",
         selectedActivitiesStatus: "{count} geselecteerde activiteiten; {modules} actieve zorgpadmodules",
         routeDirection: "Pijlen tonen de richting van het zorgpad",
-        routeSequence: "Nummers tonen de gekozen volgorde",
+        routeSequence: "Nummers tonen de volgorde; gelijke nummers zijn parallel",
+        parallelRoute: "Parallelle paden: geen of-ofbeslissing",
         diagnosticRoute: "Diagnostische en eerste-contactroute",
         treatmentRoute: "Behandelroute",
         followupRoute: "Follow-uproute",
@@ -5183,7 +5226,8 @@
           pathwayScenarioSubtitle: "一次只构建一条患者路径；竞争治疗分支会相互替换",
           selectedActivitiesStatus: "已选 {count} 个活动；{modules} 个路径模块已启用",
           routeDirection: "箭头表示路径方向",
-          routeSequence: "数字表示所选活动的先后顺序",
+          routeSequence: "数字表示路径顺序；相同数字表示并行",
+          parallelRoute: "并行路径：不是二选一决策",
           diagnosticRoute: "诊断和首次接触路线",
           treatmentRoute: "治疗路线",
           followupRoute: "随访路线",
@@ -5356,7 +5400,8 @@
           pathwayScenarioSubtitle: "患者一人分のルート；競合する治療分岐は相互に置換",
           selectedActivitiesStatus: "{count} 件の活動を選択；{modules} 件のパスウェイモジュールが有効",
           routeDirection: "矢印はパスウェイの方向を示します",
-          routeSequence: "番号は選択した順序を示します",
+          routeSequence: "番号は経路順を示し、同じ番号は並行経路です",
+          parallelRoute: "並行経路：二者択一の決定ではありません",
           diagnosticRoute: "診断・初回接触ルート",
           treatmentRoute: "治療ルート",
           followupRoute: "フォローアップルート",
@@ -5484,7 +5529,8 @@
           pathwayScenarioSubtitle: "Una ruta de paciente; las ramas terapéuticas competidoras se sustituyen",
           selectedActivitiesStatus: "{count} actividades seleccionadas; {modules} módulos de vía activos",
           routeDirection: "Las flechas indican la dirección de la vía",
-          routeSequence: "Los números muestran el orden seleccionado",
+          routeSequence: "Los números muestran el orden; los iguales son paralelos",
+          parallelRoute: "Rutas paralelas: no es una decisión excluyente",
           diagnosticRoute: "Ruta diagnóstica y de primer contacto",
           treatmentRoute: "Ruta de tratamiento",
           followupRoute: "Ruta de seguimiento",
@@ -10690,7 +10736,25 @@
         .filter((nodeId) => !orderedIds.includes(nodeId))
         .sort((a, b) => pathwayOrder.get(a) - pathwayOrder.get(b))
         .forEach((nodeId) => orderedIds.push(nodeId));
-      return new Map(orderedIds.map((nodeId, index) => [nodeId, index + 1]));
+
+      const parallelGroupForNode = new Map();
+      (pathway.parallelGateways || []).forEach((gateway) => {
+        pathway.edges
+          .filter((edgeItem) => edgeItem.startGateway === gateway.id)
+          .filter((edgeItem) => isScenarioEdgeActive(edgeItem, selectedIds))
+          .forEach((edgeItem) => parallelGroupForNode.set(edgeItem.to, gateway.id));
+      });
+      const sequenceByGroup = new Map();
+      const sequenceByNode = new Map();
+      let sequence = 0;
+      orderedIds.forEach((nodeId) => {
+        const groupKey = parallelGroupForNode.has(nodeId)
+          ? `parallel:${parallelGroupForNode.get(nodeId)}`
+          : `node:${nodeId}`;
+        if (!sequenceByGroup.has(groupKey)) sequenceByGroup.set(groupKey, ++sequence);
+        sequenceByNode.set(nodeId, sequenceByGroup.get(groupKey));
+      });
+      return sequenceByNode;
     }
 
     function selectedScenarioModuleIds() {
@@ -10947,6 +11011,8 @@
       setText("routeSequenceLabel", "routeSequence");
       setText("fullscreenRouteDirectionLabel", "routeDirection");
       setText("fullscreenRouteSequenceLabel", "routeSequence");
+      setText("parallelRouteLabel", "parallelRoute");
+      setText("fullscreenParallelRouteLabel", "parallelRoute");
       setText("diagnosticRouteLabel", "diagnosticRoute");
       setText("fullscreenDiagnosticRouteLabel", "diagnosticRoute");
       setText("treatmentRouteLabel", "treatmentRoute");
@@ -11088,11 +11154,24 @@
     }
 
     function nodeHorizontalRadius(node) {
+      if (node.type === "parallel") return 10;
       return node.type === "decision" ? 38 : 24;
     }
 
     function nodeVerticalRadius(node) {
+      if (node.type === "parallel") return 10;
       return node.type === "decision" ? 30 : 24;
+    }
+
+    function parallelGatewayById(pathway, gatewayId) {
+      return (pathway.parallelGateways || []).find((gateway) => gateway.id === gatewayId);
+    }
+
+    function edgeStartNode(pathway, edgeItem, fallbackNode) {
+      const gateway = edgeItem.startGateway
+        ? parallelGatewayById(pathway, edgeItem.startGateway)
+        : null;
+      return gateway ? { ...gateway, type: "parallel" } : fallbackNode;
     }
 
     function pathForEdge(from, to) {
@@ -11450,13 +11529,34 @@
         laneLabelBoxes.push(laneLabelBounds(laneLines, 38, laneY));
       });
 
+      (pathway.parallelGateways || []).forEach((gateway) => {
+        const from = nodeById(pathway, gateway.from);
+        if (!from) return;
+        const gatewayNode = { ...gateway, type: "parallel" };
+        const gatewayEdges = pathway.edges.filter((edgeItem) => edgeItem.startGateway === gateway.id);
+        const scenarioEdge = gatewayEdges.some((edgeItem) => isScenarioEdgeActive(edgeItem));
+        const gatewayVisible = visibleIds.has(from.id)
+          || gatewayEdges.some((edgeItem) => visibleIds.has(edgeItem.to));
+        const path = createSvgElement("path", {
+          d: pathForEdge(from, gatewayNode),
+          class: `map-edge ${scenarioEdge ? "scenario-edge" : ""}`,
+          stroke: routeColor(gateway.route),
+          "stroke-width": scenarioEdge ? 9 : 6,
+          "data-edge-from": gateway.from,
+          "data-edge-to": gateway.id
+        });
+        if (!gatewayVisible) path.setAttribute("opacity", "0.16");
+        svg.appendChild(path);
+      });
+
       pathway.edges.forEach((edgeItem) => {
         const from = nodeById(pathway, edgeItem.from);
         const to = nodeById(pathway, edgeItem.to);
         if (!from || !to) return;
+        const startNode = edgeStartNode(pathway, edgeItem, from);
         const scenarioEdge = isScenarioEdgeActive(edgeItem);
         const path = createSvgElement("path", {
-          d: pathForEdge(from, to),
+          d: pathForEdge(startNode, to),
           class: `map-edge ${edgeItem.route === "return" ? "return" : ""} ${scenarioEdge ? "scenario-edge" : ""}`,
           stroke: routeColor(edgeItem.route),
           "stroke-width": scenarioEdge ? 9 : edgeItem.route === "diagnostic" ? 7 : 6,
@@ -11470,13 +11570,51 @@
         svg.appendChild(path);
       });
 
-      const placedLabels = [...laneLabelBoxes];
-      const markerBoxes = pathway.nodes.map((node) => markerBounds(node));
-      const edgeBoxes = pathway.edges.flatMap((edgeItem) => {
-        const from = nodeById(pathway, edgeItem.from);
-        const to = nodeById(pathway, edgeItem.to);
-        return from && to ? edgeSampleBoxes(from, to) : [];
+      (pathway.parallelGateways || []).forEach((gateway) => {
+        const gatewayEdges = pathway.edges.filter((edgeItem) => edgeItem.startGateway === gateway.id);
+        const scenarioEdge = gatewayEdges.some((edgeItem) => isScenarioEdgeActive(edgeItem));
+        const group = createSvgElement("g", {
+          role: "img",
+          "aria-label": t("parallelRoute")
+        });
+        group.appendChild(createSvgElement("polygon", {
+          points: `${gateway.x},${gateway.y - 10} ${gateway.x + 10},${gateway.y} ${gateway.x},${gateway.y + 10} ${gateway.x - 10},${gateway.y}`,
+          class: "parallel-gateway-shape",
+          stroke: scenarioEdge ? "var(--accent-dark)" : routeColor(gateway.route)
+        }));
+        const symbol = createSvgElement("text", {
+          x: gateway.x,
+          y: gateway.y,
+          class: "parallel-gateway-symbol"
+        });
+        symbol.textContent = "+";
+        group.appendChild(symbol);
+        svg.appendChild(group);
       });
+
+      const placedLabels = [...laneLabelBoxes];
+      const markerBoxes = [
+        ...pathway.nodes.map((node) => markerBounds(node)),
+        ...(pathway.parallelGateways || []).map((gateway) => ({
+          x: gateway.x - 10,
+          y: gateway.y - 10,
+          width: 20,
+          height: 20
+        }))
+      ];
+      const edgeBoxes = [
+        ...(pathway.parallelGateways || []).flatMap((gateway) => {
+          const from = nodeById(pathway, gateway.from);
+          return from ? edgeSampleBoxes(from, { ...gateway, type: "parallel" }) : [];
+        }),
+        ...pathway.edges.flatMap((edgeItem) => {
+          const from = nodeById(pathway, edgeItem.from);
+          const to = nodeById(pathway, edgeItem.to);
+          return from && to
+            ? edgeSampleBoxes(edgeStartNode(pathway, edgeItem, from), to)
+            : [];
+        })
+      ];
       const scenarioSequence = scenarioSequenceMap(pathway);
       pathway.nodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
@@ -11793,7 +11931,7 @@
       };
       const verticalCandidates = ["EAUFULL-FU01"].includes(node.id)
         ? [below]
-        : ["EMC-DX09", "EMC-FU03"].includes(node.id)
+        : ["EMC-DX09", "EMC-FU03", "EAUFULL-TX09"].includes(node.id)
           ? [above]
           : (node.y >= 540 ? [above, below] : [below, above]);
       const candidates = verticalCandidates

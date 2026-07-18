@@ -1191,42 +1191,6 @@
       line-height: 1;
     }
 
-    .parallel-gateway-key {
-      display: inline-grid;
-      place-items: center;
-      width: 15px;
-      height: 15px;
-      border: 2px solid var(--treatment);
-      background: var(--panel);
-      color: var(--ink);
-      transform: rotate(45deg);
-      flex: 0 0 auto;
-    }
-
-    .parallel-gateway-key::after {
-      content: "+";
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1;
-      transform: rotate(-45deg);
-    }
-
-    .parallel-gateway-shape {
-      fill: var(--panel);
-      stroke-width: 3;
-      filter: drop-shadow(0 2px 3px rgba(28, 48, 45, 0.10));
-    }
-
-    .parallel-gateway-symbol {
-      fill: var(--ink);
-      font-family: var(--sans);
-      font-size: 15px;
-      font-weight: 800;
-      text-anchor: middle;
-      dominant-baseline: central;
-      pointer-events: none;
-    }
-
     .code-legend {
       display: flex;
       flex-wrap: wrap;
@@ -3277,7 +3241,6 @@
           <div class="legend" aria-label="Route legend">
             <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="routeDirectionLabel">Arrows show pathway direction</span></span>
             <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="routeSequenceLabel">Numbers show selected order</span></span>
-            <span class="legend-item"><span class="parallel-gateway-key" aria-hidden="true"></span><span id="parallelRouteLabel">Parallel paths: not an either-or decision</span></span>
             <span class="legend-item"><span class="swatch diagnostic"></span><span id="diagnosticRouteLabel">Diagnostic and first-contact route</span></span>
             <span class="legend-item"><span class="swatch treatment"></span><span id="treatmentRouteLabel">Treatment route</span></span>
             <span class="legend-item"><span class="swatch followup"></span><span id="followupRouteLabel">Follow-up route</span></span>
@@ -3534,7 +3497,6 @@
         <div class="legend" aria-label="Route legend">
           <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="fullscreenRouteDirectionLabel">Arrows show pathway direction</span></span>
           <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="fullscreenRouteSequenceLabel">Numbers show selected order</span></span>
-          <span class="legend-item"><span class="parallel-gateway-key" aria-hidden="true"></span><span id="fullscreenParallelRouteLabel">Parallel paths: not an either-or decision</span></span>
           <span class="legend-item"><span class="swatch diagnostic"></span><span id="fullscreenDiagnosticRouteLabel">Diagnostic and first-contact route</span></span>
           <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
           <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
@@ -4157,9 +4119,6 @@
           { y: 462, label: "Bladder-sparing and radiotherapy" },
           { y: 578, label: "Follow-up and advanced care" }
         ],
-        parallelGateways: [
-          { id: "EAUFULL-PG01", from: "EAUFULL-TX09", x: 1110, y: 405, route: "treatment" }
-        ],
         nodes: [
           activity("EAUFULL-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Entry boundary after suspected bladder cancer, presentation, or referral into MIBC workup.", "This node establishes the guideline scope and does not represent an additional consultation. The first resource-bearing clinical assessment is counted at DX01.", ["Referral record", "Boundary definition"], ["Define whether ECO-PATH starts at first presentation, first specialist referral, confirmed MIBC, or tertiary referral."]),
           activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "This is the first resource-bearing specialist contact in the guideline pathway and is modeled in EM01. The DX code retains its clinical position in the diagnostic sequence.", ["Clinician time", "Outpatient room use", "EHR documentation"], ["Which baseline assessments are repeated after referral?"]),
@@ -4180,7 +4139,7 @@
           activity("EAUFULL-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 900, 348, "Pelvic lymph node dissection as part of the surgical treatment pathway where indicated.", "This can change operation time, instruments, pathology specimens, and downstream staging.", ["Operating room time", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Should lymph node dissection be modeled as part of cystectomy or as a separate parameter?"]),
           activity("EAUFULL-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 1000, 348, "Choice of urinary diversion such as ileal conduit, neobladder, or other diversion options.", "EAU provides detailed diversion considerations. ECO-PATH needs this as a parameter because resource flows and follow-up differ by diversion.", ["Operating room time", "Surgical consumables", "Ward stay", "Patient education"], ["Which diversion types are relevant for the selected patient population?"]),
           activity("EAUFULL-TX09", "Perioperative care and VTE prophylaxis", "Surgery", "activity", "EM07", "treatment", 1110, 348, "Perioperative care, enhanced recovery elements, and pharmacological venous thromboembolism prophylaxis after radical cystectomy.", "This activity captures resource flows that are not visible if surgery is represented only as one cystectomy node.", ["Ward stay", "Medicines", "Nursing time", "Monitoring consumables"], ["Which perioperative care elements should be inside the surgical boundary?"]),
-          activity("EAUFULL-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 1030, 578, "Postoperative assessment for adjuvant chemotherapy, immunotherapy, radiotherapy, or surveillance when indicated.", "This decision remains visible because it changes the route, but it is provisionally excluded from the LCA calculation. Treatment, laboratory testing, or imaging should be activated as separate resource-bearing activities when they occur.", ["Clinical review", "Treatment decision"], ["Which adjuvant options are used in local practice, and should a separate treatment-delivery node be added?"]),
+          activity("EAUFULL-TX10", "Postoperative pathology and adjuvant assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 1110, 462, "Postoperative pathology and clinical assessment for adjuvant chemotherapy, immunotherapy, radiotherapy, or surveillance.", "Every cystectomy episode requires postoperative review even when the decision is surveillance. The decision remains visible but is provisionally excluded from the LCA calculation. A separate resource-bearing delivery activity must be added when adjuvant treatment occurs.", ["Pathology review", "Clinical review", "Treatment decision"], ["Which adjuvant options are used in local practice, and should a separate treatment-delivery node be added?"]),
           activity("EAUFULL-TX11", "Trimodality therapy eligibility", "Radiotherapy", "decision", "EM08", "treatment", 500, 462, "Eligibility for bladder-preserving trimodality treatment in selected patients.", "This decision separates bladder-preserving scenarios from radical cystectomy and palliative care.", ["MDT review", "Clinical review", "Imaging review"], ["Which criteria define eligibility locally?"]),
           activity("EAUFULL-TX12", "Maximal TURBT for bladder preservation", "Surgery", "activity", "EM07", "treatment", 360, 462, "Maximal TURBT as part of a bladder-preserving approach where clinically appropriate.", "This is distinct from diagnostic TURBT because it supports a treatment strategy and may have different resource assumptions.", ["Operating room time", "Anesthesia", "Sterile instruments", "Surgical waste"], ["Is maximal TURBT performed locally for bladder-preserving candidates?"]),
           activity("EAUFULL-TX13", "Radiotherapy planning", "Radiotherapy", "activity", "EM08", "treatment", 650, 462, "Radiotherapy planning before EBRT or chemoradiation delivery.", "Planning CT, treatment planning workstation time, staff time, and immobilization should be modeled separately from fractions.", ["Planning CT", "Treatment planning workstation", "Staff time", "Immobilization materials"], ["Which planning workflow is used locally?"]),
@@ -4188,9 +4147,9 @@
           activity("EAUFULL-TX15", "Response assessment and salvage decision", "Follow-up", "decision", "EM09", "return", 950, 462, "Response assessment after bladder-preserving treatment and decision on salvage cystectomy when recurrence or inadequate response occurs.", "Unlike a meeting-only decision, this combined node represents a resource-bearing response assessment with cystoscopy and imaging before the salvage decision.", ["Cystoscopy", "Urine cytology", "Imaging review", "Clinical review"], ["What response-assessment schedule and salvage assumptions should be used?"]),
           activity("EAUFULL-TX16", "Palliative radiotherapy or symptom control", "Radiotherapy", "activity", "EM08", "return", 500, 578, "Palliative radiotherapy or symptom-directed treatment for patients not following a curative route.", "This activity may belong to a different functional unit from curative-intent pathways and should be explicitly scoped.", ["Radiotherapy fractions", "Clinical review", "Patient travel", "Supportive care"], ["Should palliative treatment be a separate scenario?"]),
           activity("EAUFULL-TX17", "Advanced systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "return", 650, 578, "Systemic treatment for advanced or metastatic disease where indicated.", "Advanced systemic therapy can dominate resource use and should not be merged with curative perioperative therapy without clear scope.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring"], ["Which advanced-disease regimens are inside the target case?"]),
-          activity("EAUFULL-FU01", "Follow-up after radical cystectomy", "Follow-up", "activity", "EM09", "followup", 1150, 578, "Surveillance and follow-up after radical cystectomy.", "Follow-up after cystectomy includes repeated assessment, imaging, laboratory testing, and diversion-related care over time.", ["Outpatient visits", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["What follow-up time horizon should be used?"]),
+          activity("EAUFULL-FU01", "Oncologic follow-up after radical cystectomy", "Follow-up", "activity", "EM09", "followup", 1010, 578, "Oncologic surveillance and follow-up after radical cystectomy.", "This node captures repeated assessment, imaging, and laboratory testing. Diversion-related functional care is retained as the next accounting component, although the two follow-up schedules can overlap in clinical time.", ["Outpatient visits", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["What follow-up time horizon should be used?"]),
           activity("EAUFULL-FU02", "Follow-up after trimodality therapy", "Follow-up", "activity", "EM09", "followup", 900, 530, "Close follow-up after trimodality therapy, including cystoscopy, cytology, and cross-sectional imaging.", "This branch can have repeated surveillance events that materially affect pathway-level impact.", ["Cystoscopy", "Surveillance imaging", "Outpatient visits", "Patient travel"], ["Which TMT surveillance schedule should be modeled?"]),
-          activity("EAUFULL-FU03", "Functional follow-up after diversion", "Follow-up", "activity", "EM09", "followup", 1150, 462, "Functional follow-up after urinary diversion, including stoma care, metabolic monitoring, and complication management.", "This is separated because diversion-related follow-up can differ strongly from oncologic surveillance.", ["Outpatient visits", "Laboratory tests", "Stoma care", "Patient travel"], ["Which functional follow-up activities are included?"])
+          activity("EAUFULL-FU03", "Diversion-related functional follow-up", "Follow-up", "activity", "EM09", "followup", 1150, 578, "Functional follow-up after urinary diversion, including stoma care, metabolic monitoring, and complication management.", "This is separated because diversion-related care can differ strongly from oncologic surveillance. It is placed after oncologic follow-up only to keep the metro map linear; the schedules can overlap in practice.", ["Outpatient visits", "Laboratory tests", "Stoma care", "Patient travel"], ["Which functional follow-up activities are included?"])
         ],
         edges: [
           edge("EAUFULL-AC01", "EAUFULL-DX01", "diagnostic"),
@@ -4215,9 +4174,9 @@
           edge("EAUFULL-TX06", "EAUFULL-TX07", "treatment"),
           edge("EAUFULL-TX07", "EAUFULL-TX08", "treatment"),
           edge("EAUFULL-TX08", "EAUFULL-TX09", "treatment"),
-          edge("EAUFULL-TX09", "EAUFULL-FU03", "followup", { startGateway: "EAUFULL-PG01" }),
-          edge("EAUFULL-TX09", "EAUFULL-TX10", "treatment", { startGateway: "EAUFULL-PG01" }),
+          edge("EAUFULL-TX09", "EAUFULL-TX10", "treatment"),
           edge("EAUFULL-TX10", "EAUFULL-FU01", "followup"),
+          edge("EAUFULL-FU01", "EAUFULL-FU03", "followup"),
           edge("EAUFULL-TX03", "EAUFULL-TX11", "treatment"),
           edge("EAUFULL-TX11", "EAUFULL-TX12", "treatment"),
           edge("EAUFULL-TX12", "EAUFULL-TX13", "treatment"),
@@ -4311,10 +4270,11 @@
         scope: "Hospital pathway for suspected or confirmed colorectal cancer, starting with specialist intake and hospital diagnostic confirmation. It includes pathology, staging, MDO, colon, rectal, advanced-care, and follow-up routes. National FIT screening and non-cancer polyp outcomes are outside this CRC treatment boundary and should be assessed as a separate population-screening case.",
         defaultSelected: "CRCDUTCH-JM01",
         lanes: [
-          { y: 95, label: "Hospital diagnosis and confirmation" },
-          { y: 245, label: "Staging, MDO, and treatment planning" },
-          { y: 420, label: "Localized colon and rectal treatment" },
-          { y: 590, label: "Response, advanced care, and follow-up" }
+          { y: 90, label: "Hospital diagnosis and confirmation" },
+          { y: 220, label: "Staging, MDO, and treatment planning", labelX: 350, labelY: 165 },
+          { y: 350, label: "Localized colon treatment" },
+          { y: 470, label: "Rectal treatment and response" },
+          { y: 600, label: "Follow-up and advanced care" }
         ],
         screeningReferenceNodes: [
           {
@@ -4606,8 +4566,8 @@
         nodes: [
           {
             id: "CRCDUTCH-FC01",
-            x: 90,
-            y: 95,
+            x: 80,
+            y: 90,
             label: "Specialist hospital consultation",
             domain: "Access",
             type: "activity",
@@ -4620,8 +4580,8 @@
           },
           {
             id: "CRCDUTCH-DX01",
-            x: 270,
-            y: 95,
+            x: 220,
+            y: 90,
             label: "Diagnostic colonoscopy and biopsy if needed",
             domain: "Diagnostics",
             type: "activity",
@@ -4634,8 +4594,8 @@
           },
           {
             id: "CRCDUTCH-DX02",
-            x: 450,
-            y: 95,
+            x: 360,
+            y: 90,
             label: "Histopathological CRC confirmation",
             domain: "Diagnostics",
             type: "activity",
@@ -4648,8 +4608,8 @@
           },
           {
             id: "CRCDUTCH-DX03",
-            x: 590,
-            y: 245,
+            x: 500,
+            y: 220,
             label: "CRC staging workup",
             domain: "Diagnostics",
             type: "activity",
@@ -4662,8 +4622,8 @@
           },
           {
             id: "CRCDUTCH-JM01",
-            x: 750,
-            y: 245,
+            x: 640,
+            y: 220,
             label: "CRC MDO",
             domain: "Joint clinic and MDT",
             type: "decision",
@@ -4678,8 +4638,8 @@
           },
           {
             id: "CRCDUTCH-TX02",
-            x: 900,
-            y: 245,
+            x: 780,
+            y: 220,
             label: "Colon, rectal, or advanced route decision",
             domain: "Treatment",
             type: "decision",
@@ -4692,8 +4652,8 @@
           },
           {
             id: "CRCDUTCH-TX03",
-            x: 660,
-            y: 420,
+            x: 860,
+            y: 350,
             label: "Colon surgery",
             domain: "Treatment",
             type: "activity",
@@ -4706,8 +4666,8 @@
           },
           {
             id: "CRCDUTCH-TX08",
-            x: 800,
-            y: 420,
+            x: 990,
+            y: 350,
             label: "Adjuvant treatment indication",
             domain: "Treatment",
             type: "decision",
@@ -4721,8 +4681,8 @@
           },
           {
             id: "CRCDUTCH-TX04",
-            x: 930,
-            y: 420,
+            x: 1120,
+            y: 350,
             label: "Adjuvant systemic therapy if indicated",
             domain: "Treatment",
             type: "activity",
@@ -4736,8 +4696,8 @@
           },
           {
             id: "CRCDUTCH-TX05",
-            x: 500,
-            y: 420,
+            x: 860,
+            y: 470,
             label: "Rectal neoadjuvant or radiotherapy route",
             domain: "Treatment",
             type: "activity",
@@ -4751,8 +4711,8 @@
           },
           {
             id: "CRCDUTCH-TX09",
-            x: 610,
-            y: 420,
+            x: 990,
+            y: 470,
             label: "Rectal response assessment and route decision",
             domain: "Follow-up",
             type: "decision",
@@ -4766,8 +4726,8 @@
           },
           {
             id: "CRCDUTCH-FU04",
-            x: 500,
-            y: 590,
+            x: 1120,
+            y: 470,
             label: "Watch-and-wait surveillance",
             domain: "Follow-up",
             type: "activity",
@@ -4781,8 +4741,8 @@
           },
           {
             id: "CRCDUTCH-TX06",
-            x: 700,
-            y: 590,
+            x: 990,
+            y: 600,
             label: "Rectal surgery if indicated",
             domain: "Treatment",
             type: "activity",
@@ -4795,8 +4755,8 @@
           },
           {
             id: "CRCDUTCH-TX07",
-            x: 1080,
-            y: 245,
+            x: 780,
+            y: 600,
             label: "Advanced or palliative route",
             domain: "Treatment",
             type: "decision",
@@ -4810,8 +4770,8 @@
           },
           {
             id: "CRCDUTCH-FU05",
-            x: 1060,
-            y: 590,
+            x: 1120,
+            y: 600,
             label: "Post-CRC treatment surveillance",
             domain: "Follow-up",
             type: "activity",
@@ -4916,7 +4876,7 @@
 
     const pathwayAssessmentDefaults = {
       emc: { start: "EMC-FC01", end: "EMC-FU02" },
-      eauFull: { start: "EAUFULL-AC01", end: "EAUFULL-FU01" },
+      eauFull: { start: "EAUFULL-AC01", end: "EAUFULL-FU03" },
       crcDutch: { start: "CRCDUTCH-FC01", end: "CRCDUTCH-FU05" }
     };
 
@@ -5182,8 +5142,7 @@
         pathwayScenarioSubtitle: "One patient route; competing treatment branches replace each other",
         selectedActivitiesStatus: "{count} selected activities; {modules} pathway modules active",
         routeDirection: "Arrows show pathway direction",
-        routeSequence: "Numbers show pathway order; equal numbers are parallel",
-        parallelRoute: "Parallel paths: not an either-or decision",
+        routeSequence: "Numbers show the selected activity order",
         diagnosticRoute: "Diagnostic and first-contact route",
         treatmentRoute: "Treatment route",
         followupRoute: "Follow-up route",
@@ -5359,8 +5318,7 @@
         pathwayScenarioSubtitle: "Eén patiënttraject; concurrerende behandelroutes vervangen elkaar",
         selectedActivitiesStatus: "{count} geselecteerde activiteiten; {modules} actieve zorgpadmodules",
         routeDirection: "Pijlen tonen de richting van het zorgpad",
-        routeSequence: "Nummers tonen de volgorde; gelijke nummers zijn parallel",
-        parallelRoute: "Parallelle paden: geen of-ofbeslissing",
+        routeSequence: "Nummers tonen de volgorde van geselecteerde activiteiten",
         diagnosticRoute: "Diagnostische en eerste-contactroute",
         treatmentRoute: "Behandelroute",
         followupRoute: "Follow-uproute",
@@ -5541,8 +5499,7 @@
           pathwayScenarioSubtitle: "一次只构建一条患者路径；竞争治疗分支会相互替换",
           selectedActivitiesStatus: "已选 {count} 个活动；{modules} 个路径模块已启用",
           routeDirection: "箭头表示路径方向",
-          routeSequence: "数字表示路径顺序；相同数字表示并行",
-          parallelRoute: "并行路径：不是二选一决策",
+          routeSequence: "数字表示所选活动的先后顺序",
           diagnosticRoute: "诊断和首次接触路线",
           treatmentRoute: "治疗路线",
           followupRoute: "随访路线",
@@ -5715,8 +5672,7 @@
           pathwayScenarioSubtitle: "患者一人分のルート；競合する治療分岐は相互に置換",
           selectedActivitiesStatus: "{count} 件の活動を選択；{modules} 件のパスウェイモジュールが有効",
           routeDirection: "矢印はパスウェイの方向を示します",
-          routeSequence: "番号は経路順を示し、同じ番号は並行経路です",
-          parallelRoute: "並行経路：二者択一の決定ではありません",
+          routeSequence: "番号は選択した活動の順序を示します",
           diagnosticRoute: "診断・初回接触ルート",
           treatmentRoute: "治療ルート",
           followupRoute: "フォローアップルート",
@@ -5844,8 +5800,7 @@
           pathwayScenarioSubtitle: "Una ruta de paciente; las ramas terapéuticas competidoras se sustituyen",
           selectedActivitiesStatus: "{count} actividades seleccionadas; {modules} módulos de vía activos",
           routeDirection: "Las flechas indican la dirección de la vía",
-          routeSequence: "Los números muestran el orden; los iguales son paralelos",
-          parallelRoute: "Rutas paralelas: no es una decisión excluyente",
+          routeSequence: "Los números muestran el orden de las actividades seleccionadas",
           diagnosticRoute: "Ruta diagnóstica y de primer contacto",
           treatmentRoute: "Ruta de tratamiento",
           followupRoute: "Ruta de seguimiento",
@@ -7820,6 +7775,7 @@
       "Urinary diversion choice": "Keuze urinedeviatie",
       "Perioperative care and VTE prophylaxis": "Perioperatieve zorg en VTE-profylaxe",
       "Adjuvant therapy assessment": "Beoordeling adjuvante therapie",
+      "Postoperative pathology and adjuvant assessment": "Postoperatieve pathologie en beoordeling van adjuvante therapie",
       "Trimodality therapy eligibility": "Geschiktheid voor trimodaliteit",
       "Maximal TURBT for bladder preservation": "Maximale TURBT voor blaassparing",
       "Radiotherapy planning": "Radiotherapieplanning",
@@ -7828,8 +7784,10 @@
       "Palliative radiotherapy or symptom control": "Palliatieve radiotherapie of symptoomcontrole",
       "Advanced systemic therapy": "Systemische therapie gevorderde ziekte",
       "Follow-up after radical cystectomy": "Follow-up na radicale cystectomie",
+      "Oncologic follow-up after radical cystectomy": "Oncologische follow-up na radicale cystectomie",
       "Follow-up after trimodality therapy": "Follow-up na trimodaliteit",
-      "Functional follow-up after diversion": "Functionele follow-up na deviatie"
+      "Functional follow-up after diversion": "Functionele follow-up na deviatie",
+      "Diversion-related functional follow-up": "Functionele follow-up bij urinedeviatie"
     });
 
     Object.assign(nodeLabelText.zh = nodeLabelText.zh || {}, {
@@ -7847,6 +7805,7 @@
       "Urinary diversion choice": "尿流改道选择",
       "Perioperative care and VTE prophylaxis": "围手术期照护和 VTE 预防",
       "Adjuvant therapy assessment": "辅助治疗评估",
+      "Postoperative pathology and adjuvant assessment": "术后病理和辅助治疗评估",
       "Trimodality therapy eligibility": "三联治疗适应性",
       "Maximal TURBT for bladder preservation": "保膀胱最大 TURBT",
       "Radiotherapy planning": "放疗计划",
@@ -7855,8 +7814,10 @@
       "Palliative radiotherapy or symptom control": "姑息放疗或症状控制",
       "Advanced systemic therapy": "晚期系统治疗",
       "Follow-up after radical cystectomy": "根治性膀胱切除后随访",
+      "Oncologic follow-up after radical cystectomy": "根治性膀胱切除后肿瘤随访",
       "Follow-up after trimodality therapy": "三联治疗后随访",
-      "Functional follow-up after diversion": "尿流改道后功能随访"
+      "Functional follow-up after diversion": "尿流改道后功能随访",
+      "Diversion-related functional follow-up": "尿流改道相关功能随访"
     });
 
     Object.assign(nodeLabelText.ja = nodeLabelText.ja || {}, {
@@ -7874,6 +7835,7 @@
       "Urinary diversion choice": "尿路変向選択",
       "Perioperative care and VTE prophylaxis": "周術期ケアと VTE 予防",
       "Adjuvant therapy assessment": "術後補助療法評価",
+      "Postoperative pathology and adjuvant assessment": "術後病理・補助療法評価",
       "Trimodality therapy eligibility": "三者併用療法の適応",
       "Maximal TURBT for bladder preservation": "膀胱温存の最大 TURBT",
       "Radiotherapy planning": "放射線治療計画",
@@ -7882,8 +7844,10 @@
       "Palliative radiotherapy or symptom control": "緩和照射または症状制御",
       "Advanced systemic therapy": "進行期全身療法",
       "Follow-up after radical cystectomy": "膀胱摘除後フォローアップ",
+      "Oncologic follow-up after radical cystectomy": "膀胱摘除後の腫瘍学的フォローアップ",
       "Follow-up after trimodality therapy": "三者併用後フォローアップ",
-      "Functional follow-up after diversion": "尿路変向後機能フォロー"
+      "Functional follow-up after diversion": "尿路変向後機能フォロー",
+      "Diversion-related functional follow-up": "尿路変向関連の機能フォロー"
     });
 
     Object.assign(nodeLabelText.es = nodeLabelText.es || {}, {
@@ -7901,6 +7865,7 @@
       "Urinary diversion choice": "Elección de derivación urinaria",
       "Perioperative care and VTE prophylaxis": "Cuidado perioperatorio y profilaxis VTE",
       "Adjuvant therapy assessment": "Evaluación de terapia adyuvante",
+      "Postoperative pathology and adjuvant assessment": "Patología posoperatoria y evaluación adyuvante",
       "Trimodality therapy eligibility": "Elegibilidad para trimodalidad",
       "Maximal TURBT for bladder preservation": "TURBT máxima para preservación vesical",
       "Radiotherapy planning": "Planificación de radioterapia",
@@ -7909,8 +7874,10 @@
       "Palliative radiotherapy or symptom control": "Radioterapia paliativa o control sintomático",
       "Advanced systemic therapy": "Terapia sistémica avanzada",
       "Follow-up after radical cystectomy": "Seguimiento tras cistectomía radical",
+      "Oncologic follow-up after radical cystectomy": "Seguimiento oncológico tras cistectomía radical",
       "Follow-up after trimodality therapy": "Seguimiento tras trimodalidad",
-      "Functional follow-up after diversion": "Seguimiento funcional tras derivación"
+      "Functional follow-up after diversion": "Seguimiento funcional tras derivación",
+      "Diversion-related functional follow-up": "Seguimiento funcional relacionado con la derivación"
     });
 
     Object.assign(nodeLabelText.nl, {
@@ -8355,21 +8322,33 @@
     Object.assign(laneLabelText.nl, {
       "Hospital diagnosis and confirmation": "Diagnose en bevestiging in het ziekenhuis",
       "Staging, MDO, and treatment planning": "Stadiering, MDO en behandelplanning",
+      "Localized colon treatment": "Gelokaliseerde colonbehandeling",
+      "Rectal treatment and response": "Rectumbehandeling en responsbeoordeling",
+      "Follow-up and advanced care": "Follow-up en gevorderde zorg",
       "Response, advanced care, and follow-up": "Respons, gevorderde zorg en follow-up"
     });
     Object.assign(laneLabelText.zh, {
       "Hospital diagnosis and confirmation": "医院诊断和确认",
       "Staging, MDO, and treatment planning": "分期、MDO 和治疗规划",
+      "Localized colon treatment": "局限期结肠癌治疗",
+      "Rectal treatment and response": "直肠癌治疗和疗效评估",
+      "Follow-up and advanced care": "随访和晚期照护",
       "Response, advanced care, and follow-up": "疗效评估、晚期照护和随访"
     });
     Object.assign(laneLabelText.ja, {
       "Hospital diagnosis and confirmation": "病院診断と確定",
       "Staging, MDO, and treatment planning": "病期評価、MDO、治療計画",
+      "Localized colon treatment": "限局性結腸がん治療",
+      "Rectal treatment and response": "直腸がん治療と奏効評価",
+      "Follow-up and advanced care": "フォローアップと進行期ケア",
       "Response, advanced care, and follow-up": "奏効、進行期ケア、フォローアップ"
     });
     Object.assign(laneLabelText.es, {
       "Hospital diagnosis and confirmation": "Diagnóstico y confirmación hospitalaria",
       "Staging, MDO, and treatment planning": "Estadificación, MDO y planificación",
+      "Localized colon treatment": "Tratamiento localizado de colon",
+      "Rectal treatment and response": "Tratamiento rectal y evaluación de respuesta",
+      "Follow-up and advanced care": "Seguimiento y atención avanzada",
       "Response, advanced care, and follow-up": "Respuesta, atención avanzada y seguimiento"
     });
 
@@ -8389,6 +8368,7 @@
         "Urinary diversion choice": "Deviatiekeuze",
         "Perioperative care and VTE prophylaxis": "Perioperatieve zorg",
         "Adjuvant therapy assessment": "Adjuvant?",
+        "Postoperative pathology and adjuvant assessment": "Postoperatieve beoordeling",
         "Trimodality therapy eligibility": "TMT-geschiktheid",
         "Maximal TURBT for bladder preservation": "Maximale TURBT",
         "Radiotherapy planning": "RT-planning",
@@ -8397,8 +8377,10 @@
         "Palliative radiotherapy or symptom control": "Palliatieve RT",
         "Advanced systemic therapy": "Gevorderde systeemtherapie",
         "Follow-up after radical cystectomy": "RC follow-up",
+        "Oncologic follow-up after radical cystectomy": "Oncologische follow-up",
         "Follow-up after trimodality therapy": "TMT follow-up",
-        "Functional follow-up after diversion": "Functionele follow-up"
+        "Functional follow-up after diversion": "Functionele follow-up",
+        "Diversion-related functional follow-up": "Deviatie-follow-up"
       },
       zh: {
         "Referral or presentation": "转诊",
@@ -8415,6 +8397,7 @@
         "Urinary diversion choice": "尿流改道选择",
         "Perioperative care and VTE prophylaxis": "围手术期照护",
         "Adjuvant therapy assessment": "辅助治疗？",
+        "Postoperative pathology and adjuvant assessment": "术后病理评估",
         "Trimodality therapy eligibility": "三联治疗适应性",
         "Maximal TURBT for bladder preservation": "最大 TURBT",
         "Radiotherapy planning": "放疗计划",
@@ -8423,8 +8406,10 @@
         "Palliative radiotherapy or symptom control": "姑息放疗",
         "Advanced systemic therapy": "晚期系统治疗",
         "Follow-up after radical cystectomy": "术后随访",
+        "Oncologic follow-up after radical cystectomy": "术后肿瘤随访",
         "Follow-up after trimodality therapy": "三联后随访",
-        "Functional follow-up after diversion": "功能随访"
+        "Functional follow-up after diversion": "功能随访",
+        "Diversion-related functional follow-up": "改道功能随访"
       },
       ja: {
         "Referral or presentation": "紹介",
@@ -8441,6 +8426,7 @@
         "Urinary diversion choice": "尿路変向選択",
         "Perioperative care and VTE prophylaxis": "周術期ケア",
         "Adjuvant therapy assessment": "術後補助？",
+        "Postoperative pathology and adjuvant assessment": "術後病理評価",
         "Trimodality therapy eligibility": "TMT 適応",
         "Maximal TURBT for bladder preservation": "最大 TURBT",
         "Radiotherapy planning": "RT 計画",
@@ -8449,8 +8435,10 @@
         "Palliative radiotherapy or symptom control": "緩和照射",
         "Advanced systemic therapy": "進行期全身療法",
         "Follow-up after radical cystectomy": "摘除後フォロー",
+        "Oncologic follow-up after radical cystectomy": "摘除後腫瘍フォロー",
         "Follow-up after trimodality therapy": "TMT 後フォロー",
-        "Functional follow-up after diversion": "機能フォロー"
+        "Functional follow-up after diversion": "機能フォロー",
+        "Diversion-related functional follow-up": "尿路変向フォロー"
       },
       es: {
         "Referral or presentation": "Referencia",
@@ -8467,6 +8455,7 @@
         "Urinary diversion choice": "Derivación",
         "Perioperative care and VTE prophylaxis": "Cuidado perioperatorio",
         "Adjuvant therapy assessment": "Adyuvancia?",
+        "Postoperative pathology and adjuvant assessment": "Evaluación posoperatoria",
         "Trimodality therapy eligibility": "Elegibilidad TMT",
         "Maximal TURBT for bladder preservation": "TURBT máxima",
         "Radiotherapy planning": "Plan RT",
@@ -8475,8 +8464,10 @@
         "Palliative radiotherapy or symptom control": "RT paliativa",
         "Advanced systemic therapy": "Terapia sistémica avanzada",
         "Follow-up after radical cystectomy": "Seguimiento RC",
+        "Oncologic follow-up after radical cystectomy": "Seguimiento oncológico",
         "Follow-up after trimodality therapy": "Seguimiento TMT",
-        "Functional follow-up after diversion": "Seguimiento funcional"
+        "Functional follow-up after diversion": "Seguimiento funcional",
+        "Diversion-related functional follow-up": "Seguimiento de derivación"
       }
     };
 
@@ -11755,8 +11746,6 @@
       setText("routeSequenceLabel", "routeSequence");
       setText("fullscreenRouteDirectionLabel", "routeDirection");
       setText("fullscreenRouteSequenceLabel", "routeSequence");
-      setText("parallelRouteLabel", "parallelRoute");
-      setText("fullscreenParallelRouteLabel", "parallelRoute");
       setText("diagnosticRouteLabel", "diagnosticRoute");
       setText("fullscreenDiagnosticRouteLabel", "diagnosticRoute");
       setText("treatmentRouteLabel", "treatmentRoute");
@@ -12293,22 +12282,23 @@
         svg.appendChild(line);
         const laneText = localizedLaneLabel(lane.label);
         const laneLines = splitLaneLabel(laneText);
+        const laneX = lane.labelX ?? 38;
         const laneY = Math.max(24, lane.labelY ?? lane.y - (laneLines.length > 1 ? 48 : 36));
         const label = createSvgElement("text", {
-          x: 38,
+          x: laneX,
           y: laneY,
           class: "lane-label"
         });
         laneLines.forEach((lineText, index) => {
           const tspan = createSvgElement("tspan", {
-            x: 38,
+            x: laneX,
             dy: index === 0 ? 0 : 17
           });
           tspan.textContent = lineText;
           label.appendChild(tspan);
         });
         svg.appendChild(label);
-        laneLabelBoxes.push(laneLabelBounds(laneLines, 38, laneY));
+        laneLabelBoxes.push(laneLabelBounds(laneLines, laneX, laneY));
       });
 
       (pathway.parallelGateways || []).forEach((gateway) => {
@@ -12595,8 +12585,11 @@
         "Palliative radiotherapy or symptom control": "Palliative RT",
         "Advanced systemic therapy": "Advanced systemic therapy",
         "Follow-up after radical cystectomy": "RC follow-up",
+        "Oncologic follow-up after radical cystectomy": "Oncologic follow-up",
         "Follow-up after trimodality therapy": "TMT follow-up",
         "Functional follow-up after diversion": "Functional follow-up",
+        "Postoperative pathology and adjuvant assessment": "Postoperative assessment",
+        "Diversion-related functional follow-up": "Diversion follow-up",
         "Perioperative systemic therapy": "Perioperative therapy",
         "MIBC confirmation and referral decision": "MIBC referral",
         "Non-MIBC local pathway": "Local non-MIBC route",

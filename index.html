@@ -1852,6 +1852,257 @@
       margin-top: 2px;
     }
 
+    .lca-analysis-panel {
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .lca-analysis-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .lca-analysis-header h3 {
+      margin: 0 0 4px;
+    }
+
+    .lca-analysis-header p {
+      margin: 0;
+    }
+
+    .lca-result-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      border-bottom: 1px solid var(--line);
+      flex: 0 0 auto;
+    }
+
+    .lca-result-tab {
+      border: 0;
+      border-bottom: 3px solid transparent;
+      border-radius: 0;
+      padding: 8px 10px 7px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 700;
+    }
+
+    .lca-result-tab:hover,
+    .lca-result-tab[aria-selected="true"] {
+      border-bottom-color: var(--accent-dark);
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+    }
+
+    .lca-analysis-view {
+      padding: 14px;
+    }
+
+    .all-impact-table-note {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .all-impact-table-wrap {
+      max-height: 560px;
+      overflow: auto;
+      border: 1px solid var(--line);
+    }
+
+    .all-impact-table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      background: var(--panel);
+      font-size: 12px;
+    }
+
+    .all-impact-table th,
+    .all-impact-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px 9px;
+      text-align: right;
+      vertical-align: middle;
+    }
+
+    .all-impact-table th {
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-weight: 700;
+    }
+
+    .all-impact-table th:first-child,
+    .all-impact-table th:nth-child(2),
+    .all-impact-table td:first-child,
+    .all-impact-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    .all-impact-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .all-impact-table tr.selected {
+      background: var(--accent-soft);
+    }
+
+    .impact-category-select-button {
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      color: var(--ink);
+      background: transparent;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .impact-category-select-button:hover,
+    .impact-category-select-button[aria-current="true"] {
+      color: var(--accent-dark);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .impact-category-group-label {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .sankey-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 0.34fr);
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .sankey-toolbar p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sankey-cutoff-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 6px 10px;
+      align-items: center;
+    }
+
+    .sankey-cutoff-control label {
+      grid-column: 1 / -1;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sankey-cutoff-control input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-dark);
+    }
+
+    .sankey-cutoff-control output {
+      min-width: 82px;
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .sankey-cutoff-control small {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .sankey-chart-wrap {
+      position: relative;
+      max-height: 620px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .sankey-svg {
+      display: block;
+      width: 100%;
+      min-width: 1000px;
+      height: auto;
+    }
+
+    .sankey-link,
+    .sankey-node {
+      transition: opacity 140ms ease;
+      outline: none;
+    }
+
+    .sankey-link path {
+      fill: none;
+      stroke-linecap: butt;
+      transition: stroke-opacity 140ms ease;
+    }
+
+    .sankey-link:hover path,
+    .sankey-link:focus path {
+      stroke-opacity: 0.9;
+    }
+
+    .sankey-dimmed {
+      opacity: 0.14;
+    }
+
+    .sankey-node rect {
+      stroke-width: 1.5;
+    }
+
+    .sankey-label {
+      fill: var(--ink);
+      font-size: 12px;
+      paint-order: stroke;
+      stroke: var(--panel-soft);
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+
+    .sankey-label.value {
+      fill: var(--muted);
+      font-size: 11px;
+    }
+
+    .sankey-empty {
+      padding: 28px 16px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .sankey-tooltip {
+      position: fixed;
+      z-index: 2000;
+      max-width: 320px;
+      pointer-events: none;
+      border: 1px solid rgba(0, 90, 160, 0.28);
+      border-radius: var(--radius);
+      padding: 8px 10px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.97);
+      box-shadow: 0 8px 24px rgba(20, 46, 61, 0.14);
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: pre-line;
+    }
+
     .lca-warning {
       margin-top: 10px;
       border: 1px solid var(--warn-line);
@@ -2140,6 +2391,16 @@
         display: grid;
       }
 
+      .lca-analysis-header,
+      .sankey-toolbar {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .lca-result-tabs {
+        justify-self: start;
+      }
+
       .brightway-bridge-actions {
         justify-content: flex-start;
       }
@@ -2231,6 +2492,12 @@
       .source-lens-button + .source-lens-button {
         border-left: 0;
         border-top: 1px solid var(--accent);
+      }
+      .lca-result-tabs {
+        width: 100%;
+      }
+      .lca-result-tab {
+        flex: 1 1 0;
       }
       .help-cutoff-note ul {
         columns: 1;
@@ -2580,6 +2847,40 @@
           <ul class="lca-priority-list" id="lcaPriorityList"></ul>
         </div>
       </div>
+
+      <section class="lca-analysis-panel" data-workspace-panel="results" aria-labelledby="lcaAnalysisTitle">
+        <div class="lca-analysis-header">
+          <div>
+            <h3 id="lcaAnalysisTitle">Impact result analysis</h3>
+            <p class="scope-note" id="lcaAnalysisIntro"></p>
+          </div>
+          <div class="lca-result-tabs" role="tablist" aria-label="Impact result views">
+            <button class="lca-result-tab" type="button" id="allImpactTab" role="tab" aria-selected="true" aria-controls="allImpactView">All EF categories</button>
+            <button class="lca-result-tab" type="button" id="sankeyTab" role="tab" aria-selected="false" aria-controls="sankeyView">Contribution Sankey</button>
+          </div>
+        </div>
+
+        <div class="lca-analysis-view" id="allImpactView" role="tabpanel" aria-labelledby="allImpactTab">
+          <p class="all-impact-table-note" id="allImpactTableNote"></p>
+          <div class="all-impact-table-wrap" id="allImpactResults"></div>
+        </div>
+
+        <div class="lca-analysis-view" id="sankeyView" role="tabpanel" aria-labelledby="sankeyTab" hidden>
+          <div class="sankey-toolbar">
+            <p id="sankeyIntro"></p>
+            <div class="sankey-cutoff-control">
+              <label for="sankeyCutoff" id="sankeyCutoffLabel">Building-block cut-off</label>
+              <input id="sankeyCutoff" type="range" min="0.1" max="1" step="0.1" value="0.5">
+              <output id="sankeyCutoffValue" for="sankeyCutoff">0.5%</output>
+              <small id="sankeyCutoffHelp"></small>
+            </div>
+          </div>
+          <div class="sankey-chart-wrap" id="sankeyChartWrap">
+            <div id="lcaSankey"></div>
+          </div>
+          <div class="sankey-tooltip" id="sankeyTooltip" role="tooltip" hidden></div>
+        </div>
+      </section>
 
       <section class="brightway-bridge" data-workspace-panel="results" aria-labelledby="brightwayBridgeTitle">
         <div class="brightway-bridge-header">
@@ -5484,6 +5785,111 @@
     Object.assign(uiText.zh, { formulaLibrary: "已选路径情景" });
     Object.assign(uiText.ja, { formulaLibrary: "選択したパスウェイシナリオ" });
     Object.assign(uiText.es, { formulaLibrary: "Escenario de vía seleccionado" });
+
+    Object.assign(uiText.en, {
+      lcaAnalysisTitle: "Impact result analysis",
+      lcaAnalysisIntro: "Review all EF categories in one unit-preserving table or inspect the contribution structure for the currently selected category.",
+      allImpactTab: "All EF categories",
+      sankeyTab: "Contribution Sankey",
+      allImpactTableNote: "EF categories have different units and cannot be ranked from their raw values. Select a category name to use it in the detailed cards, coefficient table, and Sankey.",
+      lowPerFu: "Low / functional unit",
+      basePerFu: "Base / functional unit",
+      highPerFu: "High / functional unit",
+      baseCohortHeader: "Base cohort (N={count})",
+      sankeyIntro: "Base contribution for {category} ({unit}). Flow width follows contribution magnitude from pathway total to module and building block.",
+      sankeyCutoffLabel: "Building-block cut-off",
+      sankeyCutoffValue: "{value}% cut-off",
+      sankeyCutoffHelp: "Blocks below the threshold are aggregated within their module as Other; the pathway total is preserved.",
+      sankeyPathwayTotal: "Pathway total",
+      sankeyOther: "Other blocks in {module}",
+      sankeyNoData: "Select activities with active building blocks and non-zero coefficients to generate the contribution Sankey.",
+      sankeyContribution: "{value} · {share}% of pathway total",
+      sankeyFlow: "{from} to {to}"
+    });
+
+    Object.assign(uiText.nl, {
+      lcaAnalysisTitle: "Analyse van impactresultaten",
+      lcaAnalysisIntro: "Bekijk alle EF-categorieën in één tabel met behoud van eenheden of analyseer de bijdragen voor de geselecteerde categorie.",
+      allImpactTab: "Alle EF-categorieën",
+      sankeyTab: "Bijdragen-Sankey",
+      allImpactTableNote: "EF-categorieën hebben verschillende eenheden; ruwe waarden mogen daarom niet onderling worden gerangschikt. Selecteer een categorienaam voor de detailkaarten, coëfficiëntentabel en Sankey.",
+      lowPerFu: "Laag / functionele eenheid",
+      basePerFu: "Basis / functionele eenheid",
+      highPerFu: "Hoog / functionele eenheid",
+      baseCohortHeader: "Basiscohort (N={count})",
+      sankeyIntro: "Basisbijdrage voor {category} ({unit}). De lijnbreedte volgt de bijdrage van zorgpadtotaal naar module en bouwsteen.",
+      sankeyCutoffLabel: "Afkapgrens bouwsteen",
+      sankeyCutoffValue: "Afkapgrens {value}%",
+      sankeyCutoffHelp: "Bouwstenen onder de grens worden binnen hun module samengevoegd als Overig; het zorgpadtotaal blijft behouden.",
+      sankeyPathwayTotal: "Zorgpadtotaal",
+      sankeyOther: "Overige bouwstenen in {module}",
+      sankeyNoData: "Selecteer activiteiten met actieve bouwstenen en niet-nulcoëfficiënten om de bijdragen-Sankey te maken.",
+      sankeyContribution: "{value} · {share}% van zorgpadtotaal",
+      sankeyFlow: "{from} naar {to}"
+    });
+
+    Object.assign(uiText.zh, {
+      lcaAnalysisTitle: "影响结果分析",
+      lcaAnalysisIntro: "在保留各自单位的总表中查看全部 EF 类别，或分析当前所选类别的贡献结构。",
+      allImpactTab: "全部 EF 类别",
+      sankeyTab: "贡献桑基图",
+      allImpactTableNote: "不同 EF 类别使用不同单位，不能根据原始数值直接排序比较。点击类别名称可将其用于详细结果卡、系数表和桑基图。",
+      lowPerFu: "低值 / 功能单位",
+      basePerFu: "基准值 / 功能单位",
+      highPerFu: "高值 / 功能单位",
+      baseCohortHeader: "基准队列（N={count}）",
+      sankeyIntro: "{category}（{unit}）的基准贡献。线宽表示从路径总结果到模块，再到构建块的贡献大小。",
+      sankeyCutoffLabel: "构建块截断阈值",
+      sankeyCutoffValue: "截断阈值 {value}%",
+      sankeyCutoffHelp: "低于阈值的构建块会在各自模块内合并为“其他”，路径总结果保持不变。",
+      sankeyPathwayTotal: "路径总结果",
+      sankeyOther: "{module} 中的其他构建块",
+      sankeyNoData: "请选择具有已启用构建块和非零系数的活动，以生成贡献桑基图。",
+      sankeyContribution: "{value} · 占路径总结果 {share}%",
+      sankeyFlow: "{from} 至 {to}"
+    });
+
+    Object.assign(uiText.ja, {
+      lcaAnalysisTitle: "影響結果の分析",
+      lcaAnalysisIntro: "単位を保持した一覧表で全 EF カテゴリを確認するか、選択中カテゴリの寄与構造を分析します。",
+      allImpactTab: "全 EF カテゴリ",
+      sankeyTab: "寄与サンキー図",
+      allImpactTableNote: "EF カテゴリは単位が異なるため、生の値で順位付けできません。カテゴリ名を選択すると、詳細カード、係数表、サンキー図に反映されます。",
+      lowPerFu: "低値 / 機能単位",
+      basePerFu: "基準値 / 機能単位",
+      highPerFu: "高値 / 機能単位",
+      baseCohortHeader: "基準コホート（N={count}）",
+      sankeyIntro: "{category}（{unit}）の基準寄与です。線幅はパスウェイ合計からモジュール、構成ブロックへの寄与量を示します。",
+      sankeyCutoffLabel: "構成ブロックのカットオフ",
+      sankeyCutoffValue: "{value}% カットオフ",
+      sankeyCutoffHelp: "閾値未満の構成ブロックはモジュール内で「その他」に集約され、パスウェイ合計は保持されます。",
+      sankeyPathwayTotal: "パスウェイ合計",
+      sankeyOther: "{module} のその他の構成ブロック",
+      sankeyNoData: "有効な構成ブロックとゼロでない係数を持つアクティビティを選択すると、寄与サンキー図が表示されます。",
+      sankeyContribution: "{value} · パスウェイ合計の {share}%",
+      sankeyFlow: "{from} から {to}"
+    });
+
+    Object.assign(uiText.es, {
+      lcaAnalysisTitle: "Análisis de resultados de impacto",
+      lcaAnalysisIntro: "Revise todas las categorías EF en una tabla que conserva sus unidades o analice las contribuciones de la categoría seleccionada.",
+      allImpactTab: "Todas las categorías EF",
+      sankeyTab: "Sankey de contribuciones",
+      allImpactTableNote: "Las categorías EF tienen unidades diferentes y no deben ordenarse por sus valores brutos. Seleccione una categoría para usarla en las tarjetas, la tabla de coeficientes y el Sankey.",
+      lowPerFu: "Bajo / unidad funcional",
+      basePerFu: "Base / unidad funcional",
+      highPerFu: "Alto / unidad funcional",
+      baseCohortHeader: "Cohorte base (N={count})",
+      sankeyIntro: "Contribución base de {category} ({unit}). El ancho del flujo representa la contribución desde el total de la vía hasta el módulo y el bloque de construcción.",
+      sankeyCutoffLabel: "Umbral de bloques de construcción",
+      sankeyCutoffValue: "Umbral {value}%",
+      sankeyCutoffHelp: "Los bloques de construcción por debajo del umbral se agrupan dentro de su módulo como Otros; se conserva el total de la vía.",
+      sankeyPathwayTotal: "Total de la vía",
+      sankeyOther: "Otros bloques de construcción de {module}",
+      sankeyNoData: "Seleccione actividades con bloques de construcción activos y coeficientes distintos de cero para generar el diagrama de Sankey.",
+      sankeyContribution: "{value} · {share}% del total de la vía",
+      sankeyFlow: "{from} a {to}"
+    });
 
     const pathwayText = {
       en: {
@@ -8984,6 +9390,8 @@
       activitiesCollapsed: false,
       workspaceStep: "pathway",
       impactCategory: "climate",
+      lcaResultView: "all",
+      sankeyCutoffPercent: 0.5,
       lcaExpandedModules: {},
       functionalUnits: {},
       brightwayResult: null,
@@ -9037,28 +9445,32 @@
       if (summaryElement) summaryElement.textContent = `${formatDecimal(functionalUnit.referenceAmount, 3)} ${functionalUnit.referenceUnit}`;
     }
 
+    function impactCategoryById(categoryId) {
+      return impactCategoryRegistry.find((category) => category.id === categoryId) || impactCategoryRegistry[0];
+    }
+
     function currentImpactCategory() {
-      return impactCategoryRegistry.find((category) => category.id === state.impactCategory) || impactCategoryRegistry[0];
+      return impactCategoryById(state.impactCategory);
     }
 
-    function impactCategoryName() {
-      return t(currentImpactCategory().nameKey);
+    function impactCategoryName(categoryId = state.impactCategory) {
+      return t(impactCategoryById(categoryId).nameKey);
     }
 
-    function impactCategoryUnit() {
-      return currentImpactCategory().unit;
+    function impactCategoryUnit(categoryId = state.impactCategory) {
+      return impactCategoryById(categoryId).unit;
     }
 
     function impactCoefficientLabel() {
       return t("impactCoefficientDynamic", { unit: impactCategoryUnit() });
     }
 
-    function rowFactor(row) {
-      return Math.max(0, Number(row.factors?.[state.impactCategory]) || 0);
+    function rowFactor(row, categoryId = state.impactCategory) {
+      return Math.max(0, Number(row.factors?.[categoryId]) || 0);
     }
 
-    function rowUncertainty(row) {
-      return Math.max(0, Number(row.uncertainties?.[state.impactCategory]) || 0);
+    function rowUncertainty(row, categoryId = state.impactCategory) {
+      return Math.max(0, Number(row.uncertainties?.[categoryId]) || 0);
     }
 
     function renderImpactCategoryControl() {
@@ -9571,6 +9983,13 @@
       setText("lcaCaseCountLabel", "cohortSize");
       setText("cohortSizeHelp", "cohortSizeHelp");
       setText("dataToCollectHeading", "dataToCollect");
+      setText("lcaAnalysisTitle", "lcaAnalysisTitle");
+      setText("lcaAnalysisIntro", "lcaAnalysisIntro");
+      setText("allImpactTab", "allImpactTab");
+      setText("sankeyTab", "sankeyTab");
+      setText("allImpactTableNote", "allImpactTableNote");
+      setText("sankeyCutoffLabel", "sankeyCutoffLabel");
+      setText("sankeyCutoffHelp", "sankeyCutoffHelp");
       setText("brightwayBridgeTitle", "brightwayBridgeTitle");
       setText("brightwayBridgeIntro", "brightwayBridgeIntro");
       setText("calculateWithBrightway", "calculateWithBrightway");
@@ -10784,16 +11203,335 @@
       });
     }
 
+    function setImpactCategory(categoryId) {
+      if (!impactCategoryRegistry.some((category) => category.id === categoryId)) return;
+      state.impactCategory = categoryId;
+      const select = document.getElementById("lcaImpactCategory");
+      if (select) select.value = categoryId;
+      renderImpactCategoryControl();
+      renderLcaTable();
+      renderLcaOutputs();
+      renderBrightwayResults();
+    }
+
+    function setLcaResultView(view) {
+      state.lcaResultView = view === "sankey" ? "sankey" : "all";
+      renderLcaResultView();
+    }
+
+    function renderLcaResultView() {
+      const showSankey = state.lcaResultView === "sankey";
+      const allTab = document.getElementById("allImpactTab");
+      const sankeyTab = document.getElementById("sankeyTab");
+      const allView = document.getElementById("allImpactView");
+      const sankeyView = document.getElementById("sankeyView");
+      if (!allTab || !sankeyTab || !allView || !sankeyView) return;
+      allTab.setAttribute("aria-selected", String(!showSankey));
+      sankeyTab.setAttribute("aria-selected", String(showSankey));
+      allTab.tabIndex = showSankey ? -1 : 0;
+      sankeyTab.tabIndex = showSankey ? 0 : -1;
+      allView.hidden = showSankey;
+      sankeyView.hidden = !showSankey;
+    }
+
+    function renderAllImpactResults(caseCount) {
+      const container = document.getElementById("allImpactResults");
+      if (!container) return;
+      const rows = impactCategoryRegistry.map((category) => {
+        const low = lcaScenarioValuesForCategory(category.id, "low", caseCount);
+        const base = lcaScenarioValuesForCategory(category.id, "base", caseCount);
+        const high = lcaScenarioValuesForCategory(category.id, "high", caseCount);
+        const selected = category.id === state.impactCategory;
+        return `
+          <tr class="${selected ? "selected" : ""}">
+            <td>
+              <button class="impact-category-select-button" type="button" data-impact-category="${escapeHtml(category.id)}" aria-current="${selected ? "true" : "false"}">
+                ${escapeHtml(t(category.nameKey))}
+              </button>
+              <span class="impact-category-group-label">${escapeHtml(t(category.groupKey))}</span>
+            </td>
+            <td>${escapeHtml(category.unit)}</td>
+            <td>${escapeHtml(formatImpactNumber(low.perPathway))}</td>
+            <td><strong>${escapeHtml(formatImpactNumber(base.perPathway))}</strong></td>
+            <td>${escapeHtml(formatImpactNumber(high.perPathway))}</td>
+            <td><strong>${escapeHtml(formatImpactNumber(base.cohortExpected))}</strong></td>
+          </tr>
+        `;
+      }).join("");
+      container.innerHTML = `
+        <table class="all-impact-table">
+          <thead>
+            <tr>
+              <th>${escapeHtml(t("impactCategoryLabel"))}</th>
+              <th>${escapeHtml(t("unit"))}</th>
+              <th>${escapeHtml(t("lowPerFu"))}</th>
+              <th>${escapeHtml(t("basePerFu"))}</th>
+              <th>${escapeHtml(t("highPerFu"))}</th>
+              <th>${escapeHtml(t("baseCohortHeader", { count: formatNumber(caseCount) }))}</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function contributionSankeyData() {
+      const activeRows = lcaRows
+        .filter((row) => isLcaRowActive(row))
+        .map((row) => ({ row, value: rowImpact(row, "base") }))
+        .filter((item) => item.value > 0);
+      const total = activeRows.reduce((sum, item) => sum + item.value, 0);
+      if (total <= 0) return { total: 0, modules: [] };
+      const cutoffValue = total * state.sankeyCutoffPercent / 100;
+      const moduleOrder = lcaCalculationModuleIds();
+      const grouped = new Map();
+      activeRows.forEach((item) => {
+        if (!grouped.has(item.row.module)) grouped.set(item.row.module, []);
+        grouped.get(item.row.module).push(item);
+      });
+      const modules = moduleOrder
+        .filter((moduleId) => grouped.has(moduleId))
+        .map((moduleId) => {
+          const moduleRows = grouped.get(moduleId).sort((a, b) => b.value - a.value);
+          const moduleValue = moduleRows.reduce((sum, item) => sum + item.value, 0);
+          const visibleRows = moduleRows.filter((item) => item.value >= cutoffValue);
+          const otherValue = moduleRows
+            .filter((item) => item.value < cutoffValue)
+            .reduce((sum, item) => sum + item.value, 0);
+          const blocks = visibleRows.map((item) => ({
+            id: item.row.id,
+            label: localizedBlockName(item.row.block),
+            value: item.value,
+            isOther: false
+          }));
+          if (otherValue > 0) {
+            blocks.push({
+              id: `other-${moduleId}`,
+              label: t("sankeyOther", { module: moduleId }),
+              value: otherValue,
+              isOther: true
+            });
+          }
+          return {
+            id: moduleId,
+            label: `${moduleId} ${moduleName(moduleId)}`,
+            value: moduleValue,
+            blocks
+          };
+        });
+      return { total, modules };
+    }
+
+    function sankeyCurve(x1, y1, x2, y2) {
+      const middle = x1 + (x2 - x1) * 0.5;
+      return `M ${x1} ${y1} C ${middle} ${y1}, ${middle} ${y2}, ${x2} ${y2}`;
+    }
+
+    function sankeyTooltipText(from, to, value, total) {
+      const share = total > 0 ? value / total * 100 : 0;
+      return `${t("sankeyFlow", { from, to })}\n${t("sankeyContribution", {
+        value: formatImpact(value),
+        share: formatDecimal(share, 2)
+      })}`;
+    }
+
+    function sankeyInteractiveAttributes(group, tooltip) {
+      return `tabindex="0" data-sankey-group="${escapeHtml(group)}" data-sankey-tooltip="${escapeHtml(tooltip)}" aria-label="${escapeHtml(tooltip)}"`;
+    }
+
+    function renderContributionSankey() {
+      const target = document.getElementById("lcaSankey");
+      const output = document.getElementById("sankeyCutoffValue");
+      const intro = document.getElementById("sankeyIntro");
+      if (!target || !output || !intro) return;
+      output.textContent = t("sankeyCutoffValue", { value: formatDecimal(state.sankeyCutoffPercent, 1) });
+      intro.textContent = t("sankeyIntro", {
+        category: impactCategoryName(),
+        unit: impactCategoryUnit()
+      });
+      const data = contributionSankeyData();
+      if (data.total <= 0 || data.modules.length === 0) {
+        target.innerHTML = `<div class="sankey-empty">${escapeHtml(t("sankeyNoData"))}</div>`;
+        return;
+      }
+
+      const blocks = data.modules.flatMap((module) =>
+        module.blocks.map((block) => ({ ...block, moduleId: module.id }))
+      );
+      const width = 1200;
+      const height = Math.max(420, data.modules.length * 78 + 80, blocks.length * 36 + 80);
+      const top = 40;
+      const plotHeight = height - top * 2;
+      const moduleGap = 18;
+      const blockGap = 10;
+      const moduleScale = (plotHeight - moduleGap * Math.max(0, data.modules.length - 1)) / data.total;
+      const blockScale = (plotHeight - blockGap * Math.max(0, blocks.length - 1)) / data.total;
+      const scale = Math.max(0.000001, Math.min(moduleScale, blockScale));
+      const sourceX = 70;
+      const moduleX = 455;
+      const blockX = 830;
+      const nodeWidth = 18;
+      const flowHeight = data.total * scale;
+      const sourceY = top + (plotHeight - flowHeight) / 2;
+
+      const moduleUsedHeight = flowHeight + moduleGap * Math.max(0, data.modules.length - 1);
+      let moduleCursor = top + (plotHeight - moduleUsedHeight) / 2;
+      const moduleLayout = data.modules.map((module) => {
+        const item = { ...module, x: moduleX, y: moduleCursor, height: module.value * scale };
+        moduleCursor += item.height + moduleGap;
+        return item;
+      });
+
+      const blockUsedHeight = flowHeight + blockGap * Math.max(0, blocks.length - 1);
+      let blockCursor = top + (plotHeight - blockUsedHeight) / 2;
+      const blockLayout = blocks.map((block) => {
+        const item = { ...block, x: blockX, y: blockCursor, height: block.value * scale };
+        blockCursor += item.height + blockGap;
+        return item;
+      });
+
+      let sourceOffset = sourceY;
+      const sourceLinks = moduleLayout.map((module) => {
+        const linkHeight = module.value * scale;
+        const sourceCenter = sourceOffset + linkHeight / 2;
+        const moduleCenter = module.y + module.height / 2;
+        sourceOffset += linkHeight;
+        const tooltip = sankeyTooltipText(t("sankeyPathwayTotal"), module.label, module.value, data.total);
+        const path = sankeyCurve(sourceX + nodeWidth, sourceCenter, moduleX, moduleCenter);
+        return `
+          <g class="sankey-link" ${sankeyInteractiveAttributes(module.id, tooltip)}>
+            <path d="${path}" stroke="rgba(0, 90, 160, 0.38)" stroke-width="${Math.max(1, linkHeight)}"></path>
+            <path d="${path}" stroke="transparent" stroke-width="${Math.max(10, linkHeight)}"></path>
+            <title>${escapeHtml(tooltip)}</title>
+          </g>
+        `;
+      }).join("");
+
+      const moduleLinks = moduleLayout.flatMap((module) => {
+        let moduleOffset = module.y;
+        return blockLayout
+          .filter((block) => block.moduleId === module.id)
+          .map((block) => {
+            const linkHeight = block.value * scale;
+            const moduleCenter = moduleOffset + linkHeight / 2;
+            const blockCenter = block.y + block.height / 2;
+            moduleOffset += linkHeight;
+            const tooltip = sankeyTooltipText(module.label, block.label, block.value, data.total);
+            const path = sankeyCurve(moduleX + nodeWidth, moduleCenter, blockX, blockCenter);
+            const color = block.isOther ? "rgba(145, 158, 164, 0.42)" : "rgba(111, 207, 241, 0.54)";
+            return `
+              <g class="sankey-link" ${sankeyInteractiveAttributes(module.id, tooltip)}>
+                <path d="${path}" stroke="${color}" stroke-width="${Math.max(1, linkHeight)}"></path>
+                <path d="${path}" stroke="transparent" stroke-width="${Math.max(10, linkHeight)}"></path>
+                <title>${escapeHtml(tooltip)}</title>
+              </g>
+            `;
+          });
+      }).join("");
+
+      const sourceTooltip = t("sankeyContribution", {
+        value: formatImpact(data.total),
+        share: formatDecimal(100, 0)
+      });
+      const sourceNode = `
+        <g class="sankey-node" ${sankeyInteractiveAttributes("all", sourceTooltip)}>
+          <rect x="${sourceX}" y="${sourceY}" width="${nodeWidth}" height="${Math.max(2, flowHeight)}" rx="2" fill="#005AA0" stroke="#005AA0"></rect>
+          <text class="sankey-label" x="${sourceX - 10}" y="${sourceY + flowHeight / 2 - 3}" text-anchor="end">${escapeHtml(t("sankeyPathwayTotal"))}</text>
+          <text class="sankey-label value" x="${sourceX - 10}" y="${sourceY + flowHeight / 2 + 14}" text-anchor="end">${escapeHtml(formatImpact(data.total))}</text>
+          <title>${escapeHtml(sourceTooltip)}</title>
+        </g>
+      `;
+
+      const moduleNodes = moduleLayout.map((module) => {
+        const tooltip = sankeyTooltipText(t("sankeyPathwayTotal"), module.label, module.value, data.total);
+        const center = module.y + module.height / 2;
+        return `
+          <g class="sankey-node" ${sankeyInteractiveAttributes(module.id, tooltip)}>
+            <rect x="${module.x}" y="${module.y}" width="${nodeWidth}" height="${Math.max(2, module.height)}" rx="2" fill="#6FCFF1" stroke="#005AA0"></rect>
+            <text class="sankey-label" x="${module.x - 10}" y="${center + 4}" text-anchor="end">${escapeHtml(module.label)}</text>
+            <title>${escapeHtml(tooltip)}</title>
+          </g>
+        `;
+      }).join("");
+
+      const blockNodes = blockLayout.map((block) => {
+        const module = moduleLayout.find((item) => item.id === block.moduleId);
+        const tooltip = sankeyTooltipText(module.label, block.label, block.value, data.total);
+        const center = block.y + block.height / 2;
+        const fill = block.isOther ? "#D7DEE0" : "#DFF5FC";
+        const stroke = block.isOther ? "#91A0A5" : "#4DB9E3";
+        return `
+          <g class="sankey-node" ${sankeyInteractiveAttributes(block.moduleId, tooltip)}>
+            <rect x="${block.x}" y="${block.y}" width="${nodeWidth}" height="${Math.max(2, block.height)}" rx="2" fill="${fill}" stroke="${stroke}"></rect>
+            <text class="sankey-label" x="${block.x + nodeWidth + 10}" y="${center + 4}">${escapeHtml(block.label)}</text>
+            <title>${escapeHtml(tooltip)}</title>
+          </g>
+        `;
+      }).join("");
+
+      target.innerHTML = `
+        <svg class="sankey-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(`${t("sankeyTab")}: ${impactCategoryName()}`)}">
+          ${sourceLinks}
+          ${moduleLinks}
+          ${sourceNode}
+          ${moduleNodes}
+          ${blockNodes}
+        </svg>
+      `;
+      bindSankeyInteractions(target.querySelector("svg"));
+    }
+
+    function bindSankeyInteractions(svg) {
+      const tooltip = document.getElementById("sankeyTooltip");
+      if (!svg || !tooltip) return;
+      const items = Array.from(svg.querySelectorAll("[data-sankey-tooltip]"));
+      const positionTooltip = (x, y) => {
+        tooltip.style.left = `${Math.min(window.innerWidth - 340, Math.max(10, x + 14))}px`;
+        tooltip.style.top = `${Math.min(window.innerHeight - 120, Math.max(10, y + 14))}px`;
+      };
+      const show = (item, event) => {
+        tooltip.textContent = item.dataset.sankeyTooltip;
+        tooltip.hidden = false;
+        const group = item.dataset.sankeyGroup;
+        items.forEach((candidate) => {
+          const shouldDim = group !== "all" && candidate.dataset.sankeyGroup !== "all" && candidate.dataset.sankeyGroup !== group;
+          candidate.classList.toggle("sankey-dimmed", shouldDim);
+        });
+        if (event?.clientX != null) {
+          positionTooltip(event.clientX, event.clientY);
+        } else {
+          const rect = item.getBoundingClientRect();
+          positionTooltip(rect.right, rect.top + rect.height / 2);
+        }
+      };
+      const hide = () => {
+        tooltip.hidden = true;
+        items.forEach((candidate) => candidate.classList.remove("sankey-dimmed"));
+      };
+      items.forEach((item) => {
+        item.addEventListener("mouseenter", (event) => show(item, event));
+        item.addEventListener("mousemove", (event) => positionTooltip(event.clientX, event.clientY));
+        item.addEventListener("mouseleave", hide);
+        item.addEventListener("focus", () => show(item));
+        item.addEventListener("blur", hide);
+      });
+    }
+
     function bindLcaControls() {
       const moduleCalculations = document.getElementById("lcaModuleCalculations");
       document.getElementById("lcaCaseCount").addEventListener("input", renderLcaOutputs);
       document.getElementById("lcaImpactCategory").addEventListener("change", (event) => {
-        if (!impactCategoryRegistry.some((category) => category.id === event.target.value)) return;
-        state.impactCategory = event.target.value;
-        renderImpactCategoryControl();
-        renderLcaTable();
-        renderLcaOutputs();
-        renderBrightwayResults();
+        setImpactCategory(event.target.value);
+      });
+      document.getElementById("allImpactTab").addEventListener("click", () => setLcaResultView("all"));
+      document.getElementById("sankeyTab").addEventListener("click", () => setLcaResultView("sankey"));
+      document.getElementById("allImpactResults").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-impact-category]");
+        if (button) setImpactCategory(button.dataset.impactCategory);
+      });
+      document.getElementById("sankeyCutoff").addEventListener("input", (event) => {
+        state.sankeyCutoffPercent = Math.min(1, Math.max(0.1, Number(event.target.value) || 0.5));
+        renderContributionSankey();
       });
       moduleCalculations.addEventListener("toggle", (event) => {
         const details = event.target;
@@ -10929,6 +11667,9 @@
         uncertainty: formatNumber(demoCoefficientUncertainty)
       });
       renderLcaPriorityList();
+      renderAllImpactResults(caseCount);
+      renderContributionSankey();
+      renderLcaResultView();
     }
 
     function renderLcaPriorityList() {
@@ -11009,15 +11750,19 @@
       return element.getBoundingClientRect().top + window.scrollY;
     }
 
-    function lcaScenarioValues(scenario, caseCount) {
+    function lcaScenarioValuesForCategory(categoryId, scenario, caseCount) {
       const perPathway = lcaRows.reduce((sum, row) => {
         if (!isLcaRowActive(row)) return sum;
-        return sum + rowImpact(row, scenario);
+        return sum + rowImpact(row, scenario, categoryId);
       }, 0);
       return {
         perPathway,
         cohortExpected: perPathway * caseCount
       };
+    }
+
+    function lcaScenarioValues(scenario, caseCount) {
+      return lcaScenarioValuesForCategory(state.impactCategory, scenario, caseCount);
     }
 
     function lcaVisibleRows() {
@@ -11040,9 +11785,9 @@
         isLcaRowIncluded(row);
     }
 
-    function rowImpact(row, scenario) {
-      const base = Math.max(0, row.quantity) * rowFactor(row);
-      const uncertainty = rowUncertainty(row) / 100;
+    function rowImpact(row, scenario, categoryId = state.impactCategory) {
+      const base = Math.max(0, row.quantity) * rowFactor(row, categoryId);
+      const uncertainty = rowUncertainty(row, categoryId) / 100;
       if (scenario === "low") return Math.max(0, base * (1 - uncertainty));
       if (scenario === "high") return base * (1 + uncertainty);
       return base;
@@ -11053,7 +11798,7 @@
       return Number.isFinite(value) ? value : fallback;
     }
 
-    function formatImpact(value) {
+    function formatImpactNumber(value) {
       const number = Math.max(0, Number(value) || 0);
       const absolute = Math.abs(number);
       let formatted;
@@ -11066,7 +11811,11 @@
           maximumSignificantDigits: 4
         });
       }
-      return `${formatted} ${impactCategoryUnit()}`;
+      return formatted;
+    }
+
+    function formatImpact(value, categoryId = state.impactCategory) {
+      return `${formatImpactNumber(value)} ${impactCategoryUnit(categoryId)}`;
     }
 
     function formatNumber(value) {

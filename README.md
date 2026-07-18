@@ -33,6 +33,8 @@ Route colors distinguish diagnostic and first-contact movement, treatment moveme
 
 The browser calculator uses the prototype formula `impact = quantity x impact coefficient` for a selected EF category. It sums active building blocks into one pathway result and optionally multiplies this result by the cohort size. The cohort defaults to `1`, so the initial total corresponds to one declared functional unit. Changing the cohort size scales only the cohort total and does not redefine the functional unit. Browser coefficients are synthetic demonstration data and are kept separate from imported Brightway results.
 
+The Results step presents all 16 EF 3.1 categories in one table. Each row retains its own LCIA unit, low/base/high result per functional unit, and base cohort result. Raw values across different units are not ranked or combined. Selecting a category row updates the detailed result cards, coefficient table, and contribution view. The interactive Sankey shows the base-result flow from the pathway total to ECO-PATH modules and active building blocks for that selected category. Its `0.1%` to `1%` cut-off control aggregates smaller building-block contributions within their module as `Other`; it changes visual detail only and preserves the pathway total.
+
 ## One-click Brightway calculation
 
 GitHub Pages is a static website and cannot run Brightway or distribute licensed background databases. For direct calculation, run the explorer through the local companion service in the Python environment that has access to the intended Brightway project:

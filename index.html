@@ -2653,7 +2653,7 @@
       EM01: {
         name: "First contact and intake",
         definition: "First specialist contact, intake, and material-relevant preparation before diagnostic or treatment activities.",
-        resourceFlows: ["Patient travel", "Room use", "Bowel preparation", "EHR use"]
+        resourceFlows: ["Room use", "Bowel preparation", "EHR use"]
       },
       EM02: {
         name: "Pathology",
@@ -2663,12 +2663,12 @@
       EM03: {
         name: "Imaging and endoscopy",
         definition: "Radiology, CT reassessment, MRI, PET-CT, cystoscopy, colonoscopy, or other pathway-specific diagnostic procedures.",
-        resourceFlows: ["Equipment electricity", "Contrast media or procedure materials", "Patient travel"]
+        resourceFlows: ["Equipment electricity", "Contrast media or procedure materials"]
       },
       EM04: {
-        name: "Joint clinic and MDT",
-        definition: "Joint clinic, multidisciplinary team review, and cross-specialty decision review.",
-        resourceFlows: ["Meeting room use", "EHR and imaging display", "Patient travel for clinic attendance"]
+        name: "Multidisciplinary care logic (cut-off)",
+        definition: "Joint clinic, multidisciplinary review, and cross-specialty decisions retained for pathway logic but not calculated as standalone impact-bearing activities.",
+        resourceFlows: []
       },
       EM05: {
         name: "Clinical decision logic (cut-off)",
@@ -2687,17 +2687,17 @@
       },
       EM08: {
         name: "Radiotherapy",
-        definition: "Radiotherapy decision, planning, external-beam fractions, chemoradiation, brachytherapy, immobilization, and radiotherapy-related travel.",
-        resourceFlows: ["Linear accelerator electricity", "Treatment planning", "Immobilization materials", "Fraction count", "Patient travel"]
+        definition: "Radiotherapy decision, planning, external-beam fractions, chemoradiation, brachytherapy, and immobilization. Associated patient travel is owned by EM10.",
+        resourceFlows: ["Linear accelerator electricity", "Treatment planning", "Immobilization materials", "Fraction count"]
       },
       EM09: {
         name: "Follow-up",
         definition: "Treatment-specific surveillance, outpatient review, imaging or endoscopy, recurrence monitoring, diversion or stoma follow-up, and return-route contacts.",
-        resourceFlows: ["Outpatient visit", "Surveillance tests", "Patient travel", "EHR use"]
+        resourceFlows: ["Outpatient visit", "Surveillance tests", "EHR use"]
       },
       EM10: {
-        name: "Patient support",
-        definition: "Patient-facing support processes that can occur across several activities and need transparent allocation.",
+        name: "Patient travel and support",
+        definition: "Single-owner cross-cutting module for patient and caregiver travel plus optional food, accommodation, home sampling, and digital support. Clinical building-block coefficients must not embed these flows.",
         resourceFlows: ["Patient travel", "Caregiver travel", "Patient food", "Home sampling", "Digital support"]
       },
       EM11: {
@@ -2727,7 +2727,8 @@
       block("EM01", "Return-to-referrer handover", "per transfer", ["Clinical letter", "EHR transfer", "Administrative time"]),
       block("EM04", "MDT case discussion", "per case discussed", ["Clinician time", "Meeting room or digital platform", "Image display", "EHR use"]),
       block("EM04", "Digital case review", "per review", ["Clinician time", "ICT", "Image access"]),
-      block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
+      block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use", "EHR use"]),
+      block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use", "EHR use"]),
       block("EM05", "Shared decision-making session", "per session", ["Clinician time", "Decision aid material", "Patient communication"]),
       block("EM05", "Fitness or pre-treatment assessment", "per assessment", ["Assessment time", "Laboratory review", "EHR documentation"]),
       block("EM05", "Polyp risk stratification", "per case classified", ["Pathology review", "Risk category assignment", "Patient communication"], ["gastro"]),
@@ -2737,8 +2738,8 @@
     ];
 
     const buildingBlockRegistry = [
-      block("EM01", "First specialist consultation", "per consultation", ["Patient travel", "Room use", "EHR use"]),
-      block("EM01", "Inter-hospital clinical transfer", "per transfer", ["Patient travel", "Specimen transport", "Imaging transfer", "EHR documentation"]),
+      block("EM01", "First specialist consultation", "per consultation", ["Room use", "EHR use"]),
+      block("EM01", "Inter-hospital clinical transfer", "per transfer", ["Specimen transport", "Imaging transfer", "EHR documentation"]),
       block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"], ["gastro"]),
 
       block("EM02", "Pathology slide review", "per review", ["Pathologist time", "Microscopy or digital pathology", "Report generation"]),
@@ -2749,16 +2750,14 @@
       block("EM02", "Complex surgical specimen pathology", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
 
       block("EM03", "CT scan", "per scan", ["Scanner electricity", "Contrast media", "Disposables", "Radiology reporting"]),
-      block("EM03", "MRI scan", "per scan", ["Scanner electricity", "Room time", "Radiology reporting", "Patient travel"]),
+      block("EM03", "MRI scan", "per scan", ["Scanner electricity", "Room time", "Radiology reporting"]),
       block("EM03", "PET-CT scan", "per scan", ["Radiotracer", "Scanner electricity", "Uptake room time", "Waste"]),
       block("EM03", "Colonoscopy", "per procedure", ["Procedure materials", "Sedation", "Endoscope reprocessing", "Water", "Waste"], ["gastro"]),
       block("EM03", "Polypectomy or endoscopic lesion removal", "per procedure", ["Polypectomy device", "Specimen container", "Procedure time", "Endoscopy waste"], ["gastro"]),
       block("EM03", "Cystoscopy", "per procedure", ["Scope use", "Consumables", "Reprocessing", "Procedure room time"], ["urology"]),
       block("EM03", "Ultrasound", "per scan", ["Equipment electricity", "Gel and covers", "Clinical staff time"]),
 
-      block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use", "Patient travel", "EHR use"]),
-
-      block("EM06", "Medical oncology consultation", "per visit", ["Oncologist time", "Room use", "Patient travel", "EHR use"]),
+      block("EM06", "Medical oncology consultation", "per visit", ["Oncologist time", "Room use", "EHR use"]),
       block("EM06", "Chemotherapy infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Day-care chair time", "Cytotoxic waste"]),
       block("EM06", "Immunotherapy or targeted infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Day-care chair time", "Monitoring"]),
       block("EM06", "Oral systemic therapy cycle", "per cycle", ["Drug dose", "Dispensing", "Monitoring", "Packaging"]),
@@ -2778,17 +2777,17 @@
       block("EM07", "Procedure-related clinical waste", "per kg waste", ["Waste mass", "Waste segregation", "Treatment route"]),
 
       block("EM08", "Radiotherapy planning", "per treatment plan", ["Planning CT", "Treatment planning workstation", "Staff time"]),
-      block("EM08", "Radiotherapy fraction", "per fraction", ["Linear accelerator electricity", "Machine time", "Patient travel"]),
+      block("EM08", "Radiotherapy fraction", "per fraction", ["Linear accelerator electricity", "Machine time"]),
       block("EM08", "Immobilization device", "per device", ["Thermoplastic mask or mold", "Setup materials", "Waste"]),
       block("EM08", "Chemoradiation co-treatment add-on", "per cycle or fraction set", ["Systemic therapy inputs", "Extra monitoring", "Combined visits"]),
       block("EM08", "Brachytherapy treatment episode", "per episode", ["Applicator or catheter set", "Imaging guidance", "Source delivery time", "Anesthesia if used"], ["urology"]),
 
-      block("EM09", "Outpatient follow-up visit", "per visit", ["Clinician time", "Room use", "Patient travel", "EHR use"]),
+      block("EM09", "Outpatient follow-up visit", "per visit", ["Clinician time", "Room use", "EHR use"]),
       block("EM09", "Surveillance test set", "per surveillance round", ["Blood test", "Imaging or endoscopy", "Reporting"]),
-      block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing", "Patient travel"], ["gastro"]),
+      block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing"], ["gastro"]),
       block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"], ["gastro"]),
-      block("EM09", "Post-cystectomy surveillance round", "per surveillance round", ["Clinical review", "Imaging if indicated", "Laboratory testing", "Patient travel"], ["urology"]),
-      block("EM09", "Bladder-preservation surveillance round", "per surveillance round", ["Cystoscopy", "Urine cytology", "Imaging if indicated", "Patient travel"], ["urology"]),
+      block("EM09", "Post-cystectomy surveillance round", "per surveillance round", ["Clinical review", "Imaging if indicated", "Laboratory testing"], ["urology"]),
+      block("EM09", "Bladder-preservation surveillance round", "per surveillance round", ["Cystoscopy", "Urine cytology", "Imaging if indicated"], ["urology"]),
       block("EM09", "Urinary diversion or stoma follow-up", "per visit", ["Ostomy appliances", "Urinary drainage supplies", "Skin care materials", "Clinical review"]),
       block("EM09", "Home-based follow-up kit", "per kit", ["Sampling material", "Shipping", "Laboratory processing", "Digital app use"]),
 
@@ -2862,10 +2861,6 @@
     registerActivityBuildingBlocks(
       ["CRCDUTCH-DX01"],
       [automaticBlock("Colonoscopy intake and bowel preparation"), automaticBlock("Colonoscopy")]
-    );
-    registerActivityBuildingBlocks(
-      ["EMC-JM01"],
-      [automaticBlock("Joint outpatient clinic")]
     );
     registerActivityBuildingBlocks(
       ["EAU-TX02", "EAUFULL-TX02", "EAUFULL-TX10", "EMC-TX03", "EMC-TX10"],
@@ -3124,7 +3119,6 @@
       EM01: { factor: 0.45 },
       EM02: { factor: 1.25 },
       EM03: { factor: 6.50 },
-      EM04: { factor: 0.75 },
       EM06: { factor: 8.00 },
       EM07: { factor: 18.00 },
       EM08: { factor: 4.50 },
@@ -3949,6 +3943,7 @@
       "EAUFULL-TX11",
       "EAUFULL-TX15",
       "EMC-JM02",
+      "EMC-JM01",
       "EMC-DX05",
       "EMC-DX09",
       "EMC-TX01",
@@ -4006,8 +4001,8 @@
         helpStep4: "Selecting an activity automatically activates its mapped modules, building blocks, and provisional quantities. Review route alternatives, occurrence counts, and any manual additions before calculation.",
         helpStep5: "Review uncertainty and data gaps, then export the report in the currently selected language.",
         helpCutoffTitle: "Provisional LCA cut-off",
-        helpCutoffText: "Clinical decision and review nodes remain on the map, but meeting-only, decision-only, review-only, digital-letter, and purely administrative activities are excluded from calculation when they add only staff time and minor office or ICT energy. EM05 is therefore retained as pathway logic and does not produce calculation rows. If a decision triggers a separate visit, patient travel, laboratory test, imaging examination, or procedure, that resource-bearing activity must be modeled in its relevant module. Human labor is not characterized as an environmental resource flow; time may still be used to allocate room or equipment inputs. No numerical cut-off threshold has yet been validated, so this exclusion must be documented and revisited during formal LCA modeling.",
-        lcaCutoffSummary: "Provisional cut-off applied: EM05 clinical decision logic and other meeting-only, review-only, digital-letter, or purely administrative building blocks are not shown in the calculation rows.",
+        helpCutoffText: "Clinical decision and review nodes remain on the map, but meeting-only, decision-only, review-only, digital-letter, and purely administrative activities are excluded from calculation when they add only staff time and minor office or ICT energy. EM04 multidisciplinary care logic and EM05 clinical decision logic therefore do not produce calculation rows. If a decision triggers a separate visit, laboratory test, imaging examination, treatment, or procedure, that resource-bearing activity must be modeled in its relevant module. Patient and caregiver travel are calculated only in EM10; clinical building-block coefficients exclude travel to prevent double counting. Human labor is not characterized as an environmental resource flow; time may still be used to allocate room or equipment inputs. No numerical cut-off threshold has yet been validated, so this exclusion must be documented and revisited during formal LCA modeling.",
+        lcaCutoffSummary: "Provisional cut-off applied: EM04 multidisciplinary care logic, EM05 clinical decision logic, and other meeting-only, review-only, digital-letter, or purely administrative building blocks are not shown in the calculation rows. Patient and caregiver travel are owned only by EM10.",
         languageSelector: "Language",
         specialtySummary: "Specialties",
         specialtyUrology: "Urology",
@@ -4085,7 +4080,7 @@
         automaticFromActivities: "Auto from selected activities",
         exportReport: "Export LCA report",
         buildingBlockMapHeading: "Candidate building blocks by LCA module",
-        buildingBlockMapIntro: "Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.",
+        buildingBlockMapIntro: "Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 is the single owner of patient and caregiver travel, so clinical module coefficients exclude travel. EM11 remains optional shared hospital support.",
         moduleZone: "Module zone",
         candidateBuildingBlock: "Candidate building block",
         candidateBuildingBlockCount: "{count} candidate building blocks",
@@ -4129,7 +4124,7 @@
         formulaLibrary: "Building block library",
         formulaCohort: "Cohort impact",
         formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.",
-        lcaWarning: "Selected activities automatically activate their explicitly mapped pathway modules, building blocks, and provisional quantities. Repeated activities aggregate quantities, such as two selected CT activities producing two CT scans. EM10 and EM11 remain optional support modules. Alternative regimens, imaging choices, fraction counts, cycle counts, admission days, and all dummy impact coefficients require review before the result is used as evidence.",
+        lcaWarning: "Selected activities automatically activate their explicitly mapped pathway modules, building blocks, and provisional quantities. Repeated activities aggregate quantities, such as two selected CT activities producing two CT scans. EM10 is the only calculation owner of patient and caregiver travel; do not embed travel in another module coefficient. EM11 remains optional shared hospital support. Alternative regimens, imaging choices, fraction counts, cycle counts, admission days, and all dummy impact coefficients require review before the result is used as evidence.",
         noActiveRows: "No building block row is active. Check at least one module and one building block row to include it in the calculation.",
         priorityRow: "{module} {block}: {impact} per demo pathway instance. {gap}",
         reportTitle: "ECO-PATH LCA report: {pathway}",
@@ -4163,7 +4158,7 @@
         excluded: "Excluded",
         noCheckedTotal: "No checked module and building block row combination is currently included in the LCA total.",
         methodLimitations: "Method note and limitations",
-        methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. The prototype applies a provisional qualitative cut-off to meeting-only, digital-letter, and purely administrative activities with no additional travel or procedure. Human labor is not characterized as an environmental resource flow; time may be used as an allocation parameter. This cut-off requires documentation and sensitivity review during formal LCA modeling.",
+        methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. The prototype applies a provisional qualitative cut-off to EM04 multidisciplinary care logic, EM05 clinical decision logic, and other meeting-only, digital-letter, and purely administrative activities without a separate resource-bearing procedure. Human labor is not characterized as an environmental resource flow; time may be used as an allocation parameter. Patient and caregiver travel are assigned exclusively to EM10 and excluded from all clinical building-block coefficients to prevent double counting. These rules require documentation and sensitivity review during formal LCA modeling.",
         reportFooter: "ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser.",
         reportExported: "Report exported: {filename}"
       },
@@ -4180,8 +4175,8 @@
         helpStep4: "Een geselecteerde activiteit activeert automatisch de gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer routealternatieven, aantallen en handmatige aanvullingen voor de berekening.",
         helpStep5: "Controleer onzekerheid en datalacunes en exporteer daarna het rapport in de gekozen taal.",
         helpCutoffTitle: "Voorlopige LCA-cut-off",
-        helpCutoffText: "Klinische beslis- en beoordelingspunten blijven op de kaart staan. Activiteiten die alleen uit overleg, besluitvorming, beoordeling, digitale brieven of administratie bestaan, worden uitgesloten als ze uitsluitend personeeltijd en gering kantoor- of ICT-energiegebruik toevoegen. EM05 blijft daarom zichtbaar als zorgpadlogica en levert geen berekeningsrijen op. Als een besluit leidt tot een afzonderlijk bezoek, patiëntenreis, laboratoriumtest, beeldvormend onderzoek of procedure, moet die hulpbrondragende activiteit in de betreffende module worden gemodelleerd. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan wel als allocatiesleutel voor ruimte- of apparatuurinputs dienen. Er is nog geen numerieke drempel gevalideerd; deze uitsluiting moet bij formele LCA-modellering worden vastgelegd en opnieuw beoordeeld.",
-        lcaCutoffSummary: "Voorlopige cut-off toegepast: EM05-klinische beslislogica en andere bouwstenen voor alleen overleg, beoordeling, digitale brieven of zuivere administratie staan niet in de berekeningsrijen.",
+        helpCutoffText: "Klinische beslis- en beoordelingspunten blijven op de kaart staan. Activiteiten die alleen uit overleg, besluitvorming, beoordeling, digitale brieven of administratie bestaan, worden uitgesloten als ze uitsluitend personeeltijd en gering kantoor- of ICT-energiegebruik toevoegen. EM04 multidisciplinaire zorglogica en EM05 klinische beslislogica leveren daarom geen berekeningsrijen op. Als een besluit leidt tot een afzonderlijke laboratoriumtest, beeldvorming, behandeling of procedure, moet die hulpbrondragende activiteit in de betreffende module worden gemodelleerd. Patiënten- en mantelzorgerreizen worden uitsluitend in EM10 berekend; klinische bouwsteencoëfficiënten sluiten reizen uit om dubbeltelling te voorkomen. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan wel als allocatiesleutel voor ruimte- of apparatuurinputs dienen. Er is nog geen numerieke drempel gevalideerd; deze uitsluiting moet bij formele LCA-modellering worden vastgelegd en opnieuw beoordeeld.",
+        lcaCutoffSummary: "Voorlopige cut-off toegepast: EM04 multidisciplinaire zorglogica, EM05 klinische beslislogica en andere bouwstenen voor alleen overleg, beoordeling, digitale brieven of zuivere administratie staan niet in de berekeningsrijen. Patiënten- en mantelzorgerreizen vallen uitsluitend onder EM10.",
         languageSelector: "Taal",
         specialtySummary: "Specialismen",
         specialtyUrology: "Urologie",
@@ -4259,7 +4254,7 @@
         automaticFromActivities: "Automatisch uit geselecteerde activiteiten",
         exportReport: "LCA-rapport exporteren",
         buildingBlockMapHeading: "Kandidaatbouwstenen per LCA-module",
-        buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken, bijvoorbeeld alleen consultatie en monitoring binnen EM06. EM10 en EM11 zijn optionele ondersteunende modules, geen stations op de zorgpadkaart.",
+        buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische modulecoëfficiënten sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning.",
         moduleZone: "Modulezone",
         candidateBuildingBlock: "Kandidaatbouwsteen",
         candidateBuildingBlockCount: "{count} kandidaatbouwstenen",
@@ -4303,7 +4298,7 @@
         formulaLibrary: "Bouwsteenbibliotheek",
         formulaCohort: "Cohortimpact",
         formulaNote: "S = aangevinkte bouwsteenrijen binnen aangevinkte modules. q = aantal of resourcehoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u = relatieve onzekerheid, N = cohortgrootte. Dit is een demobibliotheek, geen definitief zorgpadscenario.",
-        lcaWarning: "Geselecteerde activiteiten activeren automatisch de expliciet gekoppelde zorgpadmodules, bouwstenen en voorlopige hoeveelheden. Herhaalde activiteiten worden opgeteld, bijvoorbeeld twee CT-activiteiten als twee CT-scans. EM10 en EM11 blijven optionele ondersteunende modules. Alternatieve regimes, beeldvorming, fracties, cycli, opnamedagen en dummy-impactcoëfficiënten moeten worden gecontroleerd.",
+        lcaWarning: "Geselecteerde activiteiten activeren automatisch de expliciet gekoppelde zorgpadmodules, bouwstenen en voorlopige hoeveelheden. Herhaalde activiteiten worden opgeteld. Alleen EM10 berekent patiënten- en mantelzorgerreizen; neem reizen niet op in een andere modulecoëfficiënt. EM11 blijft optionele gedeelde ziekenhuisondersteuning. Alternatieve regimes, beeldvorming, fracties, cycli, opnamedagen en dummy-impactcoëfficiënten moeten worden gecontroleerd.",
         noActiveRows: "Geen bouwsteenrij is actief. Vink ten minste één module en één bouwsteenrij aan om deze mee te nemen.",
         priorityRow: "{module} {block}: {impact} per demo-zorgpadinstantie. {gap}",
         reportTitle: "ECO-PATH LCA-rapport: {pathway}",
@@ -4337,7 +4332,7 @@
         excluded: "Uitgesloten",
         noCheckedTotal: "Er is momenteel geen combinatie van aangevinkte module en bouwsteenrij opgenomen in het LCA-totaal.",
         methodLimitations: "Methodenotitie en beperkingen",
-        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport. Het prototype gebruikt een voorlopige kwalitatieve cut-off voor activiteiten die alleen uit overleg, digitale brieven of administratie bestaan en geen extra reis of procedure veroorzaken. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan als allocatieparameter worden gebruikt. Deze cut-off vereist documentatie en gevoeligheidsanalyse bij formele LCA-modellering.",
+        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport. Het prototype gebruikt een voorlopige kwalitatieve cut-off voor EM04 multidisciplinaire zorglogica, EM05 klinische beslislogica en andere overleg-, digitale brief- en administratieactiviteiten zonder afzonderlijke hulpbrondragende procedure. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan als allocatieparameter worden gebruikt. Patiënten- en mantelzorgerreizen worden uitsluitend aan EM10 toegewezen en uit klinische bouwsteencoëfficiënten verwijderd om dubbeltelling te voorkomen. Deze regels vereisen documentatie en gevoeligheidsanalyse bij formele LCA-modellering.",
         reportFooter: "ECO-PATH demo voor zorgpadniveau milieubeoordeling. Rapport lokaal in de browser gegenereerd.",
         reportExported: "Rapport geexporteerd: {filename}"
       }
@@ -4360,8 +4355,8 @@
           helpStep4: "选择 activity 后会自动启用对应 modules、building blocks 和临时数量。计算前请检查治疗路线、发生次数和手动补充项。",
           helpStep5: "检查不确定性和数据缺口，然后以当前所选语言导出报告。",
           helpCutoffTitle: "暂定 LCA cut-off",
-          helpCutoffText: "临床决策与复核节点仍保留在路径图中。如果纯会议、纯决策、纯复核、数字信函或行政活动仅增加人力以及少量办公室或 ICT 用电，则不进入计算。因此 EM05 仅作为路径逻辑保留，不生成计算行。如果某项决策导致单独就诊、患者出行、实验室检查、影像检查或操作，应在相应的实质资源模块中建模。人力本身不作为环境资源流进行表征；活动时间仍可用于分配房间或设备投入。目前尚未验证数值 cut-off 阈值，因此正式 LCA 建模时必须记录并重新检查这些排除项。",
-          lcaCutoffSummary: "已应用暂定 cut-off：EM05 临床决策逻辑及其他纯会议、纯复核、数字信函和行政类构建块不显示在计算行中。",
+          helpCutoffText: "临床决策与复核节点仍保留在路径图中。如果纯会议、纯决策、纯复核、数字信函或行政活动仅增加人力以及少量办公室或 ICT 用电，则不进入计算。因此 EM04 多学科照护逻辑和 EM05 临床决策逻辑不生成计算行。如果决策触发单独的实验室检查、影像检查、治疗或操作，应在相应的实质资源模块中建模。患者及照护者出行只在 EM10 中计算；其他临床 building block 系数排除出行，以避免重复计算。人力本身不作为环境资源流进行表征；活动时间仍可用于分配房间或设备投入。目前尚未验证数值 cut-off 阈值，因此正式 LCA 建模时必须记录并重新检查这些排除项。",
+          lcaCutoffSummary: "已应用暂定 cut-off：EM04 多学科照护逻辑、EM05 临床决策逻辑及其他纯会议、纯复核、数字信函和行政类构建块不显示在计算行中。患者及照护者出行仅归属 EM10。",
           languageSelector: "语言",
           specialtySummary: "专科",
           specialtyUrology: "泌尿外科",
@@ -4438,7 +4433,7 @@
           automaticFromActivities: "由所选 activities 自动启用",
           exportReport: "导出 LCA 报告",
           buildingBlockMapHeading: "按 LCA 模块分组的候选构建块",
-          buildingBlockMapIntro: "按模块分组显示候选 ECO-PATH 构建块。一个已选路径可能只使用某个模块的一部分，例如 EM06 中的会诊和监测。EM10 与 EM11 是可选的跨活动支持模块，不是路径图上的站点模块。",
+          buildingBlockMapIntro: "按模块分组显示候选 ECO-PATH 构建块。一个已选路径可能只使用某个模块的一部分。EM10 是患者及照护者出行的唯一核算归属，临床模块系数不包含出行；EM11 仍是可选的医院共享支持模块。",
           moduleZone: "模块区域",
           candidateBuildingBlock: "候选构建块",
           candidateBuildingBlockCount: "{count} 个候选构建块",
@@ -4482,7 +4477,7 @@
           formulaLibrary: "构建块库",
           formulaCohort: "队列影响",
           formulaNote: "S = 已勾选模块内的已勾选构建块行。q = 发生次数或资源数量，c = LCIA 影响系数，j = 影响类别，u = 相对不确定性，N = 队列规模。这里是候选构建块库演示，不是最终路径情景。",
-          lcaWarning: "所选 activities 会自动启用显式映射的路径 modules、building blocks 和临时数量；重复 activity 会累计数量，例如两次 CT activity 会得到两次 CT scan。EM10 和 EM11 仍为可选支持 modules。治疗方案、影像选择、放疗分次、治疗周期、住院日和 dummy 影响系数均需在正式使用前复核。",
+          lcaWarning: "所选 activities 会自动启用显式映射的路径 modules、building blocks 和临时数量；重复 activity 会累计数量。患者及照护者出行只能在 EM10 中计算，不应再写入其他模块系数；EM11 仍为可选的医院共享支持模块。治疗方案、影像选择、放疗分次、治疗周期、住院日和 dummy 影响系数均需在正式使用前复核。",
           noActiveRows: "当前没有启用的构建块行。请至少勾选一个模块和一个构建块行。",
           priorityRow: "{module} {block}：每个演示路径实例 {impact}。{gap}",
           reportTitle: "ECO-PATH LCA 报告：{pathway}",
@@ -4516,7 +4511,7 @@
           excluded: "排除",
           noCheckedTotal: "当前没有任何已勾选模块和构建块行组合计入 LCA 总量。",
           methodLimitations: "方法说明和局限性",
-          methodLimitationsText: "本报告是 ECO-PATH 方法开发阶段的模块化 LCA 计算演示，不是最终的 ISO 14040 或 ISO 14044 合规 LCA 报告。当前原型对不产生额外出行或医疗程序的纯会议、数字信函和行政活动采用暂定定性 cut-off。人力不作为环境资源流进行表征，活动时间可以作为分配参数。正式 LCA 建模时必须记录这些排除项并进行敏感性检查。",
+          methodLimitationsText: "本报告是 ECO-PATH 方法开发阶段的模块化 LCA 计算演示，不是最终的 ISO 14040 或 ISO 14044 合规 LCA 报告。当前原型对 EM04 多学科照护逻辑、EM05 临床决策逻辑，以及不产生独立实质资源程序的纯会议、数字信函和行政活动采用暂定定性 cut-off。人力不作为环境资源流进行表征，活动时间可以作为分配参数。患者及照护者出行只分配给 EM10，并从所有临床 building block 系数中排除，以避免重复计算。正式 LCA 建模时必须记录这些规则并进行敏感性检查。",
           reportFooter: "ECO-PATH 路径层级环境评估演示。报告在浏览器本地生成。",
           reportExported: "报告已导出：{filename}"
         } : languageId === "ja" ? {
@@ -4532,8 +4527,8 @@
           helpStep4: "activity を選択すると、対応する modules、building blocks、暫定数量が自動的に有効になります。計算前に治療経路、回数、手動追加を確認してください。",
           helpStep5: "不確実性とデータギャップを確認し、現在選択されている言語でレポートを出力します。",
           helpCutoffTitle: "暫定 LCA cut-off",
-          helpCutoffText: "臨床上の意思決定点とレビュー点は図に残します。会議のみ、意思決定のみ、レビューのみ、デジタル文書、純粋な事務作業が人員時間とわずかなオフィスまたは ICT 電力しか追加しない場合、計算から除外します。そのため EM05 はパスウェイロジックとして残しますが、計算行は生成しません。意思決定によって別の受診、患者移動、臨床検査、画像検査、処置が発生する場合、その資源投入を対応するモジュールでモデル化する必要があります。人的労働そのものは環境資源フローとして評価せず、時間は部屋や機器投入の配分にのみ使用できます。数値的な cut-off 閾値はまだ検証されていないため、正式な LCA では除外項目を記録し、再評価する必要があります。",
-          lcaCutoffSummary: "暫定 cut-off を適用：EM05 の臨床意思決定ロジック、および会議のみ、レビューのみ、デジタル文書、純粋な事務作業の構成ブロックは計算行に表示されません。",
+          helpCutoffText: "臨床上の意思決定点とレビュー点は図に残します。会議のみ、意思決定のみ、レビューのみ、デジタル文書、純粋な事務作業が人員時間とわずかなオフィスまたは ICT 電力しか追加しない場合、計算から除外します。そのため EM04 多職種ケアロジックと EM05 臨床意思決定ロジックは計算行を生成しません。意思決定によって別の臨床検査、画像検査、治療、処置が発生する場合、その資源投入を対応するモジュールでモデル化する必要があります。患者・介護者移動は EM10 だけで計算し、二重計上を防ぐため臨床 building block の係数から移動を除外します。人的労働そのものは環境資源フローとして評価せず、時間は部屋や機器投入の配分にのみ使用できます。数値的な cut-off 閾値はまだ検証されていないため、正式な LCA では除外項目を記録し、再評価する必要があります。",
+          lcaCutoffSummary: "暫定 cut-off を適用：EM04 多職種ケアロジック、EM05 臨床意思決定ロジック、および会議のみ、レビューのみ、デジタル文書、純粋な事務作業の構成ブロックは計算行に表示されません。患者・介護者移動は EM10 のみに帰属します。",
           languageSelector: "言語",
           specialtySummary: "診療科",
           specialtyUrology: "泌尿器科",
@@ -4605,7 +4600,7 @@
           automaticFromActivities: "選択 activities から自動設定",
           exportReport: "LCA レポートを出力",
           buildingBlockMapHeading: "LCA モジュール別の候補構成ブロック",
-          buildingBlockMapIntro: "候補 ECO-PATH 構成ブロックをモジュール別に表示します。選択したパスウェイは、EM06 の診察とモニタリングなど、モジュールの一部だけを使用する場合があります。",
+          buildingBlockMapIntro: "候補 ECO-PATH 構成ブロックをモジュール別に表示します。選択したパスウェイはモジュールの一部だけを使用する場合があります。EM10 は患者・介護者移動の唯一の計算先で、臨床モジュール係数には移動を含めません。EM11 は任意の病院共通支援です。",
           moduleZone: "モジュール領域",
           candidateBuildingBlock: "候補構成ブロック",
           candidateBuildingBlockCount: "{count} 件の候補構成ブロック",
@@ -4642,7 +4637,7 @@
           moduleOff: "モジュールオフ",
           included: "含む",
           excluded: "除外",
-          methodLimitationsText: "本レポートは ECO-PATH 方法開発のためのモジュール型 LCA 計算デモであり、ISO 14040 または ISO 14044 に準拠した最終 LCA レポートではありません。追加の移動や医療処置を伴わない会議、デジタル文書、純粋な事務作業には暫定的な定性的 cut-off を適用しています。人的労働は環境資源フローとして評価せず、時間は配分パラメータとして使用できます。正式な LCA では、この cut-off の記録と感度確認が必要です。",
+          methodLimitationsText: "本レポートは ECO-PATH 方法開発のためのモジュール型 LCA 計算デモであり、ISO 14040 または ISO 14044 に準拠した最終 LCA レポートではありません。EM04 多職種ケアロジック、EM05 臨床意思決定ロジック、および独立した資源投入を伴わない会議、デジタル文書、純粋な事務作業には暫定的な定性的 cut-off を適用しています。人的労働は環境資源フローとして評価せず、時間は配分パラメータとして使用できます。患者・介護者移動は EM10 のみに割り当て、臨床 building block 係数から除外して二重計上を防ぎます。正式な LCA では、これらの規則の記録と感度確認が必要です。",
           reportExported: "レポートを出力しました：{filename}"
         } : {
           appTitle: "Explorador de actividades ECO-PATH",
@@ -4657,8 +4652,8 @@
           helpStep4: "Al seleccionar una actividad se activan automáticamente sus módulos, building blocks y cantidades provisionales. Revise las alternativas, frecuencias y adiciones manuales antes del cálculo.",
           helpStep5: "Revise la incertidumbre y las lagunas de datos y exporte el informe en el idioma seleccionado.",
           helpCutoffTitle: "Cut-off LCA provisional",
-          helpCutoffText: "Los puntos de decisión y revisión clínica permanecen en el mapa. Las actividades que consisten solo en reuniones, decisiones, revisiones, cartas digitales o administración se excluyen cuando únicamente añaden tiempo del personal y un consumo menor de energía de oficina o TIC. Por ello, EM05 se conserva como lógica de la vía y no genera filas de cálculo. Si una decisión causa una visita independiente, desplazamiento del paciente, análisis, prueba de imagen o procedimiento, esa actividad con consumo de recursos debe modelarse en el módulo correspondiente. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse para asignar consumos de sala o equipos. Todavía no se ha validado un umbral numérico, por lo que la exclusión debe documentarse y revisarse durante el modelado LCA formal.",
-          lcaCutoffSummary: "Cut-off provisional aplicado: la lógica de decisión clínica EM05 y otros bloques de reuniones, revisiones, cartas digitales o administración pura no aparecen en las filas de cálculo.",
+          helpCutoffText: "Los puntos de decisión y revisión clínica permanecen en el mapa. Las actividades que consisten solo en reuniones, decisiones, revisiones, cartas digitales o administración se excluyen cuando únicamente añaden tiempo del personal y un consumo menor de energía de oficina o TIC. Por ello, la lógica de atención multidisciplinaria EM04 y la lógica de decisión clínica EM05 no generan filas de cálculo. Si una decisión causa un análisis, prueba de imagen, tratamiento o procedimiento independiente, esa actividad con consumo de recursos debe modelarse en el módulo correspondiente. Los desplazamientos de pacientes y cuidadores se calculan solo en EM10; los coeficientes de building blocks clínicos excluyen los desplazamientos para evitar la doble contabilización. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse para asignar consumos de sala o equipos. Todavía no se ha validado un umbral numérico, por lo que la exclusión debe documentarse y revisarse durante el modelado LCA formal.",
+          lcaCutoffSummary: "Cut-off provisional aplicado: la lógica multidisciplinaria EM04, la lógica de decisión clínica EM05 y otros bloques de reuniones, revisiones, cartas digitales o administración pura no aparecen en las filas de cálculo. Los desplazamientos de pacientes y cuidadores pertenecen exclusivamente a EM10.",
           languageSelector: "Idioma",
           specialtySummary: "Especialidades",
           specialtyUrology: "Urología",
@@ -4730,7 +4725,7 @@
           automaticFromActivities: "Automático desde activities seleccionadas",
           exportReport: "Exportar informe LCA",
           buildingBlockMapHeading: "Bloques constructivos candidatos por módulo LCA",
-          buildingBlockMapIntro: "Bloques constructivos ECO-PATH candidatos agrupados por módulo. Una vía seleccionada puede usar solo parte de un módulo, por ejemplo consulta y monitorización dentro de EM06.",
+          buildingBlockMapIntro: "Bloques constructivos ECO-PATH candidatos agrupados por módulo. Una vía seleccionada puede usar solo parte de un módulo. EM10 es el único propietario de los desplazamientos de pacientes y cuidadores; los coeficientes de módulos clínicos excluyen los desplazamientos. EM11 sigue siendo apoyo hospitalario compartido opcional.",
           moduleZone: "Zona de módulo",
           candidateBuildingBlock: "Bloque constructivo candidato",
           candidateBuildingBlockCount: "{count} bloques constructivos candidatos",
@@ -4767,7 +4762,7 @@
           moduleOff: "Módulo desactivado",
           included: "Incluido",
           excluded: "Excluido",
-          methodLimitationsText: "Este informe es una demostración de cálculo LCA modular para el desarrollo metodológico de ECO-PATH y no es un informe LCA final conforme con ISO 14040 o ISO 14044. El prototipo aplica un cut-off cualitativo provisional a reuniones, cartas digitales y actividades puramente administrativas sin desplazamientos ni procedimientos adicionales. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse como parámetro de asignación. Este cut-off requiere documentación y revisión de sensibilidad en el modelado LCA formal.",
+          methodLimitationsText: "Este informe es una demostración de cálculo LCA modular para el desarrollo metodológico de ECO-PATH y no es un informe LCA final conforme con ISO 14040 o ISO 14044. El prototipo aplica un cut-off cualitativo provisional a la lógica multidisciplinaria EM04, la lógica de decisión clínica EM05 y otras reuniones, cartas digitales y actividades administrativas sin un procedimiento independiente con consumo de recursos. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse como parámetro de asignación. Los desplazamientos de pacientes y cuidadores se asignan exclusivamente a EM10 y se excluyen de los coeficientes clínicos para evitar la doble contabilización. Estas reglas requieren documentación y revisión de sensibilidad en el modelado LCA formal.",
           reportExported: "Informe exportado: {filename}"
         })
       };
@@ -4787,7 +4782,7 @@
       sharedBuildingBlock: "Shared building block",
       urologyBuildingBlock: "Urology-specific candidate",
       gastroBuildingBlock: "Gastroenterology-specific candidate",
-      buildingBlockMapIntro: "ECO-PATH modules are reusable modeling zones shared across specialties. Only shared building blocks and candidates applicable to the current pathway are shown; a pathway may use only part of a module. EM10 and EM11 remain optional cross-cutting support modules."
+      buildingBlockMapIntro: "ECO-PATH modules are reusable modeling zones shared across specialties. Only shared building blocks and candidates applicable to the current pathway are shown. EM10 is the single calculation owner of patient and caregiver travel; clinical building-block coefficients exclude travel. EM11 remains optional shared hospital support."
     });
 
     Object.assign(uiText.nl, {
@@ -4804,7 +4799,7 @@
       sharedBuildingBlock: "Gedeelde bouwsteen",
       urologyBuildingBlock: "Urologiespecifieke kandidaat",
       gastroBuildingBlock: "Gastro-enterologiespecifieke kandidaat",
-      buildingBlockMapIntro: "ECO-PATH-modules zijn herbruikbare modelleerzones die specialismen delen. Alleen gedeelde bouwstenen en kandidaten die op het huidige zorgpad van toepassing zijn worden getoond; een zorgpad kan slechts een deel van een module gebruiken. EM10 en EM11 blijven optionele transversale ondersteuningsmodules."
+      buildingBlockMapIntro: "ECO-PATH-modules zijn herbruikbare modelleerzones die specialismen delen. Alleen gedeelde bouwstenen en kandidaten voor het huidige zorgpad worden getoond. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische bouwsteencoëfficiënten sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning."
     });
 
     Object.assign(uiText.zh, {
@@ -4821,7 +4816,7 @@
       sharedBuildingBlock: "跨专科共享 building block",
       urologyBuildingBlock: "泌尿科特异候选项",
       gastroBuildingBlock: "胃肠科特异候选项",
-      buildingBlockMapIntro: "ECO-PATH modules 是跨专科共享的可复用建模区域。页面只显示共享 building blocks 和适用于当前路径的候选项；一条路径可以只使用某个 module 的一部分。EM10 和 EM11 仍为可选的跨活动支持模块。"
+      buildingBlockMapIntro: "ECO-PATH modules 是跨专科共享的可复用建模区域。页面只显示适用于当前路径的候选 building blocks。EM10 是患者及照护者出行的唯一核算归属，临床 building block 系数不包含出行；EM11 仍为可选的医院共享支持模块。"
     });
 
     Object.assign(uiText.ja, {
@@ -4838,7 +4833,7 @@
       sharedBuildingBlock: "診療科共通 building block",
       urologyBuildingBlock: "泌尿器科固有の候補",
       gastroBuildingBlock: "消化器科固有の候補",
-      buildingBlockMapIntro: "ECO-PATH modules は診療科間で共有できる再利用可能なモデル領域です。現在のパスウェイに適用される共通 building blocks と候補のみを表示し、各パスウェイは module の一部だけを使用できます。EM10 と EM11 は任意の横断的支援 module です。"
+      buildingBlockMapIntro: "ECO-PATH modules は診療科間で共有できる再利用可能なモデル領域です。現在のパスウェイに適用される候補 building blocks のみを表示します。EM10 は患者・介護者移動の唯一の計算先で、臨床係数には移動を含めません。EM11 は任意の病院共通支援です。"
     });
 
     Object.assign(uiText.es, {
@@ -4855,7 +4850,7 @@
       sharedBuildingBlock: "Building block compartido",
       urologyBuildingBlock: "Candidato específico de urología",
       gastroBuildingBlock: "Candidato específico de gastroenterología",
-      buildingBlockMapIntro: "Los modules ECO-PATH son zonas de modelado reutilizables y compartidas entre especialidades. Solo se muestran los building blocks compartidos y los candidatos aplicables a la vía actual; una vía puede utilizar solo una parte de un module. EM10 y EM11 siguen siendo modules transversales opcionales."
+      buildingBlockMapIntro: "Los modules ECO-PATH son zonas de modelado reutilizables y compartidas entre especialidades. Solo se muestran los building blocks aplicables a la vía actual. EM10 es el único propietario de los desplazamientos de pacientes y cuidadores; los coeficientes clínicos excluyen los desplazamientos. EM11 sigue siendo apoyo hospitalario compartido opcional."
     });
 
     Object.assign(uiText.en, {
@@ -5098,7 +5093,7 @@
       formulaNote: "S は選択モジュール内の選択 building block、q は発生回数または資源量、c は LCIA 影響係数、j は影響カテゴリ、u_c は c のみに割り当てた相対不確実性、N はコホート人数です。数量、経路、シナリオ、構造的不確実性はこの欄に含みません。",
       formulaReportNote: "S は選択モジュール内の選択 building block です。q は回数または資源量、c は影響係数、u_c は c のみの相対不確実性、N はコホート人数です。",
       helpStep5: "機能単位を定義し、暫定数量、不確実性の仮定、データギャップを確認します。レビュー済み mapping でローカル Brightway companion を起動すると結果画面から直接計算でき、JSON は監査用および代替手段として残ります。選択言語で報告書を出力します。",
-      lcaWarning: "選択した activities は、明示的に対応付けられた pathway modules、building blocks、暫定数量を自動的に有効化します。同じ種類の activity を複数選ぶと数量が加算されます。EM10 と EM11 は任意の支援モジュールです。治療レジメン、画像検査、放射線分割数、サイクル数、入院日数、ダミー影響係数は、エビデンスとして使用する前に確認してください。",
+      lcaWarning: "選択した activities は、明示的に対応付けられた pathway modules、building blocks、暫定数量を自動的に有効化します。同じ種類の activity を複数選ぶと数量が加算されます。患者・介護者移動は EM10 だけで計算し、他のモジュール係数には含めません。EM11 は任意の病院共通支援です。治療レジメン、画像検査、放射線分割数、サイクル数、入院日数、ダミー影響係数は、エビデンスとして使用する前に確認してください。",
       impactCategoryLabel: "影響カテゴリ",
       impactMethodChip: "EF v3.1 no LT · デモ",
       impactGroupClimateAir: "気候と大気",
@@ -5173,7 +5168,7 @@
       formulaNote: "S = building blocks marcados dentro de módulos marcados. q = ocurrencia o cantidad de recurso, c = coeficiente LCIA, j = categoría de impacto, u_c = incertidumbre relativa asignada solo a c, N = tamaño de cohorte. Este campo no representa incertidumbre de cantidades, vía, escenario o estructura.",
       formulaReportNote: "S contiene los building blocks marcados dentro de módulos marcados. q es ocurrencia o cantidad de recurso. c es el coeficiente de impacto. u_c es la incertidumbre relativa solo de c. N es el tamaño de cohorte.",
       helpStep5: "Defina la unidad funcional y revise las cantidades provisionales, los supuestos de incertidumbre y las lagunas de datos. Inicie el companion local de Brightway con un mapping revisado para calcular directamente en Resultados; JSON se conserva para auditoría y como alternativa. Exporte el informe en el idioma seleccionado.",
-      lcaWarning: "Las activities seleccionadas activan automáticamente los pathway modules, building blocks y cantidades provisionales con mapeo explícito. Las activities repetidas acumulan cantidades. EM10 y EM11 siguen siendo módulos de apoyo opcionales. Revise los regímenes, las pruebas de imagen, las fracciones, los ciclos, los días de ingreso y todos los coeficientes de impacto dummy antes de usar los resultados como evidencia.",
+      lcaWarning: "Las activities seleccionadas activan automáticamente los pathway modules, building blocks y cantidades provisionales con mapeo explícito. Las activities repetidas acumulan cantidades. Los desplazamientos de pacientes y cuidadores se calculan solo en EM10 y no deben incluirse en otro coeficiente de módulo. EM11 sigue siendo apoyo hospitalario compartido opcional. Revise los regímenes, las pruebas de imagen, las fracciones, los ciclos, los días de ingreso y todos los coeficientes de impacto dummy antes de usar los resultados como evidencia.",
       impactCategoryLabel: "Categoría de impacto",
       impactMethodChip: "EF v3.1 no LT · demo",
       impactGroupClimateAir: "Clima y aire",
@@ -5617,52 +5612,52 @@
         EM01: { name: "Eerste contact en intake", definition: "Eerste specialistische contact, intake en materiaalrelevante voorbereiding vóór diagnostiek of behandeling." },
         EM02: { name: "Pathologie", definition: "Pathologiebeoordeling, monstergerelateerde beoordeling, papieren beoordeling en diagnostische herbeoordeling." },
         EM03: { name: "Beeldvorming en endoscopie", definition: "Radiologie, CT-herbeoordeling, MRI, PET-CT, cystoscopie, colonoscopie of andere pathwayspecifieke diagnostiek." },
-        EM04: { name: "Joint clinic en MDO", definition: "Joint clinic, multidisciplinaire bespreking en interdisciplinaire besluitvorming." },
+        EM04: { name: "Multidisciplinaire zorglogica (cut-off)", definition: "Joint clinic, multidisciplinaire beoordeling en interdisciplinaire beslissingen blijven zichtbaar als zorgpadlogica, maar worden niet als zelfstandige impactdragende activiteiten berekend." },
         EM05: { name: "Klinische beslislogica (cut-off)", definition: "Behandelintentie, geschiktheid, routekeuze en beoordelingsbesluiten blijven zichtbaar als zorgpadlogica, maar worden niet als zelfstandige impactdragende activiteiten berekend." },
         EM06: { name: "Systemische therapie en oncologie", definition: "Medisch-oncologische beoordeling, chemotherapie, immunotherapie of gerichte behandeling, apotheekbereiding, monitoring en respons- of progressiebeoordeling." },
         EM07: { name: "Chirurgie", definition: "Endoscopische of operatieve behandeling, waaronder TURBT, orgaanresectie, lymfeklierdissectie en urinedeviatie, plus anesthesie, perioperatieve zorg, opname en afval." },
-        EM08: { name: "Radiotherapie", definition: "Radiotherapiebesluit, planning, uitwendige fracties, chemoradiatie, brachytherapie, immobilisatie en radiotherapiegerelateerd reizen." },
+        EM08: { name: "Radiotherapie", definition: "Radiotherapiebesluit, planning, uitwendige fracties, chemoradiatie, brachytherapie en immobilisatie. Bijbehorende patiëntenreizen vallen onder EM10." },
         EM09: { name: "Follow-up", definition: "Behandelingsspecifieke surveillance, poliklinische controle, beeldvorming of endoscopie, recidiefmonitoring, follow-up van deviatie of stoma en retourcontacten." },
-        EM10: { name: "Patientondersteuning", definition: "Patientgerichte ondersteunende processen die over meerdere activiteiten kunnen voorkomen en transparante allocatie vereisen." },
+        EM10: { name: "Patientenreis en ondersteuning", definition: "Enige transversale eigenaar van patienten- en mantelzorgerreizen, plus optionele voeding, overnachting, thuismonsters en digitale ondersteuning. Klinische bouwsteencoëfficiënten mogen deze stromen niet bevatten." },
         EM11: { name: "Gedeelde ziekenhuisondersteuning", definition: "Gedeelde diensten en overheadprocessen die meerdere pathwayactiviteiten ondersteunen en allocatieregels vereisen." }
       },
       zh: {
         EM01: { name: "首次接触与接收", definition: "首次专科接触、接收，以及诊断或治疗前具有实质资源消耗的准备活动。" },
         EM02: { name: "病理", definition: "病理复核、样本相关评估、纸面评估和诊断复评。" },
         EM03: { name: "影像和内镜", definition: "放射影像、CT 复评、MRI、PET-CT、膀胱镜、结肠镜或其他路径特异性诊断程序。" },
-        EM04: { name: "联合门诊和 MDT", definition: "联合门诊、多学科团队讨论和跨专科决策复核。" },
+        EM04: { name: "多学科照护逻辑（cut-off）", definition: "联合门诊、多学科复核和跨专科决策保留为路径逻辑，但不作为独立的环境影响活动计算。" },
         EM05: { name: "临床决策逻辑（cut-off）", definition: "治疗意图、适应性、路径选择和复核决策保留为路径逻辑，但不作为独立的环境影响活动计算。" },
         EM06: { name: "系统治疗和肿瘤学", definition: "肿瘤内科复核、化疗、免疫或靶向治疗、药房配制、治疗监测以及疗效或进展评估。" },
         EM07: { name: "手术", definition: "内镜或外科治疗，包括 TURBT、器官切除、淋巴结清扫和尿流改道，以及麻醉、围手术期照护、住院和相关废弃物。" },
-        EM08: { name: "放射治疗", definition: "放疗决策、计划、外照射分次、同步放化疗、近距离放疗、固定装置和放疗相关出行。" },
+        EM08: { name: "放射治疗", definition: "放疗决策、计划、外照射分次、同步放化疗、近距离放疗和固定装置。相关患者出行归入 EM10。" },
         EM09: { name: "随访", definition: "按治疗方式设计的监测、门诊复查、影像或内镜、复发监测、尿流改道或造口随访以及返回路径联系。" },
-        EM10: { name: "患者支持", definition: "可能跨多个活动出现的患者支持过程，需要透明分配规则。" },
+        EM10: { name: "患者出行与支持", definition: "患者及照护者出行的唯一跨活动归属，也可包含餐饮、住宿、居家采样和数字支持。临床 building block 系数不得再包含这些资源流。" },
         EM11: { name: "医院共享支持", definition: "支持多个路径活动的共享服务和管理过程，需要分配规则。" }
       },
       ja: {
         EM01: { name: "初回接触・受け入れ", definition: "初回専門医接触、受け入れ、診断または治療前の資源投入を伴う準備。" },
         EM02: { name: "病理", definition: "病理レビュー、検体関連評価、書類レビュー、診断再評価。" },
         EM03: { name: "画像診断と内視鏡", definition: "放射線画像、CT 再評価、MRI、PET-CT、膀胱鏡、大腸内視鏡、その他のパスウェイ特異的診断手順。" },
-        EM04: { name: "合同外来と MDT", definition: "合同外来、多職種チームレビュー、診療科横断の意思決定レビュー。" },
+        EM04: { name: "多職種ケアロジック（cut-off）", definition: "合同外来、多職種レビュー、診療科横断の意思決定はパスウェイロジックとして残しますが、独立した環境負荷活動としては計算しません。" },
         EM05: { name: "臨床意思決定ロジック（cut-off）", definition: "治療意図、適格性、経路選択、レビュー判断はパスウェイロジックとして残しますが、独立した環境負荷活動としては計算しません。" },
         EM06: { name: "全身療法と腫瘍内科", definition: "腫瘍内科レビュー、化学療法、免疫療法または標的治療、薬剤調製、モニタリング、奏効・進行評価。" },
         EM07: { name: "手術", definition: "TURBT、臓器切除、リンパ節郭清、尿路変向を含む内視鏡・外科治療、および麻酔、周術期ケア、入院、関連廃棄物。" },
-        EM08: { name: "放射線治療", definition: "放射線治療の意思決定、計画、外照射分割、化学放射線療法、小線源治療、固定具、通院。" },
+        EM08: { name: "放射線治療", definition: "放射線治療の意思決定、計画、外照射分割、化学放射線療法、小線源治療、固定具。関連する患者移動は EM10 に帰属します。" },
         EM09: { name: "フォローアップ", definition: "治療別サーベイランス、外来レビュー、画像・内視鏡、再発モニタリング、尿路変向またはストーマのフォローアップ、返送連絡。" },
-        EM10: { name: "患者支援", definition: "複数の活動にまたがる患者向け支援プロセスで、透明な配分が必要です。" },
+        EM10: { name: "患者移動と支援", definition: "患者・介護者移動を一元管理する横断モジュールで、必要に応じて食事、宿泊、在宅採取、デジタル支援も含みます。臨床 building block の係数にはこれらのフローを含めません。" },
         EM11: { name: "病院共通支援", definition: "複数のパスウェイ活動を支える共通サービスと間接プロセスで、配分ルールが必要です。" }
       },
       es: {
         EM01: { name: "Primer contacto y admisión", definition: "Primer contacto con el especialista, admisión y preparación con consumo material de recursos antes del diagnóstico o tratamiento." },
         EM02: { name: "Patologia", definition: "Revision patologica, evaluacion de muestras, revision documental y reevaluacion diagnostica." },
         EM03: { name: "Imagen y endoscopia", definition: "Radiologia, reevaluacion CT, MRI, PET-CT, cistoscopia, colonoscopia u otros procedimientos diagnosticos especificos de la via." },
-        EM04: { name: "Clinica conjunta y MDT", definition: "Clinica conjunta, revision del equipo multidisciplinario y revision de decisiones entre especialidades." },
+        EM04: { name: "Logica de atencion multidisciplinaria (cut-off)", definition: "La consulta conjunta, la revision multidisciplinaria y las decisiones entre especialidades se conservan como logica de la via, pero no se calculan como actividades independientes con impacto." },
         EM05: { name: "Logica de decision clinica (cut-off)", definition: "La intencion terapeutica, la elegibilidad, la seleccion de la vía y las revisiones se conservan como logica de la vía, pero no se calculan como actividades independientes con impacto." },
         EM06: { name: "Terapia sistemica y oncologia", definition: "Revision de oncologia medica, quimioterapia, inmunoterapia o terapia dirigida, preparacion farmaceutica, monitorizacion y evaluacion de respuesta o progresion." },
         EM07: { name: "Cirugia", definition: "Tratamiento endoscopico u operatorio, incluidos TURBT, reseccion de organo, diseccion ganglionar y derivacion urinaria, mas anestesia, cuidados perioperatorios, ingreso y residuos." },
-        EM08: { name: "Radioterapia", definition: "Decision, planificacion, fracciones de haz externo, quimiorradiacion, braquiterapia, inmovilizacion y viajes relacionados con radioterapia." },
+        EM08: { name: "Radioterapia", definition: "Decision, planificacion, fracciones de haz externo, quimiorradiacion, braquiterapia e inmovilizacion. Los desplazamientos asociados pertenecen a EM10." },
         EM09: { name: "Seguimiento", definition: "Vigilancia especifica por tratamiento, consulta, imagen o endoscopia, recurrencia, seguimiento de derivacion o estoma y contactos de retorno." },
-        EM10: { name: "Apoyo al paciente", definition: "Procesos de apoyo al paciente que pueden ocurrir en varias actividades y requieren asignacion transparente." },
+        EM10: { name: "Desplazamiento y apoyo al paciente", definition: "Unico modulo transversal para los desplazamientos de pacientes y cuidadores, mas alimentacion, alojamiento, muestreo domiciliario y apoyo digital opcionales. Los coeficientes de bloques clinicos no deben incluir estos flujos." },
         EM11: { name: "Soporte hospitalario compartido", definition: "Servicios compartidos y procesos de soporte para multiples actividades de la via que requieren reglas de asignacion." }
       }
     };

@@ -9,11 +9,13 @@ ECO-PATH is a pathway-level framework for environmental assessment of healthcare
 The current prototype includes urology and gastroenterology examples:
 
 - Urology: one MIBC map with selectable Dutch operational and EAU 2026 clinical-reference views
-- Gastroenterology: Dutch national guideline-based CRC screening-positive hospital pathway
+- Gastroenterology: Dutch national guideline-based CRC hospital pathway
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
 
-The page also includes an interactive LCA building-block calculator. It demonstrates modular calculation logic using editable dummy quantities, emission factors, selected activities, module inclusion, and low/base/high uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
+The page also includes an interactive LCA building-block calculator. It demonstrates modular calculation logic for all 16 EF 3.1 impact categories using editable dummy quantities, synthetic impact coefficients, selected activities, module inclusion, and low/base/high coefficient-uncertainty ranges. These values are placeholders for future data collection and should not be interpreted as validated environmental results.
+
+The goal, scope, and functional-unit panel defines the quantified healthcare service represented by one pathway result. Its contents are included in the browser report and in the Brightway scenario export. Clinical comparability still requires explicit confirmation; the interface does not assume that all visible treatment branches are interchangeable.
 
 A multilingual **How to use** dialog in the page header explains pathway selection, activity review, scenario construction, module activation, LCA inputs, provisional cut-off rules, and report export.
 
@@ -29,7 +31,40 @@ The interactive map represents pathway elements as metro-style stations:
 
 Route colors distinguish diagnostic and first-contact movement, treatment movement, follow-up movement, and conditional or return routes. Selecting a station opens its activity interpretation, ECO-PATH module assignment, candidate resource flows, and open questions for expert confirmation.
 
-The LCA calculator uses the prototype formula `impact = quantity x emission factor`, then applies an uncertainty range and simple branch weighting for adenoma and cancer add-ons.
+The browser calculator uses the prototype formula `impact = quantity x impact coefficient` for a selected EF category. It sums active building blocks into a pathway scenario and multiplies this result by the cohort size. Browser coefficients are synthetic demonstration data and are kept separate from imported Brightway results.
+
+## Brightway Calculation Bridge
+
+GitHub Pages is a static website and cannot run Brightway or distribute licensed background databases. The explorer therefore uses a file-based bridge:
+
+1. Define the functional unit and select the pathway activities, modules, building blocks, and quantities in the web interface.
+2. Select **Export scenario JSON** in the Results step.
+3. Copy [`brightway/mapping.example.json`](brightway/mapping.example.json) to a local, untracked mapping file. Replace every placeholder with an existing Brightway project, foreground activity database/code, and exact installed EF 3.1 no long-term method tuple.
+4. Validate the scenario and mapping without loading Brightway:
+
+   ```bash
+   python scripts/run_brightway.py \
+     --scenario /path/to/ecopath-brightway-scenario.json \
+     --mapping /path/to/local-mapping.json \
+     --validate-only
+   ```
+
+5. Run the calculation in a Python environment that has access to the intended Brightway project and databases:
+
+   ```bash
+   python scripts/run_brightway.py \
+     --scenario /path/to/ecopath-brightway-scenario.json \
+     --mapping /path/to/local-mapping.json \
+     --output /path/to/brightway-results.json
+   ```
+
+6. Import `brightway-results.json` in the Results step. Imported results are displayed separately and included as a separate section in the exported report.
+
+Add `--with-contributions` to calculate building-block contributions for each configured method. Add `--allow-missing` only for an explicitly documented partial model; missing active mappings fail by default. The runner only reads existing projects and databases. It does not create, import, delete, relink, or modify Brightway data.
+
+The example mapping deliberately contains placeholders. Exact EF method tuples depend on the methods installed in the local Brightway project and must not be guessed. Scenario and result contracts are documented in [`schemas/ecopath-scenario.schema.json`](schemas/ecopath-scenario.schema.json) and [`schemas/ecopath-results.schema.json`](schemas/ecopath-results.schema.json).
+
+This bridge supports an auditable ISO 14040/14044 workflow, but use of the bridge does not establish ISO conformance. A formal study still needs documented goal and scope, functional unit, system boundary, allocation and cut-off rules, inventory provenance, LCIA method version, interpretation, sensitivity and uncertainty analyses, critical review where applicable, and reproducible model records.
 
 ## Urology Source Views
 
@@ -54,7 +89,7 @@ Building blocks are filtered separately from modules. Shared blocks, such as CT,
 
 ## Methodological Scope
 
-The gastroenterology view has been rebuilt around Dutch national guideline sources and the screening-positive hospital boundary discussed with clinical input. It starts after an abnormal FIT result enters hospital follow-up and separates no-polyp, low-risk polyp, high-risk polyp surveillance, and confirmed colorectal cancer branches. It does not assume that an Erasmus MC internal local CRC workflow is available. Any local execution, department handover, treatment location, and surveillance time horizon still require expert confirmation.
+The gastroenterology view has been rebuilt around Dutch national guideline sources and the hospital treatment boundary discussed with clinical input. It starts at the first specialist hospital contact for suspected or confirmed colorectal cancer. Upstream national population screening is documented as contextual provenance, not modeled as part of the current treatment pathway. It does not assume that an Erasmus MC internal local CRC workflow is available. Local execution, department handover, treatment location, and surveillance time horizon still require expert confirmation.
 
 Public gastroenterology reference sources:
 

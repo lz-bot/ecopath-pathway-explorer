@@ -585,7 +585,7 @@
       font-weight: 700;
     }
 
-    select, input[type="search"], input[type="number"] {
+    select, input[type="search"], input[type="number"], input[type="text"], textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -595,9 +595,83 @@
       min-height: 40px;
     }
 
-    select:focus, input[type="search"]:focus, input[type="number"]:focus {
+    select:focus, input[type="search"]:focus, input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
       outline: 2px solid var(--accent-soft-strong);
       border-color: var(--accent);
+    }
+
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+      font: inherit;
+    }
+
+    .goal-scope-panel {
+      margin-bottom: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .goal-scope-panel > summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 14px;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .goal-scope-panel > summary::-webkit-details-marker { display: none; }
+
+    .goal-scope-panel > summary::after {
+      content: "+";
+      color: var(--accent-dark);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .goal-scope-panel[open] > summary::after { content: "−"; }
+
+    .goal-scope-summary-copy {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .goal-scope-summary-copy strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .goal-scope-summary-copy span {
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .goal-scope-content {
+      border-top: 1px solid var(--line);
+      padding: 14px;
+    }
+
+    .goal-scope-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .goal-scope-grid .field-wide { grid-column: span 2; }
+
+    .functional-unit-statement {
+      margin: 12px 0 0;
+      padding: 10px 12px;
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-size: 13px;
     }
 
     .toggle-field {
@@ -1545,6 +1619,87 @@
       min-height: 15px;
     }
 
+    .brightway-bridge {
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      padding: 14px;
+    }
+
+    .brightway-bridge-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brightway-bridge-header h3 { margin: 0 0 4px; }
+
+    .brightway-bridge-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .brightway-status {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .brightway-status.error { color: #9f2f2f; }
+
+    .brightway-result-summary {
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .brightway-result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .brightway-result-metric {
+      border-left: 4px solid var(--accent);
+      background: var(--panel);
+      padding: 10px 12px;
+    }
+
+    .brightway-result-metric strong,
+    .brightway-result-metric span,
+    .brightway-result-metric small { display: block; }
+
+    .brightway-result-metric span {
+      margin: 3px 0;
+      color: var(--accent-dark);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .brightway-result-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      font-size: 12px;
+    }
+
+    .brightway-result-table th,
+    .brightway-result-table td {
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      text-align: left;
+    }
+
+    .brightway-result-table th {
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+    }
+
     .lca-summary-grid {
       display: grid;
       grid-template-columns: 0.95fr 1.05fr;
@@ -1915,8 +2070,18 @@
         display: none;
       }
 
-      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .impact-category-bar {
+      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .impact-category-bar, .goal-scope-grid, .brightway-result-grid {
         grid-template-columns: 1fr;
+      }
+
+      .goal-scope-grid .field-wide { grid-column: auto; }
+
+      .brightway-bridge-header {
+        display: grid;
+      }
+
+      .brightway-bridge-actions {
+        justify-content: flex-start;
       }
 
       .building-block-summary {
@@ -2135,6 +2300,57 @@
       </div>
     </section>
 
+    <details class="goal-scope-panel" id="goalScopePanel" data-workspace-panel="pathway">
+      <summary>
+        <span class="goal-scope-summary-copy">
+          <strong id="goalScopeTitle">Goal, scope and functional unit</strong>
+          <span id="functionalUnitSummary"></span>
+        </span>
+      </summary>
+      <div class="goal-scope-content">
+        <p class="scope-note" id="goalScopeIntro"></p>
+        <div class="goal-scope-grid">
+          <div class="field field-wide">
+            <label for="fuClinicalFunction" id="fuClinicalFunctionLabel">Clinical function</label>
+            <input id="fuClinicalFunction" type="text" data-fu-field="clinicalFunction">
+          </div>
+          <div class="field">
+            <label for="fuPopulation" id="fuPopulationLabel">Patient population</label>
+            <input id="fuPopulation" type="text" data-fu-field="population">
+          </div>
+          <div class="field">
+            <label for="fuStartPoint" id="fuStartPointLabel">Start point</label>
+            <input id="fuStartPoint" type="text" data-fu-field="startPoint">
+          </div>
+          <div class="field">
+            <label for="fuEndPoint" id="fuEndPointLabel">Endpoint</label>
+            <input id="fuEndPoint" type="text" data-fu-field="endPoint">
+          </div>
+          <div class="field">
+            <label for="fuTimeHorizon" id="fuTimeHorizonLabel">Time horizon</label>
+            <input id="fuTimeHorizon" type="text" data-fu-field="timeHorizon">
+          </div>
+          <div class="field">
+            <label for="fuGeography" id="fuGeographyLabel">Geography</label>
+            <input id="fuGeography" type="text" data-fu-field="geography">
+          </div>
+          <div class="field">
+            <label for="fuReferenceAmount" id="fuReferenceAmountLabel">Reference amount</label>
+            <input id="fuReferenceAmount" type="number" min="0.000001" step="any" data-fu-field="referenceAmount">
+          </div>
+          <div class="field">
+            <label for="fuReferenceUnit" id="fuReferenceUnitLabel">Reference unit</label>
+            <input id="fuReferenceUnit" type="text" data-fu-field="referenceUnit">
+          </div>
+          <div class="field field-wide">
+            <label for="fuComparability" id="fuComparabilityLabel">Clinical comparability condition</label>
+            <textarea id="fuComparability" data-fu-field="comparability"></textarea>
+          </div>
+        </div>
+        <p class="functional-unit-statement" id="functionalUnitStatement"></p>
+      </div>
+    </details>
+
     <section class="layout">
       <div>
         <section class="panel map-panel" data-workspace-panel="pathway">
@@ -2302,6 +2518,23 @@
           <ul class="lca-priority-list" id="lcaPriorityList"></ul>
         </div>
       </div>
+
+      <section class="brightway-bridge" data-workspace-panel="results" aria-labelledby="brightwayBridgeTitle">
+        <div class="brightway-bridge-header">
+          <div>
+            <h3 id="brightwayBridgeTitle">Brightway calculation bridge</h3>
+            <p class="scope-note" id="brightwayBridgeIntro"></p>
+          </div>
+          <div class="brightway-bridge-actions">
+            <button type="button" id="exportBrightwayScenario">Export scenario JSON</button>
+            <button type="button" id="importBrightwayResults">Import Brightway results</button>
+            <button type="button" id="clearBrightwayResults" hidden>Clear imported results</button>
+            <input id="brightwayResultsFile" type="file" accept="application/json,.json" hidden>
+          </div>
+        </div>
+        <p class="brightway-status" id="brightwayBridgeStatus" aria-live="polite"></p>
+        <div class="brightway-result-summary" id="brightwayResultSummary" hidden></div>
+      </section>
 
       <div class="lca-module-calculations" id="lcaModuleCalculations" data-workspace-panel="lca"></div>
     </section>
@@ -4699,6 +4932,207 @@
       impactCategoryConfig: "Categoría de impacto",
       categoryReportNote: "Categoría seleccionada: {category} ({unit}). Los coeficientes sintéticos y la hipótesis de incertidumbre del 30% son marcadores de interfaz, no resultados EF verificados."
     });
+
+    Object.assign(uiText.en, {
+      goalScopeTitle: "Goal, scope and functional unit",
+      goalScopeIntro: "Define the quantified healthcare service represented by one pathway result. These fields are exported to Brightway and included in the report; they do not establish clinical equivalence by themselves.",
+      fuClinicalFunction: "Clinical function",
+      fuPopulation: "Patient population",
+      fuStartPoint: "Start point",
+      fuEndPoint: "Endpoint",
+      fuTimeHorizon: "Time horizon",
+      fuGeography: "Geography",
+      fuReferenceAmount: "Reference amount",
+      fuReferenceUnit: "Reference unit",
+      fuComparability: "Clinical comparability condition",
+      functionalUnitStatement: "{amount} {unit}: {function}; population: {population}; boundary: {start} to {end}; time horizon: {horizon}; geography: {geography}. Comparability: {comparability}",
+      brightwayBridgeTitle: "Brightway calculation bridge",
+      brightwayBridgeIntro: "Export the selected pathway, functional unit, active modules, and building-block quantities. Run the local Brightway script with licensed databases, then import its results JSON. Browser dummy results remain separate.",
+      exportBrightwayScenario: "Export scenario JSON",
+      importBrightwayResults: "Import Brightway results",
+      clearBrightwayResults: "Clear imported results",
+      brightwayScenarioExported: "Scenario exported: {filename}",
+      brightwayImportPrompt: "No Brightway result is loaded. Export a scenario and calculate it with the local runner.",
+      brightwayImportError: "The selected file is not a valid ECO-PATH Brightway result: {message}",
+      brightwayImportSuccess: "Brightway results loaded for {scenario}.",
+      brightwayScenarioMismatch: "Results loaded, but their scenario ID differs from the last scenario exported in this browser.",
+      brightwayResultsCleared: "Imported Brightway results cleared.",
+      brightwayResultTitle: "Imported Brightway result",
+      brightwayEngine: "Calculation engine",
+      brightwayFunctionalUnit: "Functional unit",
+      brightwayCurrentCategory: "Current category",
+      brightwayCategory: "Impact category",
+      brightwayPerFu: "Per functional unit",
+      brightwayCohort: "Cohort result",
+      brightwayProvenance: "Project / database provenance",
+      brightwayWarnings: "Warnings",
+      brightwayNotCalculated: "Not calculated in the imported result",
+      functionalUnitReportTitle: "Functional unit",
+      browserPrototypeResults: "Browser prototype results",
+      brightwayVerifiedResults: "Imported Brightway results"
+    });
+
+    Object.assign(uiText.nl, {
+      goalScopeTitle: "Doel, scope en functionele eenheid",
+      goalScopeIntro: "Definieer de gekwantificeerde zorgdienst die door één zorgpadresultaat wordt vertegenwoordigd. Deze velden worden naar Brightway geëxporteerd en in het rapport opgenomen; zij bewijzen op zichzelf geen klinische vergelijkbaarheid.",
+      fuClinicalFunction: "Klinische functie",
+      fuPopulation: "Patiëntenpopulatie",
+      fuStartPoint: "Startpunt",
+      fuEndPoint: "Eindpunt",
+      fuTimeHorizon: "Tijdshorizon",
+      fuGeography: "Geografie",
+      fuReferenceAmount: "Referentiehoeveelheid",
+      fuReferenceUnit: "Referentie-eenheid",
+      fuComparability: "Voorwaarde voor klinische vergelijkbaarheid",
+      functionalUnitStatement: "{amount} {unit}: {function}; populatie: {population}; grens: {start} tot {end}; tijdshorizon: {horizon}; geografie: {geography}. Vergelijkbaarheid: {comparability}",
+      brightwayBridgeTitle: "Brightway-rekenkoppeling",
+      brightwayBridgeIntro: "Exporteer het geselecteerde zorgpad, de functionele eenheid, actieve modules en bouwsteenhoeveelheden. Voer het lokale Brightway-script uit met gelicentieerde databases en importeer daarna het resultatenbestand. Dummyresultaten in de browser blijven apart.",
+      exportBrightwayScenario: "Scenario-JSON exporteren",
+      importBrightwayResults: "Brightway-resultaten importeren",
+      clearBrightwayResults: "Geïmporteerde resultaten wissen",
+      brightwayScenarioExported: "Scenario geëxporteerd: {filename}",
+      brightwayImportPrompt: "Er is geen Brightway-resultaat geladen. Exporteer een scenario en bereken dit met de lokale runner.",
+      brightwayImportError: "Het gekozen bestand is geen geldig ECO-PATH Brightway-resultaat: {message}",
+      brightwayImportSuccess: "Brightway-resultaten geladen voor {scenario}.",
+      brightwayScenarioMismatch: "Resultaten geladen, maar het scenario-ID wijkt af van het laatste in deze browser geëxporteerde scenario.",
+      brightwayResultsCleared: "Geïmporteerde Brightway-resultaten gewist.",
+      brightwayResultTitle: "Geïmporteerd Brightway-resultaat",
+      brightwayEngine: "Rekenengine",
+      brightwayFunctionalUnit: "Functionele eenheid",
+      brightwayCurrentCategory: "Huidige categorie",
+      brightwayCategory: "Impactcategorie",
+      brightwayPerFu: "Per functionele eenheid",
+      brightwayCohort: "Cohortresultaat",
+      brightwayProvenance: "Project- / databaseherkomst",
+      brightwayWarnings: "Waarschuwingen",
+      brightwayNotCalculated: "Niet berekend in het geïmporteerde resultaat",
+      functionalUnitReportTitle: "Functionele eenheid",
+      browserPrototypeResults: "Browserprototype-resultaten",
+      brightwayVerifiedResults: "Geïmporteerde Brightway-resultaten"
+    });
+
+    Object.assign(uiText.zh, {
+      goalScopeTitle: "目标、范围与功能单位",
+      goalScopeIntro: "定义一个路径结果所代表的量化医疗服务。这些字段会导出到 Brightway 并写入报告，但本身不能证明不同临床方案具有可比性。",
+      fuClinicalFunction: "临床功能",
+      fuPopulation: "患者人群",
+      fuStartPoint: "起点",
+      fuEndPoint: "终点",
+      fuTimeHorizon: "时间范围",
+      fuGeography: "地理范围",
+      fuReferenceAmount: "参考数量",
+      fuReferenceUnit: "参考单位",
+      fuComparability: "临床可比性条件",
+      functionalUnitStatement: "{amount} {unit}：{function}；人群：{population}；边界：从 {start} 到 {end}；时间范围：{horizon}；地理范围：{geography}。可比性：{comparability}",
+      brightwayBridgeTitle: "Brightway 计算桥接",
+      brightwayBridgeIntro: "导出当前选择的路径、功能单位、启用模块和 building block 数量；使用含授权数据库的本地 Brightway 脚本计算后，再导入结果 JSON。浏览器 dummy 结果会与 Brightway 结果分开显示。",
+      exportBrightwayScenario: "导出场景 JSON",
+      importBrightwayResults: "导入 Brightway 结果",
+      clearBrightwayResults: "清除导入结果",
+      brightwayScenarioExported: "已导出场景：{filename}",
+      brightwayImportPrompt: "尚未载入 Brightway 结果。请先导出场景并使用本地 runner 计算。",
+      brightwayImportError: "所选文件不是有效的 ECO-PATH Brightway 结果：{message}",
+      brightwayImportSuccess: "已载入场景 {scenario} 的 Brightway 结果。",
+      brightwayScenarioMismatch: "结果已载入，但 scenario ID 与本浏览器最后导出的场景不同。",
+      brightwayResultsCleared: "已清除导入的 Brightway 结果。",
+      brightwayResultTitle: "导入的 Brightway 结果",
+      brightwayEngine: "计算引擎",
+      brightwayFunctionalUnit: "功能单位",
+      brightwayCurrentCategory: "当前类别",
+      brightwayCategory: "影响类别",
+      brightwayPerFu: "每功能单位",
+      brightwayCohort: "队列结果",
+      brightwayProvenance: "项目 / 数据库来源",
+      brightwayWarnings: "警告",
+      brightwayNotCalculated: "导入结果中未计算该类别",
+      functionalUnitReportTitle: "功能单位",
+      browserPrototypeResults: "浏览器原型结果",
+      brightwayVerifiedResults: "导入的 Brightway 结果"
+    });
+
+    Object.assign(uiText.ja, {
+      goalScopeTitle: "目的、範囲、機能単位",
+      goalScopeIntro: "1つのパスウェイ結果が表す定量化された医療サービスを定義します。これらの項目は Brightway と報告書に出力されますが、臨床的同等性を単独で証明するものではありません。",
+      fuClinicalFunction: "臨床機能",
+      fuPopulation: "患者集団",
+      fuStartPoint: "開始点",
+      fuEndPoint: "終了点",
+      fuTimeHorizon: "時間範囲",
+      fuGeography: "地理的範囲",
+      fuReferenceAmount: "参照量",
+      fuReferenceUnit: "参照単位",
+      fuComparability: "臨床的比較可能性の条件",
+      functionalUnitStatement: "{amount} {unit}: {function}; 対象集団: {population}; 境界: {start} から {end}; 時間範囲: {horizon}; 地理: {geography}。比較可能性: {comparability}",
+      brightwayBridgeTitle: "Brightway 計算ブリッジ",
+      brightwayBridgeIntro: "選択したパスウェイ、機能単位、有効なモジュール、building block 数量を出力します。ライセンス済みデータベースを持つローカル Brightway スクリプトで計算し、結果 JSON を再読み込みします。ブラウザの dummy 結果とは分離されます。",
+      exportBrightwayScenario: "シナリオ JSON を出力",
+      importBrightwayResults: "Brightway 結果を読込",
+      clearBrightwayResults: "読込結果を消去",
+      brightwayScenarioExported: "シナリオを出力しました: {filename}",
+      brightwayImportPrompt: "Brightway 結果は未読込です。シナリオを出力し、ローカル runner で計算してください。",
+      brightwayImportError: "選択ファイルは有効な ECO-PATH Brightway 結果ではありません: {message}",
+      brightwayImportSuccess: "シナリオ {scenario} の Brightway 結果を読み込みました。",
+      brightwayScenarioMismatch: "結果を読み込みましたが、scenario ID がこのブラウザで最後に出力したものと異なります。",
+      brightwayResultsCleared: "読み込んだ Brightway 結果を消去しました。",
+      brightwayResultTitle: "読み込んだ Brightway 結果",
+      brightwayEngine: "計算エンジン",
+      brightwayFunctionalUnit: "機能単位",
+      brightwayCurrentCategory: "現在のカテゴリ",
+      brightwayCategory: "影響カテゴリ",
+      brightwayPerFu: "機能単位当たり",
+      brightwayCohort: "コホート結果",
+      brightwayProvenance: "プロジェクト / データベース由来",
+      brightwayWarnings: "警告",
+      brightwayNotCalculated: "読み込んだ結果では未計算です",
+      functionalUnitReportTitle: "機能単位",
+      browserPrototypeResults: "ブラウザプロトタイプ結果",
+      brightwayVerifiedResults: "読み込んだ Brightway 結果"
+    });
+
+    Object.assign(uiText.es, {
+      goalScopeTitle: "Objetivo, alcance y unidad funcional",
+      goalScopeIntro: "Defina el servicio sanitario cuantificado representado por un resultado de vía. Estos campos se exportan a Brightway y al informe, pero no demuestran por sí solos la comparabilidad clínica.",
+      fuClinicalFunction: "Función clínica",
+      fuPopulation: "Población de pacientes",
+      fuStartPoint: "Punto inicial",
+      fuEndPoint: "Punto final",
+      fuTimeHorizon: "Horizonte temporal",
+      fuGeography: "Geografía",
+      fuReferenceAmount: "Cantidad de referencia",
+      fuReferenceUnit: "Unidad de referencia",
+      fuComparability: "Condición de comparabilidad clínica",
+      functionalUnitStatement: "{amount} {unit}: {function}; población: {population}; límite: de {start} a {end}; horizonte: {horizon}; geografía: {geography}. Comparabilidad: {comparability}",
+      brightwayBridgeTitle: "Puente de cálculo Brightway",
+      brightwayBridgeIntro: "Exporte la vía seleccionada, la unidad funcional, los módulos activos y las cantidades de building blocks. Ejecute el script local de Brightway con bases licenciadas e importe el JSON de resultados. Los resultados dummy del navegador permanecen separados.",
+      exportBrightwayScenario: "Exportar escenario JSON",
+      importBrightwayResults: "Importar resultados Brightway",
+      clearBrightwayResults: "Borrar resultados importados",
+      brightwayScenarioExported: "Escenario exportado: {filename}",
+      brightwayImportPrompt: "No hay un resultado Brightway cargado. Exporte un escenario y calcúlelo con el runner local.",
+      brightwayImportError: "El archivo seleccionado no es un resultado ECO-PATH Brightway válido: {message}",
+      brightwayImportSuccess: "Resultados Brightway cargados para {scenario}.",
+      brightwayScenarioMismatch: "Los resultados se cargaron, pero su scenario ID difiere del último exportado en este navegador.",
+      brightwayResultsCleared: "Resultados Brightway importados borrados.",
+      brightwayResultTitle: "Resultado Brightway importado",
+      brightwayEngine: "Motor de cálculo",
+      brightwayFunctionalUnit: "Unidad funcional",
+      brightwayCurrentCategory: "Categoría actual",
+      brightwayCategory: "Categoría de impacto",
+      brightwayPerFu: "Por unidad funcional",
+      brightwayCohort: "Resultado de cohorte",
+      brightwayProvenance: "Procedencia del proyecto / base de datos",
+      brightwayWarnings: "Advertencias",
+      brightwayNotCalculated: "No calculado en el resultado importado",
+      functionalUnitReportTitle: "Unidad funcional",
+      browserPrototypeResults: "Resultados del prototipo del navegador",
+      brightwayVerifiedResults: "Resultados Brightway importados"
+    });
+
+    Object.assign(uiText.en, { formulaLibrary: "Selected pathway scenario" });
+    Object.assign(uiText.nl, { formulaLibrary: "Geselecteerd zorgpadscenario" });
+    Object.assign(uiText.zh, { formulaLibrary: "已选路径情景" });
+    Object.assign(uiText.ja, { formulaLibrary: "選択したパスウェイシナリオ" });
+    Object.assign(uiText.es, { formulaLibrary: "Escenario de vía seleccionado" });
 
     const pathwayText = {
       en: {
@@ -8115,6 +8549,53 @@
       return languageLocales[state.language] || languageLocales.en;
     }
 
+    const functionalUnitDefaults = {
+      emc: {
+        clinicalFunction: "Diagnosis, treatment planning, and primary management of muscle-invasive bladder cancer",
+        population: "One adult with confirmed non-metastatic MIBC eligible for disease-directed treatment",
+        startPoint: "First specialist urology assessment at ASZ or another regional hospital",
+        endPoint: "30 days after completion of primary treatment",
+        timeHorizon: "One care episode through 30-day post-treatment follow-up",
+        geography: "Netherlands",
+        referenceAmount: 1,
+        referenceUnit: "patient pathway",
+        comparability: "Only alternatives that are clinically appropriate for the same decision context may be compared; curative and palliative routes require separate scenarios."
+      },
+      eau: {
+        clinicalFunction: "Diagnosis, treatment planning, and primary management of muscle-invasive bladder cancer",
+        population: "One adult with confirmed non-metastatic MIBC eligible for disease-directed treatment",
+        startPoint: "Confirmed MIBC diagnosis and staging",
+        endPoint: "30 days after completion of primary treatment",
+        timeHorizon: "One care episode through 30-day post-treatment follow-up",
+        geography: "Europe, institution-neutral guideline reference",
+        referenceAmount: 1,
+        referenceUnit: "patient pathway",
+        comparability: "Treatment routes may be compared only after confirming a shared clinical decision context and relevant outcome equivalence."
+      },
+      eauFull: {
+        clinicalFunction: "Diagnosis, treatment planning, and primary management of muscle-invasive bladder cancer",
+        population: "One adult with confirmed non-metastatic MIBC eligible for disease-directed treatment",
+        startPoint: "First specialist assessment for suspected bladder cancer",
+        endPoint: "30 days after completion of primary treatment",
+        timeHorizon: "One care episode through 30-day post-treatment follow-up",
+        geography: "Europe, institution-neutral guideline reference",
+        referenceAmount: 1,
+        referenceUnit: "patient pathway",
+        comparability: "Treatment routes may be compared only after confirming a shared clinical decision context and relevant outcome equivalence."
+      },
+      crcDutch: {
+        clinicalFunction: "Hospital diagnosis, treatment planning, and primary management of colorectal cancer",
+        population: "One adult entering specialist hospital care with suspected or confirmed colorectal cancer",
+        startPoint: "First specialist hospital contact and diagnostic confirmation",
+        endPoint: "One year after completion of primary treatment",
+        timeHorizon: "One care episode through one-year post-treatment surveillance",
+        geography: "Netherlands",
+        referenceAmount: 1,
+        referenceUnit: "patient pathway",
+        comparability: "Colon, rectal, organ-preserving, advanced, and palliative routes require separate clinically appropriate scenarios."
+      }
+    };
+
     const state = {
       pathway: "emc",
       selected: null,
@@ -8131,10 +8612,50 @@
       activitiesCollapsed: false,
       workspaceStep: "pathway",
       impactCategory: "climate",
-      lcaExpandedModules: {}
+      lcaExpandedModules: {},
+      functionalUnits: {},
+      brightwayResult: null,
+      lastExportedScenarioId: null
     };
 
     let detailSyncQueued = false;
+
+    function functionalUnitForPathway(pathwayId = state.pathway) {
+      if (!state.functionalUnits[pathwayId]) {
+        const fallback = functionalUnitDefaults[pathwayId] || functionalUnitDefaults.emc;
+        state.functionalUnits[pathwayId] = { ...fallback };
+      }
+      return state.functionalUnits[pathwayId];
+    }
+
+    function functionalUnitText(functionalUnit = functionalUnitForPathway()) {
+      return t("functionalUnitStatement", {
+        amount: formatDecimal(functionalUnit.referenceAmount, 3),
+        unit: functionalUnit.referenceUnit,
+        function: functionalUnit.clinicalFunction,
+        population: functionalUnit.population,
+        start: functionalUnit.startPoint,
+        end: functionalUnit.endPoint,
+        horizon: functionalUnit.timeHorizon,
+        geography: functionalUnit.geography,
+        comparability: functionalUnit.comparability
+      });
+    }
+
+    function renderFunctionalUnit(syncInputs = true) {
+      const functionalUnit = functionalUnitForPathway();
+      if (syncInputs) {
+        document.querySelectorAll("[data-fu-field]").forEach((input) => {
+          const field = input.dataset.fuField;
+          if (field in functionalUnit) input.value = functionalUnit[field];
+        });
+      }
+      const statement = functionalUnitText(functionalUnit);
+      const statementElement = document.getElementById("functionalUnitStatement");
+      const summaryElement = document.getElementById("functionalUnitSummary");
+      if (statementElement) statementElement.textContent = statement;
+      if (summaryElement) summaryElement.textContent = `${formatDecimal(functionalUnit.referenceAmount, 3)} ${functionalUnit.referenceUnit}`;
+    }
 
     function currentImpactCategory() {
       return impactCategoryRegistry.find((category) => category.id === state.impactCategory) || impactCategoryRegistry[0];
@@ -8596,6 +9117,17 @@
       setText("oncologyLensLabel", "oncologyLens");
       setText("oncologyLensTitle", "highlightOncology");
       setText("oncologyLensSubtitle", "oncologySubtitle");
+      setText("goalScopeTitle", "goalScopeTitle");
+      setText("goalScopeIntro", "goalScopeIntro");
+      setText("fuClinicalFunctionLabel", "fuClinicalFunction");
+      setText("fuPopulationLabel", "fuPopulation");
+      setText("fuStartPointLabel", "fuStartPoint");
+      setText("fuEndPointLabel", "fuEndPoint");
+      setText("fuTimeHorizonLabel", "fuTimeHorizon");
+      setText("fuGeographyLabel", "fuGeography");
+      setText("fuReferenceAmountLabel", "fuReferenceAmount");
+      setText("fuReferenceUnitLabel", "fuReferenceUnit");
+      setText("fuComparabilityLabel", "fuComparability");
       setText("pathwayScenarioTitle", "pathwayScenario");
       setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
       setText("diagnosticRouteLabel", "diagnosticRoute");
@@ -8629,6 +9161,11 @@
       setText("lcaCutoffSummary", "lcaCutoffSummary");
       setText("lcaCaseCountLabel", "cohortSize");
       setText("dataToCollectHeading", "dataToCollect");
+      setText("brightwayBridgeTitle", "brightwayBridgeTitle");
+      setText("brightwayBridgeIntro", "brightwayBridgeIntro");
+      setText("exportBrightwayScenario", "exportBrightwayScenario");
+      setText("importBrightwayResults", "importBrightwayResults");
+      setText("clearBrightwayResults", "clearBrightwayResults");
 
       const cutoffList = document.getElementById("helpCutoffList");
       if (cutoffList) {
@@ -8779,6 +9316,8 @@
           button.addEventListener("click", () => {
             if (!pathwayData[item.id]) return;
             state.pathway = item.id;
+            state.brightwayResult = null;
+            state.lastExportedScenarioId = null;
             state.selected = pathwayData[item.id].defaultSelected;
             state.detailAnchor = "map";
             state.domain = "all";
@@ -9846,6 +10385,7 @@
         renderImpactCategoryControl();
         renderLcaTable();
         renderLcaOutputs();
+        renderBrightwayResults();
       });
       moduleCalculations.addEventListener("toggle", (event) => {
         const details = event.target;
@@ -9961,14 +10501,14 @@
         <div class="formula-line">
           <span class="formula-label">${escapeHtml(t("formulaLibrary"))}</span>
           <span class="formula-expression">
-            I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>
+            I<sub>pathway,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>
           </span>
         </div>
         <div class="formula-line">
           <span class="formula-label">${escapeHtml(t("formulaCohort"))}</span>
           <span>
             <span class="formula-expression">
-              I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>library,j</sub>
+              I<sub>cohort,j</sub> = N<span class="operator">&middot;</span>I<sub>pathway,j</sub>
             </span>
             <span class="formula-note">${escapeHtml(t("formulaNote"))}</span>
           </span>
@@ -10161,6 +10701,206 @@
       return `${parts.year}-${parts.month}-${parts.day}`;
     }
 
+    function createScenarioId() {
+      if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+      return `ecopath-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function downloadJson(data, filename) {
+      const blob = new Blob([`${JSON.stringify(data, null, 2)}\n`], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function collectBrightwayScenario() {
+      const report = collectLcaReportData();
+      const functionalUnit = functionalUnitForPathway();
+      const scenarioId = createScenarioId();
+      state.lastExportedScenarioId = scenarioId;
+      return {
+        schema_version: "1.0",
+        scenario_id: scenarioId,
+        exported_at: new Date().toISOString(),
+        app: {
+          name: "ECO-PATH Pathway Activity Explorer",
+          version: "0.3.0-dev",
+          url: window.location.href.split("#")[0]
+        },
+        language: state.language,
+        pathway: {
+          id: state.pathway,
+          label: currentPathway().label,
+          title: currentPathway().title,
+          status: currentPathway().status
+        },
+        functional_unit: {
+          ...functionalUnit,
+          statement: functionalUnitText(functionalUnit),
+          quantity_basis: "Each building-block quantity is entered per declared functional unit. The runner does not infer or rescale clinical activity counts."
+        },
+        cohort_size: report.caseCount,
+        selected_activities: selectedScenarioNodes().map((node) => ({
+          id: node.id,
+          code: displayCode(node),
+          label: node.label,
+          module_id: node.module,
+          lca_cutoff: isLcaCutoffNode(node)
+        })),
+        modules: report.modules.map((module) => ({
+          module_id: module.id,
+          name: moduleRegistry[module.id]?.name || module.id,
+          role: crossCuttingModuleIds.includes(module.id) ? "cross-cutting-support" : "pathway-linked",
+          enabled: module.included
+        })),
+        building_blocks: report.rows.map((row) => ({
+          mapping_key: row.id,
+          module_id: row.module,
+          name: row.block,
+          reference_unit: row.unit,
+          quantity_per_functional_unit: Math.max(0, Number(row.quantity) || 0),
+          enabled: row.included,
+          resource_flows: String(row.flow).split(";").map((item) => item.trim()).filter(Boolean)
+        })),
+        impact_method_request: {
+          family: "Environmental Footprint 3.1 no long-term",
+          categories: impactCategoryRegistry.map((category) => ({
+            category_id: category.id,
+            name: uiText.en[category.nameKey] || category.nameKey,
+            unit: category.unit
+          }))
+        },
+        browser_prototype: {
+          included: false,
+          note: "Browser dummy coefficients and their uncertainty ranges are deliberately excluded from the Brightway demand and results."
+        },
+        exclusions: {
+          cutoff_note: uiText.en.lcaCutoffSummary,
+          meeting_only_and_purely_administrative_blocks: "Excluded provisionally unless material or energy relevance is demonstrated and documented."
+        }
+      };
+    }
+
+    function exportBrightwayScenario() {
+      const scenario = collectBrightwayScenario();
+      const filename = `ecopath-brightway-scenario-${slugify(currentPathway().label)}-${reportDateStamp()}.json`;
+      downloadJson(scenario, filename);
+      const status = document.getElementById("brightwayBridgeStatus");
+      if (status) status.textContent = t("brightwayScenarioExported", { filename });
+    }
+
+    function validateBrightwayResult(data) {
+      if (!data || typeof data !== "object") throw new Error("JSON root must be an object");
+      if (data.schema_version !== "1.0") throw new Error("schema_version must be 1.0");
+      if (!data.scenario_id || typeof data.scenario_id !== "string") throw new Error("scenario_id is missing");
+      if (!Array.isArray(data.methods) || data.methods.length === 0) throw new Error("methods must contain at least one result");
+      data.methods.forEach((method, index) => {
+        if (!method.category_id || !method.unit) throw new Error(`method ${index + 1} is missing category_id or unit`);
+        if (!Number.isFinite(Number(method.score_per_functional_unit))) {
+          throw new Error(`method ${index + 1} has an invalid score_per_functional_unit`);
+        }
+      });
+      return data;
+    }
+
+    function formatExternalImpact(value, unit) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return t("brightwayNotCalculated");
+      const absolute = Math.abs(number);
+      const formatted = absolute !== 0 && (absolute < 0.001 || absolute >= 1000000)
+        ? number.toExponential(3)
+        : number.toLocaleString(localeForCurrentLanguage(), { maximumSignificantDigits: 5 });
+      return `${formatted} ${unit}`;
+    }
+
+    function brightwayProvenanceText(result) {
+      const provenance = result.provenance || {};
+      const databases = Array.isArray(provenance.databases) ? provenance.databases.join(", ") : "";
+      return [provenance.project, databases].filter(Boolean).join(" · ") || t("brightwayNotCalculated");
+    }
+
+    function renderBrightwayResults() {
+      const summary = document.getElementById("brightwayResultSummary");
+      const status = document.getElementById("brightwayBridgeStatus");
+      const clearButton = document.getElementById("clearBrightwayResults");
+      if (!summary || !status || !clearButton) return;
+      const result = state.brightwayResult;
+      if (!result) {
+        summary.hidden = true;
+        summary.innerHTML = "";
+        clearButton.hidden = true;
+        if (!status.textContent) status.textContent = t("brightwayImportPrompt");
+        return;
+      }
+
+      clearButton.hidden = false;
+      summary.hidden = false;
+      const current = result.methods.find((method) => method.category_id === state.impactCategory);
+      const cohortSize = Math.max(1, Number(result.cohort_size) || 1);
+      const methodRows = result.methods.map((method) => {
+        const cohortScore = Number.isFinite(Number(method.score_for_cohort))
+          ? Number(method.score_for_cohort)
+          : Number(method.score_per_functional_unit) * cohortSize;
+        return `
+          <tr>
+            <td>${escapeHtml(method.name || method.category_id)}</td>
+            <td>${escapeHtml(formatExternalImpact(method.score_per_functional_unit, method.unit))}</td>
+            <td>${escapeHtml(formatExternalImpact(cohortScore, method.unit))}</td>
+          </tr>
+        `;
+      }).join("");
+      const warnings = Array.isArray(result.warnings) ? result.warnings : [];
+      const engine = typeof result.engine === "object"
+        ? [result.engine.name, result.engine.version].filter(Boolean).join(" ")
+        : String(result.engine || "Brightway");
+      const functionalUnit = result.functional_unit?.statement || functionalUnitText();
+      summary.innerHTML = `
+        <h4>${escapeHtml(t("brightwayResultTitle"))}</h4>
+        <div class="brightway-result-grid">
+          <div class="brightway-result-metric"><strong>${escapeHtml(t("brightwayEngine"))}</strong><span>${escapeHtml(engine)}</span></div>
+          <div class="brightway-result-metric"><strong>${escapeHtml(t("brightwayFunctionalUnit"))}</strong><span>${escapeHtml(functionalUnit)}</span></div>
+          <div class="brightway-result-metric"><strong>${escapeHtml(t("brightwayCurrentCategory"))}</strong><span>${escapeHtml(current ? formatExternalImpact(current.score_per_functional_unit, current.unit) : t("brightwayNotCalculated"))}</span></div>
+          <div class="brightway-result-metric"><strong>${escapeHtml(t("brightwayProvenance"))}</strong><span>${escapeHtml(brightwayProvenanceText(result))}</span></div>
+        </div>
+        <div class="brightway-result-table-wrap">
+          <table class="brightway-result-table">
+            <thead><tr><th>${escapeHtml(t("brightwayCategory"))}</th><th>${escapeHtml(t("brightwayPerFu"))}</th><th>${escapeHtml(t("brightwayCohort"))}</th></tr></thead>
+            <tbody>${methodRows}</tbody>
+          </table>
+        </div>
+        ${warnings.length ? `<p><strong>${escapeHtml(t("brightwayWarnings"))}:</strong> ${escapeHtml(warnings.join(" | "))}</p>` : ""}
+      `;
+    }
+
+    async function importBrightwayResults(file) {
+      const status = document.getElementById("brightwayBridgeStatus");
+      try {
+        const result = validateBrightwayResult(JSON.parse(await file.text()));
+        state.brightwayResult = result;
+        const mismatch = state.lastExportedScenarioId && result.scenario_id !== state.lastExportedScenarioId;
+        status.textContent = mismatch
+          ? t("brightwayScenarioMismatch")
+          : t("brightwayImportSuccess", { scenario: result.scenario_id });
+        renderBrightwayResults();
+      } catch (error) {
+        state.brightwayResult = null;
+        status.textContent = t("brightwayImportError", { message: error.message });
+        renderBrightwayResults();
+      }
+    }
+
+    function clearBrightwayResult() {
+      state.brightwayResult = null;
+      const status = document.getElementById("brightwayBridgeStatus");
+      if (status) status.textContent = t("brightwayResultsCleared");
+      renderBrightwayResults();
+    }
+
     function collectLcaReportData() {
       const pathway = currentPathway();
       const caseCount = Math.max(1, readNumber("lcaCaseCount", 100));
@@ -10214,6 +10954,7 @@
         .filter((row) => row.included && row.baseContribution > 0)
         .sort((a, b) => b.baseContribution - a.baseContribution)
         .slice(0, 8);
+      const functionalUnit = functionalUnitForPathway();
       return {
         impactCategoryId: currentImpactCategory().id,
         impactCategoryName: impactCategoryName(),
@@ -10222,6 +10963,11 @@
         pathwayTitle: localizedPathwayTitle(),
         pathwayScope: localizedPathwayScope(),
         pathwayStatus: localizedPathwayStatus(),
+        functionalUnit: {
+          ...functionalUnit,
+          statement: functionalUnitText(functionalUnit)
+        },
+        brightwayResult: state.brightwayResult,
         selectedActivities: selectedScenarioNodes().map((node) => ({
           code: displayCode(node),
           label: localizedNodeLabel(node),
@@ -10299,6 +11045,34 @@
           <td>${row.included ? escapeHtml(formatImpact(row.baseContribution)) : escapeHtml(t("excluded"))}</td>
         </tr>
       `).join("");
+      const brightwayReportSection = data.brightwayResult
+        ? (() => {
+          const result = data.brightwayResult;
+          const cohortSize = Math.max(1, Number(result.cohort_size) || 1);
+          const rows = result.methods.map((method) => {
+            const cohortScore = Number.isFinite(Number(method.score_for_cohort))
+              ? Number(method.score_for_cohort)
+              : Number(method.score_per_functional_unit) * cohortSize;
+            return `
+              <tr>
+                <td>${escapeHtml(method.name || method.category_id)}</td>
+                <td>${escapeHtml(formatExternalImpact(method.score_per_functional_unit, method.unit))}</td>
+                <td>${escapeHtml(formatExternalImpact(cohortScore, method.unit))}</td>
+              </tr>
+            `;
+          }).join("");
+          return `
+            <section>
+              <h2>${escapeHtml(t("brightwayVerifiedResults"))}</h2>
+              <p class="muted">${escapeHtml(brightwayProvenanceText(result))}</p>
+              <table>
+                <thead><tr><th>${escapeHtml(t("brightwayCategory"))}</th><th>${escapeHtml(t("brightwayPerFu"))}</th><th>${escapeHtml(t("brightwayCohort"))}</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </section>
+          `;
+        })()
+        : "";
       return `<!doctype html>
 <html lang="${escapeHtml(language.htmlLang)}">
 <head>
@@ -10468,13 +11242,20 @@
     </section>
 
     <section>
-      <h2>${escapeHtml(t("scenarioResults"))}</h2>
+      <h2>${escapeHtml(t("functionalUnitReportTitle"))}</h2>
+      <p>${escapeHtml(data.functionalUnit.statement)}</p>
+    </section>
+
+    <section>
+      <h2>${escapeHtml(t("browserPrototypeResults"))}</h2>
       <div class="metrics">${resultCards}</div>
       <p class="muted">${escapeHtml(t("categoryReportNote", {
         category: data.impactCategoryName,
         unit: data.impactCategoryUnit
       }))}</p>
     </section>
+
+    ${brightwayReportSection}
 
     <section>
       <h2>${escapeHtml(t("selectedPathwayScenario"))}</h2>
@@ -10488,7 +11269,7 @@
 
     <section>
       <h2>${escapeHtml(t("calculationFormula"))}</h2>
-      <p class="formula">I<sub>i,j</sub> = q<sub>i</sub> &middot; c<sub>i,j</sub>; c<sub>i,j</sub><sup>low/high</sup> = c<sub>i,j</sub> &middot; (1 &plusmn; u<sub>c,i</sub>); I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>; I<sub>cohort,j</sub> = N &middot; I<sub>library,j</sub></p>
+      <p class="formula">I<sub>i,j</sub> = q<sub>i</sub> &middot; c<sub>i,j</sub>; c<sub>i,j</sub><sup>low/high</sup> = c<sub>i,j</sub> &middot; (1 &plusmn; u<sub>c,i</sub>); I<sub>pathway,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>; I<sub>cohort,j</sub> = N &middot; I<sub>pathway,j</sub></p>
       <p class="muted">${escapeHtml(t("formulaReportNote"))}</p>
     </section>
 
@@ -10578,6 +11359,8 @@
           const pathwayId = button.dataset.urologyPathway;
           if (!pathwayData[pathwayId] || pathwayId === state.pathway) return;
           state.pathway = pathwayId;
+          state.brightwayResult = null;
+          state.lastExportedScenarioId = null;
           state.selected = pathwayData[pathwayId].defaultSelected;
           state.detailAnchor = "map";
           state.domain = "all";
@@ -10618,6 +11401,30 @@
       document.getElementById("clearPathwayScenario").addEventListener("click", clearScenarioSelection);
       document.getElementById("clearPathwayScenarioFullscreen").addEventListener("click", clearScenarioSelection);
       document.getElementById("lcaExportReport").addEventListener("click", exportLcaReport);
+      document.querySelectorAll("[data-fu-field]").forEach((input) => {
+        input.addEventListener("input", (event) => {
+          const functionalUnit = functionalUnitForPathway();
+          const field = event.target.dataset.fuField;
+          if (!field || !(field in functionalUnit)) return;
+          if (field === "referenceAmount") {
+            const value = Number(event.target.value);
+            if (Number.isFinite(value) && value > 0) functionalUnit[field] = value;
+          } else {
+            functionalUnit[field] = event.target.value;
+          }
+          renderFunctionalUnit(false);
+        });
+      });
+      document.getElementById("exportBrightwayScenario").addEventListener("click", exportBrightwayScenario);
+      document.getElementById("importBrightwayResults").addEventListener("click", () => {
+        document.getElementById("brightwayResultsFile").click();
+      });
+      document.getElementById("brightwayResultsFile").addEventListener("change", async (event) => {
+        const [file] = event.target.files || [];
+        if (file) await importBrightwayResults(file);
+        event.target.value = "";
+      });
+      document.getElementById("clearBrightwayResults").addEventListener("click", clearBrightwayResult);
       document.getElementById("openMapFullscreen").addEventListener("click", openMapFullscreen);
       document.getElementById("closeMapFullscreen").addEventListener("click", closeMapFullscreen);
       document.getElementById("toggleActivities").addEventListener("click", () => {
@@ -10634,6 +11441,7 @@
       renderLanguageSelector();
       renderStaticLanguageText();
       renderSourceSwitch();
+      renderFunctionalUnit();
       renderFilterOptions();
       renderHeader();
       renderUrologySourceLens();
@@ -10647,6 +11455,7 @@
       renderActivityPanelState();
       renderLcaTable();
       renderLcaOutputs();
+      renderBrightwayResults();
       renderFullscreenView();
       renderWorkspaceStep();
       updateStickyWorkspaceOffset();

@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+brightway/mapping.local.json
+brightway-results*.json
+ecopath-brightway-scenario*.json

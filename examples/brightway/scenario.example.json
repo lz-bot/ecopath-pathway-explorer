@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "example-do-not-use-as-result",
+  "functional_unit": {
+    "statement": "1 patient pathway: example CT-only foreground test"
+  },
+  "cohort_size": 1,
+  "building_blocks": [
+    {
+      "mapping_key": "em03-ct-scan",
+      "module_id": "EM03",
+      "name": "CT scan",
+      "reference_unit": "per scan",
+      "quantity_per_functional_unit": 1,
+      "enabled": true,
+      "resource_flows": [
+        "Scanner electricity",
+        "Contrast media",
+        "Disposables"
+      ]
+    }
+  ],
+  "impact_method_request": {
+    "family": "Environmental Footprint 3.1 no long-term",
+    "categories": [
+      {
+        "category_id": "climate",
+        "name": "Climate change (GWP100)",
+        "unit": "kg CO2-eq"
+      }
+    ]
+  }
+}

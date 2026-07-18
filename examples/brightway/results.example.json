@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "example-do-not-use-as-result",
+  "calculated_at": "2026-07-18T00:00:00+00:00",
+  "engine": {
+    "name": "Example fixture, not a Brightway calculation",
+    "version": "0"
+  },
+  "functional_unit": {
+    "statement": "1 patient pathway: example CT-only foreground test"
+  },
+  "cohort_size": 1,
+  "methods": [
+    {
+      "category_id": "climate",
+      "name": "Climate change (GWP100)",
+      "unit": "kg CO2-eq",
+      "method": [
+        "EXAMPLE ONLY"
+      ],
+      "score_per_functional_unit": 1.23,
+      "score_for_cohort": 1.23
+    }
+  ],
+  "contributions": [],
+  "mapping_coverage": {
+    "active_building_blocks": 1,
+    "mapped_building_blocks": 1,
+    "missing_mapping_keys": []
+  },
+  "provenance": {
+    "project": "EXAMPLE ONLY",
+    "databases": [
+      "EXAMPLE ONLY"
+    ]
+  },
+  "warnings": [
+    "This file is a UI import fixture and is not a validated environmental result."
+  ]
+}

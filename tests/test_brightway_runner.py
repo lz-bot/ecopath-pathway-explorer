@@ -33,6 +33,16 @@ class BrightwayRunnerValidationTest(unittest.TestCase):
         with self.assertRaises(RUNNER.ConfigurationError):
             RUNNER.validate_scenario(self.scenario)
 
+    def test_invalid_pathway_assessment_is_rejected(self):
+        self.scenario["assessment"] = {
+            "mode": "complete",
+            "valid": False,
+            "declared_start": "AC01",
+            "declared_endpoint": "FU01",
+        }
+        with self.assertRaisesRegex(RUNNER.ConfigurationError, "assessment must be valid"):
+            RUNNER.validate_scenario(self.scenario)
+
     def test_validate_only_cli_does_not_import_brightway(self):
         with tempfile.TemporaryDirectory() as directory:
             directory_path = Path(directory)

@@ -44,6 +44,14 @@ def validate_scenario(scenario: dict[str, Any]) -> list[dict[str, Any]]:
     functional_unit = scenario.get("functional_unit")
     if not isinstance(functional_unit, dict) or not functional_unit.get("statement"):
         raise ConfigurationError("functional_unit.statement is required")
+    assessment = scenario.get("assessment")
+    if assessment is not None:
+        if not isinstance(assessment, dict):
+            raise ConfigurationError("assessment must be an object")
+        if assessment.get("mode") not in {"complete", "partial"}:
+            raise ConfigurationError("assessment.mode must be complete or partial")
+        if assessment.get("valid") is not True:
+            raise ConfigurationError("assessment must be valid before Brightway calculation")
     blocks = scenario.get("building_blocks")
     if not isinstance(blocks, list):
         raise ConfigurationError("building_blocks must be a list")

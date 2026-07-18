@@ -7,6 +7,18 @@
   "properties": {
     "schema_version": { "const": "1.0" },
     "scenario_id": { "type": "string", "minLength": 1 },
+    "assessment": {
+      "type": "object",
+      "required": ["mode", "valid", "result_label"],
+      "properties": {
+        "mode": { "enum": ["complete", "partial"] },
+        "valid": { "const": true },
+        "result_label": { "type": "string", "minLength": 1 },
+        "declared_start": { "type": ["string", "null"] },
+        "declared_endpoint": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
     "functional_unit": {
       "type": "object",
       "required": ["statement"],

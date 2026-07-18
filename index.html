@@ -1066,6 +1066,104 @@
       flex: 1 1 280px;
     }
 
+    .assessment-mode-control {
+      display: inline-flex;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    .assessment-mode-control button {
+      min-height: 36px;
+      border: 0;
+      border-radius: 0;
+      padding: 7px 11px;
+      color: var(--accent-dark);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .assessment-mode-control button + button {
+      border-left: 1px solid var(--accent);
+    }
+
+    .assessment-mode-control button[aria-pressed="true"] {
+      color: #ffffff;
+      background: var(--accent-dark);
+    }
+
+    .assessment-boundary-controls {
+      display: flex;
+      flex: 1 1 100%;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: end;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+    }
+
+    .assessment-boundary-controls[hidden] {
+      display: none;
+    }
+
+    .assessment-boundary-field {
+      display: grid;
+      min-width: min(100%, 250px);
+      flex: 1 1 250px;
+      gap: 3px;
+    }
+
+    .assessment-boundary-field span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .assessment-boundary-field select {
+      width: 100%;
+      min-height: 36px;
+    }
+
+    .assessment-validation {
+      flex: 1 1 100%;
+      margin: 0;
+      padding: 8px 10px;
+      border-left: 4px solid var(--return);
+      color: var(--muted);
+      background: var(--panel-soft);
+      font-size: 12px;
+    }
+
+    .assessment-validation.valid {
+      border-left-color: var(--accent);
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+    }
+
+    .assessment-gate {
+      grid-column: 1 / -1;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--return);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+    }
+
+    .assessment-gate strong,
+    .assessment-gate span {
+      display: block;
+    }
+
+    .assessment-gate span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     .legend-item {
       display: inline-flex;
       align-items: center;
@@ -3158,8 +3256,23 @@
                 <small id="pathwayScenarioSubtitle">Selected activities control pathway-linked LCA modules</small>
               </span>
             </label>
+            <div class="assessment-mode-control" role="group" aria-label="Assessment mode" id="assessmentModeControl">
+              <button type="button" id="completeAssessmentMode" data-assessment-mode="complete" aria-pressed="true">Complete pathway assessment</button>
+              <button type="button" id="partialAssessmentMode" data-assessment-mode="partial" aria-pressed="false">Partial segment exploration</button>
+            </div>
             <span class="status-chip" id="pathwayScenarioStatus"></span>
             <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
+            <div class="assessment-boundary-controls" id="assessmentBoundaryControls">
+              <label class="assessment-boundary-field" for="assessmentStartNode">
+                <span id="assessmentStartLabel">Declared start</span>
+                <select id="assessmentStartNode"></select>
+              </label>
+              <label class="assessment-boundary-field" for="assessmentEndNode">
+                <span id="assessmentEndLabel">Declared endpoint</span>
+                <select id="assessmentEndNode"></select>
+              </label>
+            </div>
+            <p class="assessment-validation" id="assessmentValidationStatus" aria-live="polite"></p>
           </div>
           <div class="legend" aria-label="Route legend">
             <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="routeDirectionLabel">Arrows show pathway direction</span></span>
@@ -3579,7 +3692,9 @@
       block("EM09", "Surveillance test set", "per surveillance round", ["Blood test", "Imaging or endoscopy", "Reporting"]),
       block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing"], ["gastro"]),
       block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"], ["gastro"]),
+      block("EM09", "Rectal response assessment", "per response assessment", ["Pelvic MRI", "Flexible endoscopy", "Clinical assessment", "Response reporting"], ["gastro"]),
       block("EM09", "Post-cystectomy surveillance round", "per surveillance round", ["Clinical review", "Imaging if indicated", "Laboratory testing"], ["urology"]),
+      block("EM09", "Bladder-preservation response assessment", "per response assessment", ["Cystoscopy", "Urine cytology", "Imaging if indicated"], ["urology"]),
       block("EM09", "Bladder-preservation surveillance round", "per surveillance round", ["Cystoscopy", "Urine cytology", "Imaging if indicated"], ["urology"]),
       block("EM09", "Urinary diversion or stoma follow-up", "per visit", ["Ostomy appliances", "Urinary drainage supplies", "Skin care materials", "Clinical review"]),
       block("EM09", "Home-based follow-up kit", "per kit", ["Sampling material", "Shipping", "Laboratory processing", "Digital app use"]),
@@ -3612,7 +3727,7 @@
     }
 
     registerActivityBuildingBlocks(
-      ["EAU-AC01", "EAU-DX01", "EAUFULL-AC01", "EAUFULL-DX01", "EMC-FC01", "EMC-DX01", "CRCDUTCH-FC01"],
+      ["EAU-DX01", "EAUFULL-DX01", "EMC-DX01", "CRCDUTCH-FC01"],
       [automaticBlock("First specialist consultation")]
     );
     registerActivityBuildingBlocks(
@@ -3648,15 +3763,19 @@
       [automaticBlock("CT scan")]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-DX08", "EMC-DX07", "CRCDUTCH-TX05"],
+      ["EAUFULL-DX08", "EMC-DX07"],
       [automaticBlock("MRI scan")]
+    );
+    registerActivityBuildingBlocks(
+      ["EMC-DX09"],
+      [automaticBlock("CT scan")]
     );
     registerActivityBuildingBlocks(
       ["CRCDUTCH-DX01"],
       [automaticBlock("Colonoscopy intake and bowel preparation"), automaticBlock("Colonoscopy")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-TX02", "EAUFULL-TX02", "EAUFULL-TX10", "EMC-TX03", "EMC-TX10"],
+      ["EAU-TX02", "EAUFULL-TX02", "EMC-TX03"],
       [automaticBlock("Medical oncology consultation")]
     );
     registerActivityBuildingBlocks(
@@ -3734,6 +3853,7 @@
     registerActivityBuildingBlocks(
       ["CRCDUTCH-TX05"],
       [
+        automaticBlock("MRI scan"),
         automaticBlock("Radiotherapy planning"),
         automaticBlock("Immobilization device"),
         automaticBlock("Radiotherapy fraction", 20),
@@ -3753,8 +3873,16 @@
       [automaticBlock("Bladder-preservation surveillance round")]
     );
     registerActivityBuildingBlocks(
+      ["EAUFULL-TX15", "EMC-TX15"],
+      [automaticBlock("Bladder-preservation response assessment")]
+    );
+    registerActivityBuildingBlocks(
       ["EAUFULL-FU03"],
       [automaticBlock("Urinary diversion or stoma follow-up")]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-TX09"],
+      [automaticBlock("Rectal response assessment")]
     );
     registerActivityBuildingBlocks(
       ["CRCDUTCH-FU04", "CRCDUTCH-FU05"],
@@ -3977,8 +4105,8 @@
           { y: 472, label: "Follow-up and advanced care" }
         ],
         nodes: [
-          activity("EAU-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 80, 112, "Entry to the guideline-level MIBC workup after suspected bladder cancer or referral.", "This is a guideline reference entry point. It does not specify which hospital performs the first contact.", ["Patient travel", "Administrative ICT", "Referral communication"], ["Should ECO-PATH start at first presentation, first cystoscopy, confirmed MIBC, or referral to a tertiary center?"]),
-          activity("EAU-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 220, 112, "Clinical assessment before definitive staging and treatment selection.", "Included because health status and baseline assessment affect treatment eligibility and downstream route selection.", ["Outpatient room use", "Clinician time", "Patient travel"], ["Which elements are repeated locally after referral?"]),
+          activity("EAU-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 80, 112, "Entry boundary for the guideline-level MIBC workup after suspected bladder cancer or referral.", "This node establishes the pathway boundary and does not represent an additional consultation. The first resource-bearing clinical assessment is counted at DX01.", ["Referral record", "Boundary definition"], ["Should ECO-PATH start at first presentation, first cystoscopy, confirmed MIBC, or referral to a tertiary center?"]),
+          activity("EAU-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 220, 112, "Clinical assessment before definitive staging and treatment selection.", "This is the first resource-bearing specialist contact in the guideline pathway and is modeled in EM01, even though its station code remains in the diagnostic sequence.", ["Outpatient room use", "Clinician time", "Clinical documentation"], ["Which elements are repeated locally after referral?"]),
           activity("EAU-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM02", "diagnostic", 360, 112, "Laboratory and urine-based diagnostic information used in the diagnostic pathway.", "This may be relevant for upstream pathway scope, but may fall outside a post-referral Erasmus MC boundary.", ["Laboratory materials", "Specimen transport", "Staff time"], ["Are these tests repeated at Erasmus MC or only reviewed from referring hospitals?"]),
           activity("EAU-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 500, 112, "Endoscopic visualization used in bladder cancer diagnosis and surveillance logic.", "Included in the guideline pathway. It should not be added to the EMC local map unless local experts confirm it occurs in the selected boundary.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy a pre-pathway activity for the current MIBC case?"]),
           activity("EAU-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 640, 112, "Transurethral resection provides tissue diagnosis and staging information.", "Important guideline activity, but likely upstream of the current EMC Bladder Cancer Center workflow unless repeated or reviewed.", ["Operating room time", "Anesthesia", "Instruments", "Pathology sample", "Waste"], ["Does the ECO-PATH MIBC model include TURBT or only pathology review after referral?"]),
@@ -4033,14 +4161,14 @@
           { id: "EAUFULL-PG01", from: "EAUFULL-TX09", x: 1110, y: 405, route: "treatment" }
         ],
         nodes: [
-          activity("EAUFULL-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Guideline entry after suspected bladder cancer, presentation, or referral into MIBC workup.", "This entry point is retained for scoping. It does not define which hospital performs referral intake or triage.", ["Patient travel", "Administrative ICT", "Referral communication"], ["Define whether ECO-PATH starts at first presentation, first specialist referral, confirmed MIBC, or tertiary referral."]),
-          activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "EAU includes baseline clinical assessment because it informs diagnosis, staging interpretation, and treatment eligibility.", ["Clinician time", "Outpatient room use", "EHR documentation"], ["Which baseline assessments are repeated after referral?"]),
+          activity("EAUFULL-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Entry boundary after suspected bladder cancer, presentation, or referral into MIBC workup.", "This node establishes the guideline scope and does not represent an additional consultation. The first resource-bearing clinical assessment is counted at DX01.", ["Referral record", "Boundary definition"], ["Define whether ECO-PATH starts at first presentation, first specialist referral, confirmed MIBC, or tertiary referral."]),
+          activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "This is the first resource-bearing specialist contact in the guideline pathway and is modeled in EM01. The DX code retains its clinical position in the diagnostic sequence.", ["Clinician time", "Outpatient room use", "EHR documentation"], ["Which baseline assessments are repeated after referral?"]),
           activity("EAUFULL-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM02", "diagnostic", 290, 92, "Urine cytology and laboratory workup used in diagnostic assessment and treatment planning.", "This can affect resource use if tests are repeated locally or added before treatment.", ["Laboratory testing", "Specimen transport", "Staff time"], ["Are these tests performed locally or only reviewed from referring hospitals?"]),
           activity("EAUFULL-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 400, 92, "Endoscopic visualization and documentation of bladder tumor characteristics.", "Cystoscopy is guideline-relevant, but it may be outside a post-referral Erasmus MC boundary unless repeated locally.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy inside the selected pathway boundary?"]),
           activity("EAUFULL-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 510, 92, "Transurethral resection used for histopathological diagnosis and staging.", "TURBT is resource-intensive and should be explicit if the ECO-PATH boundary starts before confirmed MIBC.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Does the MIBC model include TURBT or only review of TURBT results?"]),
           activity("EAUFULL-DX05", "Pathology report and specimen review", "Diagnostics", "activity", "EM02", "diagnostic", 620, 92, "Pathology report review, grade and invasion depth confirmation, and specimen adequacy assessment.", "Pathology is separated because EAU provides explicit diagnostic requirements and local workflows may include pathology revision.", ["Pathologist time", "Microscopy or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
-          activity("EAUFULL-DX06", "CT chest abdomen pelvis staging", "Diagnostics", "activity", "EM03", "diagnostic", 750, 92, "CT imaging for chest, abdomen, and pelvis staging in confirmed MIBC.", "Staging CT is a distinct imaging activity with scanner electricity, contrast media, reporting, and patient travel.", ["Scanner electricity", "Contrast media", "Radiology reporting", "Patient travel"], ["Which staging scans are new, repeated, or reviewed only?"]),
-          activity("EAUFULL-DX07", "CT urography or upper tract assessment", "Diagnostics", "activity", "EM03", "diagnostic", 880, 92, "Upper tract urothelial evaluation, including CT urography or further assessment when needed.", "Upper tract assessment can add imaging phases, reporting time, and follow-up implications.", ["Scanner electricity", "Contrast media", "Radiology reporting"], ["Is upper tract evaluation routinely repeated at the local center?"]),
+          activity("EAUFULL-DX06", "CT chest abdomen pelvis staging with urothelial phase", "Diagnostics", "activity", "EM03", "diagnostic", 750, 92, "CT imaging of the chest, abdomen, and pelvis for confirmed MIBC, including urothelial assessment when it is part of the same staging protocol.", "EAU recommends CT staging before curative treatment. The urothelial phase should not be counted as a second scan when it is performed within the same acquisition.", ["Scanner electricity", "Contrast media", "Radiology reporting", "Patient travel"], ["Which CT phases are included in one local staging protocol and which examinations are genuinely additional?"]),
+          activity("EAUFULL-DX07", "Additional upper tract assessment if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 880, 92, "Additional upper-tract urothelial evaluation only when the standard staging CT does not answer the clinical question.", "This optional node prevents routine double counting of CT urography when the urothelial phase is already included in CT staging.", ["Scanner electricity", "Contrast media", "Radiology reporting"], ["Which indication triggers a genuinely separate upper-tract examination?"]),
           activity("EAUFULL-DX08", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 1010, 92, "MRI for local staging or response assessment, and PET-CT where clinically indicated.", "These imaging options are guideline-relevant but should be parameterized only if they occur in the selected scenario.", ["MRI scan", "PET-CT scan", "Radiology reporting", "Patient travel"], ["Which additional imaging tests are used for the target population?"]),
           activity("EAUFULL-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1100, 230, "Multidisciplinary team discussion before treatment initiation and route selection.", "MDT is the clinical bridge between diagnostic findings and treatment intent.", ["Clinician time", "Meeting room use", "Imaging display", "EHR access"], ["Which specialties attend and how often are patients re-discussed?"]),
           activity("EAUFULL-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 950, 230, "Assessment of health status, frailty, comorbidity, cognition, and fitness for radical or bladder-sparing treatment.", "EAU includes health status because chronological age alone is insufficient for treatment choice.", ["Assessment time", "Laboratory review", "EHR documentation"], ["Which fitness scores or geriatric assessments are available locally?"]),
@@ -4052,12 +4180,12 @@
           activity("EAUFULL-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 900, 348, "Pelvic lymph node dissection as part of the surgical treatment pathway where indicated.", "This can change operation time, instruments, pathology specimens, and downstream staging.", ["Operating room time", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Should lymph node dissection be modeled as part of cystectomy or as a separate parameter?"]),
           activity("EAUFULL-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 1000, 348, "Choice of urinary diversion such as ileal conduit, neobladder, or other diversion options.", "EAU provides detailed diversion considerations. ECO-PATH needs this as a parameter because resource flows and follow-up differ by diversion.", ["Operating room time", "Surgical consumables", "Ward stay", "Patient education"], ["Which diversion types are relevant for the selected patient population?"]),
           activity("EAUFULL-TX09", "Perioperative care and VTE prophylaxis", "Surgery", "activity", "EM07", "treatment", 1110, 348, "Perioperative care, enhanced recovery elements, and pharmacological venous thromboembolism prophylaxis after radical cystectomy.", "This activity captures resource flows that are not visible if surgery is represented only as one cystectomy node.", ["Ward stay", "Medicines", "Nursing time", "Monitoring consumables"], ["Which perioperative care elements should be inside the surgical boundary?"]),
-          activity("EAUFULL-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 1030, 578, "Postoperative assessment for adjuvant chemotherapy, immunotherapy, radiotherapy, or surveillance when indicated.", "This decision can activate additional systemic therapy or radiotherapy resource flows after surgery.", ["Medical oncology review", "Pathology review", "Laboratory monitoring"], ["Which adjuvant options are used in local practice?"]),
+          activity("EAUFULL-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 1030, 578, "Postoperative assessment for adjuvant chemotherapy, immunotherapy, radiotherapy, or surveillance when indicated.", "This decision remains visible because it changes the route, but it is provisionally excluded from the LCA calculation. Treatment, laboratory testing, or imaging should be activated as separate resource-bearing activities when they occur.", ["Clinical review", "Treatment decision"], ["Which adjuvant options are used in local practice, and should a separate treatment-delivery node be added?"]),
           activity("EAUFULL-TX11", "Trimodality therapy eligibility", "Radiotherapy", "decision", "EM08", "treatment", 500, 462, "Eligibility for bladder-preserving trimodality treatment in selected patients.", "This decision separates bladder-preserving scenarios from radical cystectomy and palliative care.", ["MDT review", "Clinical review", "Imaging review"], ["Which criteria define eligibility locally?"]),
           activity("EAUFULL-TX12", "Maximal TURBT for bladder preservation", "Surgery", "activity", "EM07", "treatment", 360, 462, "Maximal TURBT as part of a bladder-preserving approach where clinically appropriate.", "This is distinct from diagnostic TURBT because it supports a treatment strategy and may have different resource assumptions.", ["Operating room time", "Anesthesia", "Sterile instruments", "Surgical waste"], ["Is maximal TURBT performed locally for bladder-preserving candidates?"]),
           activity("EAUFULL-TX13", "Radiotherapy planning", "Radiotherapy", "activity", "EM08", "treatment", 650, 462, "Radiotherapy planning before EBRT or chemoradiation delivery.", "Planning CT, treatment planning workstation time, staff time, and immobilization should be modeled separately from fractions.", ["Planning CT", "Treatment planning workstation", "Staff time", "Immobilization materials"], ["Which planning workflow is used locally?"]),
           activity("EAUFULL-TX14", "EBRT or chemoradiation delivery", "Radiotherapy", "activity", "EM08", "treatment", 800, 462, "External beam radiotherapy or chemoradiation delivery, including fractionated treatment.", "This activity should be parameterized by fraction count, machine time, concurrent therapy, and patient travel.", ["Radiotherapy fractions", "Linear accelerator electricity", "Machine time", "Chemotherapy co-treatment", "Patient travel"], ["Which dose and fractionation schedules are used locally?"]),
-          activity("EAUFULL-TX15", "Response monitoring and salvage decision", "Treatment planning", "decision", "EM05", "return", 950, 462, "Monitoring after bladder-preserving treatment and decision on salvage cystectomy when recurrence or inadequate response occurs.", "This keeps the long-term pathway logic visible because bladder-sparing care requires close surveillance and possible salvage treatment.", ["Cystoscopy", "Imaging review", "Clinical review", "Shared decision documentation"], ["What surveillance and salvage assumptions should be used?"]),
+          activity("EAUFULL-TX15", "Response assessment and salvage decision", "Follow-up", "decision", "EM09", "return", 950, 462, "Response assessment after bladder-preserving treatment and decision on salvage cystectomy when recurrence or inadequate response occurs.", "Unlike a meeting-only decision, this combined node represents a resource-bearing response assessment with cystoscopy and imaging before the salvage decision.", ["Cystoscopy", "Urine cytology", "Imaging review", "Clinical review"], ["What response-assessment schedule and salvage assumptions should be used?"]),
           activity("EAUFULL-TX16", "Palliative radiotherapy or symptom control", "Radiotherapy", "activity", "EM08", "return", 500, 578, "Palliative radiotherapy or symptom-directed treatment for patients not following a curative route.", "This activity may belong to a different functional unit from curative-intent pathways and should be explicitly scoped.", ["Radiotherapy fractions", "Clinical review", "Patient travel", "Supportive care"], ["Should palliative treatment be a separate scenario?"]),
           activity("EAUFULL-TX17", "Advanced systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "return", 650, 578, "Systemic treatment for advanced or metastatic disease where indicated.", "Advanced systemic therapy can dominate resource use and should not be merged with curative perioperative therapy without clear scope.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring"], ["Which advanced-disease regimens are inside the target case?"]),
           activity("EAUFULL-FU01", "Follow-up after radical cystectomy", "Follow-up", "activity", "EM09", "followup", 1150, 578, "Surveillance and follow-up after radical cystectomy.", "Follow-up after cystectomy includes repeated assessment, imaging, laboratory testing, and diversion-related care over time.", ["Outpatient visits", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["What follow-up time horizon should be used?"]),
@@ -4072,7 +4200,10 @@
           edge("EAUFULL-DX04", "EAUFULL-DX05", "diagnostic"),
           edge("EAUFULL-DX05", "EAUFULL-DX06", "diagnostic"),
           edge("EAUFULL-DX06", "EAUFULL-DX07", "diagnostic"),
+          edge("EAUFULL-DX06", "EAUFULL-DX08", "diagnostic", { excludedBy: ["EAUFULL-DX07"] }),
+          edge("EAUFULL-DX06", "EAUFULL-JM01", "diagnostic", { excludedBy: ["EAUFULL-DX07", "EAUFULL-DX08"] }),
           edge("EAUFULL-DX07", "EAUFULL-DX08", "diagnostic"),
+          edge("EAUFULL-DX07", "EAUFULL-JM01", "diagnostic", { excludedBy: ["EAUFULL-DX08"] }),
           edge("EAUFULL-DX08", "EAUFULL-JM01", "diagnostic"),
           edge("EAUFULL-JM01", "EAUFULL-TX01", "diagnostic"),
           edge("EAUFULL-TX01", "EAUFULL-TX02", "treatment"),
@@ -4080,6 +4211,7 @@
           edge("EAUFULL-TX03", "EAUFULL-TX04", "treatment"),
           edge("EAUFULL-TX04", "EAUFULL-TX05", "treatment"),
           edge("EAUFULL-TX05", "EAUFULL-TX06", "treatment"),
+          edge("EAUFULL-TX03", "EAUFULL-TX06", "treatment", { excludedBy: ["EAUFULL-TX04", "EAUFULL-TX05"] }),
           edge("EAUFULL-TX06", "EAUFULL-TX07", "treatment"),
           edge("EAUFULL-TX07", "EAUFULL-TX08", "treatment"),
           edge("EAUFULL-TX08", "EAUFULL-TX09", "treatment"),
@@ -4091,10 +4223,10 @@
           edge("EAUFULL-TX12", "EAUFULL-TX13", "treatment"),
           edge("EAUFULL-TX13", "EAUFULL-TX14", "treatment"),
           edge("EAUFULL-TX14", "EAUFULL-TX15", "followup"),
-          edge("EAUFULL-TX15", "EAUFULL-FU02", "followup"),
+          edge("EAUFULL-TX15", "EAUFULL-FU02", "followup", { excludedBy: ["EAUFULL-TX06"] }),
           edge("EAUFULL-TX15", "EAUFULL-TX06", "return"),
           edge("EAUFULL-TX03", "EAUFULL-TX16", "return"),
-          edge("EAUFULL-TX16", "EAUFULL-TX17", "return")
+          edge("EAUFULL-TX03", "EAUFULL-TX17", "return")
         ]
       },
       emc: {
@@ -4111,8 +4243,8 @@
           { y: 590, label: "Bladder preservation and follow-up", labelY: 634 }
         ],
         nodes: [
-          activity("EMC-FC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral to regional urology after hematuria or another suspicion of bladder cancer.", "Joost described this as the operational start before the patient reaches Erasmus MC. Primary-care events are context; the modeled hospital boundary starts at regional urology.", ["Patient travel", "Outpatient room use", "EHR documentation"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
-          activity("EMC-DX01", "History and physical assessment", "Diagnostics", "activity", "EM03", "diagnostic", 180, 92, "Initial urology consultation and clinical assessment in the regional hospital.", "This patient-facing activity establishes the diagnostic workup and adds travel and outpatient resource use.", ["Patient travel", "Outpatient room use", "Clinical documentation"], ["Which baseline tests are routinely ordered at ASZ?"]),
+          activity("EMC-FC01", "Referral to regional urology", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral or handover to regional urology after hematuria or another suspicion of bladder cancer.", "Joost described this as the operational boundary before diagnosis at ASZ or another regional hospital. It does not represent a second consultation; the first resource-bearing urology assessment is counted at DX01.", ["Referral record", "Appointment handover"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
+          activity("EMC-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "Initial urology consultation and clinical assessment in the regional hospital.", "This is the first resource-bearing specialist contact and is modeled in EM01. Patient travel remains owned by the optional EM10 support module to prevent double counting.", ["Outpatient room use", "EHR documentation", "Clinical assessment"], ["Which baseline tests are routinely ordered at ASZ?"]),
           activity("EMC-DX02", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 290, 92, "Cystoscopic visualization of a suspected bladder tumor in the regional hospital.", "Cystoscopy is a material and reprocessing activity that belongs inside the expanded Dutch boundary.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is flexible cystoscopy the default diagnostic procedure at ASZ?"]),
           activity("EMC-DX03", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 410, 92, "Transurethral resection of bladder tumor to obtain tissue and assess invasion.", "TURBT is performed before tertiary referral in the pathway described by Joost and is environmentally relevant due to theatre, anesthesia, instruments, and pathology flows.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology specimen", "Surgical waste"], ["Confirm admission type, anesthesia, repeat TURBT frequency, and procedure location."]),
           activity("EMC-DX04", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 530, 92, "Regional pathology establishes tumor type, grade, and muscle invasion after TURBT.", "Pathology determines whether the patient remains in a local non-MIBC pathway or enters the MIBC referral pathway.", ["Specimen processing", "Slides and staining", "Pathology reporting", "Laboratory electricity"], ["Which pathology tests and ancillary stains are used before referral?"]),
@@ -4122,7 +4254,7 @@
           activity("EMC-DX07", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 800, 220, "Additional local staging or problem-solving imaging when clinically indicated.", "This is a scenario-dependent activity, not a default for every patient.", ["MRI scan", "PET-CT scan", "Radiology reporting", "Patient travel"], ["Which indications trigger PET-CT or MRI in regional practice?"]),
           activity("EMC-FC02", "Transfer to Erasmus MC", "Access", "activity", "EM01", "diagnostic", 940, 220, "Transfer of the confirmed MIBC referral package from ASZ or another regional hospital to Erasmus MC.", "The activity marks the institutional handover described in the interview. Its administrative-only components are subject to cut-off, but travel or repeated clinical work remains in scope.", ["Referral package", "Pathology material transfer", "Imaging transfer", "Patient travel"], ["Which documents, specimens, and images must be complete before transfer?"]),
           activity("EMC-DX08", "Pathology review", "Diagnostics", "activity", "EM02", "diagnostic", 1080, 220, "Erasmus MC review of regional TURBT pathology and diagnostic material.", "Specialist review can confirm muscle invasion, variant histology, grade, and adequacy before route selection.", ["Slide transport", "Microscopy or digital pathology", "Report generation"], ["Is central pathology revision performed for all referred MIBC cases?"]),
-          activity("EMC-DX09", "Repeat CT decision", "Diagnostics", "decision", "EM03", "diagnostic", 1080, 348, "Decision whether transferred imaging is sufficient or must be repeated or supplemented.", "The decision is explicit because repeat imaging may be a material source of avoidable environmental burden.", ["Imaging review", "Staging date check", "Radiology request"], ["What age, quality, or staging criteria trigger repeat imaging?"]),
+          activity("EMC-DX09", "Repeat or supplemental staging imaging if required", "Diagnostics", "activity", "EM03", "diagnostic", 1080, 348, "Conditional repeat or supplemental staging imaging when transferred imaging is too old, incomplete, or of insufficient quality.", "Selecting this optional node means that an additional scan occurs and therefore activates a CT building block. Imaging review alone remains under the provisional cut-off.", ["Scanner electricity", "Contrast media", "Radiology reporting"], ["What age, quality, or staging criteria trigger repeat imaging, and which modality is used?"]),
           activity("EMC-JM01", "Joint clinic", "Joint clinic and MDT", "activity", "EM04", "diagnostic", 940, 348, "Patient-facing multidisciplinary bladder cancer clinic at Erasmus MC.", "The visit supports shared assessment. Staff labor alone is not characterized, but patient travel, room use, and any additional procedures remain relevant.", ["Patient travel", "Outpatient room use", "Additional tests if ordered"], ["Which specialties are present and can this visit be remote for selected patients?"]),
           activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 800, 348, "Multidisciplinary review of staging, pathology, fitness, and treatment options.", "The meeting remains visible because it determines the pathway, but its minor office and ICT inputs are provisionally excluded from LCA calculation.", ["Imaging display", "EHR access", "Meeting room electricity"], ["How many MDO discussions occur per patient and which repeat discussions change treatment?"]),
           activity("EMC-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 660, 348, "Assessment of health status, comorbidity, frailty, and suitability for curative or bladder-preserving treatment.", "Fitness affects clinical comparability and route selection, so it must remain explicit even if its direct impact is small.", ["Patient travel", "Assessment tools", "Laboratory review"], ["Which fitness or geriatric instruments are used locally?"]),
@@ -4134,12 +4266,12 @@
           activity("EMC-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 530, 470, "Pelvic lymph node dissection performed with radical cystectomy where indicated.", "It can alter operation duration, pathology workload, and resource demand.", ["Operating room time", "Surgical instruments", "Pathology specimens", "Waste"], ["Model as a separate parameter or part of the cystectomy package?"]),
           activity("EMC-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 670, 470, "Choice and delivery implications of ileal conduit, neobladder, or another urinary diversion.", "Diversion type changes surgery, materials, admission, education, and long-term follow-up.", ["Surgical consumables", "Operating room time", "Stoma materials", "Patient education"], ["Which diversion types and frequencies should be represented?"]),
           activity("EMC-TX09", "Perioperative care and VTE prophylaxis", "Surgery", "activity", "EM07", "treatment", 810, 470, "Postoperative admission, enhanced recovery elements, and thromboprophylaxis.", "This separates inpatient resource use from the operation itself.", ["Ward bed-days", "Medicines", "Monitoring consumables", "Meals and linen"], ["Which ward and ICU days belong to the reference episode?"]),
-          activity("EMC-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 900, 470, "Postoperative review for adjuvant systemic treatment or surveillance.", "The node is route logic; environmental burden is activated only if treatment or additional testing occurs.", ["Pathology review", "Laboratory monitoring", "Medical oncology consultation"], ["Which adjuvant options are current in Dutch practice?"]),
+          activity("EMC-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 900, 470, "Postoperative review for adjuvant systemic treatment or surveillance.", "The node is route logic and is provisionally excluded from the LCA calculation. Treatment, laboratory testing, or imaging should be activated as separate resource-bearing activities when they occur.", ["Clinical review", "Treatment decision"], ["Which adjuvant options are current in Dutch practice, and should a separate treatment-delivery node be added?"]),
           activity("EMC-TX11", "Trimodality therapy eligibility", "Radiotherapy", "decision", "EM08", "treatment", 390, 590, "Eligibility for bladder-preserving trimodality treatment.", "This branch must be modeled as a multi-activity pathway with its own surveillance and salvage assumptions.", ["Clinical review", "Imaging review", "Patient consultation"], ["Which local criteria define trimodality eligibility?"]),
           activity("EMC-TX12", "Maximal TURBT for bladder preservation", "Surgery", "activity", "EM07", "treatment", 530, 590, "Maximal TURBT before bladder-preserving chemoradiation where appropriate.", "This treatment TURBT is distinct from the initial diagnostic TURBT.", ["Operating room time", "Anesthesia", "Sterile instruments", "Surgical waste"], ["Is maximal TURBT performed at ASZ, Erasmus MC, or another site?"]),
           activity("EMC-TX13", "Radiotherapy planning", "Radiotherapy", "activity", "EM08", "treatment", 670, 590, "Planning CT, contouring, plan optimization, quality assurance, and immobilization before treatment.", "Planning is separated from treatment fractions so its fixed resource demand can be modeled correctly.", ["Planning CT", "Planning workstation", "Quality assurance", "Immobilization materials"], ["Which planning workflow and location apply?"]),
           activity("EMC-TX14", "EBRT, chemoradiation, or brachytherapy", "Radiotherapy", "activity", "EM08", "treatment", 810, 590, "Radiotherapy-based bladder treatment, including the Dutch brachytherapy option for selected patients.", "Brachytherapy is shown as a Dutch-specific option from the NVU guideline modules. It must not be applied outside its clinical eligibility criteria.", ["Treatment fractions or sessions", "Machine electricity", "Concurrent systemic therapy", "Patient travel"], ["Which modalities are delivered at Erasmus MC, Dordrecht, or another center?"]),
-          activity("EMC-TX15", "Response monitoring and salvage decision", "Treatment planning", "decision", "EM05", "return", 950, 590, "Response surveillance after bladder preservation and decision on salvage treatment if needed.", "Repeated cystoscopy and imaging may materially affect long-term pathway impacts.", ["Cystoscopy", "Surveillance imaging", "Clinical review", "Patient travel"], ["Which surveillance schedule and salvage assumptions are used locally?"]),
+          activity("EMC-TX15", "Response assessment and salvage decision", "Follow-up", "decision", "EM09", "return", 950, 590, "Response assessment after bladder preservation and decision on salvage treatment if needed.", "This combined node represents a resource-bearing cystoscopy or imaging assessment before the salvage decision, so it is not treated as meeting-only logic.", ["Cystoscopy", "Urine cytology", "Surveillance imaging", "Clinical review"], ["Which response-assessment schedule and salvage assumptions are used locally?"]),
           activity("EMC-TX16", "Advanced systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "return", 250, 590, "Systemic treatment for advanced or metastatic disease when this route is in scope.", "This route has a different clinical intent and may require a separate functional unit or scenario.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring"], ["Should metastatic disease remain in this pathway model or be modeled separately?"]),
           activity("EMC-TX17", "Palliative radiotherapy or symptom control", "Radiotherapy", "activity", "EM08", "return", 100, 590, "Symptom-directed local treatment or palliative radiotherapy.", "Palliative care should not be compared directly with curative pathways without an appropriate decision context and functional unit.", ["Radiotherapy fractions", "Supportive medicines", "Patient travel"], ["Which palliative activities and time horizon are in scope?"]),
           activity("EMC-FU02", "Follow-up and surveillance", "Follow-up", "activity", "EM09", "followup", 1080, 590, "Oncologic and functional follow-up after treatment.", "Joost noted that follow-up may extend for years and that imaging frequency is an important scenario parameter.", ["Outpatient visits", "Cystoscopy", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["Compare Dutch and EAU follow-up schedules and confirm the model time horizon."]),
@@ -4150,9 +4282,9 @@
           edge("EMC-DX02", "EMC-DX03", "diagnostic"), edge("EMC-DX03", "EMC-DX04", "diagnostic"),
           edge("EMC-DX04", "EMC-DX05", "diagnostic"), edge("EMC-DX05", "EMC-FU01", "return"),
           edge("EMC-DX05", "EMC-DX06", "diagnostic"), edge("EMC-DX06", "EMC-DX07", "diagnostic"),
-          edge("EMC-DX06", "EMC-FC02", "diagnostic"), edge("EMC-DX07", "EMC-FC02", "diagnostic"),
+          edge("EMC-DX06", "EMC-FC02", "diagnostic", { excludedBy: ["EMC-DX07"] }), edge("EMC-DX07", "EMC-FC02", "diagnostic"),
           edge("EMC-FC02", "EMC-DX08", "diagnostic"), edge("EMC-DX08", "EMC-DX09", "diagnostic"),
-          edge("EMC-DX08", "EMC-JM01", "diagnostic"), edge("EMC-DX09", "EMC-JM01", "diagnostic"),
+          edge("EMC-DX08", "EMC-JM01", "diagnostic", { excludedBy: ["EMC-DX09"] }), edge("EMC-DX09", "EMC-JM01", "diagnostic"),
           edge("EMC-JM01", "EMC-JM02", "diagnostic"), edge("EMC-JM02", "EMC-TX01", "treatment"),
           edge("EMC-TX01", "EMC-TX02", "treatment"), edge("EMC-TX02", "EMC-TX03", "treatment"),
           edge("EMC-TX03", "EMC-TX04", "treatment"), edge("EMC-TX04", "EMC-TX05", "treatment"),
@@ -4163,7 +4295,8 @@
           edge("EMC-TX10", "EMC-FU03", "followup"), edge("EMC-FU03", "EMC-FU02", "return"),
           edge("EMC-TX02", "EMC-TX11", "treatment"), edge("EMC-TX11", "EMC-TX12", "treatment"),
           edge("EMC-TX12", "EMC-TX13", "treatment"), edge("EMC-TX13", "EMC-TX14", "treatment"),
-          edge("EMC-TX14", "EMC-TX15", "treatment"), edge("EMC-TX15", "EMC-FU02", "followup"),
+          edge("EMC-TX14", "EMC-TX15", "treatment"), edge("EMC-TX15", "EMC-FU02", "followup", { excludedBy: ["EMC-TX06"] }),
+          edge("EMC-TX15", "EMC-TX06", "return"),
           edge("EMC-TX02", "EMC-TX16", "return"), edge("EMC-TX02", "EMC-TX17", "return"),
           edge("EMC-TX16", "EMC-FU02", "followup"), edge("EMC-TX17", "EMC-FU02", "followup")
         ]
@@ -4559,7 +4692,7 @@
           },
           {
             id: "CRCDUTCH-TX03",
-            x: 700,
+            x: 660,
             y: 420,
             label: "Colon surgery",
             domain: "Treatment",
@@ -4572,12 +4705,27 @@
             resourceFlows: ["Operating room time", "Anesthesia", "Surgical instruments", "Admission days", "Waste"]
           },
           {
+            id: "CRCDUTCH-TX08",
+            x: 800,
+            y: 420,
+            label: "Adjuvant treatment indication",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM05",
+            route: "treatment",
+            oncology: true,
+            moduleNote: "This decision separates postoperative surveillance from actual adjuvant systemic treatment and is excluded from calculation unless it triggers a resource-bearing activity.",
+            interpretation: "Postoperative indication decision based on stage, pathology, fitness, and expected benefit of adjuvant therapy.",
+            rationale: "A decision node is needed so colon surgery does not appear to require chemotherapy for every patient.",
+            resourceFlows: ["Pathology review", "Clinical decision record"]
+          },
+          {
             id: "CRCDUTCH-TX04",
-            x: 900,
+            x: 930,
             y: 420,
             label: "Adjuvant systemic therapy if indicated",
             domain: "Treatment",
-            type: "decision",
+            type: "activity",
             module: "EM06",
             route: "treatment",
             oncology: true,
@@ -4588,7 +4736,7 @@
           },
           {
             id: "CRCDUTCH-TX05",
-            x: 520,
+            x: 500,
             y: 420,
             label: "Rectal neoadjuvant or radiotherapy route",
             domain: "Treatment",
@@ -4596,10 +4744,25 @@
             module: "EM08",
             route: "treatment",
             oncology: true,
-            moduleNote: "This branch can include radiotherapy, chemoradiation, or total neoadjuvant therapy according to the selected clinical scope.",
-            interpretation: "Preoperative or organ-preserving treatment for rectal cancer when indicated.",
-            rationale: "This creates reusable radiotherapy and systemic therapy blocks shared with other oncology pathways.",
-            resourceFlows: ["Radiotherapy planning", "Treatment fractions", "Concurrent systemic therapy", "Patient travel"]
+            moduleNote: "This branch includes one initial pelvic MRI for local rectal staging plus the selected radiotherapy, chemoradiation, or total neoadjuvant treatment blocks. The post-treatment response MRI is counted separately at TX09.",
+            interpretation: "Local rectal staging followed by preoperative or organ-preserving treatment when indicated.",
+            rationale: "The Dutch CRC guideline separates rectal local staging and neoadjuvant treatment from the colon route. Triggering the initial pelvic MRI here avoids assigning it to every CRC case and keeps it separate from response assessment.",
+            resourceFlows: ["Pelvic MRI for local staging", "Radiotherapy planning", "Treatment fractions", "Concurrent systemic therapy"]
+          },
+          {
+            id: "CRCDUTCH-TX09",
+            x: 610,
+            y: 420,
+            label: "Rectal response assessment and route decision",
+            domain: "Follow-up",
+            type: "decision",
+            module: "EM09",
+            route: "treatment",
+            oncology: true,
+            moduleNote: "This combined node includes the resource-bearing response assessment and the subsequent choice between watch-and-wait surveillance and rectal surgery.",
+            interpretation: "Pelvic MRI, flexible endoscopy, and clinical response assessment after neoadjuvant or radiotherapy treatment, followed by route selection.",
+            rationale: "Dutch CRC guidance includes restaging after neoadjuvant treatment. The decision remains explicit because watch-and-wait and immediate surgery are alternative patient routes, but the preceding assessment must not be removed by the meeting-only cut-off.",
+            resourceFlows: ["Pelvic MRI", "Flexible endoscopy", "Clinical assessment", "Response reporting"]
           },
           {
             id: "CRCDUTCH-FU04",
@@ -4691,15 +4854,17 @@
           edge("CRCDUTCH-DX03", "CRCDUTCH-JM01", "diagnostic"),
           edge("CRCDUTCH-JM01", "CRCDUTCH-TX02", "treatment"),
           edge("CRCDUTCH-TX02", "CRCDUTCH-TX03", "treatment"),
-          edge("CRCDUTCH-TX03", "CRCDUTCH-TX04", "treatment"),
+          edge("CRCDUTCH-TX03", "CRCDUTCH-TX08", "treatment"),
+          edge("CRCDUTCH-TX08", "CRCDUTCH-TX04", "treatment"),
+          edge("CRCDUTCH-TX08", "CRCDUTCH-FU05", "followup", { excludedBy: ["CRCDUTCH-TX04"] }),
           edge("CRCDUTCH-TX04", "CRCDUTCH-FU05", "followup"),
           edge("CRCDUTCH-TX02", "CRCDUTCH-TX05", "treatment"),
-          edge("CRCDUTCH-TX05", "CRCDUTCH-FU04", "followup"),
+          edge("CRCDUTCH-TX05", "CRCDUTCH-TX09", "treatment"),
+          edge("CRCDUTCH-TX09", "CRCDUTCH-FU04", "followup"),
           edge("CRCDUTCH-FU04", "CRCDUTCH-TX06", "return"),
-          edge("CRCDUTCH-TX05", "CRCDUTCH-TX06", "treatment"),
+          edge("CRCDUTCH-TX09", "CRCDUTCH-TX06", "treatment", { excludedBy: ["CRCDUTCH-FU04"] }),
           edge("CRCDUTCH-TX06", "CRCDUTCH-FU05", "followup"),
-          edge("CRCDUTCH-TX02", "CRCDUTCH-TX07", "return"),
-          edge("CRCDUTCH-TX07", "CRCDUTCH-FU05", "followup")
+          edge("CRCDUTCH-TX02", "CRCDUTCH-TX07", "return")
         ]
       }
     };
@@ -4717,7 +4882,8 @@
           id: "bladder-preservation",
           nodes: ["EMC-TX11", "EMC-TX12", "EMC-TX13", "EMC-TX14", "EMC-TX15"]
         },
-        { id: "advanced-or-palliative", nodes: ["EMC-TX16", "EMC-TX17"] }
+        { id: "advanced-systemic", nodes: ["EMC-TX16"] },
+        { id: "palliative-radiotherapy", nodes: ["EMC-TX17"] }
       ],
       eauFull: [
         {
@@ -4735,17 +4901,162 @@
             "EAUFULL-TX15", "EAUFULL-FU02"
           ]
         },
-        { id: "advanced-or-palliative", nodes: ["EAUFULL-TX16", "EAUFULL-TX17"] }
+        { id: "palliative-radiotherapy", nodes: ["EAUFULL-TX16"] },
+        { id: "advanced-systemic", nodes: ["EAUFULL-TX17"] }
       ],
       crcDutch: [
-        { id: "localized-colon", nodes: ["CRCDUTCH-TX03", "CRCDUTCH-TX04"] },
+        { id: "localized-colon", nodes: ["CRCDUTCH-TX03", "CRCDUTCH-TX08", "CRCDUTCH-TX04"] },
         {
           id: "localized-rectal",
-          nodes: ["CRCDUTCH-TX05", "CRCDUTCH-FU04", "CRCDUTCH-TX06"]
+          nodes: ["CRCDUTCH-TX05", "CRCDUTCH-TX09", "CRCDUTCH-FU04", "CRCDUTCH-TX06"]
         },
         { id: "advanced-or-palliative", nodes: ["CRCDUTCH-TX07"] }
       ]
     };
+
+    const pathwayAssessmentDefaults = {
+      emc: { start: "EMC-FC01", end: "EMC-FU02" },
+      eauFull: { start: "EAUFULL-AC01", end: "EAUFULL-FU01" },
+      crcDutch: { start: "CRCDUTCH-FC01", end: "CRCDUTCH-FU05" }
+    };
+
+    const pathwayEvidenceProfiles = {
+      emc: {
+        source: "Erasmus MC 2022 MIBC workflow, EAU/NVU guidance, and Joost expert interview",
+        status: "Expert-informed Dutch operational reconstruction; current execution and activity frequency require local confirmation"
+      },
+      eauFull: {
+        source: "EAU 2026 MIBC diagnostic evaluation, disease management, and follow-up chapters",
+        status: "Guideline-supported institution-neutral reference; local execution is not assumed"
+      },
+      crcDutch: {
+        source: "Dutch CRC guideline (2026) and Peter expert interview",
+        status: "Guideline-supported hospital pathway; entry boundary, local execution, and activity frequency require confirmation"
+      }
+    };
+
+    const pathwayEvidenceText = {
+      nl: {
+        emc: {
+          source: "Erasmus MC MIBC-zorgpad 2022, EAU/NVU-richtlijnen en expertinterview met Joost",
+          status: "Expertgestuurde Nederlandse operationele reconstructie; actuele uitvoering en frequentie vereisen lokale bevestiging"
+        },
+        eauFull: {
+          source: "EAU MIBC 2026: diagnostische evaluatie, ziektebehandeling en follow-up",
+          status: "Onderbouwd door de richtlijn en instellingsneutraal; lokale uitvoering wordt niet verondersteld"
+        },
+        crcDutch: {
+          source: "Nederlandse CRC-richtlijn 2026 en expertinterview met Peter",
+          status: "Onderbouwd Nederlands ziekenhuiszorgpad; startgrens, lokale uitvoering en frequentie vereisen bevestiging"
+        }
+      },
+      zh: {
+        emc: {
+          source: "Erasmus MC 2022 MIBC 本地路径、EAU/NVU 指南及 Joost 专家访谈",
+          status: "基于专家意见重建的荷兰实际路径；当前执行方式和活动频次仍需本地确认"
+        },
+        eauFull: {
+          source: "EAU 2026 MIBC 诊断评估、疾病管理和随访章节",
+          status: "有指南依据的机构中立参考路径；不假定本地一定执行"
+        },
+        crcDutch: {
+          source: "荷兰 CRC 指南（2026）及 Peter 专家访谈",
+          status: "有指南依据的荷兰医院路径；起始边界、本地执行和活动频次仍需确认"
+        }
+      },
+      ja: {
+        emc: {
+          source: "Erasmus MC 2022 MIBC ローカル経路、EAU/NVU ガイドライン、Joost 専門家インタビュー",
+          status: "専門家情報に基づくオランダの実務経路再構成。現在の実施方法と頻度は地域確認が必要"
+        },
+        eauFull: {
+          source: "EAU 2026 MIBC の診断評価、疾患管理、フォローアップ章",
+          status: "ガイドラインに基づく施設中立の参照経路。地域での実施は仮定しない"
+        },
+        crcDutch: {
+          source: "オランダ CRC ガイドライン 2026 と Peter 専門家インタビュー",
+          status: "ガイドラインに基づくオランダ病院経路。開始境界、地域実施、頻度は確認が必要"
+        }
+      },
+      es: {
+        emc: {
+          source: "Vía local MIBC de Erasmus MC 2022, guías EAU/NVU y entrevista experta con Joost",
+          status: "Reconstrucción operativa neerlandesa informada por expertos; la ejecución y frecuencia actuales requieren confirmación local"
+        },
+        eauFull: {
+          source: "EAU MIBC 2026: evaluación diagnóstica, manejo de la enfermedad y seguimiento",
+          status: "Referencia institucionalmente neutra respaldada por la guía; no se presupone ejecución local"
+        },
+        crcDutch: {
+          source: "Guía neerlandesa de CRC 2026 y entrevista experta con Peter",
+          status: "Vía hospitalaria neerlandesa respaldada por la guía; el límite inicial, la ejecución local y la frecuencia requieren confirmación"
+        }
+      }
+    };
+
+    function annotateAndValidateActivityEvidence() {
+      ["emc", "eauFull", "crcDutch"].forEach((pathwayId) => {
+        const profile = pathwayEvidenceProfiles[pathwayId];
+        pathwayData[pathwayId].nodes.forEach((node) => {
+          node.evidence = { pathwayId, ...profile };
+        });
+      });
+      const missing = ["emc", "eauFull", "crcDutch"].flatMap((pathwayId) =>
+        pathwayData[pathwayId].nodes
+          .filter((node) => !node.evidence?.source || !node.evidence?.status)
+          .map((node) => node.id)
+      );
+      if (missing.length) throw new Error(`Activities without evidence status: ${missing.join(", ")}`);
+
+      const incomplete = ["emc", "eauFull", "crcDutch"].flatMap((pathwayId) =>
+        pathwayData[pathwayId].nodes
+          .filter((node) => (
+            !node.label
+            || !node.domain
+            || !["activity", "decision"].includes(node.type)
+            || !moduleRegistry[node.module]
+            || !(node.protocolStep || node.interpretation)
+            || !node.rationale
+            || !Array.isArray(node.resourceFlows)
+            || node.resourceFlows.length === 0
+          ))
+          .map((node) => `${pathwayId}: ${node.id}`)
+      );
+      if (incomplete.length) {
+        throw new Error(`Activities with incomplete clinical or LCA metadata: ${incomplete.join(", ")}`);
+      }
+    }
+
+    annotateAndValidateActivityEvidence();
+
+    function validateVisiblePathwayGraphs() {
+      ["emc", "eauFull", "crcDutch"].forEach((pathwayId) => {
+        const pathway = pathwayData[pathwayId];
+        const nodeIds = pathway.nodes.map((node) => node.id);
+        const nodeIdSet = new Set(nodeIds);
+        if (nodeIdSet.size !== nodeIds.length) {
+          throw new Error(`Duplicate activity IDs in ${pathwayId}`);
+        }
+        const edgeKeys = new Set();
+        pathway.edges.forEach((edgeItem) => {
+          if (!nodeIdSet.has(edgeItem.from) || !nodeIdSet.has(edgeItem.to)) {
+            throw new Error(`Unknown edge endpoint in ${pathwayId}: ${edgeItem.from} -> ${edgeItem.to}`);
+          }
+          const edgeKey = `${edgeItem.from}->${edgeItem.to}`;
+          if (edgeKeys.has(edgeKey)) throw new Error(`Duplicate edge in ${pathwayId}: ${edgeKey}`);
+          edgeKeys.add(edgeKey);
+        });
+        const connectedNodeIds = new Set(pathway.edges.flatMap((edgeItem) => [edgeItem.from, edgeItem.to]));
+        const isolated = nodeIds.filter((nodeId) => !connectedNodeIds.has(nodeId));
+        if (isolated.length) throw new Error(`Isolated activities in ${pathwayId}: ${isolated.join(", ")}`);
+        const boundary = pathwayAssessmentDefaults[pathwayId];
+        if (!boundary || !nodeIdSet.has(boundary.start) || !nodeIdSet.has(boundary.end)) {
+          throw new Error(`Invalid default assessment boundary in ${pathwayId}`);
+        }
+      });
+    }
+
+    validateVisiblePathwayGraphs();
 
     const pathwayReferenceRegistry = {
       emc: [
@@ -4765,33 +5076,37 @@
         { label: "EAU disease management", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer/chapter/disease-management" }
       ],
       crcDutch: [
-        { label: "Richtlijnendatabase: Colorectaal carcinoom (2026)", url: "https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html" }
+        { label: "Richtlijnendatabase: Colorectaal carcinoom (2026)", url: "https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html" },
+        { label: "RIVM: national CRC screening process", url: "https://www.rivm.nl/bevolkingsonderzoek-darmkanker/professionals" }
       ]
     };
 
     const lcaCutoffNodeIds = new Set([
+      "EAU-AC01",
       "EAU-JM01",
       "EAU-DX07",
       "EAU-TX01",
       "EAU-TX05",
       "EAU-TX07",
+      "EAUFULL-AC01",
       "EAUFULL-JM01",
       "EAUFULL-TX01",
       "EAUFULL-TX03",
+      "EAUFULL-TX10",
       "EAUFULL-TX11",
-      "EAUFULL-TX15",
+      "EMC-FC01",
       "EMC-JM02",
       "EMC-JM01",
       "EMC-DX05",
-      "EMC-DX09",
       "EMC-TX01",
       "EMC-TX02",
+      "EMC-TX10",
       "EMC-TX11",
-      "EMC-TX15",
       "EMC-FU01",
       "EMC-FU03",
       "CRCDUTCH-JM01",
       "CRCDUTCH-TX02",
+      "CRCDUTCH-TX08",
       "CRCDUTCH-TX07"
     ]);
 
@@ -6758,6 +7073,151 @@
       sensitivityCoverageValue: "Representado el {value}% del total de la categoría seleccionada"
     });
 
+    Object.assign(uiText.en, {
+      helpStep3: "Choose Complete pathway assessment when the selected activities must form one connected directed route between the declared start and endpoint. Use Partial segment exploration for a single activity or connected subset; those results are labeled as partial and are not a full patient-pathway result.",
+      assessmentModeLabel: "Assessment purpose",
+      completeAssessmentMode: "Complete pathway assessment",
+      partialAssessmentMode: "Partial segment exploration",
+      assessmentStart: "Declared start",
+      assessmentEnd: "Declared endpoint",
+      assessmentNoSelection: "Select activities to build an assessment route.",
+      assessmentStartMissing: "The declared start is not selected.",
+      assessmentEndMissing: "The declared endpoint is not selected.",
+      assessmentDisconnected: "The selected activities do not form one connected route.",
+      assessmentOutsideRoute: "One or more selected activities cannot be reached from the declared start.",
+      assessmentEndUnreachable: "The declared endpoint cannot be reached through the selected activities.",
+      assessmentBranchConflict: "A decision point contains more than one competing outgoing route.",
+      assessmentValidComplete: "Complete connected pathway: {start} to {end}. LCA calculation is enabled.",
+      assessmentValidPartial: "Connected partial segment. Results are exploratory and do not represent a full patient pathway.",
+      completePathwayResult: "Complete pathway result",
+      partialSegmentResult: "Partial segment result",
+      assessmentBlockedTitle: "A valid assessment route is required",
+      assessmentBlocked: "Results, reports, and Brightway calculations remain disabled. {issues}",
+      pendingValidPath: "Pending valid assessment route",
+      activityEvidence: "Activity evidence",
+      evidenceSource: "Evidence source",
+      evidenceStatus: "Validation status",
+      assessmentModeReport: "Assessment mode",
+      assessmentBoundaryReport: "Declared assessment boundary",
+      assessmentExportBlocked: "Complete a connected pathway or switch to Partial segment exploration before calculating or exporting."
+    });
+
+    Object.assign(uiText.nl, {
+      helpStep3: "Kies Volledige zorgpadbeoordeling als de geselecteerde activiteiten één verbonden, gerichte route tussen het opgegeven begin- en eindpunt moeten vormen. Gebruik Verkenning van een deeltraject voor één activiteit of een verbonden deel; deze resultaten worden als gedeeltelijk aangeduid en zijn geen volledig patiënttraject.",
+      assessmentModeLabel: "Doel van de beoordeling",
+      completeAssessmentMode: "Volledige zorgpadbeoordeling",
+      partialAssessmentMode: "Verkenning van een deeltraject",
+      assessmentStart: "Opgegeven beginpunt",
+      assessmentEnd: "Opgegeven eindpunt",
+      assessmentNoSelection: "Selecteer activiteiten om een beoordelingsroute op te bouwen.",
+      assessmentStartMissing: "Het opgegeven beginpunt is niet geselecteerd.",
+      assessmentEndMissing: "Het opgegeven eindpunt is niet geselecteerd.",
+      assessmentDisconnected: "De geselecteerde activiteiten vormen geen verbonden route.",
+      assessmentOutsideRoute: "Een of meer geselecteerde activiteiten zijn niet bereikbaar vanaf het opgegeven beginpunt.",
+      assessmentEndUnreachable: "Het opgegeven eindpunt is niet bereikbaar via de geselecteerde activiteiten.",
+      assessmentBranchConflict: "Een beslispunt bevat meer dan één concurrerende uitgaande route.",
+      assessmentValidComplete: "Volledig verbonden zorgpad: {start} tot {end}. LCA-berekening is ingeschakeld.",
+      assessmentValidPartial: "Verbonden deeltraject. De resultaten zijn verkennend en vormen geen volledig patiënttraject.",
+      completePathwayResult: "Resultaat volledig zorgpad",
+      partialSegmentResult: "Resultaat deeltraject",
+      assessmentBlockedTitle: "Een geldige beoordelingsroute is vereist",
+      assessmentBlocked: "Resultaten, rapporten en Brightway-berekeningen blijven uitgeschakeld. {issues}",
+      pendingValidPath: "Wacht op een geldige beoordelingsroute",
+      activityEvidence: "Onderbouwing van de activiteit",
+      evidenceSource: "Bron",
+      evidenceStatus: "Validatiestatus",
+      assessmentModeReport: "Beoordelingsmodus",
+      assessmentBoundaryReport: "Opgegeven beoordelingsgrens",
+      assessmentExportBlocked: "Maak een verbonden zorgpad of schakel over naar Verkenning van een deeltraject voordat u berekent of exporteert."
+    });
+
+    Object.assign(uiText.zh, {
+      helpStep3: "如需评估完整患者路径，请选择“完整路径评估”，并确保所选活动在指定起点和终点之间构成一条连续的有向路径。如只想查看单个活动或连续片段，请使用“局部片段探索”；其结果会明确标记为局部结果，不代表完整患者路径。",
+      assessmentModeLabel: "评估目的",
+      completeAssessmentMode: "完整路径评估",
+      partialAssessmentMode: "局部片段探索",
+      assessmentStart: "指定起点",
+      assessmentEnd: "指定终点",
+      assessmentNoSelection: "请选择活动以构建评估路径。",
+      assessmentStartMissing: "尚未选择指定起点。",
+      assessmentEndMissing: "尚未选择指定终点。",
+      assessmentDisconnected: "所选活动没有构成一条连续路径。",
+      assessmentOutsideRoute: "部分所选活动无法从指定起点到达。",
+      assessmentEndUnreachable: "无法通过所选活动到达指定终点。",
+      assessmentBranchConflict: "同一决策点选择了多个互斥的后续路径。",
+      assessmentValidComplete: "完整连续路径：{start} 至 {end}。已启用 LCA 计算。",
+      assessmentValidPartial: "连续的局部片段。结果仅用于探索，不代表完整患者路径。",
+      completePathwayResult: "完整路径结果",
+      partialSegmentResult: "局部片段结果",
+      assessmentBlockedTitle: "需要有效的评估路径",
+      assessmentBlocked: "结果、报告和 Brightway 计算暂不可用。{issues}",
+      pendingValidPath: "等待有效评估路径",
+      activityEvidence: "活动证据",
+      evidenceSource: "证据来源",
+      evidenceStatus: "验证状态",
+      assessmentModeReport: "评估模式",
+      assessmentBoundaryReport: "指定评估边界",
+      assessmentExportBlocked: "请先构建连续路径，或切换到“局部片段探索”，再进行计算或导出。"
+    });
+
+    Object.assign(uiText.ja, {
+      helpStep3: "選択した活動が指定した開始点と終了点の間で一つの連続した有向経路を形成する必要がある場合は、完全パスウェイ評価を選択します。単一活動または連続部分のみを調べる場合は部分セグメント探索を使用します。結果は部分結果と表示され、患者パスウェイ全体の結果ではありません。",
+      assessmentModeLabel: "評価目的",
+      completeAssessmentMode: "完全パスウェイ評価",
+      partialAssessmentMode: "部分セグメント探索",
+      assessmentStart: "指定開始点",
+      assessmentEnd: "指定終了点",
+      assessmentNoSelection: "活動を選択して評価経路を作成してください。",
+      assessmentStartMissing: "指定開始点が選択されていません。",
+      assessmentEndMissing: "指定終了点が選択されていません。",
+      assessmentDisconnected: "選択した活動が一つの連続経路を形成していません。",
+      assessmentOutsideRoute: "一部の選択活動が指定開始点から到達できません。",
+      assessmentEndUnreachable: "選択した活動では指定終了点に到達できません。",
+      assessmentBranchConflict: "一つの意思決定点で複数の競合経路が選択されています。",
+      assessmentValidComplete: "完全な連続経路：{start} から {end}。LCA 計算が有効です。",
+      assessmentValidPartial: "連続した部分セグメントです。結果は探索用で、患者パスウェイ全体を表しません。",
+      completePathwayResult: "完全パスウェイ結果",
+      partialSegmentResult: "部分セグメント結果",
+      assessmentBlockedTitle: "有効な評価経路が必要です",
+      assessmentBlocked: "結果、レポート、Brightway 計算は無効です。{issues}",
+      pendingValidPath: "有効な評価経路を待機中",
+      activityEvidence: "活動の根拠",
+      evidenceSource: "根拠資料",
+      evidenceStatus: "検証状況",
+      assessmentModeReport: "評価モード",
+      assessmentBoundaryReport: "指定評価範囲",
+      assessmentExportBlocked: "連続経路を完成するか、部分セグメント探索に切り替えてから計算または出力してください。"
+    });
+
+    Object.assign(uiText.es, {
+      helpStep3: "Seleccione Evaluación de vía completa cuando las actividades deban formar una ruta dirigida y conectada entre el inicio y el final declarados. Use Exploración de segmento parcial para una actividad o un subconjunto conectado; esos resultados se etiquetan como parciales y no representan la vía completa del paciente.",
+      assessmentModeLabel: "Objetivo de la evaluación",
+      completeAssessmentMode: "Evaluación de vía completa",
+      partialAssessmentMode: "Exploración de segmento parcial",
+      assessmentStart: "Inicio declarado",
+      assessmentEnd: "Final declarado",
+      assessmentNoSelection: "Seleccione actividades para construir una ruta de evaluación.",
+      assessmentStartMissing: "No se ha seleccionado el inicio declarado.",
+      assessmentEndMissing: "No se ha seleccionado el final declarado.",
+      assessmentDisconnected: "Las actividades seleccionadas no forman una ruta conectada.",
+      assessmentOutsideRoute: "Una o más actividades no son alcanzables desde el inicio declarado.",
+      assessmentEndUnreachable: "No se puede alcanzar el final declarado mediante las actividades seleccionadas.",
+      assessmentBranchConflict: "Un punto de decisión contiene más de una ruta de salida competidora.",
+      assessmentValidComplete: "Vía completa conectada: {start} a {end}. El cálculo LCA está habilitado.",
+      assessmentValidPartial: "Segmento parcial conectado. Los resultados son exploratorios y no representan una vía completa del paciente.",
+      completePathwayResult: "Resultado de vía completa",
+      partialSegmentResult: "Resultado de segmento parcial",
+      assessmentBlockedTitle: "Se requiere una ruta de evaluación válida",
+      assessmentBlocked: "Los resultados, informes y cálculos de Brightway permanecen deshabilitados. {issues}",
+      pendingValidPath: "Pendiente de una ruta de evaluación válida",
+      activityEvidence: "Evidencia de la actividad",
+      evidenceSource: "Fuente de evidencia",
+      evidenceStatus: "Estado de validación",
+      assessmentModeReport: "Modo de evaluación",
+      assessmentBoundaryReport: "Límite de evaluación declarado",
+      assessmentExportBlocked: "Complete una vía conectada o cambie a Exploración de segmento parcial antes de calcular o exportar."
+    });
+
     const sensitivityPromptText = {
       en: {
         travel: {
@@ -8317,6 +8777,94 @@
       "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / BT"
     });
 
+    Object.assign(nodeLabelText.nl, {
+      "Referral to regional urology": "Verwijzing naar regionale urologie",
+      "CT chest abdomen pelvis staging with urothelial phase": "CT-stadiëring thorax, abdomen en bekken met urotheelfase",
+      "Additional upper tract assessment if indicated": "Aanvullende beoordeling van de bovenste urinewegen indien geïndiceerd",
+      "Response assessment and salvage decision": "Responsbeoordeling en beslissing over salvagebehandeling",
+      "Repeat or supplemental staging imaging if required": "Herhaalde of aanvullende stadiëringsbeeldvorming indien nodig",
+      "Adjuvant treatment indication": "Indicatiestelling voor adjuvante behandeling",
+      "Response-based rectal route decision": "Responsgestuurde beslissing voor het rectumtraject",
+      "Rectal response assessment and route decision": "Responsbeoordeling en routebesluit bij rectumcarcinoom"
+    });
+
+    Object.assign(nodeLabelText.zh, {
+      "Referral to regional urology": "转诊至区域泌尿科",
+      "CT chest abdomen pelvis staging with urothelial phase": "胸腹盆 CT 分期（含尿路上皮期）",
+      "Additional upper tract assessment if indicated": "有指征时追加上尿路评估",
+      "Response assessment and salvage decision": "疗效评估与挽救治疗决策",
+      "Repeat or supplemental staging imaging if required": "需要时重复或补充分期影像",
+      "Adjuvant treatment indication": "辅助治疗适应证判断",
+      "Response-based rectal route decision": "基于疗效的直肠治疗路径决策",
+      "Rectal response assessment and route decision": "直肠癌疗效评估与路径决策"
+    });
+
+    Object.assign(nodeLabelText.ja, {
+      "Referral to regional urology": "地域泌尿器科への紹介",
+      "CT chest abdomen pelvis staging with urothelial phase": "尿路上皮相を含む胸腹骨盤 CT 病期診断",
+      "Additional upper tract assessment if indicated": "適応時の追加上部尿路評価",
+      "Response assessment and salvage decision": "奏効評価と救済治療判断",
+      "Repeat or supplemental staging imaging if required": "必要時の再検または追加病期画像",
+      "Adjuvant treatment indication": "術後補助療法の適応判断",
+      "Response-based rectal route decision": "奏効に基づく直腸治療経路判断",
+      "Rectal response assessment and route decision": "直腸がんの奏効評価と経路判断"
+    });
+
+    Object.assign(nodeLabelText.es, {
+      "Referral to regional urology": "Derivación a urología regional",
+      "CT chest abdomen pelvis staging with urothelial phase": "Estadificación CT de tórax, abdomen y pelvis con fase urotelial",
+      "Additional upper tract assessment if indicated": "Evaluación adicional de la vía urinaria superior si está indicada",
+      "Response assessment and salvage decision": "Evaluación de respuesta y decisión de rescate",
+      "Repeat or supplemental staging imaging if required": "Imagen de estadificación repetida o adicional si es necesaria",
+      "Adjuvant treatment indication": "Indicación de tratamiento adyuvante",
+      "Response-based rectal route decision": "Decisión de vía rectal basada en respuesta",
+      "Rectal response assessment and route decision": "Evaluación de respuesta rectal y decisión de vía"
+    });
+
+    Object.assign(shortNodeLabelText.nl, {
+      "Referral to regional urology": "Verwijzing urologie",
+      "CT chest abdomen pelvis staging with urothelial phase": "CT-stadiëring",
+      "Additional upper tract assessment if indicated": "Bovenste urineweg?",
+      "Response assessment and salvage decision": "Respons / salvage",
+      "Repeat or supplemental staging imaging if required": "Aanvullende beeldvorming",
+      "Adjuvant treatment indication": "Adjuvante indicatie?",
+      "Response-based rectal route decision": "Responsroute?",
+      "Rectal response assessment and route decision": "Respons + route"
+    });
+
+    Object.assign(shortNodeLabelText.zh, {
+      "Referral to regional urology": "转诊泌尿科",
+      "CT chest abdomen pelvis staging with urothelial phase": "胸腹盆 CT 分期",
+      "Additional upper tract assessment if indicated": "追加上尿路评估？",
+      "Response assessment and salvage decision": "疗效 / 挽救",
+      "Repeat or supplemental staging imaging if required": "补充分期影像",
+      "Adjuvant treatment indication": "辅助治疗？",
+      "Response-based rectal route decision": "疗效路径？",
+      "Rectal response assessment and route decision": "疗效评估 + 路径"
+    });
+
+    Object.assign(shortNodeLabelText.ja, {
+      "Referral to regional urology": "泌尿器科紹介",
+      "CT chest abdomen pelvis staging with urothelial phase": "胸腹骨盤 CT",
+      "Additional upper tract assessment if indicated": "追加上部尿路？",
+      "Response assessment and salvage decision": "奏効 / 救済",
+      "Repeat or supplemental staging imaging if required": "追加病期画像",
+      "Adjuvant treatment indication": "術後補助適応？",
+      "Response-based rectal route decision": "奏効経路？",
+      "Rectal response assessment and route decision": "奏効評価 + 経路"
+    });
+
+    Object.assign(shortNodeLabelText.es, {
+      "Referral to regional urology": "Derivación urología",
+      "CT chest abdomen pelvis staging with urothelial phase": "CT de estadificación",
+      "Additional upper tract assessment if indicated": "Vía superior?",
+      "Response assessment and salvage decision": "Respuesta / rescate",
+      "Repeat or supplemental staging imaging if required": "Imagen adicional",
+      "Adjuvant treatment indication": "Indicación adyuvante?",
+      "Response-based rectal route decision": "Ruta por respuesta?",
+      "Rectal response assessment and route decision": "Respuesta + vía"
+    });
+
     const blockNameText = {
       nl: {
         "First specialist consultation": "Eerste specialistische consult",
@@ -8514,6 +9062,23 @@
       "Post-cystectomy surveillance round": "Ronda de vigilancia tras cistectomía",
       "Bladder-preservation surveillance round": "Ronda de vigilancia tras preservación vesical",
       "Urinary diversion or stoma follow-up": "Seguimiento de derivación urinaria o estoma"
+    });
+
+    Object.assign(blockNameText.nl, {
+      "Bladder-preservation response assessment": "Responsbeoordeling na blaassparende behandeling",
+      "Rectal response assessment": "Responsbeoordeling bij rectumcarcinoom"
+    });
+    Object.assign(blockNameText.zh, {
+      "Bladder-preservation response assessment": "保膀胱治疗后疗效评估",
+      "Rectal response assessment": "直肠癌疗效评估"
+    });
+    Object.assign(blockNameText.ja, {
+      "Bladder-preservation response assessment": "膀胱温存治療後の奏効評価",
+      "Rectal response assessment": "直腸がんの奏効評価"
+    });
+    Object.assign(blockNameText.es, {
+      "Bladder-preservation response assessment": "Evaluación de respuesta tras preservación vesical",
+      "Rectal response assessment": "Evaluación de respuesta del cáncer rectal"
     });
 
     const unitText = {
@@ -9131,6 +9696,34 @@
       "per colonoscopy intake": "por admisión de colonoscopia",
       "per case classified": "por caso clasificado",
       "per surveillance colonoscopy": "por colonoscopia de vigilancia"
+    });
+
+    Object.assign(unitText.nl, { "per response assessment": "per responsbeoordeling" });
+    Object.assign(unitText.zh, { "per response assessment": "每次疗效评估" });
+    Object.assign(unitText.ja, { "per response assessment": "奏効評価 1 回あたり" });
+    Object.assign(unitText.es, { "per response assessment": "por evaluación de respuesta" });
+
+    Object.assign(resourceFlowText.nl, {
+      "Pelvic MRI": "MRI van het bekken",
+      "Flexible endoscopy": "Flexibele endoscopie",
+      "Response reporting": "Responsrapportage"
+    });
+    Object.assign(resourceFlowText.zh, {
+      "Pelvic MRI": "盆腔 MRI",
+      "Flexible endoscopy": "软式内镜",
+      "Response reporting": "疗效报告"
+    });
+    Object.assign(resourceFlowText.ja = resourceFlowText.ja || {}, {
+      "Pelvic MRI": "骨盤 MRI",
+      "Flexible endoscopy": "軟性内視鏡",
+      "Clinical assessment": "臨床評価",
+      "Response reporting": "奏効報告"
+    });
+    Object.assign(resourceFlowText.es = resourceFlowText.es || {}, {
+      "Pelvic MRI": "MRI pélvica",
+      "Flexible endoscopy": "Endoscopia flexible",
+      "Clinical assessment": "Evaluación clínica",
+      "Response reporting": "Informe de respuesta"
     });
 
     Object.assign(resourceFlowText.ja = resourceFlowText.ja || {}, {
@@ -10346,6 +10939,8 @@
       language: readStoredLanguage(),
       scenarioBuildMode: true,
       scenarioNodes: {},
+      assessmentMode: "complete",
+      assessmentBoundaries: {},
       mapFullscreenOpen: false,
       activitiesCollapsed: false,
       workspaceStep: "pathway",
@@ -10529,6 +11124,14 @@
       return items.map(localizedResourceFlow).join("; ");
     }
 
+    function localizedActivityEvidence(node) {
+      const pathwayId = node.evidence?.pathwayId;
+      return pathwayEvidenceText[state.language]?.[pathwayId] || node.evidence || {
+        source: "Source profile not assigned",
+        status: "Requires source and expert confirmation"
+      };
+    }
+
     function localizedClinicalProtocol(node) {
       if (state.language === "en") return node.protocolStep || node.interpretation || node.label;
       return t("clinicalProtocolFallback", {
@@ -10625,6 +11228,124 @@
       return pathwayData[state.pathway];
     }
 
+    function assessmentBoundaryForPathway(pathwayId = state.pathway) {
+      const pathway = pathwayData[pathwayId];
+      const defaults = pathwayAssessmentDefaults[pathwayId] || {
+        start: pathway.nodes[0]?.id,
+        end: pathway.nodes[pathway.nodes.length - 1]?.id
+      };
+      if (!state.assessmentBoundaries[pathwayId]) {
+        state.assessmentBoundaries[pathwayId] = { ...defaults };
+      }
+      const boundary = state.assessmentBoundaries[pathwayId];
+      const nodeIds = new Set(pathway.nodes.map((node) => node.id));
+      if (!nodeIds.has(boundary.start)) boundary.start = defaults.start;
+      if (!nodeIds.has(boundary.end)) boundary.end = defaults.end;
+      return boundary;
+    }
+
+    function traverseScenarioGraph(startId, adjacency) {
+      if (!startId || !adjacency.has(startId)) return new Set();
+      const visited = new Set([startId]);
+      const queue = [startId];
+      while (queue.length) {
+        const nodeId = queue.shift();
+        (adjacency.get(nodeId) || []).forEach((nextId) => {
+          if (visited.has(nextId)) return;
+          visited.add(nextId);
+          queue.push(nextId);
+        });
+      }
+      return visited;
+    }
+
+    function currentAssessmentStatus() {
+      const pathway = currentPathway();
+      const selectedIds = new Set(scenarioSetForPathway());
+      const boundary = assessmentBoundaryForPathway();
+      const issues = [];
+      const activeEdges = pathway.edges.filter((edgeItem) => isScenarioEdgeActive(edgeItem, selectedIds));
+      const directed = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
+      const undirected = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
+      activeEdges.forEach((edgeItem) => {
+        directed.get(edgeItem.from)?.push(edgeItem.to);
+        undirected.get(edgeItem.from)?.push(edgeItem.to);
+        undirected.get(edgeItem.to)?.push(edgeItem.from);
+      });
+
+      if (selectedIds.size === 0) {
+        issues.push(t("assessmentNoSelection"));
+      } else {
+        const [firstSelected] = selectedIds;
+        if (traverseScenarioGraph(firstSelected, undirected).size !== selectedIds.size) {
+          issues.push(t("assessmentDisconnected"));
+        }
+      }
+
+      const hasCompetingBranchSelection = pathway.nodes.some((node) =>
+        selectedIds.has(node.id)
+        && node.type === "decision"
+        && (directed.get(node.id) || []).length > 1
+      );
+      if (hasCompetingBranchSelection) issues.push(t("assessmentBranchConflict"));
+
+      if (state.assessmentMode === "complete" && selectedIds.size > 0) {
+        if (!selectedIds.has(boundary.start)) issues.push(t("assessmentStartMissing"));
+        if (!selectedIds.has(boundary.end)) issues.push(t("assessmentEndMissing"));
+        if (selectedIds.has(boundary.start)) {
+          const reachable = traverseScenarioGraph(boundary.start, directed);
+          if (reachable.size !== selectedIds.size) issues.push(t("assessmentOutsideRoute"));
+          if (!reachable.has(boundary.end)) issues.push(t("assessmentEndUnreachable"));
+        }
+      }
+
+      const startNode = nodeById(pathway, boundary.start);
+      const endNode = nodeById(pathway, boundary.end);
+      const valid = issues.length === 0;
+      const resultLabel = state.assessmentMode === "complete"
+        ? t("completePathwayResult")
+        : t("partialSegmentResult");
+      const message = valid
+        ? state.assessmentMode === "complete"
+          ? t("assessmentValidComplete", {
+            start: startNode ? localizedNodeLabel(startNode) : boundary.start,
+            end: endNode ? localizedNodeLabel(endNode) : boundary.end
+          })
+          : t("assessmentValidPartial")
+        : issues.join(" ");
+      return {
+        mode: state.assessmentMode,
+        valid,
+        issues,
+        message,
+        resultLabel,
+        startId: boundary.start,
+        endId: boundary.end,
+        startLabel: startNode ? localizedNodeLabel(startNode) : boundary.start,
+        endLabel: endNode ? localizedNodeLabel(endNode) : boundary.end,
+        selectedCount: selectedIds.size
+      };
+    }
+
+    function assessmentGateHtml(status = currentAssessmentStatus()) {
+      return `
+        <div class="assessment-gate" role="status">
+          <strong>${escapeHtml(t("assessmentBlockedTitle"))}</strong>
+          <span>${escapeHtml(t("assessmentBlocked", { issues: status.message }))}</span>
+        </div>
+      `;
+    }
+
+    function clearAssessmentDependentResults() {
+      state.brightwayResult = null;
+      state.lastExportedScenarioId = null;
+      const status = document.getElementById("brightwayBridgeStatus");
+      if (status) {
+        status.textContent = "";
+        status.classList.remove("error");
+      }
+    }
+
     function pathwayFamily(pathwayId = state.pathway) {
       return pathwayId === "crcDutch" ? "gastro" : "urology";
     }
@@ -10677,16 +11398,31 @@
       const selectedBundle = scenarioRouteBundleForNode(nodeId, pathwayId);
       if (!selectedBundle) return;
       const retainedBundleIds = new Set([selectedBundle.id]);
-      const eauSalvageContinuationNodes = new Set([
-        "EAUFULL-TX06", "EAUFULL-TX07", "EAUFULL-TX08", "EAUFULL-TX09",
-        "EAUFULL-TX10", "EAUFULL-FU01", "EAUFULL-FU03"
-      ]);
+      const salvagePathway = {
+        eauFull: {
+          decision: "EAUFULL-TX15",
+          directFollowup: "EAUFULL-FU02",
+          continuation: new Set([
+            "EAUFULL-TX06", "EAUFULL-TX07", "EAUFULL-TX08", "EAUFULL-TX09",
+            "EAUFULL-TX10", "EAUFULL-FU01", "EAUFULL-FU03"
+          ])
+        },
+        emc: {
+          decision: "EMC-TX15",
+          directFollowup: "EMC-FU02",
+          continuation: new Set([
+            "EMC-TX06", "EMC-TX07", "EMC-TX08", "EMC-TX09", "EMC-TX10",
+            "EMC-FU03", "EMC-FU02"
+          ])
+        }
+      }[pathwayId];
       if (
-        pathwayId === "eauFull"
-        && selectedIds.has("EAUFULL-TX15")
-        && eauSalvageContinuationNodes.has(nodeId)
+        salvagePathway
+        && selectedIds.has(salvagePathway.decision)
+        && salvagePathway.continuation.has(nodeId)
       ) {
         retainedBundleIds.add("bladder-preservation");
+        if (nodeId !== salvagePathway.directFollowup) selectedIds.delete(salvagePathway.directFollowup);
       }
       (pathwayScenarioRouteBundles[pathwayId] || []).forEach((bundle) => {
         if (retainedBundleIds.has(bundle.id)) return;
@@ -10809,11 +11545,13 @@
         removeCompetingScenarioRouteNodes(selectedIds, nodeId);
         selectedIds.add(nodeId);
       }
+      clearAssessmentDependentResults();
       syncPathwayModulesFromScenario();
     }
 
     function clearScenarioSelection() {
       scenarioSetForPathway().clear();
+      clearAssessmentDependentResults();
       syncPathwayModulesFromScenario();
       render();
     }
@@ -11007,6 +11745,12 @@
       setText("pathwayContextTitle", "pathwayContextTitle");
       setText("pathwayScenarioTitle", "pathwayScenario");
       setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
+      setText("completeAssessmentMode", "completeAssessmentMode");
+      setText("partialAssessmentMode", "partialAssessmentMode");
+      setText("assessmentStartLabel", "assessmentStart");
+      setText("assessmentEndLabel", "assessmentEnd");
+      const assessmentModeControl = document.getElementById("assessmentModeControl");
+      if (assessmentModeControl) assessmentModeControl.setAttribute("aria-label", t("assessmentModeLabel"));
       setText("routeDirectionLabel", "routeDirection");
       setText("routeSequenceLabel", "routeSequence");
       setText("fullscreenRouteDirectionLabel", "routeDirection");
@@ -11286,8 +12030,7 @@
           button.addEventListener("click", () => {
             if (!pathwayData[item.id]) return;
             state.pathway = item.id;
-            state.brightwayResult = null;
-            state.lastExportedScenarioId = null;
+            clearAssessmentDependentResults();
             state.selected = pathwayData[item.id].defaultSelected;
             state.detailAnchor = "map";
             state.domain = "all";
@@ -11425,20 +12168,59 @@
       });
     }
 
+    function renderAssessmentBoundarySelect(select, selectedId) {
+      if (!select) return;
+      clear(select);
+      currentPathway().nodes.forEach((node) => {
+        const option = document.createElement("option");
+        option.value = node.id;
+        option.textContent = `${displayCode(node)} · ${localizedNodeLabel(node)}`;
+        select.appendChild(option);
+      });
+      select.value = selectedId;
+    }
+
     function renderPathwayScenarioControls() {
       const selectedCount = selectedScenarioNodes().length;
       const moduleCount = selectedScenarioModuleIds().length;
-      const status = t("selectedActivitiesStatus", { count: selectedCount, modules: moduleCount });
+      const countStatus = t("selectedActivitiesStatus", { count: selectedCount, modules: moduleCount });
+      const assessment = currentAssessmentStatus();
       const modeToggle = document.getElementById("pathwayScenarioMode");
       const clearButton = document.getElementById("clearPathwayScenario");
       const clearFullscreenButton = document.getElementById("clearPathwayScenarioFullscreen");
       const statusChip = document.getElementById("pathwayScenarioStatus");
       const fullscreenStatusChip = document.getElementById("fullscreenScenarioStatus");
+      const completeButton = document.getElementById("completeAssessmentMode");
+      const partialButton = document.getElementById("partialAssessmentMode");
+      const boundaryControls = document.getElementById("assessmentBoundaryControls");
+      const validationStatus = document.getElementById("assessmentValidationStatus");
+      const startSelect = document.getElementById("assessmentStartNode");
+      const endSelect = document.getElementById("assessmentEndNode");
       if (modeToggle) modeToggle.checked = state.scenarioBuildMode;
-      if (statusChip) statusChip.textContent = status;
-      if (fullscreenStatusChip) fullscreenStatusChip.textContent = status;
+      if (statusChip) statusChip.textContent = countStatus;
+      if (fullscreenStatusChip) {
+        const assessmentStatusLabel = assessment.valid
+          ? assessment.resultLabel
+          : state.assessmentMode === "complete"
+            ? t("completeAssessmentMode")
+            : t("partialAssessmentMode");
+        fullscreenStatusChip.textContent = `${countStatus} · ${assessmentStatusLabel}`;
+      }
       if (clearButton) clearButton.disabled = selectedCount === 0;
       if (clearFullscreenButton) clearFullscreenButton.disabled = selectedCount === 0;
+      if (completeButton) completeButton.setAttribute("aria-pressed", String(state.assessmentMode === "complete"));
+      if (partialButton) partialButton.setAttribute("aria-pressed", String(state.assessmentMode === "partial"));
+      if (boundaryControls) boundaryControls.hidden = state.assessmentMode !== "complete";
+      renderAssessmentBoundarySelect(startSelect, assessment.startId);
+      renderAssessmentBoundarySelect(endSelect, assessment.endId);
+      if (validationStatus) {
+        validationStatus.textContent = assessment.message;
+        validationStatus.classList.toggle("valid", assessment.valid);
+      }
+      ["lcaExportReport", "exportBrightwayScenario"].forEach((id) => {
+        const button = document.getElementById(id);
+        if (button) button.disabled = !assessment.valid;
+      });
     }
 
     function attachMapNodeInteractions(group, node) {
@@ -11774,6 +12556,7 @@
     function shortStationLabel(node) {
       const replacements = {
         "Referral or presentation": "Referral",
+        "Referral to regional urology": "Urology referral",
         "History and physical assessment": "History + exam",
         "Urine cytology and laboratory workup": "Urine + lab workup",
         "TURBT for diagnosis and staging": "TURBT staging",
@@ -11788,6 +12571,8 @@
         "Palliative or advanced disease route": "Palliative route",
         "Follow-up and surveillance": "Follow-up",
         "Pathology report and specimen review": "Pathology report",
+        "CT chest abdomen pelvis staging with urothelial phase": "CT staging + urothelial phase",
+        "Additional upper tract assessment if indicated": "Upper tract assessment?",
         "CT chest abdomen pelvis staging": "CT staging",
         "CT urography or upper tract assessment": "CT urography",
         "MRI or PET-CT if indicated": "MRI / PET-CT",
@@ -11799,13 +12584,14 @@
         "Radical cystectomy": "Radical cystectomy",
         "Pelvic lymph node dissection": "Pelvic LND",
         "Urinary diversion choice": "Diversion choice",
-        "Perioperative care and VTE prophylaxis": "Perioperative care",
+        "Perioperative care and VTE prophylaxis": "Periop care",
         "Adjuvant therapy assessment": "Adjuvant therapy?",
         "Trimodality therapy eligibility": "TMT eligibility",
         "Maximal TURBT for bladder preservation": "Maximal TURBT",
         "Radiotherapy planning": "RT planning",
         "EBRT or chemoradiation delivery": "EBRT / chemoradiation",
         "Response monitoring and salvage decision": "Response / salvage",
+        "Response assessment and salvage decision": "Response / salvage",
         "Palliative radiotherapy or symptom control": "Palliative RT",
         "Advanced systemic therapy": "Advanced systemic therapy",
         "Follow-up after radical cystectomy": "RC follow-up",
@@ -11815,6 +12601,7 @@
         "MIBC confirmation and referral decision": "MIBC referral",
         "Non-MIBC local pathway": "Local non-MIBC route",
         "Transfer to Erasmus MC": "Transfer to Erasmus MC",
+        "Repeat or supplemental staging imaging if required": "Repeat imaging if needed",
         "EBRT, chemoradiation, or brachytherapy": "EBRT / CRT / BT",
         "Return to referrer": "Return",
         "Repeat CT decision": "Repeat CT?",
@@ -11906,7 +12693,10 @@
         "Watch-and-wait response surveillance": "Watch-and-wait",
         "Rectal surgery if indicated": "Rectal surgery",
         "Advanced or palliative route": "Advanced / palliative",
-        "Post-CRC treatment surveillance": "CRC surveillance"
+        "Post-CRC treatment surveillance": "CRC surveillance",
+        "Adjuvant treatment indication": "Adjuvant indication?",
+        "Response-based rectal route decision": "Rectal response decision",
+        "Rectal response assessment and route decision": "Response + route"
       };
       if (state.language === "en") return replacements[node.label] || node.label;
       return shortNodeLabelText[state.language]?.[node.label] || localizedNodeLabel(node);
@@ -12096,6 +12886,7 @@
         detail.innerHTML = `<div class="empty">${escapeHtml(t("noActivitySelected"))}</div>`;
         return;
       }
+      const evidence = localizedActivityEvidence(node);
       detail.innerHTML = `
         <div class="detail-title">
           <div class="code-pill">${escapeHtml(displayCode(node))}</div>
@@ -12119,6 +12910,11 @@
           <div class="detail-block">
             <strong>${escapeHtml(t("whyKept"))}</strong>
             <p>${escapeHtml(localizedClinicalRationale(node))}</p>
+          </div>
+          <div class="detail-block">
+            <strong>${escapeHtml(t("activityEvidence"))}</strong>
+            <p><b>${escapeHtml(t("evidenceSource"))}:</b> ${escapeHtml(evidence.source)}</p>
+            <p><b>${escapeHtml(t("evidenceStatus"))}:</b> ${escapeHtml(evidence.status)}</p>
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("ecopathModule"))}</strong>
@@ -12454,6 +13250,11 @@
     function renderAllImpactResults(caseCount) {
       const container = document.getElementById("allImpactResults");
       if (!container) return;
+      const assessment = currentAssessmentStatus();
+      if (!assessment.valid) {
+        container.innerHTML = assessmentGateHtml(assessment);
+        return;
+      }
       const rows = impactCategoryRegistry.map((category) => {
         const low = lcaScenarioValuesForCategory(category.id, "low", caseCount);
         const base = lcaScenarioValuesForCategory(category.id, "base", caseCount);
@@ -12561,6 +13362,11 @@
       const output = document.getElementById("sankeyCutoffValue");
       const intro = document.getElementById("sankeyIntro");
       if (!target || !output || !intro) return;
+      const assessment = currentAssessmentStatus();
+      if (!assessment.valid) {
+        target.innerHTML = assessmentGateHtml(assessment);
+        return;
+      }
       output.textContent = t("sankeyCutoffValue", { value: formatDecimal(state.sankeyCutoffPercent, 1) });
       intro.textContent = t("sankeyIntro", {
         category: impactCategoryName(),
@@ -12943,6 +13749,13 @@
       const reductionLabel = document.getElementById("sensitivityReductionLabel");
       const quantityBasisControl = document.getElementById("sensitivityQuantityBasisControl");
       if (!summary || !results || !methodNote || !slider || !sliderValue) return;
+      const assessment = currentAssessmentStatus();
+      if (!assessment.valid) {
+        methodNote.textContent = t("assessmentExportBlocked");
+        summary.innerHTML = assessmentGateHtml(assessment);
+        results.innerHTML = "";
+        return;
+      }
 
       document.querySelectorAll("[data-sensitivity-mode]").forEach((button) => {
         button.setAttribute("aria-pressed", String(button.dataset.sensitivityMode === state.sensitivityMode));
@@ -13182,61 +13995,7 @@
       });
     }
 
-    function renderLcaOutputs() {
-      const caseCount = Math.max(1, readNumber("lcaCaseCount", 1));
-      const calculationModuleIds = lcaCalculationModuleIds();
-      const activeRows = lcaRows.filter((row) => isLcaRowActive(row)).length;
-      const includedModules = calculationModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
-      const scenarios = [
-        { id: "low", label: t("low") },
-        { id: "base", label: t("base") },
-        { id: "high", label: t("high") }
-      ];
-      const resultCards = scenarios.map((scenario) => {
-        const values = lcaScenarioValues(scenario.id, caseCount);
-        return `
-          <div class="lca-result-card">
-            <strong>${escapeHtml(scenario.label)} ${escapeHtml(t("scenario"))}</strong>
-            <span>${formatImpact(values.cohortExpected)}</span>
-            <small>${escapeHtml(impactCategoryName())}</small>
-            <small>${escapeHtml(t("demoLibraryTotal", { count: formatNumber(caseCount) }))}</small>
-            <small>${escapeHtml(t("perPathway", { value: formatImpact(values.perPathway) }))}</small>
-            <small>${escapeHtml(t("includedModulesRows", {
-              modules: includedModules,
-              moduleTotal: calculationModuleIds.length,
-              rows: formatNumber(activeRows),
-              rowTotal: formatNumber(lcaVisibleRows().length)
-            }))}</small>
-          </div>
-        `;
-      }).join("");
-      document.getElementById("lcaResults").innerHTML = resultCards;
-      document.getElementById("lcaPathwayStatus").textContent = t("pathwayStatus", {
-        pathway: localizedPathwayLabel(),
-        pathwayModules: lcaPathwayModuleIds().length,
-        supportModules: lcaSupportModuleIds().length
-      });
-
-      lcaRows.forEach((row) => {
-        const element = document.getElementById(`lcaContribution-${row.id}`);
-        if (element) element.textContent = isLcaRowActive(row) ? formatImpact(rowImpact(row, "base")) : t("excluded");
-      });
-
-      calculationModuleIds.forEach((moduleId) => {
-        const element = document.getElementById(`lcaModuleTotal-${moduleId}`);
-        if (!element) return;
-        if (!isLcaModuleIncluded(moduleId)) {
-          element.textContent = t("excludedFromTotal");
-          return;
-        }
-        const moduleRows = lcaVisibleRows().filter((row) => row.module === moduleId);
-        const moduleTotal = moduleRows
-          .filter((row) => row.module === moduleId && isLcaRowIncluded(row))
-          .reduce((sum, row) => sum + rowImpact(row, "base"), 0);
-        const moduleActiveRows = moduleRows.filter((row) => isLcaRowIncluded(row)).length;
-        element.textContent = t("moduleSubtotal", { value: formatImpact(moduleTotal), rows: moduleActiveRows });
-      });
-
+    function renderLcaFormulaAndWarning() {
       document.getElementById("lcaFormula").innerHTML = `
         <div class="formula-line">
           <span class="formula-label">${escapeHtml(t("formulaBlockRow"))}</span>
@@ -13266,11 +14025,88 @@
           </span>
         </div>
       `;
-
       document.getElementById("lcaDataWarning").textContent = t("categoryDataWarning", {
         category: impactCategoryName(),
         uncertainty: formatNumber(demoCoefficientUncertainty)
       });
+    }
+
+    function renderLcaOutputs() {
+      renderLcaFormulaAndWarning();
+      const assessment = currentAssessmentStatus();
+      document.getElementById("lcaPathwayStatus").textContent = `${assessment.resultLabel} · ${t("pathwayStatus", {
+        pathway: localizedPathwayLabel(),
+        pathwayModules: lcaPathwayModuleIds().length,
+        supportModules: lcaSupportModuleIds().length
+      })}`;
+      if (!assessment.valid) {
+        document.getElementById("lcaResults").innerHTML = assessmentGateHtml(assessment);
+        lcaRows.forEach((row) => {
+          const element = document.getElementById(`lcaContribution-${row.id}`);
+          if (element) element.textContent = t("pendingValidPath");
+        });
+        lcaCalculationModuleIds().forEach((moduleId) => {
+          const element = document.getElementById(`lcaModuleTotal-${moduleId}`);
+          if (element) element.textContent = t("pendingValidPath");
+        });
+        document.getElementById("lcaPriorityList").innerHTML = `<li>${escapeHtml(t("assessmentBlocked", { issues: assessment.message }))}</li>`;
+        document.getElementById("allImpactResults").innerHTML = assessmentGateHtml(assessment);
+        document.getElementById("lcaSankey").innerHTML = assessmentGateHtml(assessment);
+        document.getElementById("sensitivitySummary").innerHTML = assessmentGateHtml(assessment);
+        document.getElementById("sensitivityResults").innerHTML = "";
+        renderLcaResultView();
+        renderBrightwayServiceStatus();
+        return;
+      }
+      const caseCount = Math.max(1, readNumber("lcaCaseCount", 1));
+      const calculationModuleIds = lcaCalculationModuleIds();
+      const activeRows = lcaRows.filter((row) => isLcaRowActive(row)).length;
+      const includedModules = calculationModuleIds.filter((moduleId) => isLcaModuleIncluded(moduleId)).length;
+      const scenarios = [
+        { id: "low", label: t("low") },
+        { id: "base", label: t("base") },
+        { id: "high", label: t("high") }
+      ];
+      const resultCards = scenarios.map((scenario) => {
+        const values = lcaScenarioValues(scenario.id, caseCount);
+        return `
+          <div class="lca-result-card">
+            <strong>${escapeHtml(scenario.label)} ${escapeHtml(t("scenario"))}</strong>
+            <span>${formatImpact(values.cohortExpected)}</span>
+            <small>${escapeHtml(impactCategoryName())}</small>
+            <small>${escapeHtml(assessment.resultLabel)}</small>
+            <small>${escapeHtml(t("demoLibraryTotal", { count: formatNumber(caseCount) }))}</small>
+            <small>${escapeHtml(t("perPathway", { value: formatImpact(values.perPathway) }))}</small>
+            <small>${escapeHtml(t("includedModulesRows", {
+              modules: includedModules,
+              moduleTotal: calculationModuleIds.length,
+              rows: formatNumber(activeRows),
+              rowTotal: formatNumber(lcaVisibleRows().length)
+            }))}</small>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("lcaResults").innerHTML = resultCards;
+      lcaRows.forEach((row) => {
+        const element = document.getElementById(`lcaContribution-${row.id}`);
+        if (element) element.textContent = isLcaRowActive(row) ? formatImpact(rowImpact(row, "base")) : t("excluded");
+      });
+
+      calculationModuleIds.forEach((moduleId) => {
+        const element = document.getElementById(`lcaModuleTotal-${moduleId}`);
+        if (!element) return;
+        if (!isLcaModuleIncluded(moduleId)) {
+          element.textContent = t("excludedFromTotal");
+          return;
+        }
+        const moduleRows = lcaVisibleRows().filter((row) => row.module === moduleId);
+        const moduleTotal = moduleRows
+          .filter((row) => row.module === moduleId && isLcaRowIncluded(row))
+          .reduce((sum, row) => sum + rowImpact(row, "base"), 0);
+        const moduleActiveRows = moduleRows.filter((row) => isLcaRowIncluded(row)).length;
+        element.textContent = t("moduleSubtotal", { value: formatImpact(moduleTotal), rows: moduleActiveRows });
+      });
+
       renderLcaPriorityList();
       renderAllImpactResults(caseCount);
       renderContributionSankey();
@@ -13483,6 +14319,8 @@
     }
 
     function collectBrightwayScenario() {
+      const assessment = currentAssessmentStatus();
+      if (!assessment.valid) throw new Error(t("assessmentExportBlocked"));
       const report = collectLcaReportData();
       const functionalUnit = functionalUnitForPathway();
       const scenarioId = createScenarioId();
@@ -13503,6 +14341,13 @@
           title: currentPathway().title,
           status: currentPathway().status
         },
+        assessment: {
+          mode: assessment.mode,
+          result_label: assessment.resultLabel,
+          valid: assessment.valid,
+          declared_start: assessment.mode === "complete" ? assessment.startId : null,
+          declared_endpoint: assessment.mode === "complete" ? assessment.endId : null
+        },
         functional_unit: {
           ...functionalUnit,
           statement: functionalUnitText(functionalUnit),
@@ -13514,7 +14359,9 @@
           code: displayCode(node),
           label: node.label,
           module_id: node.module,
-          lca_cutoff: isLcaCutoffNode(node)
+          lca_cutoff: isLcaCutoffNode(node),
+          evidence_source: node.evidence?.source || "",
+          evidence_status: node.evidence?.status || ""
         })),
         modules: report.modules.map((module) => ({
           module_id: module.id,
@@ -13555,6 +14402,11 @@
     }
 
     function exportBrightwayScenario() {
+      const assessment = currentAssessmentStatus();
+      if (!assessment.valid) {
+        setBrightwayBridgeStatus(t("assessmentExportBlocked"), true);
+        return;
+      }
       const scenario = collectBrightwayScenario();
       const filename = `ecopath-brightway-scenario-${slugify(currentPathway().label)}-${reportDateStamp()}.json`;
       downloadJson(scenario, filename);
@@ -13591,7 +14443,10 @@
         badge.textContent = t("brightwayServiceUnavailable");
         detail.textContent = service.error || t("brightwayServiceUnavailableDetail");
       }
-      calculateButton.disabled = !service.connected || service.checking || state.brightwayCalculating;
+      calculateButton.disabled = !currentAssessmentStatus().valid
+        || !service.connected
+        || service.checking
+        || state.brightwayCalculating;
       checkButton.disabled = service.checking || state.brightwayCalculating;
     }
 
@@ -13629,6 +14484,10 @@
     }
 
     async function calculateDirectlyWithBrightway() {
+      if (!currentAssessmentStatus().valid) {
+        setBrightwayBridgeStatus(t("assessmentExportBlocked"), true);
+        return;
+      }
       if (!state.brightwayService.connected && !(await checkBrightwayService())) return;
       state.brightwayCalculating = true;
       renderBrightwayServiceStatus();
@@ -13695,6 +14554,15 @@
       const status = document.getElementById("brightwayBridgeStatus");
       const clearButton = document.getElementById("clearBrightwayResults");
       if (!summary || !status || !clearButton) return;
+      const assessment = currentAssessmentStatus();
+      if (!assessment.valid) {
+        summary.hidden = true;
+        summary.innerHTML = "";
+        clearButton.hidden = true;
+        status.classList.add("error");
+        status.textContent = t("assessmentExportBlocked");
+        return;
+      }
       const result = state.brightwayResult;
       if (!result) {
         summary.hidden = true;
@@ -13781,6 +14649,7 @@
 
     function collectLcaReportData() {
       const pathway = currentPathway();
+      const assessment = currentAssessmentStatus();
       const caseCount = Math.max(1, readNumber("lcaCaseCount", 1));
       const moduleIds = lcaCalculationModuleIds();
       const rows = lcaRows
@@ -13851,12 +14720,15 @@
           label: localizedNodeLabel(node),
           module: node.module,
           moduleName: moduleRegistry[node.module] ? moduleName(node.module) : "",
-          lcaCutoff: isLcaCutoffNode(node)
+          lcaCutoff: isLcaCutoffNode(node),
+          evidenceSource: localizedActivityEvidence(node).source,
+          evidenceStatus: localizedActivityEvidence(node).status
         })),
         generatedAt: reportGeneratedAt(),
         caseCount,
         moduleCount: moduleIds.length,
         includedModuleCount: modules.filter((module) => module.included).length,
+        assessment,
         rows,
         modules,
         totals,
@@ -13878,6 +14750,7 @@
         <div class="metric">
           <strong>${escapeHtml(label)}</strong>
           <span>${escapeHtml(formatImpact(values.cohortExpected))}</span>
+          <small>${escapeHtml(data.assessment.resultLabel)}</small>
           <small>${escapeHtml(t("perPathway", { value: formatImpact(values.perPathway) }))}</small>
         </div>
       `).join("");
@@ -13908,9 +14781,11 @@
             <td>${escapeHtml(activity.label)}</td>
             <td>${escapeHtml(activity.module)} ${escapeHtml(activity.moduleName)}</td>
             <td>${escapeHtml(activity.lcaCutoff ? t("lcaCutoff") : t("lcaEligible"))}</td>
+            <td>${escapeHtml(activity.evidenceSource)}</td>
+            <td>${escapeHtml(activity.evidenceStatus)}</td>
           </tr>
         `).join("")
-        : `<tr><td colspan="4">${escapeHtml(t("noSelectedReport"))}</td></tr>`;
+        : `<tr><td colspan="6">${escapeHtml(t("noSelectedReport"))}</td></tr>`;
       const calculationRows = data.rows.map((row) => `
         <tr class="${row.included ? "" : "excluded"}">
           <td>${escapeHtml(row.module)}</td>
@@ -14150,6 +15025,8 @@
         <div><strong>${escapeHtml(t("checkedModules"))}</strong><br>${escapeHtml(formatNumber(data.includedModuleCount))} / ${escapeHtml(formatNumber(data.moduleCount))}</div>
         <div><strong>${escapeHtml(t("rowsCounted"))}</strong><br>${escapeHtml(formatNumber(data.rows.filter((row) => row.included).length))} / ${escapeHtml(formatNumber(data.rows.length))}</div>
         <div><strong>${escapeHtml(t("selectedPathwayActivities"))}</strong><br>${escapeHtml(formatNumber(data.selectedActivities.length))}</div>
+        <div><strong>${escapeHtml(t("assessmentModeReport"))}</strong><br>${escapeHtml(data.assessment.resultLabel)}</div>
+        <div><strong>${escapeHtml(t("assessmentBoundaryReport"))}</strong><br>${escapeHtml(data.assessment.mode === "complete" ? `${data.assessment.startLabel} -> ${data.assessment.endLabel}` : data.assessment.resultLabel)}</div>
       </div>
     </section>
 
@@ -14173,7 +15050,7 @@
       <h2>${escapeHtml(t("selectedPathwayScenario"))}</h2>
       <table>
         <thead>
-          <tr><th>${escapeHtml(t("code"))}</th><th>${escapeHtml(t("activity"))}</th><th>${escapeHtml(t("assignedModule"))}</th><th>${escapeHtml(t("lcaStatus"))}</th></tr>
+          <tr><th>${escapeHtml(t("code"))}</th><th>${escapeHtml(t("activity"))}</th><th>${escapeHtml(t("assignedModule"))}</th><th>${escapeHtml(t("lcaStatus"))}</th><th>${escapeHtml(t("evidenceSource"))}</th><th>${escapeHtml(t("evidenceStatus"))}</th></tr>
         </thead>
         <tbody>${selectedActivityRows}</tbody>
       </table>
@@ -14244,6 +15121,11 @@
     }
 
     function exportLcaReport() {
+      if (!currentAssessmentStatus().valid) {
+        const status = document.getElementById("lcaExportStatus");
+        if (status) status.textContent = t("assessmentExportBlocked");
+        return;
+      }
       const reportHtml = buildLcaReportHtml();
       const filename = `ecopath-lca-report-${slugify(currentPathway().label)}-${state.impactCategory}-${reportDateStamp()}.html`;
       const blob = new Blob([reportHtml], { type: "text/html;charset=utf-8" });
@@ -14286,8 +15168,7 @@
           const pathwayId = button.dataset.urologyPathway;
           if (!pathwayData[pathwayId] || pathwayId === state.pathway) return;
           state.pathway = pathwayId;
-          state.brightwayResult = null;
-          state.lastExportedScenarioId = null;
+          clearAssessmentDependentResults();
           state.selected = pathwayData[pathwayId].defaultSelected;
           state.detailAnchor = "map";
           state.domain = "all";
@@ -14324,6 +15205,25 @@
       document.getElementById("pathwayScenarioMode").addEventListener("change", (event) => {
         state.scenarioBuildMode = event.target.checked;
         renderPathwayScenarioControls();
+      });
+      document.querySelectorAll("[data-assessment-mode]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const mode = button.dataset.assessmentMode === "partial" ? "partial" : "complete";
+          if (mode === state.assessmentMode) return;
+          state.assessmentMode = mode;
+          clearAssessmentDependentResults();
+          render();
+        });
+      });
+      document.getElementById("assessmentStartNode").addEventListener("change", (event) => {
+        assessmentBoundaryForPathway().start = event.target.value;
+        clearAssessmentDependentResults();
+        render();
+      });
+      document.getElementById("assessmentEndNode").addEventListener("change", (event) => {
+        assessmentBoundaryForPathway().end = event.target.value;
+        clearAssessmentDependentResults();
+        render();
       });
       document.getElementById("clearPathwayScenario").addEventListener("click", clearScenarioSelection);
       document.getElementById("clearPathwayScenarioFullscreen").addEventListener("click", clearScenarioSelection);

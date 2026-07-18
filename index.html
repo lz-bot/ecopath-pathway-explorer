@@ -4008,10 +4008,10 @@
           activity("EAUFULL-TX04", "Perioperative systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 500, 348, "Guideline-defined neoadjuvant, adjuvant, or perioperative systemic treatment according to eligibility and the current 2026 recommendations.", "The generic activity label accommodates evolving chemo-immunotherapy options without treating one regimen as universal. Each scenario still needs a dated regimen, cycle, dose, and monitoring specification.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring", "Cytotoxic waste"], ["Which EAU 2026 systemic option is relevant to the selected clinical scenario, and is it implemented in Dutch practice?"]),
           activity("EAUFULL-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 650, 348, "Restaging assessment after neoadjuvant treatment to detect progression or metastatic disease before definitive treatment.", "EAU follow-up and treatment sections identify restaging as a relevant pathway-changing assessment.", ["CT scan", "MRI scan", "Radiology reporting", "Clinical review"], ["Which restaging modality is used locally?"]),
           activity("EAUFULL-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 800, 348, "Radical cystectomy as a primary curative surgical option for eligible patients.", "This is a high-resource surgical activity and should be separated from planning decisions and follow-up.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Which surgical episode boundary should be used?"]),
-          activity("EAUFULL-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 930, 348, "Pelvic lymph node dissection as part of the surgical treatment pathway where indicated.", "This can change operation time, instruments, pathology specimens, and downstream staging.", ["Operating room time", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Should lymph node dissection be modeled as part of cystectomy or as a separate parameter?"]),
-          activity("EAUFULL-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 1060, 348, "Choice of urinary diversion such as ileal conduit, neobladder, or other diversion options.", "EAU provides detailed diversion considerations. ECO-PATH needs this as a parameter because resource flows and follow-up differ by diversion.", ["Operating room time", "Surgical consumables", "Ward stay", "Patient education"], ["Which diversion types are relevant for the selected patient population?"]),
-          activity("EAUFULL-TX09", "Perioperative care and VTE prophylaxis", "Surgery", "activity", "EM07", "treatment", 1060, 462, "Perioperative care, enhanced recovery elements, and pharmacological venous thromboembolism prophylaxis after radical cystectomy.", "This activity captures resource flows that are not visible if surgery is represented only as one cystectomy node.", ["Ward stay", "Medicines", "Nursing time", "Monitoring consumables"], ["Which perioperative care elements should be inside the surgical boundary?"]),
-          activity("EAUFULL-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 780, 578, "Postoperative assessment for adjuvant chemotherapy, immunotherapy, radiotherapy, or surveillance when indicated.", "This decision can activate additional systemic therapy or radiotherapy resource flows after surgery.", ["Medical oncology review", "Pathology review", "Laboratory monitoring"], ["Which adjuvant options are used in local practice?"]),
+          activity("EAUFULL-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 900, 348, "Pelvic lymph node dissection as part of the surgical treatment pathway where indicated.", "This can change operation time, instruments, pathology specimens, and downstream staging.", ["Operating room time", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Should lymph node dissection be modeled as part of cystectomy or as a separate parameter?"]),
+          activity("EAUFULL-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 1000, 348, "Choice of urinary diversion such as ileal conduit, neobladder, or other diversion options.", "EAU provides detailed diversion considerations. ECO-PATH needs this as a parameter because resource flows and follow-up differ by diversion.", ["Operating room time", "Surgical consumables", "Ward stay", "Patient education"], ["Which diversion types are relevant for the selected patient population?"]),
+          activity("EAUFULL-TX09", "Perioperative care and VTE prophylaxis", "Surgery", "activity", "EM07", "treatment", 1110, 348, "Perioperative care, enhanced recovery elements, and pharmacological venous thromboembolism prophylaxis after radical cystectomy.", "This activity captures resource flows that are not visible if surgery is represented only as one cystectomy node.", ["Ward stay", "Medicines", "Nursing time", "Monitoring consumables"], ["Which perioperative care elements should be inside the surgical boundary?"]),
+          activity("EAUFULL-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 1030, 578, "Postoperative assessment for adjuvant chemotherapy, immunotherapy, radiotherapy, or surveillance when indicated.", "This decision can activate additional systemic therapy or radiotherapy resource flows after surgery.", ["Medical oncology review", "Pathology review", "Laboratory monitoring"], ["Which adjuvant options are used in local practice?"]),
           activity("EAUFULL-TX11", "Trimodality therapy eligibility", "Radiotherapy", "decision", "EM08", "treatment", 500, 462, "Eligibility for bladder-preserving trimodality treatment in selected patients.", "This decision separates bladder-preserving scenarios from radical cystectomy and palliative care.", ["MDT review", "Clinical review", "Imaging review"], ["Which criteria define eligibility locally?"]),
           activity("EAUFULL-TX12", "Maximal TURBT for bladder preservation", "Surgery", "activity", "EM07", "treatment", 360, 462, "Maximal TURBT as part of a bladder-preserving approach where clinically appropriate.", "This is distinct from diagnostic TURBT because it supports a treatment strategy and may have different resource assumptions.", ["Operating room time", "Anesthesia", "Sterile instruments", "Surgical waste"], ["Is maximal TURBT performed locally for bladder-preserving candidates?"]),
           activity("EAUFULL-TX13", "Radiotherapy planning", "Radiotherapy", "activity", "EM08", "treatment", 650, 462, "Radiotherapy planning before EBRT or chemoradiation delivery.", "Planning CT, treatment planning workstation time, staff time, and immobilization should be modeled separately from fractions.", ["Planning CT", "Treatment planning workstation", "Staff time", "Immobilization materials"], ["Which planning workflow is used locally?"]),
@@ -4019,9 +4019,9 @@
           activity("EAUFULL-TX15", "Response monitoring and salvage decision", "Treatment planning", "decision", "EM05", "return", 950, 462, "Monitoring after bladder-preserving treatment and decision on salvage cystectomy when recurrence or inadequate response occurs.", "This keeps the long-term pathway logic visible because bladder-sparing care requires close surveillance and possible salvage treatment.", ["Cystoscopy", "Imaging review", "Clinical review", "Shared decision documentation"], ["What surveillance and salvage assumptions should be used?"]),
           activity("EAUFULL-TX16", "Palliative radiotherapy or symptom control", "Radiotherapy", "activity", "EM08", "return", 500, 578, "Palliative radiotherapy or symptom-directed treatment for patients not following a curative route.", "This activity may belong to a different functional unit from curative-intent pathways and should be explicitly scoped.", ["Radiotherapy fractions", "Clinical review", "Patient travel", "Supportive care"], ["Should palliative treatment be a separate scenario?"]),
           activity("EAUFULL-TX17", "Advanced systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "return", 650, 578, "Systemic treatment for advanced or metastatic disease where indicated.", "Advanced systemic therapy can dominate resource use and should not be merged with curative perioperative therapy without clear scope.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring"], ["Which advanced-disease regimens are inside the target case?"]),
-          activity("EAUFULL-FU01", "Follow-up after radical cystectomy", "Follow-up", "activity", "EM09", "followup", 1030, 578, "Surveillance and follow-up after radical cystectomy.", "Follow-up after cystectomy includes repeated assessment, imaging, laboratory testing, and diversion-related care over time.", ["Outpatient visits", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["What follow-up time horizon should be used?"]),
-          activity("EAUFULL-FU02", "Follow-up after trimodality therapy", "Follow-up", "activity", "EM09", "followup", 900, 578, "Close follow-up after trimodality therapy, including cystoscopy, cytology, and cross-sectional imaging.", "This branch can have repeated surveillance events that materially affect pathway-level impact.", ["Cystoscopy", "Surveillance imaging", "Outpatient visits", "Patient travel"], ["Which TMT surveillance schedule should be modeled?"]),
-          activity("EAUFULL-FU03", "Functional follow-up after diversion", "Follow-up", "activity", "EM09", "followup", 1150, 578, "Functional follow-up after urinary diversion, including stoma care, metabolic monitoring, and complication management.", "This is separated because diversion-related follow-up can differ strongly from oncologic surveillance.", ["Outpatient visits", "Laboratory tests", "Stoma care", "Patient travel"], ["Which functional follow-up activities are included?"])
+          activity("EAUFULL-FU01", "Follow-up after radical cystectomy", "Follow-up", "activity", "EM09", "followup", 1150, 578, "Surveillance and follow-up after radical cystectomy.", "Follow-up after cystectomy includes repeated assessment, imaging, laboratory testing, and diversion-related care over time.", ["Outpatient visits", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["What follow-up time horizon should be used?"]),
+          activity("EAUFULL-FU02", "Follow-up after trimodality therapy", "Follow-up", "activity", "EM09", "followup", 900, 530, "Close follow-up after trimodality therapy, including cystoscopy, cytology, and cross-sectional imaging.", "This branch can have repeated surveillance events that materially affect pathway-level impact.", ["Cystoscopy", "Surveillance imaging", "Outpatient visits", "Patient travel"], ["Which TMT surveillance schedule should be modeled?"]),
+          activity("EAUFULL-FU03", "Functional follow-up after diversion", "Follow-up", "activity", "EM09", "followup", 1150, 462, "Functional follow-up after urinary diversion, including stoma care, metabolic monitoring, and complication management.", "This is separated because diversion-related follow-up can differ strongly from oncologic surveillance.", ["Outpatient visits", "Laboratory tests", "Stoma care", "Patient travel"], ["Which functional follow-up activities are included?"])
         ],
         edges: [
           edge("EAUFULL-AC01", "EAUFULL-DX01", "diagnostic"),
@@ -4042,20 +4042,18 @@
           edge("EAUFULL-TX06", "EAUFULL-TX07", "treatment"),
           edge("EAUFULL-TX07", "EAUFULL-TX08", "treatment"),
           edge("EAUFULL-TX08", "EAUFULL-TX09", "treatment"),
-          edge("EAUFULL-TX08", "EAUFULL-FU03", "followup"),
-          edge("EAUFULL-TX06", "EAUFULL-TX10", "treatment"),
+          edge("EAUFULL-TX09", "EAUFULL-FU03", "followup"),
+          edge("EAUFULL-TX09", "EAUFULL-TX10", "treatment"),
           edge("EAUFULL-TX10", "EAUFULL-FU01", "followup"),
           edge("EAUFULL-TX03", "EAUFULL-TX11", "treatment"),
           edge("EAUFULL-TX11", "EAUFULL-TX12", "treatment"),
           edge("EAUFULL-TX12", "EAUFULL-TX13", "treatment"),
           edge("EAUFULL-TX13", "EAUFULL-TX14", "treatment"),
-          edge("EAUFULL-TX14", "EAUFULL-TX15", "return"),
-          edge("EAUFULL-TX14", "EAUFULL-FU02", "followup"),
+          edge("EAUFULL-TX14", "EAUFULL-TX15", "followup"),
           edge("EAUFULL-TX15", "EAUFULL-FU02", "followup"),
+          edge("EAUFULL-TX15", "EAUFULL-TX06", "return"),
           edge("EAUFULL-TX03", "EAUFULL-TX16", "return"),
-          edge("EAUFULL-TX16", "EAUFULL-TX17", "return"),
-          edge("EAUFULL-TX17", "EAUFULL-FU01", "followup"),
-          edge("EAUFULL-TX09", "EAUFULL-FU01", "followup")
+          edge("EAUFULL-TX16", "EAUFULL-TX17", "return")
         ]
       },
       emc: {
@@ -4685,7 +4683,8 @@
           id: "curative-surgery",
           nodes: [
             "EAUFULL-TX04", "EAUFULL-TX05", "EAUFULL-TX06", "EAUFULL-TX07",
-            "EAUFULL-TX08", "EAUFULL-TX09", "EAUFULL-TX10", "EAUFULL-FU03"
+            "EAUFULL-TX08", "EAUFULL-TX09", "EAUFULL-TX10", "EAUFULL-FU01",
+            "EAUFULL-FU03"
           ]
         },
         {
@@ -10631,8 +10630,20 @@
     function removeCompetingScenarioRouteNodes(selectedIds, nodeId, pathwayId = state.pathway) {
       const selectedBundle = scenarioRouteBundleForNode(nodeId, pathwayId);
       if (!selectedBundle) return;
+      const retainedBundleIds = new Set([selectedBundle.id]);
+      const eauSalvageContinuationNodes = new Set([
+        "EAUFULL-TX06", "EAUFULL-TX07", "EAUFULL-TX08", "EAUFULL-TX09",
+        "EAUFULL-TX10", "EAUFULL-FU01", "EAUFULL-FU03"
+      ]);
+      if (
+        pathwayId === "eauFull"
+        && selectedIds.has("EAUFULL-TX15")
+        && eauSalvageContinuationNodes.has(nodeId)
+      ) {
+        retainedBundleIds.add("bladder-preservation");
+      }
       (pathwayScenarioRouteBundles[pathwayId] || []).forEach((bundle) => {
-        if (bundle.id === selectedBundle.id) return;
+        if (retainedBundleIds.has(bundle.id)) return;
         bundle.nodes.forEach((competingNodeId) => selectedIds.delete(competingNodeId));
       });
     }
@@ -11780,9 +11791,11 @@
         y: node.y + markerHalfHeight + labelGap,
         dx: 0
       };
-      const verticalCandidates = ["EMC-DX09", "EMC-FU03"].includes(node.id)
-        ? [above]
-        : (node.y >= 540 ? [above, below] : [below, above]);
+      const verticalCandidates = ["EAUFULL-FU01"].includes(node.id)
+        ? [below]
+        : ["EMC-DX09", "EMC-FU03"].includes(node.id)
+          ? [above]
+          : (node.y >= 540 ? [above, below] : [below, above]);
       const candidates = verticalCandidates
         .filter((candidate) => candidate.y >= 14 && candidate.y <= 650 - labelHeight);
 

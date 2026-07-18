@@ -987,12 +987,13 @@
       pointer-events: none;
     }
 
-    .scenario-badge-mark {
-      fill: none;
-      stroke: var(--panel);
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-width: 2.4;
+    .scenario-badge-number {
+      fill: var(--panel);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
       pointer-events: none;
     }
 
@@ -1069,6 +1070,27 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .route-direction-arrow {
+      color: var(--accent-dark);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .route-sequence-example {
+      display: inline-grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      color: var(--panel);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
     }
 
     .code-legend {
@@ -3104,6 +3126,8 @@
             <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
           </div>
           <div class="legend" aria-label="Route legend">
+            <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="routeDirectionLabel">Arrows show pathway direction</span></span>
+            <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="routeSequenceLabel">Numbers show selected order</span></span>
             <span class="legend-item"><span class="swatch diagnostic"></span><span id="diagnosticRouteLabel">Diagnostic and first-contact route</span></span>
             <span class="legend-item"><span class="swatch treatment"></span><span id="treatmentRouteLabel">Treatment route</span></span>
             <span class="legend-item"><span class="swatch followup"></span><span id="followupRouteLabel">Follow-up route</span></span>
@@ -3351,6 +3375,8 @@
           </svg>
         </div>
         <div class="legend" aria-label="Route legend">
+          <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="fullscreenRouteDirectionLabel">Arrows show pathway direction</span></span>
+          <span class="legend-item"><span class="route-sequence-example" aria-hidden="true">1</span><span id="fullscreenRouteSequenceLabel">Numbers show selected order</span></span>
           <span class="legend-item"><span class="swatch diagnostic"></span><span id="fullscreenDiagnosticRouteLabel">Diagnostic and first-contact route</span></span>
           <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
           <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
@@ -4055,7 +4081,7 @@
           activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 800, 348, "Multidisciplinary review of staging, pathology, fitness, and treatment options.", "The meeting remains visible because it determines the pathway, but its minor office and ICT inputs are provisionally excluded from LCA calculation.", ["Imaging display", "EHR access", "Meeting room electricity"], ["How many MDO discussions occur per patient and which repeat discussions change treatment?"]),
           activity("EMC-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 660, 348, "Assessment of health status, comorbidity, frailty, and suitability for curative or bladder-preserving treatment.", "Fitness affects clinical comparability and route selection, so it must remain explicit even if its direct impact is small.", ["Patient travel", "Assessment tools", "Laboratory review"], ["Which fitness or geriatric instruments are used locally?"]),
           activity("EMC-TX02", "Treatment intent and shared decision", "Treatment planning", "decision", "EM05", "treatment", 520, 348, "Selection of curative surgery, bladder-preserving treatment, systemic treatment, or palliative intent after multidisciplinary counseling.", "This is the principal scenario-building node. It does not imply that all displayed alternatives are clinically equivalent.", ["Patient consultation", "Decision aids", "Patient travel"], ["Which treatment alternatives are comparable for the intended ECO-PATH decision question?"]),
-          activity("EMC-TX03", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 390, 410, "Eligibility assessment for perioperative systemic therapy, including regimen-specific contraindications.", "Joost noted that systemic treatment practice is evolving. The activity therefore requires versioned regimen and eligibility assumptions.", ["Laboratory monitoring", "Medical oncology review", "Treatment planning"], ["Which Dutch and Erasmus MC regimens are current for the selected population and year?"]),
+          activity("EMC-TX03", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 390, 390, "Eligibility assessment for perioperative systemic therapy, including regimen-specific contraindications.", "Joost noted that systemic treatment practice is evolving. The activity therefore requires versioned regimen and eligibility assumptions.", ["Laboratory monitoring", "Medical oncology review", "Treatment planning"], ["Which Dutch and Erasmus MC regimens are current for the selected population and year?"]),
           activity("EMC-TX04", "Neoadjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 250, 410, "Systemic treatment before definitive local therapy when selected.", "This node contains medicine, pharmacy, infusion, monitoring, and waste flows and should be parameterized by regimen and cycle.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring", "Cytotoxic waste"], ["Does the selected scenario use chemotherapy alone or a newer perioperative combination?"]),
           activity("EMC-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 100, 410, "Restaging after systemic therapy before definitive treatment.", "Restaging can detect progression and redirect the pathway.", ["CT scan", "MRI if indicated", "Radiology reporting", "Patient travel"], ["Which restaging modality and timing are used locally?"]),
           activity("EMC-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 390, 470, "Radical cystectomy as a definitive curative treatment route.", "This is a high-resource surgical building block that needs procedure, anesthesia, admission, and waste data.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Confirm surgical approach, operation time, and admission boundary."]),
@@ -4084,7 +4110,8 @@
           edge("EMC-JM01", "EMC-JM02", "diagnostic"), edge("EMC-JM02", "EMC-TX01", "treatment"),
           edge("EMC-TX01", "EMC-TX02", "treatment"), edge("EMC-TX02", "EMC-TX03", "treatment"),
           edge("EMC-TX03", "EMC-TX04", "treatment"), edge("EMC-TX04", "EMC-TX05", "treatment"),
-          edge("EMC-TX05", "EMC-TX06", "treatment"), edge("EMC-TX02", "EMC-TX06", "treatment"),
+          edge("EMC-TX05", "EMC-TX06", "treatment"),
+          edge("EMC-TX03", "EMC-TX06", "treatment", { excludedBy: ["EMC-TX04", "EMC-TX05"] }),
           edge("EMC-TX06", "EMC-TX07", "treatment"), edge("EMC-TX07", "EMC-TX08", "treatment"),
           edge("EMC-TX08", "EMC-TX09", "treatment"), edge("EMC-TX09", "EMC-TX10", "treatment"),
           edge("EMC-TX10", "EMC-FU03", "followup"), edge("EMC-FU03", "EMC-FU02", "return"),
@@ -4631,6 +4658,48 @@
       }
     };
 
+    const pathwayScenarioRouteBundles = {
+      emc: [
+        {
+          id: "curative-surgery",
+          nodes: [
+            "EMC-TX03", "EMC-TX04", "EMC-TX05", "EMC-TX06", "EMC-TX07",
+            "EMC-TX08", "EMC-TX09", "EMC-TX10", "EMC-FU03"
+          ]
+        },
+        {
+          id: "bladder-preservation",
+          nodes: ["EMC-TX11", "EMC-TX12", "EMC-TX13", "EMC-TX14", "EMC-TX15"]
+        },
+        { id: "advanced-or-palliative", nodes: ["EMC-TX16", "EMC-TX17"] }
+      ],
+      eauFull: [
+        {
+          id: "curative-surgery",
+          nodes: [
+            "EAUFULL-TX04", "EAUFULL-TX05", "EAUFULL-TX06", "EAUFULL-TX07",
+            "EAUFULL-TX08", "EAUFULL-TX09", "EAUFULL-TX10", "EAUFULL-FU03"
+          ]
+        },
+        {
+          id: "bladder-preservation",
+          nodes: [
+            "EAUFULL-TX11", "EAUFULL-TX12", "EAUFULL-TX13", "EAUFULL-TX14",
+            "EAUFULL-TX15", "EAUFULL-FU02"
+          ]
+        },
+        { id: "advanced-or-palliative", nodes: ["EAUFULL-TX16", "EAUFULL-TX17"] }
+      ],
+      crcDutch: [
+        { id: "localized-colon", nodes: ["CRCDUTCH-TX03", "CRCDUTCH-TX04"] },
+        {
+          id: "localized-rectal",
+          nodes: ["CRCDUTCH-TX05", "CRCDUTCH-FU04", "CRCDUTCH-TX06"]
+        },
+        { id: "advanced-or-palliative", nodes: ["CRCDUTCH-TX07"] }
+      ]
+    };
+
     const pathwayReferenceRegistry = {
       emc: [
         { label: "NVU: actuele richtlijnen", url: "https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/" },
@@ -4719,7 +4788,7 @@
         helpIntro: "Use the pathway map to define a clinically meaningful scenario, then use the LCA section to decide which resource-bearing building blocks enter the environmental model.",
         helpStep1: "Choose a specialty and a guideline or local workflow source from the pathway menu.",
         helpStep2: "Hover over or click an activity to review its clinical interpretation, module assignment, resource flows, and open questions.",
-        helpStep3: "Select the activities that form the pathway scenario of interest. Relevant LCA modules are checked automatically, except activities under the provisional cut-off.",
+        helpStep3: "Build one patient route at a time. Selecting an activity on a competing treatment branch replaces activities selected on the previous branch; sequential activities on the same branch can remain selected together. Relevant LCA modules are checked automatically, except activities under the provisional cut-off.",
         helpStep4: "Selecting an activity automatically activates its mapped modules, building blocks, and provisional quantities. Review route alternatives, occurrence counts, and any manual additions before calculation.",
         helpStep5: "Review uncertainty and data gaps, then export the report in the currently selected language.",
         helpCutoffTitle: "Provisional LCA cut-off",
@@ -4748,8 +4817,10 @@
         closeFullscreen: "Close full screen",
         clearPathway: "Clear selected pathway",
         pathwayScenario: "Pathway scenario",
-        pathwayScenarioSubtitle: "Selected activities control pathway-linked LCA modules",
+        pathwayScenarioSubtitle: "One patient route; competing treatment branches replace each other",
         selectedActivitiesStatus: "{count} selected activities; {modules} pathway modules active",
+        routeDirection: "Arrows show pathway direction",
+        routeSequence: "Numbers show selected order",
         diagnosticRoute: "Diagnostic and first-contact route",
         treatmentRoute: "Treatment route",
         followupRoute: "Follow-up route",
@@ -4893,7 +4964,7 @@
         helpIntro: "Gebruik de zorgpadkaart om een klinisch betekenisvol scenario af te bakenen. Bepaal daarna in het LCA-gedeelte welke bouwstenen met relevante hulpbronnen in het milieumodel worden opgenomen.",
         helpStep1: "Kies in het zorgpadmenu een specialisme en een richtlijn of lokale workflowbron.",
         helpStep2: "Beweeg over of klik op een activiteit om de klinische interpretatie, moduletoewijzing, hulpbronnen en open vragen te bekijken.",
-        helpStep3: "Selecteer de activiteiten die het gewenste zorgpadscenario vormen. Relevante LCA-modules worden automatisch aangevinkt, behalve activiteiten onder de voorlopige cut-off.",
+        helpStep3: "Bouw steeds één patiënttraject. Een activiteit op een concurrerende behandelroute vervangt activiteiten op de eerder gekozen route; opeenvolgende activiteiten binnen dezelfde route kunnen samen geselecteerd blijven. Relevante LCA-modules worden automatisch aangevinkt, behalve activiteiten onder de voorlopige cut-off.",
         helpStep4: "Een geselecteerde activiteit activeert automatisch de gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer routealternatieven, aantallen en handmatige aanvullingen voor de berekening.",
         helpStep5: "Controleer onzekerheid en datalacunes en exporteer daarna het rapport in de gekozen taal.",
         helpCutoffTitle: "Voorlopige LCA-cut-off",
@@ -4922,8 +4993,10 @@
         closeFullscreen: "Volledig scherm sluiten",
         clearPathway: "Geselecteerd zorgpad wissen",
         pathwayScenario: "Zorgpadscenario",
-        pathwayScenarioSubtitle: "Geselecteerde activiteiten sturen zorgpadgebonden LCA-modules",
+        pathwayScenarioSubtitle: "Eén patiënttraject; concurrerende behandelroutes vervangen elkaar",
         selectedActivitiesStatus: "{count} geselecteerde activiteiten; {modules} actieve zorgpadmodules",
+        routeDirection: "Pijlen tonen de richting van het zorgpad",
+        routeSequence: "Nummers tonen de gekozen volgorde",
         diagnosticRoute: "Diagnostische en eerste-contactroute",
         treatmentRoute: "Behandelroute",
         followupRoute: "Follow-uproute",
@@ -5073,7 +5146,7 @@
           helpIntro: "先用路径图定义具有临床意义的情景，再在 LCA 部分决定哪些包含实质资源消耗的构建块进入环境模型。",
           helpStep1: "从路径菜单中选择专科，以及指南或本地工作流来源。",
           helpStep2: "将鼠标悬停在活动上或点击活动，查看临床解释、模块分配、候选资源流和待确认问题。",
-          helpStep3: "选择组成目标路径情景的活动。相关 LCA 模块会自动勾选，但暂定 cut-off 范围内的活动不会激活模块。",
+          helpStep3: "每次构建一条患者路径。选择竞争治疗分支上的活动时，会自动替换此前分支中已选的活动；同一分支内连续发生的活动可以同时保留。相关 LCA 模块会自动勾选，但暂定 cut-off 范围内的活动不会激活模块。",
           helpStep4: "选择 activity 后会自动启用对应 modules、building blocks 和临时数量。计算前请检查治疗路线、发生次数和手动补充项。",
           helpStep5: "检查不确定性和数据缺口，然后以当前所选语言导出报告。",
           helpCutoffTitle: "暂定 LCA cut-off",
@@ -5101,8 +5174,10 @@
           closeFullscreen: "关闭全屏",
           clearPathway: "清空已选路径",
           pathwayScenario: "路径情景",
-          pathwayScenarioSubtitle: "已选活动控制路径关联 LCA 模块",
+          pathwayScenarioSubtitle: "一次只构建一条患者路径；竞争治疗分支会相互替换",
           selectedActivitiesStatus: "已选 {count} 个活动；{modules} 个路径模块已启用",
+          routeDirection: "箭头表示路径方向",
+          routeSequence: "数字表示所选活动的先后顺序",
           diagnosticRoute: "诊断和首次接触路线",
           treatmentRoute: "治疗路线",
           followupRoute: "随访路线",
@@ -5245,7 +5320,7 @@
           helpIntro: "パスウェイ図で臨床的に意味のあるシナリオを定義し、LCA セクションで実質的な資源投入を伴う構成ブロックを環境モデルに含めます。",
           helpStep1: "パスウェイメニューから診療科とガイドラインまたはローカルワークフローを選択します。",
           helpStep2: "活動にカーソルを合わせるかクリックして、臨床的解釈、モジュール割当、資源フロー、確認事項を確認します。",
-          helpStep3: "確認したいパスウェイシナリオを構成する活動を選択します。暫定 cut-off 対象を除き、関連 LCA モジュールが自動的に選択されます。",
+          helpStep3: "患者一人分のルートを一度に一つ作成します。競合する治療分岐の活動を選ぶと、以前の分岐で選択した活動が置き換わります。同じ分岐内の連続活動は同時に選択できます。暫定 cut-off 対象を除き、関連 LCA モジュールが自動的に選択されます。",
           helpStep4: "activity を選択すると、対応する modules、building blocks、暫定数量が自動的に有効になります。計算前に治療経路、回数、手動追加を確認してください。",
           helpStep5: "不確実性とデータギャップを確認し、現在選択されている言語でレポートを出力します。",
           helpCutoffTitle: "暫定 LCA cut-off",
@@ -5272,7 +5347,10 @@
           closeFullscreen: "全画面を閉じる",
           clearPathway: "選択したパスウェイをクリア",
           pathwayScenario: "パスウェイシナリオ",
+          pathwayScenarioSubtitle: "患者一人分のルート；競合する治療分岐は相互に置換",
           selectedActivitiesStatus: "{count} 件の活動を選択；{modules} 件のパスウェイモジュールが有効",
+          routeDirection: "矢印はパスウェイの方向を示します",
+          routeSequence: "番号は選択した順序を示します",
           diagnosticRoute: "診断・初回接触ルート",
           treatmentRoute: "治療ルート",
           followupRoute: "フォローアップルート",
@@ -5370,7 +5448,7 @@
           helpIntro: "Use el mapa para definir un escenario clínicamente significativo y, después, decida en la sección LCA qué bloques con consumo material de recursos entran en el modelo ambiental.",
           helpStep1: "Seleccione una especialidad y una guía o fuente de flujo local en el menú de vías.",
           helpStep2: "Pase el cursor o haga clic en una actividad para revisar su interpretación clínica, módulo, flujos de recursos y preguntas abiertas.",
-          helpStep3: "Seleccione las actividades que forman el escenario de interés. Los módulos LCA relacionados se marcan automáticamente, excepto las actividades bajo el cut-off provisional.",
+          helpStep3: "Construya una ruta de paciente cada vez. Al elegir una actividad de una rama terapéutica competidora, se sustituyen las actividades elegidas en la rama anterior; las actividades secuenciales de la misma rama pueden permanecer seleccionadas. Los módulos LCA relacionados se marcan automáticamente, excepto las actividades bajo el cut-off provisional.",
           helpStep4: "Al seleccionar una actividad se activan automáticamente sus módulos, building blocks y cantidades provisionales. Revise las alternativas, frecuencias y adiciones manuales antes del cálculo.",
           helpStep5: "Revise la incertidumbre y las lagunas de datos y exporte el informe en el idioma seleccionado.",
           helpCutoffTitle: "Cut-off LCA provisional",
@@ -5397,7 +5475,10 @@
           closeFullscreen: "Cerrar pantalla completa",
           clearPathway: "Borrar vía seleccionada",
           pathwayScenario: "Escenario de vía",
+          pathwayScenarioSubtitle: "Una ruta de paciente; las ramas terapéuticas competidoras se sustituyen",
           selectedActivitiesStatus: "{count} actividades seleccionadas; {modules} módulos de vía activos",
+          routeDirection: "Las flechas indican la dirección de la vía",
+          routeSequence: "Los números muestran el orden seleccionado",
           diagnosticRoute: "Ruta diagnóstica y de primer contacto",
           treatmentRoute: "Ruta de tratamiento",
           followupRoute: "Ruta de seguimiento",
@@ -10484,8 +10565,8 @@
       };
     }
 
-    function edge(from, to, route) {
-      return { from, to, route };
+    function edge(from, to, route, options = {}) {
+      return { from, to, route, ...options };
     }
 
     function currentPathway() {
@@ -10533,6 +10614,65 @@
       const pathway = currentPathway();
       const selectedIds = scenarioSetForPathway();
       return pathway.nodes.filter((node) => selectedIds.has(node.id));
+    }
+
+    function scenarioRouteBundleForNode(nodeId, pathwayId = state.pathway) {
+      return (pathwayScenarioRouteBundles[pathwayId] || [])
+        .find((bundle) => bundle.nodes.includes(nodeId));
+    }
+
+    function removeCompetingScenarioRouteNodes(selectedIds, nodeId, pathwayId = state.pathway) {
+      const selectedBundle = scenarioRouteBundleForNode(nodeId, pathwayId);
+      if (!selectedBundle) return;
+      (pathwayScenarioRouteBundles[pathwayId] || []).forEach((bundle) => {
+        if (bundle.id === selectedBundle.id) return;
+        bundle.nodes.forEach((competingNodeId) => selectedIds.delete(competingNodeId));
+      });
+    }
+
+    function isScenarioEdgeActive(edgeItem, selectedIds = scenarioSetForPathway()) {
+      if (!selectedIds.has(edgeItem.from) || !selectedIds.has(edgeItem.to)) return false;
+      if ((edgeItem.excludedBy || []).some((nodeId) => selectedIds.has(nodeId))) return false;
+      if ((edgeItem.required || []).some((nodeId) => !selectedIds.has(nodeId))) return false;
+      return true;
+    }
+
+    function scenarioSequenceMap(pathway = currentPathway()) {
+      const selectedIds = scenarioSetForPathway();
+      const selectedNodes = pathway.nodes.filter((node) => selectedIds.has(node.id));
+      const pathwayOrder = new Map(pathway.nodes.map((node, index) => [node.id, index]));
+      const indegree = new Map(selectedNodes.map((node) => [node.id, 0]));
+      const outgoing = new Map(selectedNodes.map((node) => [node.id, []]));
+
+      pathway.edges.forEach((edgeItem) => {
+        if (!isScenarioEdgeActive(edgeItem, selectedIds)) return;
+        outgoing.get(edgeItem.from)?.push(edgeItem.to);
+        indegree.set(edgeItem.to, (indegree.get(edgeItem.to) || 0) + 1);
+      });
+
+      const queue = selectedNodes
+        .filter((node) => indegree.get(node.id) === 0)
+        .map((node) => node.id)
+        .sort((a, b) => pathwayOrder.get(a) - pathwayOrder.get(b));
+      const orderedIds = [];
+      while (queue.length) {
+        const nodeId = queue.shift();
+        orderedIds.push(nodeId);
+        (outgoing.get(nodeId) || []).forEach((nextId) => {
+          indegree.set(nextId, indegree.get(nextId) - 1);
+          if (indegree.get(nextId) === 0) {
+            queue.push(nextId);
+            queue.sort((a, b) => pathwayOrder.get(a) - pathwayOrder.get(b));
+          }
+        });
+      }
+
+      selectedNodes
+        .map((node) => node.id)
+        .filter((nodeId) => !orderedIds.includes(nodeId))
+        .sort((a, b) => pathwayOrder.get(a) - pathwayOrder.get(b))
+        .forEach((nodeId) => orderedIds.push(nodeId));
+      return new Map(orderedIds.map((nodeId, index) => [nodeId, index + 1]));
     }
 
     function selectedScenarioModuleIds() {
@@ -10584,6 +10724,7 @@
       if (selectedIds.has(nodeId)) {
         selectedIds.delete(nodeId);
       } else {
+        removeCompetingScenarioRouteNodes(selectedIds, nodeId);
         selectedIds.add(nodeId);
       }
       syncPathwayModulesFromScenario();
@@ -10784,6 +10925,10 @@
       setText("pathwayContextTitle", "pathwayContextTitle");
       setText("pathwayScenarioTitle", "pathwayScenario");
       setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
+      setText("routeDirectionLabel", "routeDirection");
+      setText("routeSequenceLabel", "routeSequence");
+      setText("fullscreenRouteDirectionLabel", "routeDirection");
+      setText("fullscreenRouteSequenceLabel", "routeSequence");
       setText("diagnosticRouteLabel", "diagnosticRoute");
       setText("fullscreenDiagnosticRouteLabel", "diagnosticRoute");
       setText("treatmentRouteLabel", "treatmentRoute");
@@ -10921,17 +11066,65 @@
       scheduleDetailPanelSync();
     }
 
+    function nodeHorizontalRadius(node) {
+      return node.type === "decision" ? 38 : 24;
+    }
+
+    function nodeVerticalRadius(node) {
+      return node.type === "decision" ? 30 : 24;
+    }
+
     function pathForEdge(from, to) {
       if (from.id === "EMC-TX02" && to.id === "EMC-TX17") {
-        return `M ${from.x} ${from.y} C ${from.x} ${to.y - 36}, ${from.x} ${to.y}, ${to.x} ${to.y}`;
+        const startY = from.y + nodeVerticalRadius(from);
+        const endX = to.x + nodeHorizontalRadius(to);
+        return `M ${from.x} ${startY} C ${from.x} ${to.y - 36}, ${from.x} ${to.y}, ${endX} ${to.y}`;
       }
       const dx = Math.abs(to.x - from.x);
       const dy = Math.abs(to.y - from.y);
-      if (dx < 8 || dy < 8) {
-        return `M ${from.x} ${from.y} L ${to.x} ${to.y}`;
+      if (dx < 8) {
+        const direction = to.y >= from.y ? 1 : -1;
+        const startY = from.y + direction * nodeVerticalRadius(from);
+        const endY = to.y - direction * nodeVerticalRadius(to);
+        return `M ${from.x} ${startY} L ${to.x} ${endY}`;
       }
+      if (dy < 8) {
+        const direction = to.x >= from.x ? 1 : -1;
+        const startX = from.x + direction * nodeHorizontalRadius(from);
+        const endX = to.x - direction * nodeHorizontalRadius(to);
+        return `M ${startX} ${from.y} L ${endX} ${to.y}`;
+      }
+      const direction = to.x >= from.x ? 1 : -1;
+      const startX = from.x + direction * nodeHorizontalRadius(from);
+      const endX = to.x - direction * nodeHorizontalRadius(to);
       const midX = (from.x + to.x) / 2;
-      return `M ${from.x} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${to.x} ${to.y}`;
+      return `M ${startX} ${from.y} C ${midX} ${from.y}, ${midX} ${to.y}, ${endX} ${to.y}`;
+    }
+
+    function mapEdgeMarkerId(svgId, route) {
+      return `${svgId}-${route}-direction`;
+    }
+
+    function appendMapEdgeMarkers(svg, svgId) {
+      const defs = createSvgElement("defs");
+      ["diagnostic", "treatment", "followup", "return"].forEach((route) => {
+        const marker = createSvgElement("marker", {
+          id: mapEdgeMarkerId(svgId, route),
+          viewBox: "0 0 8 8",
+          markerWidth: 7,
+          markerHeight: 7,
+          refX: 7,
+          refY: 4,
+          orient: "auto",
+          markerUnits: "userSpaceOnUse"
+        });
+        marker.appendChild(createSvgElement("path", {
+          d: "M 0 0 L 8 4 L 0 8 Z",
+          fill: routeColor(route)
+        }));
+        defs.appendChild(marker);
+      });
+      svg.appendChild(defs);
     }
 
     function pathwaySourceGroups() {
@@ -11202,6 +11395,7 @@
       clear(svg);
       svg.appendChild(createSvgElement("title", { id: titleId })).textContent = localizedPathwayTitle();
       svg.appendChild(createSvgElement("desc", { id: descId })).textContent = localizedPathwayScope();
+      appendMapEdgeMarkers(svg, svgId);
 
       const laneLabelBoxes = [];
       pathway.lanes.forEach((lane) => {
@@ -11239,12 +11433,15 @@
         const from = nodeById(pathway, edgeItem.from);
         const to = nodeById(pathway, edgeItem.to);
         if (!from || !to) return;
-        const scenarioEdge = isScenarioNodeSelected(from.id) && isScenarioNodeSelected(to.id);
+        const scenarioEdge = isScenarioEdgeActive(edgeItem);
         const path = createSvgElement("path", {
           d: pathForEdge(from, to),
           class: `map-edge ${edgeItem.route === "return" ? "return" : ""} ${scenarioEdge ? "scenario-edge" : ""}`,
           stroke: routeColor(edgeItem.route),
-          "stroke-width": scenarioEdge ? 9 : edgeItem.route === "diagnostic" ? 7 : 6
+          "stroke-width": scenarioEdge ? 9 : edgeItem.route === "diagnostic" ? 7 : 6,
+          "marker-end": `url(#${mapEdgeMarkerId(svgId, edgeItem.route)})`,
+          "data-edge-from": edgeItem.from,
+          "data-edge-to": edgeItem.to
         });
         if (!visibleIds.has(from.id) || !visibleIds.has(to.id)) {
           path.setAttribute("opacity", "0.16");
@@ -11259,6 +11456,7 @@
         const to = nodeById(pathway, edgeItem.to);
         return from && to ? edgeSampleBoxes(from, to) : [];
       });
+      const scenarioSequence = scenarioSequenceMap(pathway);
       pathway.nodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
         const labelLines = splitLabel(shortStationLabel(node), 17);
@@ -11273,7 +11471,9 @@
           class: "map-node",
           role: "button",
           "aria-label": `${node.id} ${localizedNodeLabel(node)}`,
-          tabindex: "0"
+          tabindex: "0",
+          "data-node-id": node.id,
+          "data-node-layer": "label"
         });
         attachMapNodeInteractions(group, node);
         if (!visible) group.setAttribute("opacity", "0.24");
@@ -11313,7 +11513,9 @@
           class: "map-node",
           role: "button",
           "aria-label": `${node.id} ${localizedNodeLabel(node)}`,
-          tabindex: "0"
+          tabindex: "0",
+          "data-node-id": node.id,
+          "data-node-layer": "marker"
         });
         attachMapNodeInteractions(group, node);
         if (!visible) group.setAttribute("opacity", "0.24");
@@ -11353,13 +11555,16 @@
           group.appendChild(createSvgElement("circle", {
             cx: node.x + 26,
             cy: node.y - 24,
-            r: 9,
+            r: 10,
             class: "scenario-badge"
           }));
-          group.appendChild(createSvgElement("path", {
-            d: `M ${node.x + 21.5} ${node.y - 24} L ${node.x + 24.5} ${node.y - 20.8} L ${node.x + 31.2} ${node.y - 27.2}`,
-            class: "scenario-badge-mark"
-          }));
+          const sequenceNumber = createSvgElement("text", {
+            x: node.x + 26,
+            y: node.y - 24,
+            class: "scenario-badge-number"
+          });
+          sequenceNumber.textContent = scenarioSequence.get(node.id) || "";
+          group.appendChild(sequenceNumber);
         }
 
         const [codePrefix, codeNumber] = stationCodeParts(node);

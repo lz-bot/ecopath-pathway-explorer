@@ -31,6 +31,7 @@
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
@@ -50,7 +51,7 @@
     }
 
     .topbar {
-      max-width: 1260px;
+      max-width: 1480px;
       margin: 0 auto;
       padding: 14px 18px;
       display: grid;
@@ -97,9 +98,10 @@
     .help-button {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      font-weight: 700;
-      white-space: nowrap;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
     }
 
     .help-icon {
@@ -113,6 +115,18 @@
       font-family: var(--sans);
       font-size: 12px;
       line-height: 1;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     button:focus-visible,
@@ -421,10 +435,91 @@
       font-weight: 700;
     }
 
-    main {
-      max-width: 1260px;
+    main.workspace-shell {
+      max-width: 1480px;
       margin: 0 auto;
       padding: 18px;
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .workflow-nav {
+      position: sticky;
+      top: var(--sticky-workspace-top, 98px);
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .workflow-nav h2 {
+      margin: 0 0 3px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .workflow-step {
+      width: 100%;
+      min-height: 54px;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 9px;
+      align-items: center;
+      text-align: left;
+      padding: 8px;
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .workflow-step-number {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      color: var(--muted);
+      background: var(--panel-soft);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .workflow-step span:last-child {
+      display: grid;
+      gap: 1px;
+      line-height: 1.2;
+    }
+
+    .workflow-step strong {
+      font-size: 13px;
+    }
+
+    .workflow-step small {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .workflow-step.active {
+      color: var(--accent-dark);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .workflow-step.active .workflow-step-number {
+      border-color: var(--accent-dark);
+      color: var(--panel);
+      background: var(--accent-dark);
+    }
+
+    .workspace-content {
+      min-width: 0;
     }
 
     .filters {
@@ -433,6 +528,50 @@
       gap: 10px;
       margin-bottom: 14px;
       align-items: end;
+    }
+
+    .field small,
+    .filter-help {
+      color: var(--muted);
+      font-size: 10.5px;
+      line-height: 1.3;
+    }
+
+    .advanced-module-filter {
+      min-width: 0;
+    }
+
+    .advanced-module-filter > summary {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--muted);
+      cursor: pointer;
+      list-style: none;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .advanced-module-filter > summary::-webkit-details-marker { display: none; }
+    .advanced-module-filter > summary::after { content: "+"; color: var(--accent-dark); }
+    .advanced-module-filter[open] > summary::after { content: "−"; }
+    .advanced-module-filter[open] > summary {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .advanced-module-filter .field {
+      margin-top: 6px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
     }
 
     .field {
@@ -814,7 +953,7 @@
 
     .map-fullscreen-header {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
       gap: 14px;
       align-items: start;
       border: 1px solid var(--line);
@@ -829,12 +968,24 @@
       font-size: 18px;
     }
 
+    .map-fullscreen-header .scope-note {
+      display: none;
+    }
+
     .map-fullscreen-controls {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 8px;
       align-items: center;
+      min-width: 0;
+    }
+
+    .map-fullscreen-controls .status-chip {
+      max-width: 300px;
+      overflow-wrap: anywhere;
+      white-space: normal;
+      line-height: 1.25;
     }
 
     .map-fullscreen-shell {
@@ -1446,7 +1597,7 @@
 
     .lca-module-calculation-header {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr) auto auto;
       gap: 12px;
       align-items: center;
       padding: 10px;
@@ -1509,6 +1660,27 @@
       margin-top: 0;
       border: 0;
       border-radius: 0;
+    }
+
+    details.lca-module-calculation > summary {
+      cursor: pointer;
+      list-style: none;
+    }
+
+    details.lca-module-calculation > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.lca-module-calculation > summary::after {
+      content: "+";
+      justify-self: end;
+      color: var(--accent-dark);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    details.lca-module-calculation[open] > summary::after {
+      content: "−";
     }
 
     .lca-table {
@@ -1622,8 +1794,28 @@
         width: 124px;
       }
 
-      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid, .lca-module-calculation-header {
+      main.workspace-shell {
         grid-template-columns: 1fr;
+      }
+
+      .workflow-nav {
+        position: sticky;
+        top: 76px;
+        z-index: 15;
+        grid-template-columns: repeat(4, minmax(120px, 1fr));
+        overflow-x: auto;
+      }
+
+      .workflow-nav h2 {
+        display: none;
+      }
+
+      .layout, .filters, .method-note, .lca-summary-grid, .lca-control-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lca-module-calculation-header {
+        grid-template-columns: minmax(0, 1fr) auto auto;
       }
 
       .map-fullscreen-shell,
@@ -1667,7 +1859,7 @@
     }
 
     @media (max-width: 620px) {
-      main { padding: 12px; }
+      main.workspace-shell { padding: 12px; }
       .topbar { padding: 12px; }
       .language-selector summary,
       .specialty-selector summary {
@@ -1709,6 +1901,17 @@
       .help-cutoff-note ul {
         columns: 1;
       }
+      .workflow-nav {
+        top: 70px;
+        grid-template-columns: repeat(4, 136px);
+        padding: 7px;
+      }
+      .workflow-step {
+        min-height: 46px;
+      }
+      .workflow-step small {
+        display: none;
+      }
       svg { min-height: 300px; }
     }
   </style>
@@ -1726,7 +1929,7 @@
       <div class="topbar-actions">
         <button class="help-button" type="button" id="openHelpDialog" aria-haspopup="dialog" aria-controls="helpDialog">
           <span class="help-icon" aria-hidden="true">?</span>
-          <span id="helpButtonText">How to use</span>
+          <span class="sr-only" id="helpButtonText">How to use</span>
         </button>
         <details class="language-selector" id="languageSelector">
           <summary id="languageSummary">English</summary>
@@ -1762,16 +1965,43 @@
     </div>
   </dialog>
 
-  <main>
-    <section class="filters" aria-label="Activity filters">
+  <main class="workspace-shell">
+    <aside class="workflow-nav" aria-label="ECO-PATH workflow steps">
+      <h2 id="workflowHeading">Workflow</h2>
+      <button class="workflow-step active" type="button" data-workspace-step="pathway" aria-current="step">
+        <span class="workflow-step-number">1</span>
+        <span><strong id="workflowPathwayTitle">Pathway and scope</strong><small id="workflowPathwayHint">Choose the clinical boundary</small></span>
+      </button>
+      <button class="workflow-step" type="button" data-workspace-step="activities">
+        <span class="workflow-step-number">2</span>
+        <span><strong id="workflowActivitiesTitle">Activities</strong><small id="workflowActivitiesHint">Build the scenario</small></span>
+      </button>
+      <button class="workflow-step" type="button" data-workspace-step="lca">
+        <span class="workflow-step-number">3</span>
+        <span><strong id="workflowLcaTitle">LCA model</strong><small id="workflowLcaHint">Select modules and blocks</small></span>
+      </button>
+      <button class="workflow-step" type="button" data-workspace-step="results">
+        <span class="workflow-step-number">4</span>
+        <span><strong id="workflowResultsTitle">Results</strong><small id="workflowResultsHint">Review and export</small></span>
+      </button>
+    </aside>
+
+    <div class="workspace-content">
+    <div id="clinicalWorkspace">
+    <section class="filters" aria-label="Activity filters" data-workspace-panel="pathway activities">
       <div class="field">
         <label for="domainFilter" id="domainFilterLabel">Domain</label>
         <select id="domainFilter"></select>
+        <small id="domainFilterHelp">Clinical navigation category.</small>
       </div>
-      <div class="field">
-        <label for="moduleFilter" id="moduleFilterLabel">ECO-PATH module</label>
-        <select id="moduleFilter"></select>
-      </div>
+      <details class="advanced-module-filter">
+        <summary id="moduleFilterSummary">LCA module filter (advanced)</summary>
+        <div class="field">
+          <label for="moduleFilter" id="moduleFilterLabel">ECO-PATH module</label>
+          <select id="moduleFilter"></select>
+          <small id="moduleFilterHelp">Reusable LCA modeling zone, not a second clinical category.</small>
+        </div>
+      </details>
       <div class="field">
         <label for="typeFilter" id="typeFilterLabel">Element type</label>
         <select id="typeFilter">
@@ -1798,7 +2028,7 @@
 
     <section class="layout">
       <div>
-        <section class="panel map-panel">
+        <section class="panel map-panel" data-workspace-panel="pathway">
           <div class="panel-heading">
             <div>
               <h2 id="pathwayTitle"></h2>
@@ -1857,7 +2087,7 @@
           <div class="pathway-references" id="pathwayReferences" aria-label="Pathway references"></div>
         </section>
 
-        <section class="panel activity-panel" id="activitiesPanel">
+        <section class="panel activity-panel" id="activitiesPanel" data-workspace-panel="activities">
           <div class="activity-toolbar">
             <h2 id="activitiesHeading">Activities</h2>
             <div class="activity-toolbar-actions">
@@ -1868,7 +2098,7 @@
           <div class="activity-list" id="activityList"></div>
         </section>
 
-        <section class="method-note" aria-label="Method notes">
+        <section class="method-note" aria-label="Method notes" data-workspace-panel="activities">
           <div class="note-cell">
             <strong id="methodProtocolTitle">Protocol step</strong>
             <p id="methodProtocolText">Source instruction from a guideline, protocol, or workflow diagram.</p>
@@ -1892,12 +2122,13 @@
         </section>
       </div>
 
-      <aside class="panel detail-panel" id="activityDetailPanel" aria-live="polite">
+      <aside class="panel detail-panel" id="activityDetailPanel" aria-live="polite" data-workspace-panel="pathway activities">
         <div id="activityDetail"></div>
       </aside>
     </section>
+    </div>
 
-    <section class="panel lca-panel" id="lcaCalculator" aria-label="LCA building block calculator">
+    <section class="panel lca-panel" id="lcaCalculator" aria-label="LCA building block calculator" hidden>
       <div class="panel-heading">
         <div>
           <h2 id="lcaHeading">Modular LCA calculation demo</h2>
@@ -1905,12 +2136,12 @@
         </div>
         <div class="lca-header-actions">
           <span class="status-chip" id="lcaPathwayStatus"></span>
-          <button type="button" id="lcaExportReport">Export LCA report</button>
+          <button type="button" id="lcaExportReport" data-workspace-panel="results">Export LCA report</button>
           <span class="export-status" id="lcaExportStatus" aria-live="polite"></span>
         </div>
       </div>
 
-      <div class="lca-module-map" aria-label="LCA building block map">
+      <div class="lca-module-map" aria-label="LCA building block map" data-workspace-panel="lca">
         <div class="panel-heading">
           <div>
             <h3 id="buildingBlockMapHeading">Candidate building blocks by LCA module</h3>
@@ -1926,7 +2157,7 @@
         <div class="module-map-grid" id="buildingBlockMap"></div>
       </div>
 
-      <div class="lca-summary-grid">
+      <div class="lca-summary-grid" data-workspace-panel="results">
         <div>
           <div class="lca-control-grid" aria-label="LCA scenario inputs">
             <div class="field">
@@ -1945,8 +2176,9 @@
         </div>
       </div>
 
-      <div class="lca-module-calculations" id="lcaModuleCalculations"></div>
+      <div class="lca-module-calculations" id="lcaModuleCalculations" data-workspace-panel="lca"></div>
     </section>
+    </div>
   </main>
 
   <section class="map-fullscreen-overlay" id="mapFullscreenOverlay" aria-hidden="true" aria-label="Fullscreen pathway map">
@@ -2391,18 +2623,17 @@
         sourceType: "guideline",
         sourceGroup: "reference",
         label: "Gastroenterology: Dutch CRC pathway",
-        title: "Dutch CRC Screening-Positive Hospital Pathway",
-        status: "Dutch national guideline-based pathway, local EMC execution not assumed",
-        scope: "Hospital-boundary ECO-PATH abstraction starting at first hospital contact after an abnormal FIT screening result. It separates no-polyp, low-risk polyp, high-risk polyp, and colorectal cancer branches using Dutch screening outcome data and FMS/Richtlijnendatabase guidance for colorectal cancer and colonoscopy surveillance.",
-        defaultSelected: "CRCDUTCH-DX04",
+        title: "Dutch CRC Hospital Diagnosis and Treatment Pathway",
+        status: "Expert-informed Dutch hospital pathway; cross-hospital execution and endpoint require confirmation",
+        scope: "Hospital pathway for suspected or confirmed colorectal cancer, starting with specialist intake and hospital diagnostic confirmation. It includes pathology, staging, MDO, colon, rectal, advanced-care, and follow-up routes. National FIT screening and non-cancer polyp outcomes are outside this CRC treatment boundary and should be assessed as a separate population-screening case.",
+        defaultSelected: "CRCDUTCH-JM01",
         lanes: [
-          { y: 88, label: "First hospital contact after positive FIT" },
-          { y: 210, label: "Diagnostic colonoscopy and findings", labelY: 190 },
-          { y: 335, label: "Polyp management and surveillance" },
-          { y: 470, label: "CRC staging, MDO, and treatment" },
-          { y: 595, label: "Post-treatment surveillance" }
+          { y: 95, label: "Hospital diagnosis and confirmation" },
+          { y: 245, label: "Staging, MDO, and treatment planning" },
+          { y: 420, label: "Localized colon and rectal treatment" },
+          { y: 590, label: "Response, advanced care, and follow-up" }
         ],
-        nodes: [
+        screeningReferenceNodes: [
           {
             id: "CRCDUTCH-AC01",
             x: 80,
@@ -2689,7 +2920,197 @@
             resourceFlows: ["Outpatient visits", "CEA or laboratory testing", "CT if indicated", "Colonoscopy", "Patient travel"]
           }
         ],
-        edges: [
+        nodes: [
+          {
+            id: "CRCDUTCH-FC01",
+            x: 90,
+            y: 95,
+            label: "Specialist hospital consultation",
+            domain: "Access",
+            type: "activity",
+            module: "EM01",
+            route: "diagnostic",
+            moduleNote: "This is the first hospital-facing specialist contact inside the current CRC boundary. It is separate from diagnostic procedures and from the national screening program.",
+            interpretation: "Specialist intake for suspected or confirmed colorectal cancer, including referral review and planning of missing diagnostic work-up.",
+            rationale: "Peter's interview notes place the CRC start point at the hospital medical specialist visit. The upstream FIT invitation and home sampling belong to a separate population-screening case.",
+            resourceFlows: ["Patient travel", "Outpatient room use", "EHR review", "Diagnostic planning"]
+          },
+          {
+            id: "CRCDUTCH-DX01",
+            x: 270,
+            y: 95,
+            label: "Diagnostic colonoscopy and biopsy if needed",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM03",
+            route: "diagnostic",
+            moduleNote: "Colonoscopy remains in scope when diagnosis has not been completed before the first specialist contact. It can be switched off for a cohort entering with confirmed CRC.",
+            interpretation: "Colonoscopy, lesion assessment, biopsy, and recovery where required to establish the hospital diagnosis.",
+            rationale: "Removing national screening does not justify removing hospital diagnostic work. The occurrence depends on the selected entry population and referral completeness.",
+            resourceFlows: ["Endoscopy room use", "Bowel preparation", "Endoscope reprocessing", "Sedation", "Consumables", "Waste"]
+          },
+          {
+            id: "CRCDUTCH-DX02",
+            x: 450,
+            y: 95,
+            label: "Histopathological CRC confirmation",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM02",
+            route: "diagnostic",
+            moduleNote: "Pathology confirmation is retained as a separate reusable LCA building block.",
+            interpretation: "Processing and review of biopsy or resection material to confirm colorectal cancer and relevant histological features.",
+            rationale: "The expert notes explicitly separate pathology and histology from imaging and treatment planning.",
+            resourceFlows: ["Specimen processing", "Staining", "Microscopy or digital pathology", "Reporting"]
+          },
+          {
+            id: "CRCDUTCH-DX03",
+            x: 590,
+            y: 245,
+            label: "CRC staging workup",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM03",
+            route: "diagnostic",
+            moduleNote: "CRC staging is parameterized by colon or rectal site and by metastatic suspicion.",
+            interpretation: "Staging imaging and relevant laboratory assessment after colorectal cancer confirmation.",
+            rationale: "Staging determines localized, rectal organ-preservation, and advanced-care routes and therefore affects the LCA scenario.",
+            resourceFlows: ["CT", "MRI for rectal cancer if indicated", "Laboratory testing", "Radiology reporting"]
+          },
+          {
+            id: "CRCDUTCH-JM01",
+            x: 750,
+            y: 245,
+            label: "CRC MDO",
+            domain: "Joint clinic and MDT",
+            type: "decision",
+            module: "EM04",
+            route: "treatment",
+            oncology: true,
+            lcaCutoff: true,
+            moduleNote: "MDO remains visible because it determines the route, but the meeting-only building block is provisionally excluded from the environmental total unless material inputs are demonstrated.",
+            interpretation: "Multidisciplinary review of confirmed and staged colorectal cancer.",
+            rationale: "The meeting is clinically essential pathway logic. Under the provisional cut-off, staff time and minor office electricity are not modeled as a standalone impact-bearing block.",
+            resourceFlows: ["Clinical decision record", "Treatment route assignment"]
+          },
+          {
+            id: "CRCDUTCH-TX02",
+            x: 900,
+            y: 245,
+            label: "Colon, rectal, or advanced route decision",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM05",
+            route: "treatment",
+            moduleNote: "The route decision separates clinically different sequences without treating the decision meeting itself as a high-impact procedure.",
+            interpretation: "Selection of the localized colon, localized rectal, organ-preserving, or advanced-care pathway.",
+            rationale: "Colon and rectal cancer require different treatment sequences and resource models. Advanced disease may need a distinct functional unit.",
+            resourceFlows: ["Treatment planning", "Shared decision documentation", "Patient consultation"]
+          },
+          {
+            id: "CRCDUTCH-TX03",
+            x: 700,
+            y: 420,
+            label: "Colon surgery",
+            domain: "Treatment",
+            type: "activity",
+            module: "EM07",
+            route: "treatment",
+            moduleNote: "Colon surgery activates the reusable surgery module and should be parameterized by procedure, approach, admission, and complications boundary.",
+            interpretation: "Definitive surgery for localized colon cancer when indicated.",
+            rationale: "Surgery is expected to be a major environmental hotspot and must remain distinct from rectal surgery.",
+            resourceFlows: ["Operating room time", "Anesthesia", "Surgical instruments", "Admission days", "Waste"]
+          },
+          {
+            id: "CRCDUTCH-TX04",
+            x: 900,
+            y: 420,
+            label: "Adjuvant systemic therapy if indicated",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM06",
+            route: "treatment",
+            oncology: true,
+            moduleNote: "Only the systemic therapy building blocks used by the selected regimen and cycle count should be activated.",
+            interpretation: "Assessment and delivery route for adjuvant systemic therapy after localized surgery when indicated.",
+            rationale: "Oncology is represented through the actual consultation, regimen, pharmacy, administration, and monitoring activities inside EM06.",
+            resourceFlows: ["Medical oncology review", "Chemotherapy cycles", "Pharmacy preparation", "Laboratory monitoring"]
+          },
+          {
+            id: "CRCDUTCH-TX05",
+            x: 520,
+            y: 420,
+            label: "Rectal neoadjuvant or radiotherapy route",
+            domain: "Treatment",
+            type: "activity",
+            module: "EM08",
+            route: "treatment",
+            oncology: true,
+            moduleNote: "This branch can include radiotherapy, chemoradiation, or total neoadjuvant therapy according to the selected clinical scope.",
+            interpretation: "Preoperative or organ-preserving treatment for rectal cancer when indicated.",
+            rationale: "This creates reusable radiotherapy and systemic therapy blocks shared with other oncology pathways.",
+            resourceFlows: ["Radiotherapy planning", "Treatment fractions", "Concurrent systemic therapy", "Patient travel"]
+          },
+          {
+            id: "CRCDUTCH-FU04",
+            x: 500,
+            y: 590,
+            label: "Watch-and-wait surveillance",
+            domain: "Follow-up",
+            type: "activity",
+            module: "EM09",
+            route: "followup",
+            oncology: true,
+            moduleNote: "In Dutch clinical communication the English term is commonly retained as watch-and-waitbeleid. The surveillance schedule requires expert confirmation.",
+            interpretation: "Structured response surveillance after rectal neoadjuvant treatment when an organ-preserving watch-and-wait route is selected.",
+            rationale: "Repeated MRI, endoscopy, clinical assessment, and travel can materially affect the pathway result over time.",
+            resourceFlows: ["MRI", "Endoscopy", "Clinical assessment", "Patient travel"]
+          },
+          {
+            id: "CRCDUTCH-TX06",
+            x: 700,
+            y: 590,
+            label: "Rectal surgery if indicated",
+            domain: "Treatment",
+            type: "activity",
+            module: "EM07",
+            route: "treatment",
+            moduleNote: "Rectal surgery is separate from colon surgery because duration, stoma care, admission, and prior treatment can differ.",
+            interpretation: "Rectal surgery after staging or neoadjuvant treatment when indicated.",
+            rationale: "Separate parameterization avoids hiding clinically important resource differences inside one generic surgery block.",
+            resourceFlows: ["Operating room time", "Anesthesia", "Surgical instruments", "Admission days", "Stoma materials if applicable"]
+          },
+          {
+            id: "CRCDUTCH-TX07",
+            x: 1080,
+            y: 245,
+            label: "Advanced or palliative route",
+            domain: "Treatment",
+            type: "decision",
+            module: "EM05",
+            route: "return",
+            oncology: true,
+            moduleNote: "Advanced disease remains configurable because its clinical intent and time horizon can require a separate functional unit.",
+            interpretation: "Route for metastatic, unresectable, or palliative treatment situations.",
+            rationale: "This branch can be excluded when the selected study population is localized CRC only.",
+            resourceFlows: ["Medical oncology review", "Systemic therapy planning", "Palliative care coordination"]
+          },
+          {
+            id: "CRCDUTCH-FU05",
+            x: 1060,
+            y: 590,
+            label: "Post-CRC treatment surveillance",
+            domain: "Follow-up",
+            type: "activity",
+            module: "EM09",
+            route: "followup",
+            moduleNote: "The surveillance time horizon must be stated because repeated imaging, colonoscopy, and visits can dominate long-term follow-up impacts.",
+            interpretation: "Follow-up after curative or disease-directed colorectal cancer treatment.",
+            rationale: "Peter's notes identify follow-up as a separate phase and leave the endpoint for explicit study definition.",
+            resourceFlows: ["Outpatient visits", "CEA or laboratory testing", "CT if indicated", "Colonoscopy", "Patient travel"]
+          }
+        ],
+        screeningReferenceEdges: [
           edge("CRCDUTCH-AC01", "CRCDUTCH-AC02", "diagnostic"),
           edge("CRCDUTCH-AC02", "CRCDUTCH-DX01", "diagnostic"),
           edge("CRCDUTCH-DX01", "CRCDUTCH-DX02", "diagnostic"),
@@ -2701,6 +3122,23 @@
           edge("CRCDUTCH-TX01", "CRCDUTCH-FU03", "followup"),
           edge("CRCDUTCH-DX04", "CRCDUTCH-DX05", "diagnostic"),
           edge("CRCDUTCH-DX05", "CRCDUTCH-JM01", "diagnostic"),
+          edge("CRCDUTCH-JM01", "CRCDUTCH-TX02", "treatment"),
+          edge("CRCDUTCH-TX02", "CRCDUTCH-TX03", "treatment"),
+          edge("CRCDUTCH-TX03", "CRCDUTCH-TX04", "treatment"),
+          edge("CRCDUTCH-TX04", "CRCDUTCH-FU05", "followup"),
+          edge("CRCDUTCH-TX02", "CRCDUTCH-TX05", "treatment"),
+          edge("CRCDUTCH-TX05", "CRCDUTCH-FU04", "followup"),
+          edge("CRCDUTCH-FU04", "CRCDUTCH-TX06", "return"),
+          edge("CRCDUTCH-TX05", "CRCDUTCH-TX06", "treatment"),
+          edge("CRCDUTCH-TX06", "CRCDUTCH-FU05", "followup"),
+          edge("CRCDUTCH-TX02", "CRCDUTCH-TX07", "return"),
+          edge("CRCDUTCH-TX07", "CRCDUTCH-FU05", "followup")
+        ],
+        edges: [
+          edge("CRCDUTCH-FC01", "CRCDUTCH-DX01", "diagnostic"),
+          edge("CRCDUTCH-DX01", "CRCDUTCH-DX02", "diagnostic"),
+          edge("CRCDUTCH-DX02", "CRCDUTCH-DX03", "diagnostic"),
+          edge("CRCDUTCH-DX03", "CRCDUTCH-JM01", "diagnostic"),
           edge("CRCDUTCH-JM01", "CRCDUTCH-TX02", "treatment"),
           edge("CRCDUTCH-TX02", "CRCDUTCH-TX03", "treatment"),
           edge("CRCDUTCH-TX03", "CRCDUTCH-TX04", "treatment"),
@@ -2734,10 +3172,7 @@
         { label: "EAU disease management", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer/chapter/disease-management" }
       ],
       crcDutch: [
-        { label: "Richtlijnendatabase: Colorectaal carcinoom (2026)", url: "https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html" },
-        { label: "RIVM: Bevolkingsonderzoek darmkanker", url: "https://www.rivm.nl/bevolkingsonderzoek-darmkanker/professionals" },
-        { label: "RIVM: Vervolgonderzoek na FIT", url: "https://www.rivm.nl/bevolkingsonderzoek-darmkanker/uitslag/vervolgonderzoek" },
-        { label: "Richtlijnendatabase: Coloscopie surveillance", url: "https://richtlijnendatabase.nl/richtlijn/coloscopie_surveillance/kwaliteit_van_coloscopie_algemene_aspecten.html" }
+        { label: "Richtlijnendatabase: Colorectaal carcinoom (2026)", url: "https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html" }
       ]
     };
 
@@ -3625,6 +4060,116 @@
       buildingBlockMapIntro: "Los modules ECO-PATH son zonas de modelado reutilizables y compartidas entre especialidades. Solo se muestran los building blocks compartidos y los candidatos aplicables a la vía actual; una vía puede utilizar solo una parte de un module. EM10 y EM11 siguen siendo modules transversales opcionales."
     });
 
+    Object.assign(uiText.en, {
+      workflowHeading: "Workflow",
+      workflowPathwayTitle: "Pathway and scope",
+      workflowPathwayHint: "Choose the clinical boundary",
+      workflowActivitiesTitle: "Activities",
+      workflowActivitiesHint: "Build the scenario",
+      workflowLcaTitle: "LCA model",
+      workflowLcaHint: "Select modules and blocks",
+      workflowResultsTitle: "Results",
+      workflowResultsHint: "Review and export",
+      moduleFilterSummary: "LCA module filter (advanced)",
+      domainFilterHelp: "Clinical navigation category. It does not define the LCA inventory boundary.",
+      moduleFilterHelp: "Reusable LCA modeling zone used to inspect activities that share an inventory model. It is not a second clinical category.",
+      helpStep2: "Use Domain to navigate clinical activities. An ECO-PATH module (EM) is a reusable LCA modeling zone for activities that share inventory logic; use the advanced EM filter only to inspect those assignments.",
+      uncertainty: "Impact coefficient uncertainty, +/- %",
+      uncertaintyAria: "{block} impact coefficient uncertainty percent",
+      formulaUncertainty: "Impact coefficient range",
+      formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u_c = relative uncertainty assigned to c only, N = cohort size. Quantity, pathway, scenario, and structural uncertainty are not represented by this field.",
+      formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. u_c is the relative uncertainty assigned to c only. N is cohort size.",
+      helpStep5: "Review the impact-coefficient uncertainty range and unresolved quantity, pathway, scenario, and structural uncertainty, then export the report in the selected language."
+    });
+
+    Object.assign(uiText.nl, {
+      workflowHeading: "Werkstappen",
+      workflowPathwayTitle: "Zorgpad en afbakening",
+      workflowPathwayHint: "Kies de klinische grens",
+      workflowActivitiesTitle: "Activiteiten",
+      workflowActivitiesHint: "Bouw het scenario",
+      workflowLcaTitle: "LCA-model",
+      workflowLcaHint: "Kies modules en bouwstenen",
+      workflowResultsTitle: "Resultaten",
+      workflowResultsHint: "Beoordeel en exporteer",
+      moduleFilterSummary: "LCA-modulefilter (geavanceerd)",
+      domainFilterHelp: "Klinische navigatiecategorie. Dit bepaalt niet de LCA-inventarisgrens.",
+      moduleFilterHelp: "Herbruikbare LCA-modelzone voor activiteiten met hetzelfde inventarismodel. Dit is geen tweede klinische categorie.",
+      helpStep2: "Gebruik Domein om door klinische activiteiten te navigeren. Een ECO-PATH-module (EM) is een herbruikbare LCA-modelzone voor activiteiten met dezelfde inventarislogica; gebruik het geavanceerde EM-filter alleen om die toewijzingen te bekijken.",
+      uncertainty: "Onzekerheid impactcoëfficiënt, +/- %",
+      uncertaintyAria: "Onzekerheidspercentage impactcoëfficiënt voor {block}",
+      formulaUncertainty: "Bereik impactcoëfficiënt",
+      formulaNote: "S = aangevinkte bouwstenen binnen aangevinkte modules. q = aantal of hulpbronhoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u_c = relatieve onzekerheid uitsluitend van c, N = cohortgrootte. Onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur staat niet in dit veld.",
+      formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is de impactcoëfficiënt. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
+      helpStep5: "Beoordeel het onzekerheidsbereik van de impactcoëfficiënt en open onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur. Exporteer daarna het rapport in de gekozen taal."
+    });
+
+    Object.assign(uiText.zh, {
+      workflowHeading: "工作步骤",
+      workflowPathwayTitle: "路径与边界",
+      workflowPathwayHint: "选择临床边界",
+      workflowActivitiesTitle: "活动",
+      workflowActivitiesHint: "组成情景路径",
+      workflowLcaTitle: "LCA 模型",
+      workflowLcaHint: "选择模块和构建单元",
+      workflowResultsTitle: "结果",
+      workflowResultsHint: "检查并导出",
+      moduleFilterSummary: "LCA 模块筛选（高级）",
+      domainFilterHelp: "用于临床路径导航，不定义 LCA 清单边界。",
+      moduleFilterHelp: "用于查找共用同一清单模型的活动，是可复用的 LCA 建模区，不是第二套临床分类。",
+      helpStep2: "Domain 仅用于浏览临床活动。ECO-PATH 模块（EM）是共用清单逻辑活动的可复用 LCA 建模区；高级 EM 筛选仅用于检查这些分配关系。",
+      uncertainty: "影响系数不确定性，+/- %",
+      uncertaintyAria: "{block} 的影响系数不确定性百分比",
+      formulaUncertainty: "影响系数范围",
+      formulaNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为 LCIA 影响系数；j 为影响类别；u_c 仅表示 c 的相对不确定性；N 为队列人数。本字段不表示数量、路径、情景或模型结构不确定性。",
+      formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为影响系数；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
+      helpStep5: "检查影响系数不确定性范围，并单独记录数量、路径、情景和模型结构不确定性，然后使用当前语言导出报告。"
+    });
+
+    Object.assign(uiText.ja, {
+      workflowHeading: "手順",
+      workflowPathwayTitle: "パスウェイと範囲",
+      workflowPathwayHint: "臨床境界を選択",
+      workflowActivitiesTitle: "活動",
+      workflowActivitiesHint: "シナリオを構成",
+      workflowLcaTitle: "LCA モデル",
+      workflowLcaHint: "モジュールとブロックを選択",
+      workflowResultsTitle: "結果",
+      workflowResultsHint: "確認して出力",
+      moduleFilterSummary: "LCA モジュールフィルター（詳細）",
+      domainFilterHelp: "臨床ナビゲーション用で、LCA インベントリ境界を定義しません。",
+      moduleFilterHelp: "同じインベントリモデルを共有する活動を確認する再利用可能な LCA モデル領域です。別の臨床分類ではありません。",
+      helpStep2: "Domain は臨床活動のナビゲーションにのみ使用します。ECO-PATH モジュール（EM）は同じインベントリ論理を共有する活動の再利用可能な LCA モデル領域で、詳細 EM フィルターはその割当確認にのみ使用します。",
+      uncertainty: "影響係数の不確実性、+/- %",
+      uncertaintyAria: "{block} の影響係数不確実性パーセント",
+      formulaUncertainty: "影響係数の範囲",
+      formulaNote: "S は選択モジュール内の選択 building block、q は発生回数または資源量、c は LCIA 影響係数、j は影響カテゴリ、u_c は c のみに割り当てた相対不確実性、N はコホート人数です。数量、経路、シナリオ、構造的不確実性はこの欄に含みません。",
+      formulaReportNote: "S は選択モジュール内の選択 building block です。q は回数または資源量、c は影響係数、u_c は c のみの相対不確実性、N はコホート人数です。",
+      helpStep5: "影響係数の不確実性範囲と、数量、経路、シナリオ、構造に残る不確実性を確認し、選択言語で報告書を出力します。"
+    });
+
+    Object.assign(uiText.es, {
+      workflowHeading: "Flujo de trabajo",
+      workflowPathwayTitle: "Vía y alcance",
+      workflowPathwayHint: "Elegir el límite clínico",
+      workflowActivitiesTitle: "Actividades",
+      workflowActivitiesHint: "Construir el escenario",
+      workflowLcaTitle: "Modelo LCA",
+      workflowLcaHint: "Elegir módulos y bloques",
+      workflowResultsTitle: "Resultados",
+      workflowResultsHint: "Revisar y exportar",
+      moduleFilterSummary: "Filtro de módulo LCA (avanzado)",
+      domainFilterHelp: "Categoría de navegación clínica. No define el límite del inventario LCA.",
+      moduleFilterHelp: "Zona de modelado LCA reutilizable para actividades que comparten un inventario. No es una segunda categoría clínica.",
+      helpStep2: "Use Dominio solo para navegar por las actividades clínicas. Un módulo ECO-PATH (EM) es una zona LCA reutilizable para actividades con la misma lógica de inventario; use el filtro EM avanzado únicamente para revisar esas asignaciones.",
+      uncertainty: "Incertidumbre del coeficiente de impacto, +/- %",
+      uncertaintyAria: "Porcentaje de incertidumbre del coeficiente de impacto de {block}",
+      formulaUncertainty: "Rango del coeficiente de impacto",
+      formulaNote: "S = building blocks marcados dentro de módulos marcados. q = ocurrencia o cantidad de recurso, c = coeficiente LCIA, j = categoría de impacto, u_c = incertidumbre relativa asignada solo a c, N = tamaño de cohorte. Este campo no representa incertidumbre de cantidades, vía, escenario o estructura.",
+      formulaReportNote: "S contiene los building blocks marcados dentro de módulos marcados. q es ocurrencia o cantidad de recurso. c es el coeficiente de impacto. u_c es la incertidumbre relativa solo de c. N es el tamaño de cohorte.",
+      helpStep5: "Revise el rango de incertidumbre del coeficiente de impacto y documente por separado la incertidumbre de cantidades, vía, escenario y estructura. Exporte el informe en el idioma seleccionado."
+    });
+
     const pathwayText = {
       en: {
         eau: {
@@ -3643,13 +4188,13 @@
           label: "Dutch / EAU MIBC comparison",
           title: "Dutch MIBC Pathway: Regional Diagnosis to Erasmus MC Treatment",
           status: "Expert-informed operational reconstruction; older EAU-based NVU guidance and local confirmation required",
-          scope: "Hospital pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up."
+          scope: "Operational pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up. Joost's interview notes suggest a narrower primary LCA episode from MDO to discharge and early check-up; this proposed assessment boundary remains distinct from the complete operational map and requires confirmation."
         },
         crcDutch: {
           label: "Gastro: Dutch CRC pathway",
-          title: "Dutch CRC Screening-Positive Hospital Pathway",
-          status: "Dutch national guideline-based pathway, local EMC execution not assumed",
-          scope: "Hospital-boundary pathway starting at first hospital contact after an abnormal FIT screening result. It separates no-polyp, low-risk polyp, high-risk polyp, and CRC branches using Dutch screening outcome data plus FMS/Richtlijnendatabase guidance for colorectal cancer and colonoscopy surveillance."
+          title: "Dutch CRC Hospital Diagnosis and Treatment Pathway",
+          status: "Expert-informed Dutch hospital pathway; cross-hospital execution and endpoint require confirmation",
+          scope: "Hospital pathway for suspected or confirmed colorectal cancer, starting with specialist intake and hospital diagnostic confirmation. It includes pathology, staging, MDO, colon, rectal, advanced-care, and follow-up routes. National FIT screening and non-cancer polyp outcomes are outside this CRC treatment boundary and should be assessed as a separate population-screening case."
         }
       },
       nl: {
@@ -3669,13 +4214,13 @@
           label: "Nederlandse / EAU MIBC-vergelijking",
           title: "Nederlandse MIBC-route: regionale diagnose tot behandeling in Erasmus MC",
           status: "Expertgeinformeerde operationele reconstructie; oudere op EAU gebaseerde NVU-richtlijn en lokale bevestiging nodig",
-          scope: "Ziekenhuisroute vanaf urologische beoordeling in Albert Schweitzer ziekenhuis of een ander regionaal ziekenhuis. Cystoscopie, TURBT, pathologie en eerste stadiering gaan vooraf aan verwijzing; patiënten met bevestigde MIBC gaan daarna naar Erasmus MC voor beoordeling, multidisciplinaire behandelplanning, behandeling en gedeelde follow-up."
+          scope: "Operationele route vanaf urologische beoordeling in Albert Schweitzer ziekenhuis of een ander regionaal ziekenhuis. Cystoscopie, TURBT, pathologie en eerste stadiering gaan vooraf aan verwijzing; patiënten met bevestigde MIBC gaan daarna naar Erasmus MC voor beoordeling, multidisciplinaire behandelplanning, behandeling en gedeelde follow-up. De interviewnotities van Joost suggereren een smallere primaire LCA-episode van MDO tot ontslag en vroege controle; deze voorgestelde beoordelingsgrens blijft onderscheiden van de volledige operationele kaart en vereist bevestiging."
         },
         crcDutch: {
           label: "Gastro: Nederlandse CRC-route",
-          title: "Nederlandse ziekenhuisroute na positieve FIT voor CRC",
-          status: "Gebaseerd op Nederlandse nationale richtlijnen, lokale EMC-uitvoering niet verondersteld",
-          scope: "Ziekenhuisgrens voor ECO-PATH vanaf het eerste ziekenhuiscontact na een ongunstige FIT-uitslag. De route splitst geen poliepen, laag-risico poliepen, hoog-risico poliepen en colorectaal carcinoom op basis van Nederlandse screeningsuitkomsten en FMS/Richtlijnendatabase-richtlijnen voor colorectaal carcinoom en coloscopiesurveillance."
+          title: "Nederlandse ziekenhuisroute voor CRC-diagnose en behandeling",
+          status: "Expertgeinformeerde Nederlandse ziekenhuisroute; uitvoering tussen ziekenhuizen en eindpunt vereisen bevestiging",
+          scope: "Ziekenhuisroute voor vermoede of bevestigde colorectale kanker, vanaf specialistische intake en diagnostische bevestiging in het ziekenhuis. De route omvat pathologie, stadiering, MDO, colon-, rectum- en gevorderde behandelroutes en follow-up. Landelijke FIT-screening en niet-kwaadaardige poliepuitkomsten vallen buiten deze CRC-behandelgrens en horen in een afzonderlijke screeningscasus."
         }
       },
       zh: {
@@ -3695,13 +4240,13 @@
           label: "荷兰 / EAU MIBC 对照",
           title: "荷兰 MIBC 路径：从区域医院诊断到 Erasmus MC 治疗",
           status: "基于专家访谈的运营重建；NVU 指南源自较早版 EAU，仍需本地确认",
-          scope: "医院边界从 Albert Schweitzer 医院或其他区域医院的泌尿科评估开始。膀胱镜、TURBT、病理和初始分期在转诊前完成；确认 MIBC 后进入 Erasmus MC 复核、多学科治疗规划、治疗和共享随访。"
+          scope: "完整运营路径从 Albert Schweitzer 医院或其他区域医院的泌尿科评估开始。膀胱镜、TURBT、病理和初始分期在转诊前完成；确认 MIBC 后进入 Erasmus MC 复核、多学科治疗规划、治疗和共享随访。Joost 的访谈笔记提出可把主要 LCA 评估期缩小为从 MDO 到出院及早期复查；这一拟议评估边界与完整运营图分开，仍需确认。"
         },
         crcDutch: {
           label: "胃肠病学：荷兰 CRC 路径",
-          title: "荷兰 FIT 阳性后 CRC 医院路径",
-          status: "基于荷兰国家指南，未假定 EMC 本地执行",
-          scope: "ECO-PATH 医院边界路径，从 FIT 筛查结果异常后的首次医院接触开始。它根据荷兰筛查结果数据以及 FMS/Richtlijnendatabase 的结直肠癌和结肠镜监测指南，区分无息肉、低风险息肉、高风险息肉和 CRC 分支。"
+          title: "荷兰 CRC 医院诊断与治疗路径",
+          status: "基于专家访谈的荷兰医院路径；跨医院执行和终点仍需确认",
+          scope: "针对疑似或确诊结直肠癌的医院路径，从专科接诊和院内诊断确认开始，包括病理、分期、MDO、结肠、直肠、晚期治疗和随访。国家 FIT 筛查以及非癌性息肉结局不属于当前 CRC 治疗边界，应作为独立的人群筛查案例评估。"
         }
       },
       ja: {
@@ -3721,13 +4266,13 @@
           label: "オランダ / EAU MIBC 比較",
           title: "オランダ MIBC 経路：地域診断から Erasmus MC 治療まで",
           status: "専門家情報に基づく運用再構成です。NVU 指針は旧版 EAU ベースで、ローカル確認が必要です",
-          scope: "Albert Schweitzer 病院または他の地域病院での泌尿器科評価から始まる病院経路です。膀胱鏡、TURBT、病理、初期病期評価を紹介前に行い、MIBC 確定後に Erasmus MC でレビュー、多職種治療計画、治療、共同フォローアップを行います。"
+          scope: "Albert Schweitzer 病院または他の地域病院での泌尿器科評価から始まる完全な運用経路です。膀胱鏡、TURBT、病理、初期病期評価を紹介前に行い、MIBC 確定後に Erasmus MC でレビュー、多職種治療計画、治療、共同フォローアップを行います。Joost の面談メモは MDO から退院および早期受診までの狭い LCA 評価期間を示唆します。この評価境界は完全な運用図と区別し、確認が必要です。"
         },
         crcDutch: {
           label: "消化器科：オランダ CRC 経路",
-          title: "FIT 陽性後のオランダ CRC 病院パスウェイ",
-          status: "オランダ国内ガイドラインに基づく経路であり、EMC ローカル実施は仮定していません",
-          scope: "FIT スクリーニングで異常結果が出た後の初回病院接触から始まる ECO-PATH の病院境界パスウェイです。オランダのスクリーニング結果データと FMS/Richtlijnendatabase の大腸がんおよび大腸内視鏡サーベイランス指針に基づき、ポリープなし、低リスクポリープ、高リスクポリープ、CRC 分岐を分離します。"
+          title: "オランダ CRC 病院診断・治療パスウェイ",
+          status: "専門家情報に基づくオランダ病院経路です。病院間実施と終点は確認が必要です",
+          scope: "疑いまたは確定した大腸がんを対象に、専門医受診と病院内診断確認から始まる経路です。病理、病期評価、MDO、結腸、直腸、進行期治療、フォローアップを含みます。全国 FIT 検診と非がん性ポリープ転帰はこの CRC 治療境界外で、別の集団検診ケースとして評価します。"
         }
       },
       es: {
@@ -3747,13 +4292,13 @@
           label: "Comparación MIBC neerlandesa / EAU",
           title: "Vía MIBC neerlandesa: del diagnóstico regional al tratamiento en Erasmus MC",
           status: "Reconstrucción operativa basada en entrevista experta; la guía NVU deriva de una EAU anterior y requiere confirmación local",
-          scope: "Vía hospitalaria que comienza con evaluación urológica en Albert Schweitzer u otro hospital regional. Cistoscopia, TURBT, patología y estadificación inicial preceden la referencia; tras confirmar MIBC, el paciente entra en revisión, planificación multidisciplinaria, tratamiento y seguimiento compartido de Erasmus MC."
+          scope: "Vía operativa completa que comienza con evaluación urológica en Albert Schweitzer u otro hospital regional. Cistoscopia, TURBT, patología y estadificación inicial preceden la referencia; tras confirmar MIBC, el paciente entra en revisión, planificación multidisciplinaria, tratamiento y seguimiento compartido de Erasmus MC. Las notas de Joost sugieren un episodio LCA principal más estrecho desde MDO hasta el alta y control temprano; este límite de evaluación se mantiene separado del mapa operativo completo y requiere confirmación."
         },
         crcDutch: {
           label: "Gastro: vía CRC neerlandesa",
-          title: "Vía hospitalaria neerlandesa para CRC tras FIT positivo",
-          status: "Basada en guías nacionales neerlandesas, sin asumir ejecución local EMC",
-          scope: "Vía ECO-PATH con límite hospitalario desde el primer contacto hospitalario tras un resultado FIT desfavorable. Separa ramas de sin pólipos, pólipos de bajo riesgo, pólipos de alto riesgo y CRC usando datos neerlandeses de cribado y guías FMS/Richtlijnendatabase para cáncer colorrectal y vigilancia colonoscópica."
+          title: "Vía hospitalaria neerlandesa de diagnóstico y tratamiento de CRC",
+          status: "Vía hospitalaria neerlandesa informada por expertos; la ejecución entre hospitales y el punto final requieren confirmación",
+          scope: "Vía hospitalaria para cáncer colorrectal sospechado o confirmado, desde la consulta especializada y confirmación diagnóstica hospitalaria. Incluye patología, estadificación, MDO, rutas de colon, recto, enfermedad avanzada y seguimiento. El cribado FIT nacional y los resultados de pólipos no cancerosos quedan fuera de este límite de tratamiento CRC y deben evaluarse como un caso poblacional independiente."
         }
       }
     };
@@ -4479,6 +5024,38 @@
       "Post-CRC treatment surveillance": "Vigilancia tras tratamiento CRC"
     });
 
+    Object.assign(nodeLabelText.nl, {
+      "Specialist hospital consultation": "Specialistisch ziekenhuisconsult",
+      "Diagnostic colonoscopy and biopsy if needed": "Diagnostische coloscopie en zo nodig biopsie",
+      "Histopathological CRC confirmation": "Histopathologische bevestiging van CRC",
+      "Colon, rectal, or advanced route decision": "Besluit colon-, rectum- of gevorderde route",
+      "Watch-and-wait surveillance": "Watch-and-waitbeleid en surveillance"
+    });
+
+    Object.assign(nodeLabelText.zh, {
+      "Specialist hospital consultation": "医院专科接诊",
+      "Diagnostic colonoscopy and biopsy if needed": "必要时诊断性结肠镜和活检",
+      "Histopathological CRC confirmation": "CRC 组织病理学确认",
+      "Colon, rectal, or advanced route decision": "结肠、直肠或晚期路径决策",
+      "Watch-and-wait surveillance": "观察等待监测"
+    });
+
+    Object.assign(nodeLabelText.ja, {
+      "Specialist hospital consultation": "病院専門医受診",
+      "Diagnostic colonoscopy and biopsy if needed": "必要時の診断的大腸内視鏡・生検",
+      "Histopathological CRC confirmation": "CRC 病理組織学的確認",
+      "Colon, rectal, or advanced route decision": "結腸・直腸・進行期ルート判断",
+      "Watch-and-wait surveillance": "watch-and-wait サーベイランス"
+    });
+
+    Object.assign(nodeLabelText.es, {
+      "Specialist hospital consultation": "Consulta hospitalaria especializada",
+      "Diagnostic colonoscopy and biopsy if needed": "Colonoscopia diagnóstica y biopsia si procede",
+      "Histopathological CRC confirmation": "Confirmación histopatológica de CRC",
+      "Colon, rectal, or advanced route decision": "Decisión de ruta de colon, recto o avanzada",
+      "Watch-and-wait surveillance": "Vigilancia watch-and-wait"
+    });
+
     const laneLabelText = {
       nl: {
         "Diagnosis and staging": "Diagnose en stadiering",
@@ -4632,6 +5209,27 @@
       "Erasmus MC review and multidisciplinary treatment planning": "Revisión Erasmus MC y planificación multidisciplinaria",
       "Curative surgery / perioperative care": "Cirugía curativa / atención perioperatoria",
       "Bladder preservation and follow-up": "Preservación vesical y seguimiento"
+    });
+
+    Object.assign(laneLabelText.nl, {
+      "Hospital diagnosis and confirmation": "Diagnose en bevestiging in het ziekenhuis",
+      "Staging, MDO, and treatment planning": "Stadiering, MDO en behandelplanning",
+      "Response, advanced care, and follow-up": "Respons, gevorderde zorg en follow-up"
+    });
+    Object.assign(laneLabelText.zh, {
+      "Hospital diagnosis and confirmation": "医院诊断和确认",
+      "Staging, MDO, and treatment planning": "分期、MDO 和治疗规划",
+      "Response, advanced care, and follow-up": "疗效评估、晚期照护和随访"
+    });
+    Object.assign(laneLabelText.ja, {
+      "Hospital diagnosis and confirmation": "病院診断と確定",
+      "Staging, MDO, and treatment planning": "病期評価、MDO、治療計画",
+      "Response, advanced care, and follow-up": "奏効、進行期ケア、フォローアップ"
+    });
+    Object.assign(laneLabelText.es, {
+      "Hospital diagnosis and confirmation": "Diagnóstico y confirmación hospitalaria",
+      "Staging, MDO, and treatment planning": "Estadificación, MDO y planificación",
+      "Response, advanced care, and follow-up": "Respuesta, atención avanzada y seguimiento"
     });
 
     const shortNodeLabelText = {
@@ -4959,6 +5557,35 @@
       "Rectal surgery if indicated": "Cirugía rectal",
       "Advanced or palliative route": "Avanzado",
       "Post-CRC treatment surveillance": "Vigilancia CRC"
+    });
+
+    Object.assign(shortNodeLabelText.nl, {
+      "Specialist hospital consultation": "Specialistisch consult",
+      "Diagnostic colonoscopy and biopsy if needed": "Coloscopie ± biopsie",
+      "Histopathological CRC confirmation": "CRC-pathologie",
+      "Colon, rectal, or advanced route decision": "Colon / rectum / gevorderd",
+      "Watch-and-wait surveillance": "Watch-and-waitbeleid"
+    });
+    Object.assign(shortNodeLabelText.zh, {
+      "Specialist hospital consultation": "医院专科接诊",
+      "Diagnostic colonoscopy and biopsy if needed": "结肠镜 ± 活检",
+      "Histopathological CRC confirmation": "CRC 病理确认",
+      "Colon, rectal, or advanced route decision": "结肠 / 直肠 / 晚期",
+      "Watch-and-wait surveillance": "观察等待监测"
+    });
+    Object.assign(shortNodeLabelText.ja, {
+      "Specialist hospital consultation": "専門医受診",
+      "Diagnostic colonoscopy and biopsy if needed": "内視鏡 ± 生検",
+      "Histopathological CRC confirmation": "CRC 病理確認",
+      "Colon, rectal, or advanced route decision": "結腸 / 直腸 / 進行期",
+      "Watch-and-wait surveillance": "watch-and-wait"
+    });
+    Object.assign(shortNodeLabelText.es, {
+      "Specialist hospital consultation": "Consulta especializada",
+      "Diagnostic colonoscopy and biopsy if needed": "Colonoscopia ± biopsia",
+      "Histopathological CRC confirmation": "Patología CRC",
+      "Colon, rectal, or advanced route decision": "Colon / recto / avanzado",
+      "Watch-and-wait surveillance": "Watch-and-wait"
     });
 
     Object.assign(shortNodeLabelText.nl, {
@@ -6971,7 +7598,9 @@
       scenarioBuildMode: true,
       scenarioNodes: {},
       mapFullscreenOpen: false,
-      activitiesCollapsed: false
+      activitiesCollapsed: false,
+      workspaceStep: "pathway",
+      lcaExpandedModules: {}
     };
 
     let detailSyncQueued = false;
@@ -7350,6 +7979,8 @@
       setText("appTitle", "appTitle");
       setText("appSubtitle", "appSubtitle");
       setText("helpButtonText", "helpButton");
+      const helpButton = document.getElementById("openHelpDialog");
+      if (helpButton) helpButton.setAttribute("aria-label", t("helpButton"));
       setText("helpDialogTitle", "helpTitle");
       setText("closeHelpDialog", "closeHelp");
       setText("helpIntro", "helpIntro");
@@ -7360,8 +7991,20 @@
       setText("helpStep5", "helpStep5");
       setText("helpCutoffTitle", "helpCutoffTitle");
       setText("helpCutoffText", "helpCutoffText");
+      setText("workflowHeading", "workflowHeading");
+      setText("workflowPathwayTitle", "workflowPathwayTitle");
+      setText("workflowPathwayHint", "workflowPathwayHint");
+      setText("workflowActivitiesTitle", "workflowActivitiesTitle");
+      setText("workflowActivitiesHint", "workflowActivitiesHint");
+      setText("workflowLcaTitle", "workflowLcaTitle");
+      setText("workflowLcaHint", "workflowLcaHint");
+      setText("workflowResultsTitle", "workflowResultsTitle");
+      setText("workflowResultsHint", "workflowResultsHint");
       setText("domainFilterLabel", "domain");
+      setText("domainFilterHelp", "domainFilterHelp");
+      setText("moduleFilterSummary", "moduleFilterSummary");
       setText("moduleFilterLabel", "module");
+      setText("moduleFilterHelp", "moduleFilterHelp");
       setText("typeFilterLabel", "elementType");
       setText("searchBoxLabel", "search");
       setText("oncologyLensLabel", "oncologyLens");
@@ -7432,6 +8075,50 @@
           option.textContent = labels[option.value] || option.textContent;
         });
       }
+    }
+
+    function updateStickyWorkspaceOffset() {
+      const header = document.querySelector("header");
+      const offset = Math.ceil(header?.getBoundingClientRect().height || 74) + 12;
+      document.documentElement.style.setProperty("--sticky-workspace-top", `${offset}px`);
+    }
+
+    function renderWorkspaceStep() {
+      const validSteps = ["pathway", "activities", "lca", "results"];
+      if (!validSteps.includes(state.workspaceStep)) state.workspaceStep = "pathway";
+      const clinicalWorkspace = document.getElementById("clinicalWorkspace");
+      const lcaCalculator = document.getElementById("lcaCalculator");
+      const clinicalStep = ["pathway", "activities"].includes(state.workspaceStep);
+      if (clinicalWorkspace) clinicalWorkspace.hidden = !clinicalStep;
+      if (lcaCalculator) lcaCalculator.hidden = clinicalStep;
+
+      document.querySelectorAll("[data-workspace-panel]").forEach((element) => {
+        const steps = String(element.dataset.workspacePanel || "").split(/\s+/).filter(Boolean);
+        element.hidden = !steps.includes(state.workspaceStep);
+      });
+
+      document.querySelectorAll(".workflow-step[data-workspace-step]").forEach((button) => {
+        const active = button.dataset.workspaceStep === state.workspaceStep;
+        button.classList.toggle("active", active);
+        if (active) button.setAttribute("aria-current", "step");
+        else button.removeAttribute("aria-current");
+      });
+      document.body.dataset.workspaceStep = state.workspaceStep;
+    }
+
+    function switchWorkspaceStep(step) {
+      if (!["pathway", "activities", "lca", "results"].includes(step)) return;
+      state.workspaceStep = step;
+      renderWorkspaceStep();
+      updateStickyWorkspaceOffset();
+      const main = document.querySelector("main.workspace-shell");
+      if (main) {
+        const header = document.querySelector("header");
+        const headerHeight = Math.ceil(header?.getBoundingClientRect().height || 74);
+        const top = Math.max(0, main.getBoundingClientRect().top + window.scrollY - headerHeight - 8);
+        window.scrollTo({ top, behavior: "auto" });
+      }
+      scheduleDetailPanelSync();
     }
 
     function pathForEdge(from, to) {
@@ -7512,6 +8199,7 @@
             state.module = "all";
             state.type = "all";
             state.query = "";
+            state.workspaceStep = "pathway";
             document.getElementById("typeFilter").value = "all";
             document.getElementById("searchBox").value = "";
             syncPathwayModulesFromScenario();
@@ -8489,15 +9177,16 @@
           const selectedActivityCount = selectedScenarioNodes().filter((node) => node.module === moduleId).length;
           const moduleDisabledAttr = included ? "" : " disabled";
           const hasOncologyRows = moduleRows.some(({ row }) => isOncologyLcaRow(row));
-          const section = document.createElement("section");
+          const section = document.createElement("details");
           section.className = [
             "lca-module-calculation",
             included ? "" : "excluded",
             state.oncologyLens && hasOncologyRows ? "oncology-highlight" : ""
           ].filter(Boolean).join(" ");
           section.dataset.lcaModule = moduleId;
+          section.open = state.lcaExpandedModules[moduleId] === true;
           section.innerHTML = `
-          <div class="lca-module-calculation-header">
+          <summary class="lca-module-calculation-header">
             <label class="lca-module-toggle">
               <input type="checkbox" data-lca-module-toggle="${escapeHtml(moduleId)}" ${included ? "checked" : ""} aria-label="${escapeHtml(t("use"))} ${escapeHtml(moduleId)} ${escapeHtml(moduleName(moduleId))}">
               <span class="lca-module-code">${escapeHtml(moduleId)}</span>
@@ -8512,7 +9201,7 @@
               </span>
             </label>
             <span class="lca-module-total" id="lcaModuleTotal-${escapeHtml(moduleId)}"></span>
-          </div>
+          </summary>
           <div class="lca-table-wrap">
             <table class="lca-table">
               <thead>
@@ -8522,8 +9211,8 @@
                   <th>${escapeHtml(t("resourceFlowsToModel"))}</th>
                   <th>${escapeHtml(t("unit"))}</th>
                   <th>${escapeHtml(t("baseQuantity"))}</th>
-                  <th>${escapeHtml(t("uncertainty"))}</th>
                   <th>${escapeHtml(t("impactCoefficient"))}</th>
+                  <th>${escapeHtml(t("uncertainty"))}</th>
                   <th>${escapeHtml(t("defaultStatusGap"))}</th>
                   <th>${escapeHtml(t("baseContribution"))}</th>
                 </tr>
@@ -8546,8 +9235,8 @@
                     <td>${escapeHtml(localizedResourceFlowList(row.flow))}</td>
                     <td>${escapeHtml(localizedUnit(row.unit))}</td>
                     <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(t("baseQuantityAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
-                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(t("uncertaintyAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
                     <td><input type="number" min="0" step="0.0001" value="${escapeHtml(row.factor)}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(t("impactCoefficientAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
+                    <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(row.uncertainty)}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(t("uncertaintyAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
                     <td class="lca-source-cell">${escapeHtml(localizedGap(row))}</td>
                     <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
                   </tr>
@@ -8565,6 +9254,11 @@
     function bindLcaControls() {
       const moduleCalculations = document.getElementById("lcaModuleCalculations");
       document.getElementById("lcaCaseCount").addEventListener("input", renderLcaOutputs);
+      moduleCalculations.addEventListener("toggle", (event) => {
+        const details = event.target;
+        if (!(details instanceof HTMLDetailsElement) || !details.dataset.lcaModule) return;
+        state.lcaExpandedModules[details.dataset.lcaModule] = details.open;
+      }, true);
       moduleCalculations.addEventListener("input", (event) => {
         const input = event.target;
         const rowIndex = Number(input.dataset.lcaRow);
@@ -8655,7 +9349,7 @@
         <div class="formula-line">
           <span class="formula-label">${escapeHtml(t("formulaUncertainty"))}</span>
           <span class="formula-expression">
-            I<sub>i</sub><sup>low/high</sup> = I<sub>i</sub><span class="operator">&middot;</span>(1 &plusmn; u<sub>i</sub>)
+            c<sub>i,j</sub><sup>low/high</sup> = c<sub>i,j</sub><span class="operator">&middot;</span>(1 &plusmn; u<sub>c,i</sub>)
           </span>
         </div>
         <div class="formula-line">
@@ -8973,8 +9667,8 @@
           <td>${escapeHtml(row.displayFlow)}</td>
           <td>${escapeHtml(row.displayUnit)}</td>
           <td>${escapeHtml(formatDecimal(row.quantity, 3))}</td>
-          <td>${escapeHtml(formatDecimal(row.uncertainty, 1))}%</td>
           <td>${escapeHtml(formatDecimal(row.factor, 4))}</td>
+          <td>${escapeHtml(formatDecimal(row.uncertainty, 1))}%</td>
           <td>${row.included ? escapeHtml(formatKg(row.baseContribution)) : escapeHtml(t("excluded"))}</td>
         </tr>
       `).join("");
@@ -9163,7 +9857,7 @@
 
     <section>
       <h2>${escapeHtml(t("calculationFormula"))}</h2>
-      <p class="formula">I<sub>i,j</sub> = q<sub>i</sub> &middot; c<sub>i,j</sub>; I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>; I<sub>cohort,j</sub> = N &middot; I<sub>library,j</sub></p>
+      <p class="formula">I<sub>i,j</sub> = q<sub>i</sub> &middot; c<sub>i,j</sub>; c<sub>i,j</sub><sup>low/high</sup> = c<sub>i,j</sub> &middot; (1 &plusmn; u<sub>c,i</sub>); I<sub>library,j</sub> = &Sigma;<sub>i&isin;S</sub>I<sub>i,j</sub>; I<sub>cohort,j</sub> = N &middot; I<sub>library,j</sub></p>
       <p class="muted">${escapeHtml(t("formulaReportNote"))}</p>
     </section>
 
@@ -9191,7 +9885,7 @@
       <h2>${escapeHtml(t("fullCalculationRows"))}</h2>
       <table>
         <thead>
-          <tr><th>${escapeHtml(t("module"))}</th><th>${escapeHtml(t("buildingBlock"))}</th><th>${escapeHtml(t("status"))}</th><th>${escapeHtml(t("resourceFlowsLabel"))}</th><th>${escapeHtml(t("unit"))}</th><th>${escapeHtml(t("baseQuantity"))}</th><th>${escapeHtml(t("uncertainty"))}</th><th>${escapeHtml(t("impactCoefficient"))}</th><th>${escapeHtml(t("baseContribution"))}</th></tr>
+          <tr><th>${escapeHtml(t("module"))}</th><th>${escapeHtml(t("buildingBlock"))}</th><th>${escapeHtml(t("status"))}</th><th>${escapeHtml(t("resourceFlowsLabel"))}</th><th>${escapeHtml(t("unit"))}</th><th>${escapeHtml(t("baseQuantity"))}</th><th>${escapeHtml(t("impactCoefficient"))}</th><th>${escapeHtml(t("uncertainty"))}</th><th>${escapeHtml(t("baseContribution"))}</th></tr>
         </thead>
         <tbody>${calculationRows}</tbody>
       </table>
@@ -9245,6 +9939,9 @@
       document.getElementById("specialtySelector").addEventListener("toggle", (event) => {
         if (event.target.open) document.getElementById("languageSelector").removeAttribute("open");
       });
+      document.querySelectorAll(".workflow-step[data-workspace-step]").forEach((button) => {
+        button.addEventListener("click", () => switchWorkspaceStep(button.dataset.workspaceStep));
+      });
       document.querySelectorAll("[data-urology-pathway]").forEach((button) => {
         button.addEventListener("click", () => {
           const pathwayId = button.dataset.urologyPathway;
@@ -9256,6 +9953,7 @@
           state.module = "all";
           state.type = "all";
           state.query = "";
+          state.workspaceStep = "pathway";
           document.getElementById("typeFilter").value = "all";
           document.getElementById("searchBox").value = "";
           syncPathwayModulesFromScenario();
@@ -9318,12 +10016,17 @@
       renderLcaTable();
       renderLcaOutputs();
       renderFullscreenView();
+      renderWorkspaceStep();
+      updateStickyWorkspaceOffset();
       scheduleDetailPanelSync();
     }
 
     bindControls();
     window.addEventListener("scroll", scheduleDetailPanelSync, { passive: true });
-    window.addEventListener("resize", scheduleDetailPanelSync);
+    window.addEventListener("resize", () => {
+      updateStickyWorkspaceOffset();
+      scheduleDetailPanelSync();
+    });
     bindLcaControls();
     state.selected = currentPathway().defaultSelected;
     render();

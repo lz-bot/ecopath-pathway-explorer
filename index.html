@@ -718,6 +718,10 @@
       align-items: start;
     }
 
+    .layout > * {
+      min-width: 0;
+    }
+
     .panel {
       background: var(--panel);
       border: 1px solid var(--line);
@@ -811,12 +815,6 @@
       white-space: nowrap;
     }
 
-    .map-display-toolbar {
-      display: flex;
-      justify-content: flex-end;
-      margin: 0 0 8px;
-    }
-
     .map-actions {
       display: flex;
       flex-wrap: wrap;
@@ -879,11 +877,48 @@
     }
 
     .map-wrap {
+      position: relative;
       width: 100%;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel-soft);
       overflow: hidden;
+    }
+
+    .map-fullscreen-trigger {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      width: 38px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(111, 207, 241, 0.85);
+      border-radius: 7px;
+      padding: 0;
+      color: var(--accent-dark);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 2px 8px rgba(0, 90, 160, 0.14);
+      cursor: pointer;
+    }
+
+    .map-fullscreen-trigger:hover,
+    .map-fullscreen-trigger:focus-visible {
+      color: #ffffff;
+      background: var(--accent-dark);
+    }
+
+    .map-fullscreen-trigger svg {
+      width: 20px;
+      height: 20px;
+      min-height: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
     }
 
     svg {
@@ -2256,6 +2291,13 @@
       text-align: right;
     }
 
+    .sensitivity-reduction-control small {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
     .sensitivity-method-note {
       margin: 0 0 12px;
       border-left: 4px solid var(--accent);
@@ -2308,7 +2350,7 @@
 
     .sensitivity-table {
       width: 100%;
-      min-width: 900px;
+      min-width: 1080px;
       border-collapse: collapse;
       background: var(--panel);
       font-size: 12px;
@@ -2372,6 +2414,35 @@
 
     .sensitivity-table .sensitivity-response span + span {
       margin-top: 3px;
+    }
+
+    .sensitivity-table .sensitivity-response {
+      min-width: 310px;
+    }
+
+    .sensitivity-row-control {
+      display: grid;
+      grid-template-columns: minmax(130px, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .sensitivity-row-control input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-dark);
+    }
+
+    .sensitivity-row-control input[type="range"]:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .sensitivity-row-control output {
+      min-width: 42px;
+      color: var(--accent-dark);
+      font-weight: 700;
+      text-align: right;
     }
 
     .sensitivity-table .sensitivity-response .quantity-interpretation {
@@ -3007,10 +3078,15 @@
               </div>
             </div>
           </details>
-          <div class="map-display-toolbar">
-            <button type="button" id="openMapFullscreen" aria-expanded="false">Fullscreen map</button>
-          </div>
           <div class="map-wrap">
+            <button class="map-fullscreen-trigger" type="button" id="openMapFullscreen" aria-expanded="false" aria-label="Fullscreen map" title="Fullscreen map">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M15 3h6v6"></path>
+                <path d="M9 21H3v-6"></path>
+                <path d="m21 3-7 7"></path>
+                <path d="m3 21 7-7"></path>
+              </svg>
+            </button>
             <svg id="pathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="svgTitle svgDesc">
               <title id="svgTitle">Pathway activity map</title>
               <desc id="svgDesc">Interactive pathway map with coded activities and ECO-PATH modules.</desc>
@@ -3214,6 +3290,7 @@
               <label class="sensitivity-control-label" for="sensitivityReduction" id="sensitivityReductionLabel">Tested reduction</label>
               <input id="sensitivityReduction" type="range" min="5" max="50" step="5" value="20">
               <output id="sensitivityReductionValue" for="sensitivityReduction">20%</output>
+              <small id="sensitivityGlobalReductionHelp"></small>
             </div>
           </div>
           <p class="sensitivity-method-note" id="sensitivityMethodNote"></p>
@@ -6249,8 +6326,9 @@
       sensitivityPercentBasis: "Same percentage",
       sensitivityOneUnitBasis: "One fewer reference unit",
       sensitivityReductionLabel: "Tested reduction",
-      sensitivityCoefficientReductionLabel: "Tested coefficient reduction",
-      sensitivitySameQuantityReductionLabel: "Same quantity reduction for selected blocks",
+      sensitivityCoefficientReductionLabel: "Apply one coefficient reduction to checked contributors",
+      sensitivitySameQuantityReductionLabel: "Apply one quantity reduction to checked contributors",
+      sensitivityGlobalReductionHelp: "Master control: moving this slider overwrites the individual percentages of checked contributors.",
       sensitivityMethodBrowser: "Screening only: results use synthetic browser coefficients. Treat the ranking as a data-collection and scenario-testing priority, not an intervention recommendation.",
       sensitivityMethodBrightway: "Uses imported Brightway building-block contributions for the selected category. Each row tests one parameter at a time with all other parameters fixed.",
       sensitivityMethodBrightwayFallback: "A Brightway total is available, but matching building-block contributions are unavailable or stale. The screening therefore uses browser demonstration contributions.",
@@ -6262,7 +6340,7 @@
       sensitivityRank: "Rank",
       sensitivityBuildingBlock: "Building block",
       sensitivityContribution: "Baseline contribution",
-      sensitivityTest: "OAT test",
+      sensitivityTest: "Independent change",
       sensitivityResultChange: "Pathway reduction",
       sensitivityNewTotal: "Modeled pathway result",
       sensitivityScenarioPrompt: "Improvement prompt",
@@ -6272,17 +6350,19 @@
       sensitivityOperationalSafeguard: "Operational intensity scenarios must preserve clinical function, patient safety, infection control, access, and regulatory requirements.",
       sensitivityClinicalSafeguard: "Quantity scenarios are not recommendations to reduce care. Test them only with guideline support, clinical equivalence, patient acceptability, and expert approval.",
       sensitivityPositiveOnly: "Only positive contributions are ranked; avoided burdens and negative credits require separate interpretation.",
-      sensitivityPercentMethod: "The slider applies the same percentage only to checked rows; unchecked contributors are not changed.",
+      sensitivityPercentMethod: "Each checked row has its own percentage. The master slider sets one shared percentage for all checked rows; unchecked contributors are unchanged.",
       sensitivityOneUnitMethod: "One reference unit is removed from each checked row using its base quantity. Confirm that quantity represents actual visits, days, scans, cycles, or another count.",
       sensitivityCombinedAssumption: "Individual rows are one-at-a-time tests. The combined result adds the selected reductions under a linear independence assumption and does not model interactions between changes.",
       sensitivityCombinedScenario: "Combined selected scenario",
-      sensitivityCombinedValue: "{count} selected · -{reduction}% of pathway · {total}",
+      sensitivityCombinedValue: "{count} selected · decrease {amount} ({reduction}%) · result {total}",
       sensitivitySelectPrompt: "Select one or more contributors; no reduction is applied by default.",
       sensitivityUseRank: "Use / rank",
       sensitivityIndividualResult: "Individual pathway change",
+      sensitivityIndividualReductionValue: "{amount} ({percent}% of pathway)",
       sensitivityIndividualNewTotal: "Individual modeled result",
       sensitivityNotSelected: "Not included in the combined scenario",
       sensitivitySelectContributor: "Include {block} in the combined sensitivity scenario",
+      sensitivityAdjustContributor: "Set the independent reduction for {block}",
       sensitivityQuantityInterpretation: "Base quantity: {quantity} · {unit}. One fewer reference unit = {percent}%.",
       sensitivityOneUnitChange: "Quantity {from} → {to} (one fewer; {value}%)",
       sensitivityWholeBlockWarning: "At a base quantity of 1, one fewer unit removes the entire building block.",
@@ -6308,8 +6388,9 @@
       sensitivityPercentBasis: "Hetzelfde percentage",
       sensitivityOneUnitBasis: "Eén referentie-eenheid minder",
       sensitivityReductionLabel: "Geteste reductie",
-      sensitivityCoefficientReductionLabel: "Geteste reductie van de impactcoëfficiënt",
-      sensitivitySameQuantityReductionLabel: "Dezelfde volumereductie voor geselecteerde bouwstenen",
+      sensitivityCoefficientReductionLabel: "Pas één coëfficiëntreductie toe op aangevinkte bijdragen",
+      sensitivitySameQuantityReductionLabel: "Pas één volumereductie toe op aangevinkte bijdragen",
+      sensitivityGlobalReductionHelp: "Hoofdregelaar: verplaatsen overschrijft de afzonderlijke percentages van alle aangevinkte bijdragen.",
       sensitivityMethodBrowser: "Alleen screening: de resultaten gebruiken synthetische browsercoëfficiënten. Gebruik de rangschikking als prioriteit voor dataverzameling en scenariotesten, niet als interventieadvies.",
       sensitivityMethodBrightway: "Gebruikt geïmporteerde Brightway-bijdragen per bouwsteen voor de geselecteerde categorie. Elke rij test één parameter afzonderlijk en houdt alle andere parameters constant.",
       sensitivityMethodBrightwayFallback: "Er is een Brightway-totaal beschikbaar, maar passende bouwsteenbijdragen ontbreken of zijn verouderd. De screening gebruikt daarom demonstratiebijdragen uit de browser.",
@@ -6321,7 +6402,7 @@
       sensitivityRank: "Rang",
       sensitivityBuildingBlock: "Bouwsteen",
       sensitivityContribution: "Basisbijdrage",
-      sensitivityTest: "OAT-test",
+      sensitivityTest: "Afzonderlijke wijziging",
       sensitivityResultChange: "Reductie zorgpad",
       sensitivityNewTotal: "Gemodelleerd zorgpadresultaat",
       sensitivityScenarioPrompt: "Verbeteroptie",
@@ -6331,17 +6412,19 @@
       sensitivityOperationalSafeguard: "Scenario's voor impactintensiteit moeten de klinische functie, patiëntveiligheid, infectiepreventie, toegankelijkheid en regelgeving behouden.",
       sensitivityClinicalSafeguard: "Volumescenario's zijn geen advies om zorg te verminderen. Test ze alleen met richtlijnonderbouwing, klinische gelijkwaardigheid, patiëntacceptatie en goedkeuring door experts.",
       sensitivityPositiveOnly: "Alleen positieve bijdragen worden gerangschikt; vermeden lasten en negatieve credits vereisen afzonderlijke interpretatie.",
-      sensitivityPercentMethod: "De schuifregelaar past hetzelfde percentage alleen toe op aangevinkte rijen; niet-aangevinkte bijdragen veranderen niet.",
+      sensitivityPercentMethod: "Elke aangevinkte rij heeft een eigen percentage. De hoofdregelaar stelt één gedeeld percentage in voor alle aangevinkte rijen; niet-aangevinkte bijdragen veranderen niet.",
       sensitivityOneUnitMethod: "Van elke aangevinkte rij wordt op basis van de basishoeveelheid één referentie-eenheid afgetrokken. Bevestig dat de hoeveelheid werkelijke bezoeken, dagen, scans, cycli of een andere telling weergeeft.",
       sensitivityCombinedAssumption: "Afzonderlijke rijen zijn één-voor-één-tests. Het gecombineerde resultaat telt de geselecteerde reducties op onder de aanname van lineaire onafhankelijkheid en modelleert geen interacties tussen wijzigingen.",
       sensitivityCombinedScenario: "Gecombineerd geselecteerd scenario",
-      sensitivityCombinedValue: "{count} geselecteerd · -{reduction}% van zorgpad · {total}",
+      sensitivityCombinedValue: "{count} geselecteerd · daling {amount} ({reduction}%) · resultaat {total}",
       sensitivitySelectPrompt: "Selecteer één of meer bijdragen; standaard wordt geen reductie toegepast.",
       sensitivityUseRank: "Gebruik / rang",
       sensitivityIndividualResult: "Individuele verandering van zorgpad",
+      sensitivityIndividualReductionValue: "{amount} ({percent}% van zorgpad)",
       sensitivityIndividualNewTotal: "Individueel gemodelleerd resultaat",
       sensitivityNotSelected: "Niet opgenomen in het gecombineerde scenario",
       sensitivitySelectContributor: "Neem {block} op in het gecombineerde gevoeligheidsscenario",
+      sensitivityAdjustContributor: "Stel de afzonderlijke reductie in voor {block}",
       sensitivityQuantityInterpretation: "Basishoeveelheid: {quantity} · {unit}. Eén referentie-eenheid minder = {percent}%.",
       sensitivityOneUnitChange: "Hoeveelheid {from} → {to} (één minder; {value}%)",
       sensitivityWholeBlockWarning: "Bij een basishoeveelheid van 1 verwijdert één eenheid minder de volledige bouwsteen.",
@@ -6367,8 +6450,9 @@
       sensitivityPercentBasis: "相同百分比",
       sensitivityOneUnitBasis: "每项减少 1 个参考单位",
       sensitivityReductionLabel: "测试降幅",
-      sensitivityCoefficientReductionLabel: "测试影响系数降幅",
-      sensitivitySameQuantityReductionLabel: "对所选 building blocks 使用相同数量降幅",
+      sensitivityCoefficientReductionLabel: "对已勾选贡献者统一设置影响系数降幅",
+      sensitivitySameQuantityReductionLabel: "对已勾选贡献者统一设置活动数量降幅",
+      sensitivityGlobalReductionHelp: "总滑块：移动后会覆盖所有已勾选贡献者各自的百分比。",
       sensitivityMethodBrowser: "仅用于筛查：结果使用浏览器中的合成演示系数。该排序用于确定数据收集和情景测试优先级，不是干预建议。",
       sensitivityMethodBrightway: "使用所选影响类别的 Brightway building-block 贡献。每次只测试一个参数，其余参数保持不变。",
       sensitivityMethodBrightwayFallback: "已有 Brightway 总结果，但缺少匹配的 building-block 贡献或贡献已过期，因此本次筛查使用浏览器演示贡献。",
@@ -6380,7 +6464,7 @@
       sensitivityRank: "排序",
       sensitivityBuildingBlock: "Building block",
       sensitivityContribution: "基准贡献",
-      sensitivityTest: "单因素测试",
+      sensitivityTest: "独立变化",
       sensitivityResultChange: "路径降幅",
       sensitivityNewTotal: "模拟后的路径结果",
       sensitivityScenarioPrompt: "改进方向",
@@ -6390,17 +6474,19 @@
       sensitivityOperationalSafeguard: "单位影响强度情景必须保持临床功能、患者安全、感染控制、医疗可及性并符合监管要求。",
       sensitivityClinicalSafeguard: "活动数量情景不是减少医疗服务的建议。只有在指南支持、临床等效、患者可接受且经专家批准时才能测试。",
       sensitivityPositiveOnly: "这里只排序正贡献；避免负荷和负值抵扣需要单独解释。",
-      sensitivityPercentMethod: "滑块只对已勾选行使用相同百分比；未勾选贡献者保持不变。",
+      sensitivityPercentMethod: "每个已勾选行都有独立百分比。总滑块只为所有已勾选行统一设置一个百分比；未勾选贡献者保持不变。",
       sensitivityOneUnitMethod: "根据基准数量，从每个已勾选行减少 1 个参考单位。请确认该数量确实代表就诊次数、住院日、扫描、疗程或其他计数。",
       sensitivityCombinedAssumption: "每一行仍是单因素测试；组合结果在线性独立假设下相加所选降幅，不模拟多项变化之间的交互作用。",
       sensitivityCombinedScenario: "所选项目的组合情景",
-      sensitivityCombinedValue: "已选 {count} 项 · 路径降低 {reduction}% · {total}",
+      sensitivityCombinedValue: "已选 {count} 项 · 减少 {amount}（{reduction}%）· 新结果 {total}",
       sensitivitySelectPrompt: "请选择一个或多个贡献者；默认不应用任何降幅。",
       sensitivityUseRank: "选择 / 排序",
       sensitivityIndividualResult: "单项路径变化",
+      sensitivityIndividualReductionValue: "{amount}（占路径 {percent}%）",
       sensitivityIndividualNewTotal: "单项模拟结果",
       sensitivityNotSelected: "未计入组合情景",
       sensitivitySelectContributor: "将 {block} 纳入组合敏感性情景",
+      sensitivityAdjustContributor: "设置 {block} 的独立降幅",
       sensitivityQuantityInterpretation: "基准数量：{quantity} · {unit}。减少 1 个参考单位 = {percent}%。",
       sensitivityOneUnitChange: "数量 {from} → {to}（减少 1 个；{value}%）",
       sensitivityWholeBlockWarning: "基准数量为 1 时，减少 1 个单位等于移除整个 building block。",
@@ -6426,8 +6512,9 @@
       sensitivityPercentBasis: "同じ割合",
       sensitivityOneUnitBasis: "各項目で参照単位を 1 減らす",
       sensitivityReductionLabel: "試験する削減率",
-      sensitivityCoefficientReductionLabel: "試験する影響係数の削減率",
-      sensitivitySameQuantityReductionLabel: "選択した構成ブロックに同じ活動量削減率を適用",
+      sensitivityCoefficientReductionLabel: "チェックした寄与に同じ影響係数削減率を適用",
+      sensitivitySameQuantityReductionLabel: "チェックした寄与に同じ活動量削減率を適用",
+      sensitivityGlobalReductionHelp: "一括スライダーを動かすと、チェックした寄与の個別割合が上書きされます。",
       sensitivityMethodBrowser: "スクリーニング専用です。結果はブラウザの合成デモ係数を使用します。順位はデータ収集とシナリオ試験の優先度であり、介入の推奨ではありません。",
       sensitivityMethodBrightway: "選択カテゴリについて、取り込んだ Brightway の building-block 寄与を使用します。他のパラメータを固定し、各行で一つのパラメータだけを試験します。",
       sensitivityMethodBrightwayFallback: "Brightway 合計はありますが、一致する building-block 寄与がないか古いため、ブラウザのデモ寄与を使用します。",
@@ -6439,7 +6526,7 @@
       sensitivityRank: "順位",
       sensitivityBuildingBlock: "Building block",
       sensitivityContribution: "基準寄与",
-      sensitivityTest: "一因子試験",
+      sensitivityTest: "個別の変更",
       sensitivityResultChange: "パスウェイ削減率",
       sensitivityNewTotal: "モデル後のパスウェイ結果",
       sensitivityScenarioPrompt: "改善の着眼点",
@@ -6449,17 +6536,19 @@
       sensitivityOperationalSafeguard: "影響原単位シナリオでは、臨床機能、患者安全、感染管理、アクセス、規制要件を維持する必要があります。",
       sensitivityClinicalSafeguard: "活動量シナリオは医療削減の推奨ではありません。ガイドライン、臨床的同等性、患者受容性、専門家承認がある場合のみ試験してください。",
       sensitivityPositiveOnly: "正の寄与だけを順位付けします。回避負荷や負のクレジットは別に解釈する必要があります。",
-      sensitivityPercentMethod: "スライダーはチェックした行だけに同じ割合を適用し、未選択の寄与は変更しません。",
+      sensitivityPercentMethod: "チェックした各行には個別の割合があります。一括スライダーはチェックした全行に同じ割合を設定し、未選択の寄与は変更しません。",
       sensitivityOneUnitMethod: "各チェック行の基準量から参照単位を 1 減らします。基準量が実際の受診、日数、スキャン、サイクルなどの回数を表すことを確認してください。",
       sensitivityCombinedAssumption: "各行は一因子試験です。組合せ結果は線形独立を仮定して選択した削減量を加算し、変更間の相互作用はモデル化しません。",
       sensitivityCombinedScenario: "選択項目の組合せシナリオ",
-      sensitivityCombinedValue: "{count} 項目 · パスウェイ -{reduction}% · {total}",
+      sensitivityCombinedValue: "{count} 項目 · {amount} 削減（{reduction}%）· 結果 {total}",
       sensitivitySelectPrompt: "一つ以上の寄与を選択してください。標準では削減を適用しません。",
       sensitivityUseRank: "選択 / 順位",
       sensitivityIndividualResult: "個別のパスウェイ変化",
+      sensitivityIndividualReductionValue: "{amount}（パスウェイの {percent}%）",
       sensitivityIndividualNewTotal: "個別のモデル結果",
       sensitivityNotSelected: "組合せシナリオに含まれていません",
       sensitivitySelectContributor: "{block} を組合せ感度シナリオに含める",
+      sensitivityAdjustContributor: "{block} の個別削減率を設定",
       sensitivityQuantityInterpretation: "基準量: {quantity} · {unit}。参照単位を 1 減らす = {percent}%。",
       sensitivityOneUnitChange: "活動量 {from} → {to}（1 減少、{value}%）",
       sensitivityWholeBlockWarning: "基準量が 1 の場合、1 単位の削減は構成ブロック全体の除外に相当します。",
@@ -6485,8 +6574,9 @@
       sensitivityPercentBasis: "Mismo porcentaje",
       sensitivityOneUnitBasis: "Una unidad de referencia menos",
       sensitivityReductionLabel: "Reducción probada",
-      sensitivityCoefficientReductionLabel: "Reducción probada del coeficiente",
-      sensitivitySameQuantityReductionLabel: "Misma reducción de cantidad para los bloques seleccionados",
+      sensitivityCoefficientReductionLabel: "Aplicar una reducción del coeficiente a las contribuciones marcadas",
+      sensitivitySameQuantityReductionLabel: "Aplicar una reducción de cantidad a las contribuciones marcadas",
+      sensitivityGlobalReductionHelp: "Control maestro: al moverlo se sobrescriben los porcentajes individuales de las contribuciones marcadas.",
       sensitivityMethodBrowser: "Solo para cribado: los resultados usan coeficientes sintéticos del navegador. La clasificación indica prioridades de datos y pruebas de escenario, no recomendaciones de intervención.",
       sensitivityMethodBrightway: "Utiliza contribuciones Brightway por bloque de construcción para la categoría seleccionada. Cada fila prueba un parámetro y mantiene constantes los demás.",
       sensitivityMethodBrightwayFallback: "Hay un total Brightway, pero faltan contribuciones coincidentes por bloque de construcción o están desactualizadas. Por ello se usan contribuciones de demostración del navegador.",
@@ -6498,7 +6588,7 @@
       sensitivityRank: "Rango",
       sensitivityBuildingBlock: "Bloque de construcción",
       sensitivityContribution: "Contribución base",
-      sensitivityTest: "Prueba OAT",
+      sensitivityTest: "Cambio independiente",
       sensitivityResultChange: "Reducción de la vía",
       sensitivityNewTotal: "Resultado modelado de la vía",
       sensitivityScenarioPrompt: "Opción de mejora",
@@ -6508,17 +6598,19 @@
       sensitivityOperationalSafeguard: "Los escenarios de intensidad deben conservar la función clínica, la seguridad, el control de infecciones, el acceso y los requisitos regulatorios.",
       sensitivityClinicalSafeguard: "Los escenarios de cantidad no recomiendan reducir la atención. Pruébelos solo con respaldo de guías, equivalencia clínica, aceptación del paciente y aprobación experta.",
       sensitivityPositiveOnly: "Solo se clasifican contribuciones positivas; las cargas evitadas y los créditos negativos requieren interpretación separada.",
-      sensitivityPercentMethod: "El control aplica el mismo porcentaje solo a las filas marcadas; las contribuciones no seleccionadas no cambian.",
+      sensitivityPercentMethod: "Cada fila marcada tiene su propio porcentaje. El control maestro asigna un porcentaje común a todas las filas marcadas; las demás no cambian.",
       sensitivityOneUnitMethod: "Se resta una unidad de referencia de cada fila marcada usando su cantidad base. Confirme que la cantidad representa visitas, días, exploraciones, ciclos u otro recuento real.",
       sensitivityCombinedAssumption: "Cada fila es una prueba de un factor. El resultado combinado suma las reducciones seleccionadas bajo un supuesto de independencia lineal y no modela interacciones entre cambios.",
       sensitivityCombinedScenario: "Escenario combinado seleccionado",
-      sensitivityCombinedValue: "{count} seleccionados · vía -{reduction}% · {total}",
+      sensitivityCombinedValue: "{count} seleccionados · disminución {amount} ({reduction}%) · resultado {total}",
       sensitivitySelectPrompt: "Seleccione una o más contribuciones; por defecto no se aplica ninguna reducción.",
       sensitivityUseRank: "Usar / rango",
       sensitivityIndividualResult: "Cambio individual de la vía",
+      sensitivityIndividualReductionValue: "{amount} ({percent}% de la vía)",
       sensitivityIndividualNewTotal: "Resultado individual modelado",
       sensitivityNotSelected: "No incluido en el escenario combinado",
       sensitivitySelectContributor: "Incluir {block} en el escenario combinado de sensibilidad",
+      sensitivityAdjustContributor: "Definir la reducción independiente de {block}",
       sensitivityQuantityInterpretation: "Cantidad base: {quantity} · {unit}. Una unidad de referencia menos = {percent}%.",
       sensitivityOneUnitChange: "Cantidad {from} → {to} (una menos; {value}%)",
       sensitivityWholeBlockWarning: "Con una cantidad base de 1, una unidad menos elimina todo el bloque de construcción.",
@@ -10130,6 +10222,7 @@
       sensitivityMode: "intensity",
       sensitivityQuantityBasis: "percent",
       sensitivityReductionPercent: 20,
+      sensitivityRowReductions: {},
       sensitivitySelectedKeys: [],
       lcaExpandedModules: {},
       functionalUnits: {},
@@ -10739,6 +10832,7 @@
       setText("sensitivityPercentBasis", "sensitivityPercentBasis");
       setText("sensitivityOneUnitBasis", "sensitivityOneUnitBasis");
       setText("sensitivityReductionLabel", "sensitivityReductionLabel");
+      setText("sensitivityGlobalReductionHelp", "sensitivityGlobalReductionHelp");
       setText("brightwayBridgeTitle", "brightwayBridgeTitle");
       setText("brightwayBridgeIntro", "brightwayBridgeIntro");
       setText("calculateWithBrightway", "calculateWithBrightway");
@@ -10757,7 +10851,10 @@
       const searchBox = document.getElementById("searchBox");
       if (searchBox) searchBox.placeholder = t("searchPlaceholder");
       const openButton = document.getElementById("openMapFullscreen");
-      if (openButton) openButton.textContent = t("fullscreenMap");
+      if (openButton) {
+        openButton.setAttribute("aria-label", t("fullscreenMap"));
+        openButton.title = t("fullscreenMap");
+      }
       const closeButton = document.getElementById("closeMapFullscreen");
       if (closeButton) closeButton.textContent = t("closeFullscreen");
       const clearButton = document.getElementById("clearPathwayScenario");
@@ -12392,9 +12489,20 @@
       });
     }
 
+    function clampSensitivityReduction(value, fallback = 20) {
+      const numeric = Number(value);
+      const resolved = Number.isFinite(numeric) ? numeric : fallback;
+      return Math.min(50, Math.max(5, resolved));
+    }
+
+    function sensitivityReductionForKey(mappingKey) {
+      const stored = state.sensitivityRowReductions[mappingKey];
+      return clampSensitivityReduction(stored, 20);
+    }
+
     function sensitivityTestLabel(item, analysis) {
       if (!analysis.oneUnitMode) {
-        return t("sensitivityReductionTest", { value: analysis.reductionPercent });
+        return t("sensitivityReductionTest", { value: formatDecimal(item.testedReductionPercent, 0) });
       }
       if (!item.eligibleForOneUnit) return t("sensitivityOneUnitUnavailable");
       return t("sensitivityOneUnitChange", {
@@ -12406,7 +12514,7 @@
 
     function collectSensitivityAnalysis(limit = 5) {
       const sourceData = sensitivityContributionData();
-      const reductionPercent = Math.min(50, Math.max(5, Number(state.sensitivityReductionPercent) || 20));
+      const reductionPercent = clampSensitivityReduction(state.sensitivityReductionPercent, 20);
       const total = Number(sourceData.total) || 0;
       const selectedKeys = new Set(state.sensitivitySelectedKeys);
       const oneUnitMode = state.sensitivityMode === "quantity" && state.sensitivityQuantityBasis === "oneUnit";
@@ -12417,9 +12525,10 @@
           .slice(0, limit)
           .map((item) => {
             const quantityDetails = sensitivityQuantityDetails(item);
+            const rowReductionPercent = sensitivityReductionForKey(item.mappingKey);
             const reductionRate = oneUnitMode
               ? quantityDetails.oneUnitRate
-              : reductionPercent / 100;
+              : rowReductionPercent / 100;
             const reduction = item.value * reductionRate;
             const requestedSelected = selectedKeys.has(item.mappingKey);
             return {
@@ -12510,6 +12619,7 @@
       const combinedValue = analysis.selectedCount
         ? t("sensitivityCombinedValue", {
           count: analysis.selectedCount,
+          amount: formatSensitivityImpact(analysis.combinedReduction, analysis),
           reduction: formatDecimal(analysis.combinedPathwayReductionPercent, 2),
           total: formatSensitivityImpact(analysis.combinedNewTotal, analysis)
         })
@@ -12536,17 +12646,30 @@
       const rows = analysis.rows.map((item, index) => {
         const quantityInterpretation = sensitivityQuantityInterpretationText(item);
         const testLabel = sensitivityTestLabel(item, analysis);
+        const rowControl = analysis.oneUnitMode
+          ? ""
+          : `
+            <div class="sensitivity-row-control">
+              <label class="sr-only" for="sensitivity-row-${escapeHtml(item.mappingKey)}">${escapeHtml(t("sensitivityAdjustContributor", { block: `${item.module} ${item.block}` }))}</label>
+              <input id="sensitivity-row-${escapeHtml(item.mappingKey)}" type="range" min="5" max="50" step="5" value="${escapeHtml(formatDecimal(item.testedReductionPercent, 0))}" data-sensitivity-row-reduction="${escapeHtml(item.mappingKey)}" ${item.selected ? "" : "disabled"}>
+              <output data-sensitivity-row-output="${escapeHtml(item.mappingKey)}">${escapeHtml(formatDecimal(item.testedReductionPercent, 0))}%</output>
+            </div>
+          `;
         const response = item.selected
           ? `
+            ${rowControl}
             <span><strong>${escapeHtml(testLabel)}</strong></span>
-            <span>${escapeHtml(t("sensitivityIndividualResult"))}: ${escapeHtml(t("sensitivityPathwayReduction", { value: formatDecimal(item.pathwayReductionPercent, 2) }))}</span>
+            <span>${escapeHtml(t("sensitivityIndividualResult"))}: ${escapeHtml(t("sensitivityIndividualReductionValue", {
+              amount: formatSensitivityImpact(item.reduction, analysis),
+              percent: formatDecimal(item.pathwayReductionPercent, 2)
+            }))}</span>
             <span>${escapeHtml(t("sensitivityIndividualNewTotal"))}: ${escapeHtml(formatSensitivityImpact(item.newTotal, analysis))}</span>
             ${analysis.mode === "quantity" ? `<span class="quantity-interpretation">${escapeHtml(quantityInterpretation)}</span>` : ""}
             ${item.removesWholeBlock && analysis.mode === "quantity" ? `<span class="quantity-interpretation whole-block-warning">${escapeHtml(t("sensitivityWholeBlockWarning"))}</span>` : ""}
           `
           : analysis.oneUnitMode && !item.eligibleForOneUnit
             ? `<span>${escapeHtml(t("sensitivityOneUnitUnavailable"))}</span>`
-            : `<span>${escapeHtml(t("sensitivityNotSelected"))}</span>`;
+            : `${rowControl}<span>${escapeHtml(t("sensitivityNotSelected"))}</span>`;
         return `
         <tr class="${item.selected ? "selected" : ""}">
           <td class="sensitivity-select-cell">
@@ -12610,15 +12733,39 @@
         });
       });
       document.getElementById("sensitivityReduction").addEventListener("input", (event) => {
-        state.sensitivityReductionPercent = Math.min(50, Math.max(5, Number(event.target.value) || 20));
+        const value = clampSensitivityReduction(event.target.value, 20);
+        state.sensitivityReductionPercent = value;
+        state.sensitivitySelectedKeys.forEach((mappingKey) => {
+          state.sensitivityRowReductions[mappingKey] = value;
+        });
         renderSensitivityExplorer();
       });
+      document.getElementById("sensitivityResults").addEventListener("input", (event) => {
+        const slider = event.target.closest("[data-sensitivity-row-reduction]");
+        if (!slider) return;
+        const value = clampSensitivityReduction(slider.value, state.sensitivityReductionPercent);
+        state.sensitivityRowReductions[slider.dataset.sensitivityRowReduction] = value;
+        const output = slider.parentElement?.querySelector("[data-sensitivity-row-output]");
+        if (output) output.textContent = `${value}%`;
+      });
       document.getElementById("sensitivityResults").addEventListener("change", (event) => {
+        const rowSlider = event.target.closest("[data-sensitivity-row-reduction]");
+        if (rowSlider) {
+          state.sensitivityRowReductions[rowSlider.dataset.sensitivityRowReduction] = clampSensitivityReduction(
+            rowSlider.value,
+            state.sensitivityReductionPercent
+          );
+          renderSensitivityExplorer();
+          return;
+        }
         const checkbox = event.target.closest("[data-sensitivity-select]");
         if (!checkbox) return;
         const selected = new Set(state.sensitivitySelectedKeys);
         if (checkbox.checked) {
           selected.add(checkbox.dataset.sensitivitySelect);
+          if (!Object.prototype.hasOwnProperty.call(state.sensitivityRowReductions, checkbox.dataset.sensitivitySelect)) {
+            state.sensitivityRowReductions[checkbox.dataset.sensitivitySelect] = 20;
+          }
         } else {
           selected.delete(checkbox.dataset.sensitivitySelect);
         }
@@ -13414,6 +13561,7 @@
       const sensitivityCombinedValue = data.sensitivity.selectedCount
         ? t("sensitivityCombinedValue", {
           count: data.sensitivity.selectedCount,
+          amount: formatSensitivityImpact(data.sensitivity.combinedReduction, data.sensitivity),
           reduction: formatDecimal(data.sensitivity.combinedPathwayReductionPercent, 2),
           total: formatSensitivityImpact(data.sensitivity.combinedNewTotal, data.sensitivity)
         })
@@ -13423,7 +13571,10 @@
           const response = row.selected
             ? `
               <strong>${escapeHtml(sensitivityTestLabel(row, data.sensitivity))}</strong><br>
-              ${escapeHtml(t("sensitivityIndividualResult"))}: ${escapeHtml(t("sensitivityPathwayReduction", { value: formatDecimal(row.pathwayReductionPercent, 2) }))}<br>
+              ${escapeHtml(t("sensitivityIndividualResult"))}: ${escapeHtml(t("sensitivityIndividualReductionValue", {
+                amount: formatSensitivityImpact(row.reduction, data.sensitivity),
+                percent: formatDecimal(row.pathwayReductionPercent, 2)
+              }))}<br>
               ${escapeHtml(t("sensitivityIndividualNewTotal"))}: ${escapeHtml(formatSensitivityImpact(row.newTotal, data.sensitivity))}
               ${data.sensitivity.mode === "quantity" ? `<br><small>${escapeHtml(sensitivityQuantityInterpretationText(row))}</small>` : ""}
               ${row.removesWholeBlock && data.sensitivity.mode === "quantity" ? `<br><small>${escapeHtml(t("sensitivityWholeBlockWarning"))}</small>` : ""}

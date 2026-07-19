@@ -12816,12 +12816,14 @@
       const above = {
         x: centeredX,
         y: node.y - markerHalfHeight - labelGap - labelHeight,
-        dx: 0
+        dx: 0,
+        verticalNudge: 4
       };
       const below = {
         x: centeredX,
         y: node.y + markerHalfHeight + labelGap,
-        dx: 0
+        dx: 0,
+        verticalNudge: 0
       };
       const verticalCandidates = ["EAUFULL-FU01"].includes(node.id)
         ? [below]
@@ -12836,7 +12838,7 @@
         const unclamped = { ...candidate, width: labelWidth, height: labelHeight };
         const x = Math.max(2, Math.min(1198 - labelWidth, candidate.x));
         const baseY = Math.max(14, Math.min(650 - labelHeight, candidate.y));
-        const y = baseY + labelVerticalOffset;
+        const y = baseY + labelVerticalOffset + candidate.verticalNudge;
         const box = { x, y, width: labelWidth, height: labelHeight };
         const clampPenalty = Math.abs(x - candidate.x) * 2 + Math.abs(baseY - candidate.y) * 2;
         const labelPenalty = placedLabels.reduce((total, placed) => total + overlapArea(box, placed) * 30, 0);

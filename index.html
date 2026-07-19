@@ -969,6 +969,21 @@
       stroke-width: 4;
     }
 
+    .map-node.assessment-excluded {
+      cursor: not-allowed;
+    }
+
+    .map-node.assessment-excluded .node-shape {
+      fill: var(--panel-soft);
+      stroke: var(--line);
+      filter: none;
+    }
+
+    .map-node.assessment-excluded .node-code,
+    .map-node.assessment-excluded .station-label-text {
+      fill: var(--muted);
+    }
+
     .label-hitbox {
       fill: transparent;
       stroke: none;
@@ -1081,6 +1096,58 @@
       margin-top: 10px;
     }
 
+    .pathway-step-guide {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 12px 0 0;
+      padding: 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-soft);
+      list-style: none;
+    }
+
+    .pathway-step-guide li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      padding: 10px 12px;
+    }
+
+    .pathway-step-guide li + li {
+      border-left: 1px solid var(--line);
+    }
+
+    .pathway-step-number {
+      display: inline-grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 50%;
+      color: #ffffff;
+      background: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .pathway-step-guide strong,
+    .pathway-step-guide small {
+      display: block;
+    }
+
+    .pathway-step-guide strong {
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .pathway-step-guide small {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
     .pathway-scenario-bar .toggle-field {
       min-width: 260px;
       flex: 1 1 280px;
@@ -1146,6 +1213,14 @@
     .assessment-boundary-field select {
       width: 100%;
       min-height: 36px;
+    }
+
+    .assessment-boundary-rule {
+      flex: 1 1 100%;
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
     }
 
     .assessment-validation {
@@ -1730,6 +1805,14 @@
     .activity-row.in-scenario {
       border-color: rgba(21, 74, 139, 0.45);
       box-shadow: inset 3px 0 0 var(--accent-dark);
+    }
+
+    .activity-row:disabled {
+      cursor: not-allowed;
+      opacity: 0.46;
+      color: var(--muted);
+      background: var(--panel-soft);
+      box-shadow: none;
     }
 
     .activity-row.oncology-highlight {
@@ -2996,6 +3079,15 @@
         width: 100%;
       }
 
+      .pathway-step-guide {
+        grid-template-columns: 1fr;
+      }
+
+      .pathway-step-guide li + li {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
     }
 
     @media (max-width: 620px) {
@@ -3264,6 +3356,47 @@
               </div>
             </div>
           </details>
+          <ol class="pathway-step-guide" id="pathwayStepGuide" aria-label="Pathway setup order">
+            <li>
+              <span class="pathway-step-number" aria-hidden="true">1</span>
+              <span><strong id="pathwaySetupSourceTitle">Choose pathway source</strong><small id="pathwaySetupSourceText">Select the specialty and reference view.</small></span>
+            </li>
+            <li>
+              <span class="pathway-step-number" aria-hidden="true">2</span>
+              <span><strong id="pathwaySetupBoundaryTitle">Declare the boundary</strong><small id="pathwaySetupBoundaryText">Choose the assessment mode, start, and endpoint.</small></span>
+            </li>
+            <li>
+              <span class="pathway-step-number" aria-hidden="true">3</span>
+              <span><strong id="pathwaySetupRouteTitle">Build the route</strong><small id="pathwaySetupRouteText">Select connected activities on the map.</small></span>
+            </li>
+          </ol>
+          <div class="pathway-scenario-bar" aria-label="Selected pathway scenario">
+            <div class="assessment-mode-control" role="group" aria-label="Assessment mode" id="assessmentModeControl">
+              <button type="button" id="completeAssessmentMode" data-assessment-mode="complete" aria-pressed="true">Complete pathway assessment</button>
+              <button type="button" id="partialAssessmentMode" data-assessment-mode="partial" aria-pressed="false">Partial segment exploration</button>
+            </div>
+            <div class="assessment-boundary-controls" id="assessmentBoundaryControls">
+              <label class="assessment-boundary-field" for="assessmentStartNode">
+                <span id="assessmentStartLabel">Declared start</span>
+                <select id="assessmentStartNode"></select>
+              </label>
+              <label class="assessment-boundary-field" for="assessmentEndNode">
+                <span id="assessmentEndLabel">Declared endpoint</span>
+                <select id="assessmentEndNode"></select>
+              </label>
+              <p class="assessment-boundary-rule" id="assessmentBoundaryRule"></p>
+            </div>
+            <label class="toggle-field" for="pathwayScenarioMode">
+              <input id="pathwayScenarioMode" type="checkbox" checked>
+              <span>
+                <strong id="pathwayScenarioTitle">Pathway scenario</strong>
+                <small id="pathwayScenarioSubtitle">Selected activities control pathway-linked LCA modules</small>
+              </span>
+            </label>
+            <span class="status-chip" id="pathwayScenarioStatus"></span>
+            <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
+            <p class="assessment-validation" id="assessmentValidationStatus" aria-live="polite"></p>
+          </div>
           <div class="map-wrap">
             <button class="map-fullscreen-trigger" type="button" id="openMapFullscreen" aria-expanded="false" aria-label="Fullscreen map" title="Fullscreen map">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -3277,32 +3410,6 @@
               <title id="svgTitle">Pathway activity map</title>
               <desc id="svgDesc">Interactive pathway map with coded activities and ECO-PATH modules.</desc>
             </svg>
-          </div>
-          <div class="pathway-scenario-bar" aria-label="Selected pathway scenario">
-            <label class="toggle-field" for="pathwayScenarioMode">
-              <input id="pathwayScenarioMode" type="checkbox" checked>
-              <span>
-                <strong id="pathwayScenarioTitle">Pathway scenario</strong>
-                <small id="pathwayScenarioSubtitle">Selected activities control pathway-linked LCA modules</small>
-              </span>
-            </label>
-            <div class="assessment-mode-control" role="group" aria-label="Assessment mode" id="assessmentModeControl">
-              <button type="button" id="completeAssessmentMode" data-assessment-mode="complete" aria-pressed="true">Complete pathway assessment</button>
-              <button type="button" id="partialAssessmentMode" data-assessment-mode="partial" aria-pressed="false">Partial segment exploration</button>
-            </div>
-            <span class="status-chip" id="pathwayScenarioStatus"></span>
-            <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
-            <div class="assessment-boundary-controls" id="assessmentBoundaryControls">
-              <label class="assessment-boundary-field" for="assessmentStartNode">
-                <span id="assessmentStartLabel">Declared start</span>
-                <select id="assessmentStartNode"></select>
-              </label>
-              <label class="assessment-boundary-field" for="assessmentEndNode">
-                <span id="assessmentEndLabel">Declared endpoint</span>
-                <select id="assessmentEndNode"></select>
-              </label>
-            </div>
-            <p class="assessment-validation" id="assessmentValidationStatus" aria-live="polite"></p>
           </div>
           <div class="legend" aria-label="Route legend">
             <span class="legend-item"><span class="route-direction-arrow" aria-hidden="true">→</span><span id="routeDirectionLabel">Arrowheads on routes show direction</span></span>
@@ -7136,6 +7243,13 @@
 
     Object.assign(uiText.en, {
       helpStep3: "Choose Complete pathway assessment when the selected activities must form one connected directed route between the declared start and endpoint. Use Partial segment exploration for a single activity or connected subset; those results are labeled as partial and are not a full patient-pathway result.",
+      pathwayStepGuideLabel: "Pathway setup order",
+      pathwaySetupSourceTitle: "Choose pathway source",
+      pathwaySetupSourceText: "Select the specialty and Dutch or European reference view.",
+      pathwaySetupBoundaryTitle: "Declare the boundary",
+      pathwaySetupBoundaryText: "Choose complete or partial assessment; set start and endpoint for a complete pathway.",
+      pathwaySetupRouteTitle: "Build the route",
+      pathwaySetupRouteText: "Select connected activities on the map, then continue to Activities.",
       assessmentModeLabel: "Assessment purpose",
       completeAssessmentMode: "Complete pathway assessment",
       partialAssessmentMode: "Partial segment exploration",
@@ -7147,6 +7261,10 @@
       assessmentDisconnected: "The selected activities do not form one connected route.",
       assessmentOutsideRoute: "One or more selected activities cannot be reached from the declared start.",
       assessmentEndUnreachable: "The declared endpoint cannot be reached through the selected activities.",
+      assessmentBeyondEndpoint: "One or more selected activities do not lead to the declared endpoint.",
+      assessmentBoundaryNoPath: "No directed pathway connects the declared start and endpoint.",
+      assessmentBoundaryRule: "In Complete mode, the declared start and endpoint stay included once route selection begins. Activities outside this start-to-end corridor are unavailable and are not included in LCA results.",
+      assessmentNodeOutsideBoundary: "Outside the declared start-to-end corridor",
       assessmentBranchConflict: "A decision point contains more than one competing outgoing route.",
       assessmentValidComplete: "Complete connected pathway: {start} to {end}. LCA calculation is enabled.",
       assessmentValidPartial: "Connected partial segment. Results are exploratory and do not represent a full patient pathway.",
@@ -7165,6 +7283,13 @@
 
     Object.assign(uiText.nl, {
       helpStep3: "Kies Volledige zorgpadbeoordeling als de geselecteerde activiteiten één verbonden, gerichte route tussen het opgegeven begin- en eindpunt moeten vormen. Gebruik Verkenning van een deeltraject voor één activiteit of een verbonden deel; deze resultaten worden als gedeeltelijk aangeduid en zijn geen volledig patiënttraject.",
+      pathwayStepGuideLabel: "Volgorde voor het instellen van het zorgpad",
+      pathwaySetupSourceTitle: "Kies de zorgpadbron",
+      pathwaySetupSourceText: "Selecteer het specialisme en de Nederlandse of Europese referentieweergave.",
+      pathwaySetupBoundaryTitle: "Leg de grens vast",
+      pathwaySetupBoundaryText: "Kies een volledige of gedeeltelijke beoordeling; stel voor een volledig zorgpad het begin- en eindpunt in.",
+      pathwaySetupRouteTitle: "Bouw de route",
+      pathwaySetupRouteText: "Selecteer verbonden activiteiten op de kaart en ga daarna door naar Activiteiten.",
       assessmentModeLabel: "Doel van de beoordeling",
       completeAssessmentMode: "Volledige zorgpadbeoordeling",
       partialAssessmentMode: "Verkenning van een deeltraject",
@@ -7176,6 +7301,10 @@
       assessmentDisconnected: "De geselecteerde activiteiten vormen geen verbonden route.",
       assessmentOutsideRoute: "Een of meer geselecteerde activiteiten zijn niet bereikbaar vanaf het opgegeven beginpunt.",
       assessmentEndUnreachable: "Het opgegeven eindpunt is niet bereikbaar via de geselecteerde activiteiten.",
+      assessmentBeyondEndpoint: "Een of meer geselecteerde activiteiten leiden niet naar het opgegeven eindpunt.",
+      assessmentBoundaryNoPath: "Er bestaat geen gerichte route tussen het opgegeven begin- en eindpunt.",
+      assessmentBoundaryRule: "In de volledige modus blijven het opgegeven begin- en eindpunt opgenomen zodra de routeselectie begint. Activiteiten buiten dit traject zijn niet beschikbaar en worden niet in de LCA-resultaten opgenomen.",
+      assessmentNodeOutsideBoundary: "Buiten het opgegeven traject van begin tot eind",
       assessmentBranchConflict: "Een beslispunt bevat meer dan één concurrerende uitgaande route.",
       assessmentValidComplete: "Volledig verbonden zorgpad: {start} tot {end}. LCA-berekening is ingeschakeld.",
       assessmentValidPartial: "Verbonden deeltraject. De resultaten zijn verkennend en vormen geen volledig patiënttraject.",
@@ -7194,6 +7323,13 @@
 
     Object.assign(uiText.zh, {
       helpStep3: "如需评估完整患者路径，请选择“完整路径评估”，并确保所选活动在指定起点和终点之间构成一条连续的有向路径。如只想查看单个活动或连续片段，请使用“局部片段探索”；其结果会明确标记为局部结果，不代表完整患者路径。",
+      pathwayStepGuideLabel: "路径设置顺序",
+      pathwaySetupSourceTitle: "选择路径来源",
+      pathwaySetupSourceText: "选择专科以及荷兰或欧洲参考路径。",
+      pathwaySetupBoundaryTitle: "指定评估边界",
+      pathwaySetupBoundaryText: "选择完整或局部评估；完整路径需设置起点和终点。",
+      pathwaySetupRouteTitle: "构建路径",
+      pathwaySetupRouteText: "在图中选择连续活动，然后进入“活动”步骤。",
       assessmentModeLabel: "评估目的",
       completeAssessmentMode: "完整路径评估",
       partialAssessmentMode: "局部片段探索",
@@ -7205,6 +7341,10 @@
       assessmentDisconnected: "所选活动没有构成一条连续路径。",
       assessmentOutsideRoute: "部分所选活动无法从指定起点到达。",
       assessmentEndUnreachable: "无法通过所选活动到达指定终点。",
+      assessmentBeyondEndpoint: "部分所选活动不能通向指定终点。",
+      assessmentBoundaryNoPath: "指定起点与终点之间不存在有向路径。",
+      assessmentBoundaryRule: "在完整路径模式下，开始选择路线后，指定起点和终点会保持选中。该区间之外的活动不可选择，也不会计入 LCA 结果。",
+      assessmentNodeOutsideBoundary: "位于指定起点至终点区间之外",
       assessmentBranchConflict: "同一决策点选择了多个互斥的后续路径。",
       assessmentValidComplete: "完整连续路径：{start} 至 {end}。已启用 LCA 计算。",
       assessmentValidPartial: "连续的局部片段。结果仅用于探索，不代表完整患者路径。",
@@ -7223,6 +7363,13 @@
 
     Object.assign(uiText.ja, {
       helpStep3: "選択した活動が指定した開始点と終了点の間で一つの連続した有向経路を形成する必要がある場合は、完全パスウェイ評価を選択します。単一活動または連続部分のみを調べる場合は部分セグメント探索を使用します。結果は部分結果と表示され、患者パスウェイ全体の結果ではありません。",
+      pathwayStepGuideLabel: "パスウェイ設定の順序",
+      pathwaySetupSourceTitle: "パスウェイの情報源を選択",
+      pathwaySetupSourceText: "診療科とオランダまたは欧州の参照ビューを選択します。",
+      pathwaySetupBoundaryTitle: "評価範囲を指定",
+      pathwaySetupBoundaryText: "完全評価または部分評価を選択し、完全パスウェイでは開始点と終了点を設定します。",
+      pathwaySetupRouteTitle: "経路を構築",
+      pathwaySetupRouteText: "マップ上で連続した活動を選択し、その後「活動」へ進みます。",
       assessmentModeLabel: "評価目的",
       completeAssessmentMode: "完全パスウェイ評価",
       partialAssessmentMode: "部分セグメント探索",
@@ -7234,6 +7381,10 @@
       assessmentDisconnected: "選択した活動が一つの連続経路を形成していません。",
       assessmentOutsideRoute: "一部の選択活動が指定開始点から到達できません。",
       assessmentEndUnreachable: "選択した活動では指定終了点に到達できません。",
+      assessmentBeyondEndpoint: "一部の選択活動が指定終了点につながっていません。",
+      assessmentBoundaryNoPath: "指定開始点と終了点を結ぶ有向経路がありません。",
+      assessmentBoundaryRule: "完全モードでは、経路選択を開始すると指定した開始点と終了点が維持されます。この範囲外の活動は選択できず、LCA 結果にも含まれません。",
+      assessmentNodeOutsideBoundary: "指定した開始点から終了点までの範囲外",
       assessmentBranchConflict: "一つの意思決定点で複数の競合経路が選択されています。",
       assessmentValidComplete: "完全な連続経路：{start} から {end}。LCA 計算が有効です。",
       assessmentValidPartial: "連続した部分セグメントです。結果は探索用で、患者パスウェイ全体を表しません。",
@@ -7252,6 +7403,13 @@
 
     Object.assign(uiText.es, {
       helpStep3: "Seleccione Evaluación de vía completa cuando las actividades deban formar una ruta dirigida y conectada entre el inicio y el final declarados. Use Exploración de segmento parcial para una actividad o un subconjunto conectado; esos resultados se etiquetan como parciales y no representan la vía completa del paciente.",
+      pathwayStepGuideLabel: "Orden de configuración de la vía",
+      pathwaySetupSourceTitle: "Elegir la fuente de la vía",
+      pathwaySetupSourceText: "Seleccione la especialidad y la vista de referencia neerlandesa o europea.",
+      pathwaySetupBoundaryTitle: "Declarar el límite",
+      pathwaySetupBoundaryText: "Elija evaluación completa o parcial; defina inicio y final para una vía completa.",
+      pathwaySetupRouteTitle: "Construir la ruta",
+      pathwaySetupRouteText: "Seleccione actividades conectadas en el mapa y continúe después a Actividades.",
       assessmentModeLabel: "Objetivo de la evaluación",
       completeAssessmentMode: "Evaluación de vía completa",
       partialAssessmentMode: "Exploración de segmento parcial",
@@ -7263,6 +7421,10 @@
       assessmentDisconnected: "Las actividades seleccionadas no forman una ruta conectada.",
       assessmentOutsideRoute: "Una o más actividades no son alcanzables desde el inicio declarado.",
       assessmentEndUnreachable: "No se puede alcanzar el final declarado mediante las actividades seleccionadas.",
+      assessmentBeyondEndpoint: "Una o más actividades seleccionadas no conducen al final declarado.",
+      assessmentBoundaryNoPath: "No existe una ruta dirigida entre el inicio y el final declarados.",
+      assessmentBoundaryRule: "En el modo completo, el inicio y el final declarados permanecen incluidos al comenzar la selección. Las actividades fuera de este corredor no están disponibles ni se incluyen en los resultados LCA.",
+      assessmentNodeOutsideBoundary: "Fuera del corredor declarado entre inicio y final",
       assessmentBranchConflict: "Un punto de decisión contiene más de una ruta de salida competidora.",
       assessmentValidComplete: "Vía completa conectada: {start} a {end}. El cálculo LCA está habilitado.",
       assessmentValidPartial: "Segmento parcial conectado. Los resultados son exploratorios y no representan una vía completa del paciente.",
@@ -11360,6 +11522,37 @@
       return visited;
     }
 
+    function pathwayStructuralAdjacency(pathway, reverse = false) {
+      const adjacency = new Map(pathway.nodes.map((node) => [node.id, []]));
+      // Boundary availability uses every documented route. Scenario validation
+      // applies required and excluded edge conditions after activities are selected.
+      pathway.edges.forEach((edgeItem) => {
+        const from = reverse ? edgeItem.to : edgeItem.from;
+        const to = reverse ? edgeItem.from : edgeItem.to;
+        if (adjacency.has(from) && adjacency.has(to)) adjacency.get(from).push(to);
+      });
+      return adjacency;
+    }
+
+    function assessmentBoundaryCorridor(pathway = currentPathway(), boundary = assessmentBoundaryForPathway()) {
+      const reachableFromStart = traverseScenarioGraph(
+        boundary.start,
+        pathwayStructuralAdjacency(pathway)
+      );
+      const ableToReachEnd = traverseScenarioGraph(
+        boundary.end,
+        pathwayStructuralAdjacency(pathway, true)
+      );
+      return new Set(
+        Array.from(reachableFromStart).filter((nodeId) => ableToReachEnd.has(nodeId))
+      );
+    }
+
+    function isAssessmentNodeSelectable(nodeId) {
+      if (state.assessmentMode !== "complete") return true;
+      return assessmentBoundaryCorridor().has(nodeId);
+    }
+
     function currentAssessmentStatus() {
       const pathway = currentPathway();
       const selectedIds = new Set(scenarioSetForPathway());
@@ -11367,12 +11560,21 @@
       const issues = [];
       const activeEdges = pathway.edges.filter((edgeItem) => isScenarioEdgeActive(edgeItem, selectedIds));
       const directed = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
+      const reverseDirected = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
       const undirected = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
       activeEdges.forEach((edgeItem) => {
         directed.get(edgeItem.from)?.push(edgeItem.to);
+        reverseDirected.get(edgeItem.to)?.push(edgeItem.from);
         undirected.get(edgeItem.from)?.push(edgeItem.to);
         undirected.get(edgeItem.to)?.push(edgeItem.from);
       });
+
+      if (
+        state.assessmentMode === "complete"
+        && !assessmentBoundaryCorridor(pathway, boundary).has(boundary.end)
+      ) {
+        issues.push(t("assessmentBoundaryNoPath"));
+      }
 
       if (selectedIds.size === 0) {
         issues.push(t("assessmentNoSelection"));
@@ -11397,6 +11599,10 @@
           const reachable = traverseScenarioGraph(boundary.start, directed);
           if (reachable.size !== selectedIds.size) issues.push(t("assessmentOutsideRoute"));
           if (!reachable.has(boundary.end)) issues.push(t("assessmentEndUnreachable"));
+        }
+        if (selectedIds.has(boundary.end)) {
+          const ableToReachEnd = traverseScenarioGraph(boundary.end, reverseDirected);
+          if (ableToReachEnd.size !== selectedIds.size) issues.push(t("assessmentBeyondEndpoint"));
         }
       }
 
@@ -11638,16 +11844,52 @@
       });
     }
 
+    function reconcileScenarioSelectionToBoundary(pathwayId = state.pathway) {
+      if (state.assessmentMode !== "complete") return false;
+      const pathway = pathwayData[pathwayId];
+      const boundary = assessmentBoundaryForPathway(pathwayId);
+      const corridor = assessmentBoundaryCorridor(pathway, boundary);
+      const selectedIds = scenarioSetForPathway(pathwayId);
+      const hadSelection = selectedIds.size > 0;
+      let changed = false;
+
+      Array.from(selectedIds).forEach((nodeId) => {
+        if (corridor.has(nodeId)) return;
+        selectedIds.delete(nodeId);
+        changed = true;
+      });
+
+      if (hadSelection && corridor.has(boundary.start) && corridor.has(boundary.end)) {
+        [boundary.start, boundary.end].forEach((nodeId) => {
+          if (selectedIds.has(nodeId)) return;
+          selectedIds.add(nodeId);
+          changed = true;
+        });
+      }
+      return changed;
+    }
+
     function toggleScenarioNode(nodeId) {
       const selectedIds = scenarioSetForPathway();
+      const boundary = assessmentBoundaryForPathway();
+      if (!isAssessmentNodeSelectable(nodeId)) return false;
+      if (
+        state.assessmentMode === "complete"
+        && selectedIds.has(nodeId)
+        && [boundary.start, boundary.end].includes(nodeId)
+      ) {
+        return false;
+      }
       if (selectedIds.has(nodeId)) {
         selectedIds.delete(nodeId);
       } else {
         removeCompetingScenarioRouteNodes(selectedIds, nodeId);
         selectedIds.add(nodeId);
       }
+      reconcileScenarioSelectionToBoundary();
       clearAssessmentDependentResults();
       syncPathwayModulesFromScenario();
+      return true;
     }
 
     function clearScenarioSelection() {
@@ -11844,12 +12086,21 @@
       setText("fuReferenceUnitLabel", "fuReferenceUnit");
       setText("fuComparabilityLabel", "fuComparability");
       setText("pathwayContextTitle", "pathwayContextTitle");
+      setText("pathwaySetupSourceTitle", "pathwaySetupSourceTitle");
+      setText("pathwaySetupSourceText", "pathwaySetupSourceText");
+      setText("pathwaySetupBoundaryTitle", "pathwaySetupBoundaryTitle");
+      setText("pathwaySetupBoundaryText", "pathwaySetupBoundaryText");
+      setText("pathwaySetupRouteTitle", "pathwaySetupRouteTitle");
+      setText("pathwaySetupRouteText", "pathwaySetupRouteText");
       setText("pathwayScenarioTitle", "pathwayScenario");
       setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
       setText("completeAssessmentMode", "completeAssessmentMode");
       setText("partialAssessmentMode", "partialAssessmentMode");
       setText("assessmentStartLabel", "assessmentStart");
       setText("assessmentEndLabel", "assessmentEnd");
+      setText("assessmentBoundaryRule", "assessmentBoundaryRule");
+      const pathwayStepGuide = document.getElementById("pathwayStepGuide");
+      if (pathwayStepGuide) pathwayStepGuide.setAttribute("aria-label", t("pathwayStepGuideLabel"));
       const assessmentModeControl = document.getElementById("assessmentModeControl");
       if (assessmentModeControl) assessmentModeControl.setAttribute("aria-label", t("assessmentModeLabel"));
       setText("routeDirectionLabel", "routeDirection");
@@ -12144,6 +12395,7 @@
             state.workspaceStep = "pathway";
             document.getElementById("typeFilter").value = "all";
             document.getElementById("searchBox").value = "";
+            reconcileScenarioSelectionToBoundary();
             syncPathwayModulesFromScenario();
             render();
             if (selector) selector.removeAttribute("open");
@@ -12182,7 +12434,21 @@
 
     function renderFilterOptions() {
       const nodes = currentPathway().nodes;
-      const domains = ["all", ...Array.from(new Set(nodes.map((node) => node.domain)))];
+      const presentDomains = new Set(nodes.map((node) => node.domain));
+      const clinicalDomainOrder = [
+        "Access",
+        "Diagnostics",
+        "Joint clinic and MDT",
+        "Treatment planning",
+        "Systemic therapy and oncology",
+        "Treatment",
+        "Surgery",
+        "Radiotherapy",
+        "Advanced disease",
+        "Follow-up"
+      ];
+      const orderedDomains = clinicalDomainOrder.filter((domain) => presentDomains.delete(domain));
+      const domains = ["all", ...orderedDomains, ...Array.from(presentDomains).sort()];
       const modules = ["all", ...pathwayModuleIds()];
       const domainFilter = document.getElementById("domainFilter");
       const moduleFilter = document.getElementById("moduleFilter");
@@ -12376,6 +12642,9 @@
       if (!svg) return;
       const pathway = currentPathway();
       const visibleIds = new Set(filteredNodes().map((node) => node.id));
+      const boundaryCorridor = state.assessmentMode === "complete"
+        ? assessmentBoundaryCorridor(pathway)
+        : new Set(pathway.nodes.map((node) => node.id));
       const titleId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgTitle" : "svgTitle";
       const descId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgDesc" : "svgDesc";
       clear(svg);
@@ -12421,6 +12690,8 @@
         const gatewayNode = { ...gateway, type: "parallel" };
         const gatewayEdges = pathway.edges.filter((edgeItem) => edgeItem.startGateway === gateway.id);
         const scenarioEdge = gatewayEdges.some((edgeItem) => isScenarioEdgeActive(edgeItem));
+        const insideBoundary = boundaryCorridor.has(from.id)
+          && gatewayEdges.some((edgeItem) => boundaryCorridor.has(edgeItem.to));
         const gatewayVisible = visibleIds.has(from.id)
           || gatewayEdges.some((edgeItem) => visibleIds.has(edgeItem.to));
         const path = createSvgElement("path", {
@@ -12431,7 +12702,8 @@
           "data-edge-from": gateway.from,
           "data-edge-to": gateway.id
         });
-        if (!gatewayVisible) path.setAttribute("opacity", "0.16");
+        if (!insideBoundary) path.setAttribute("opacity", "0.1");
+        else if (!gatewayVisible) path.setAttribute("opacity", "0.16");
         svg.appendChild(path);
       });
 
@@ -12441,6 +12713,7 @@
         if (!from || !to) return;
         const startNode = edgeStartNode(pathway, edgeItem, from);
         const scenarioEdge = isScenarioEdgeActive(edgeItem);
+        const insideBoundary = boundaryCorridor.has(edgeItem.from) && boundaryCorridor.has(edgeItem.to);
         const path = createSvgElement("path", {
           d: pathForEdge(startNode, to),
           class: `map-edge ${edgeItem.route === "return" ? "return" : ""} ${scenarioEdge ? "scenario-edge" : ""}`,
@@ -12450,19 +12723,29 @@
           "data-edge-to": edgeItem.to
         });
         const edgeVisible = visibleIds.has(from.id) && visibleIds.has(to.id);
-        if (!edgeVisible) {
+        if (!insideBoundary) {
+          path.setAttribute("opacity", "0.1");
+        } else if (!edgeVisible) {
           path.setAttribute("opacity", "0.16");
         }
         svg.appendChild(path);
-        appendEdgeDirectionMarker(svg, path, edgeItem.route, edgeVisible ? (scenarioEdge ? 1 : 0.92) : 0.16);
+        const directionOpacity = !insideBoundary
+          ? 0.1
+          : edgeVisible
+            ? (scenarioEdge ? 1 : 0.92)
+            : 0.16;
+        appendEdgeDirectionMarker(svg, path, edgeItem.route, directionOpacity);
       });
 
       (pathway.parallelGateways || []).forEach((gateway) => {
         const gatewayEdges = pathway.edges.filter((edgeItem) => edgeItem.startGateway === gateway.id);
         const scenarioEdge = gatewayEdges.some((edgeItem) => isScenarioEdgeActive(edgeItem));
+        const insideBoundary = boundaryCorridor.has(gateway.from)
+          && gatewayEdges.some((edgeItem) => boundaryCorridor.has(edgeItem.to));
         const group = createSvgElement("g", {
           role: "img",
-          "aria-label": t("parallelRoute")
+          "aria-label": t("parallelRoute"),
+          opacity: insideBoundary ? "1" : "0.16"
         });
         group.appendChild(createSvgElement("polygon", {
           points: `${gateway.x},${gateway.y - 10} ${gateway.x + 10},${gateway.y} ${gateway.x},${gateway.y + 10} ${gateway.x - 10},${gateway.y}`,
@@ -12505,6 +12788,7 @@
       const scenarioSequence = scenarioSequenceMap(pathway);
       pathway.nodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
+        const insideBoundary = boundaryCorridor.has(node.id);
         const labelLines = splitLabel(shortStationLabel(node), 17);
         const labelLayout = stationLabelLayout(node, labelLines, placedLabels, markerBoxes, edgeBoxes);
         placedLabels.push({
@@ -12514,15 +12798,17 @@
           height: labelLayout.height
         });
         const group = createSvgElement("g", {
-          class: "map-node",
+          class: `map-node ${insideBoundary ? "" : "assessment-excluded"}`.trim(),
           role: "button",
-          "aria-label": `${node.id} ${localizedNodeLabel(node)}`,
+          "aria-label": `${node.id} ${localizedNodeLabel(node)}${insideBoundary ? "" : `. ${t("assessmentNodeOutsideBoundary")}`}`,
+          "aria-disabled": String(!insideBoundary),
           tabindex: "0",
           "data-node-id": node.id,
           "data-node-layer": "label"
         });
         attachMapNodeInteractions(group, node);
-        if (!visible) group.setAttribute("opacity", "0.24");
+        if (!insideBoundary) group.setAttribute("opacity", "0.18");
+        else if (!visible) group.setAttribute("opacity", "0.24");
 
         group.appendChild(createSvgElement("rect", {
           x: labelLayout.x - 5,
@@ -12553,18 +12839,21 @@
 
       pathway.nodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
+        const insideBoundary = boundaryCorridor.has(node.id);
         const selected = state.selected === node.id;
         const scenarioSelected = isScenarioNodeSelected(node.id);
         const group = createSvgElement("g", {
-          class: "map-node",
+          class: `map-node ${insideBoundary ? "" : "assessment-excluded"}`.trim(),
           role: "button",
-          "aria-label": `${node.id} ${localizedNodeLabel(node)}`,
+          "aria-label": `${node.id} ${localizedNodeLabel(node)}${insideBoundary ? "" : `. ${t("assessmentNodeOutsideBoundary")}`}`,
+          "aria-disabled": String(!insideBoundary),
           tabindex: "0",
           "data-node-id": node.id,
           "data-node-layer": "marker"
         });
         attachMapNodeInteractions(group, node);
-        if (!visible) group.setAttribute("opacity", "0.24");
+        if (!insideBoundary) group.setAttribute("opacity", "0.18");
+        else if (!visible) group.setAttribute("opacity", "0.24");
 
         const showOncologyHalo = state.oncologyLens && node.oncology;
         if (showOncologyHalo && node.type === "decision") {
@@ -13098,6 +13387,9 @@
     function renderActivityList() {
       const list = document.getElementById("activityList");
       const nodes = filteredNodes();
+      const boundaryCorridor = state.assessmentMode === "complete"
+        ? assessmentBoundaryCorridor()
+        : new Set(currentPathway().nodes.map((node) => node.id));
       clear(list);
       document.getElementById("activityCount").textContent = t("elementsShown", {
         shown: nodes.length,
@@ -13113,6 +13405,7 @@
       }
 
       nodes.forEach((node) => {
+        const insideBoundary = boundaryCorridor.has(node.id);
         const button = document.createElement("button");
         button.type = "button";
         button.className = [
@@ -13122,6 +13415,8 @@
           state.oncologyLens && node.oncology ? "oncology-highlight" : ""
         ].filter(Boolean).join(" ");
         button.dataset.nodeId = node.id;
+        button.disabled = !insideBoundary;
+        if (!insideBoundary) button.title = t("assessmentNodeOutsideBoundary");
         button.addEventListener("click", () => selectMapNode(node.id, "list"));
         button.innerHTML = `
           <span class="code-pill">${escapeHtml(displayCode(node))}</span>
@@ -15297,6 +15592,7 @@
           state.workspaceStep = "pathway";
           document.getElementById("typeFilter").value = "all";
           document.getElementById("searchBox").value = "";
+          reconcileScenarioSelectionToBoundary();
           syncPathwayModulesFromScenario();
           render();
         });
@@ -15330,18 +15626,24 @@
           const mode = button.dataset.assessmentMode === "partial" ? "partial" : "complete";
           if (mode === state.assessmentMode) return;
           state.assessmentMode = mode;
+          reconcileScenarioSelectionToBoundary();
           clearAssessmentDependentResults();
+          syncPathwayModulesFromScenario();
           render();
         });
       });
       document.getElementById("assessmentStartNode").addEventListener("change", (event) => {
         assessmentBoundaryForPathway().start = event.target.value;
+        reconcileScenarioSelectionToBoundary();
         clearAssessmentDependentResults();
+        syncPathwayModulesFromScenario();
         render();
       });
       document.getElementById("assessmentEndNode").addEventListener("change", (event) => {
         assessmentBoundaryForPathway().end = event.target.value;
+        reconcileScenarioSelectionToBoundary();
         clearAssessmentDependentResults();
+        syncPathwayModulesFromScenario();
         render();
       });
       document.getElementById("clearPathwayScenario").addEventListener("click", clearScenarioSelection);

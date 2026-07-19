@@ -935,6 +935,22 @@
       opacity: 0.82;
     }
 
+    .care-zone-shape {
+      pointer-events: none;
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .care-zone-shape.regional {
+      fill: rgba(170, 179, 182, 0.12);
+      stroke: rgba(97, 113, 120, 0.22);
+    }
+
+    .care-zone-shape.erasmus {
+      fill: rgba(111, 207, 241, 0.11);
+      stroke: rgba(21, 74, 139, 0.20);
+    }
+
     .map-edge.return {
       stroke-dasharray: 8 8;
     }
@@ -1263,6 +1279,43 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .care-setting-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 12px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .care-setting-legend > strong {
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .care-setting-key {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .care-setting-swatch {
+      width: 20px;
+      height: 12px;
+      border: 1px solid transparent;
+    }
+
+    .care-setting-swatch.regional {
+      border-color: rgba(97, 113, 120, 0.32);
+      background: rgba(170, 179, 182, 0.18);
+    }
+
+    .care-setting-swatch.erasmus {
+      border-color: rgba(21, 74, 139, 0.28);
+      background: rgba(111, 207, 241, 0.18);
     }
 
     .route-direction-arrow {
@@ -3419,6 +3472,11 @@
             <span class="legend-item"><span class="swatch followup"></span><span id="followupRouteLabel">Follow-up route</span></span>
             <span class="legend-item"><span class="swatch return"></span><span id="returnRouteLabel">Conditional or return route</span></span>
           </div>
+          <div class="care-setting-legend" id="careSettingLegend" aria-label="Care setting legend" hidden>
+            <strong id="careSettingLegendTitle">Care setting</strong>
+            <span class="care-setting-key"><span class="care-setting-swatch regional" aria-hidden="true"></span><span id="regionalHospitalCareLabel">ASZ / regional hospital</span></span>
+            <span class="care-setting-key"><span class="care-setting-swatch erasmus" aria-hidden="true"></span><span id="erasmusMCCareLabel">Erasmus MC / shared follow-up</span></span>
+          </div>
           <div class="code-legend" aria-label="Station code prefixes">
             <span class="code-legend-item"><span class="prefix-chip">FC</span><span id="accessPrefixLabel">First contact / intake</span></span>
             <span class="code-legend-item"><span class="prefix-chip">DX</span><span id="diagnosticsPrefixLabel">Diagnostics</span></span>
@@ -3674,6 +3732,11 @@
           <span class="legend-item"><span class="swatch treatment"></span>Treatment route</span>
           <span class="legend-item"><span class="swatch followup"></span>Follow-up route</span>
           <span class="legend-item"><span class="swatch return"></span>Conditional or return route</span>
+        </div>
+        <div class="care-setting-legend" id="fullscreenCareSettingLegend" aria-label="Care setting legend" hidden>
+          <strong id="fullscreenCareSettingLegendTitle">Care setting</strong>
+          <span class="care-setting-key"><span class="care-setting-swatch regional" aria-hidden="true"></span><span id="fullscreenRegionalHospitalCareLabel">ASZ / regional hospital</span></span>
+          <span class="care-setting-key"><span class="care-setting-swatch erasmus" aria-hidden="true"></span><span id="fullscreenErasmusMCCareLabel">Erasmus MC / shared follow-up</span></span>
         </div>
         <div class="code-legend" aria-label="Station code prefixes">
           <span class="code-legend-item"><span class="prefix-chip">FC</span><span id="fullscreenAccessPrefixLabel">First contact / intake</span></span>
@@ -4367,9 +4430,21 @@
         status: "Expert-informed operational reconstruction; older EAU-based NVU guidance and local confirmation required",
         scope: "Hospital pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up. The map combines Dutch guidance with Joost expert input and does not assert that every activity occurs for every patient.",
         defaultSelected: "EMC-FC02",
+        careZones: [
+          {
+            kind: "regional",
+            labelKey: "regionalHospitalCare",
+            points: "18,18 1182,18 1182,154 1000,154 1000,282 18,282"
+          },
+          {
+            kind: "erasmus",
+            labelKey: "erasmusMCCare",
+            points: "1000,154 1182,154 1182,662 18,662 18,282 1000,282"
+          }
+        ],
         lanes: [
           { y: 92, label: "ASZ or regional hospital: diagnosis and MIBC confirmation" },
-          { y: 220, label: "Staging, referral package, and transfer to Erasmus MC" },
+          { y: 220, label: "Staging, referral package, and transfer to Erasmus MC", labelY: 188 },
           { y: 348, label: "Erasmus MC review and multidisciplinary treatment planning" },
           { y: 470, label: "Curative surgery / perioperative care", labelY: 450 },
           { y: 590, label: "Bladder preservation and follow-up", labelY: 634 }
@@ -5316,6 +5391,9 @@
         selectedActivitiesStatus: "{count} selected activities; {modules} pathway modules active",
         routeDirection: "Arrowheads on routes show direction",
         routeSequence: "Numbers show the selected activity order",
+        careSetting: "Care setting",
+        regionalHospitalCare: "ASZ / regional hospital",
+        erasmusMCCare: "Erasmus MC / shared follow-up",
         diagnosticRoute: "Diagnostic and first-contact route",
         treatmentRoute: "Treatment route",
         followupRoute: "Follow-up route",
@@ -5492,6 +5570,9 @@
         selectedActivitiesStatus: "{count} geselecteerde activiteiten; {modules} actieve zorgpadmodules",
         routeDirection: "Pijlpunten op routes tonen de richting",
         routeSequence: "Nummers tonen de volgorde van geselecteerde activiteiten",
+        careSetting: "Zorglocatie",
+        regionalHospitalCare: "ASZ / regionaal ziekenhuis",
+        erasmusMCCare: "Erasmus MC / gedeelde follow-up",
         diagnosticRoute: "Diagnostische en eerste-contactroute",
         treatmentRoute: "Behandelroute",
         followupRoute: "Follow-uproute",
@@ -5673,6 +5754,9 @@
           selectedActivitiesStatus: "已选 {count} 个活动；{modules} 个路径模块已启用",
           routeDirection: "线路上的箭头表示前进方向",
           routeSequence: "数字表示所选活动的先后顺序",
+          careSetting: "照护机构",
+          regionalHospitalCare: "ASZ / 区域医院",
+          erasmusMCCare: "Erasmus MC / 共享随访",
           diagnosticRoute: "诊断和首次接触路线",
           treatmentRoute: "治疗路线",
           followupRoute: "随访路线",
@@ -5846,6 +5930,9 @@
           selectedActivitiesStatus: "{count} 件の活動を選択；{modules} 件のパスウェイモジュールが有効",
           routeDirection: "経路上の矢印が進行方向を示します",
           routeSequence: "番号は選択した活動の順序を示します",
+          careSetting: "医療機関",
+          regionalHospitalCare: "ASZ / 地域病院",
+          erasmusMCCare: "Erasmus MC / 共同フォローアップ",
           diagnosticRoute: "診断・初回接触ルート",
           treatmentRoute: "治療ルート",
           followupRoute: "フォローアップルート",
@@ -5974,6 +6061,9 @@
           selectedActivitiesStatus: "{count} actividades seleccionadas; {modules} módulos de vía activos",
           routeDirection: "Las flechas sobre las rutas indican la dirección",
           routeSequence: "Los números muestran el orden de las actividades seleccionadas",
+          careSetting: "Centro asistencial",
+          regionalHospitalCare: "ASZ / hospital regional",
+          erasmusMCCare: "Erasmus MC / seguimiento compartido",
           diagnosticRoute: "Ruta diagnóstica y de primer contacto",
           treatmentRoute: "Ruta de tratamiento",
           followupRoute: "Ruta de seguimiento",
@@ -12107,6 +12197,17 @@
       setText("routeSequenceLabel", "routeSequence");
       setText("fullscreenRouteDirectionLabel", "routeDirection");
       setText("fullscreenRouteSequenceLabel", "routeSequence");
+      setText("careSettingLegendTitle", "careSetting");
+      setText("regionalHospitalCareLabel", "regionalHospitalCare");
+      setText("erasmusMCCareLabel", "erasmusMCCare");
+      setText("fullscreenCareSettingLegendTitle", "careSetting");
+      setText("fullscreenRegionalHospitalCareLabel", "regionalHospitalCare");
+      setText("fullscreenErasmusMCCareLabel", "erasmusMCCare");
+      const showCareSettingLegend = Boolean(currentPathway().careZones && currentPathway().careZones.length);
+      ["careSettingLegend", "fullscreenCareSettingLegend"].forEach((id) => {
+        const legend = document.getElementById(id);
+        if (legend) legend.hidden = !showCareSettingLegend;
+      });
       setText("diagnosticRouteLabel", "diagnosticRoute");
       setText("fullscreenDiagnosticRouteLabel", "diagnosticRoute");
       setText("treatmentRouteLabel", "treatmentRoute");
@@ -12650,6 +12751,15 @@
       clear(svg);
       svg.appendChild(createSvgElement("title", { id: titleId })).textContent = localizedPathwayTitle();
       svg.appendChild(createSvgElement("desc", { id: descId })).textContent = localizedPathwayScope();
+
+      (pathway.careZones || []).forEach((zone) => {
+        const shape = createSvgElement("polygon", {
+          points: zone.points,
+          class: `care-zone-shape ${zone.kind}`
+        });
+        shape.appendChild(createSvgElement("title")).textContent = t(zone.labelKey);
+        svg.appendChild(shape);
+      });
 
       const laneLabelBoxes = [];
       pathway.lanes.forEach((lane) => {

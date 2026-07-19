@@ -3872,6 +3872,7 @@
       block("EM07", "Radical cystectomy procedure episode", "per procedure", ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Surgical waste"], ["urology"]),
       block("EM07", "Urinary diversion procedure add-on", "per procedure", ["Additional operating room time", "Bowel anastomosis materials", "Ureteral stents or catheters", "Stoma starter supplies"], ["urology"]),
       block("EM07", "Colorectal resection procedure episode", "per procedure", ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Stoma materials if used"], ["gastro"]),
+      block("EM07", "Colorectal perioperative care / ERAS episode", "per surgical episode", ["Antibiotic prophylaxis", "VTE prophylaxis", "Multimodal analgesia", "Catheter or drain materials", "Early oral nutrition"], ["gastro"]),
       block("EM07", "Operating room time", "per OR hour", ["OR electricity", "Ventilation", "Lighting", "Equipment use"]),
       block("EM07", "Anesthesia episode", "per anesthesia", ["Anesthetic medicines", "Airway materials", "Monitoring consumables"]),
       block("EM07", "Sterile instrument set", "per set", ["CSSD processing", "Sterilization energy", "Packaging", "Transport"]),
@@ -3890,6 +3891,7 @@
       block("EM09", "Surveillance test set", "per surveillance round", ["Blood test", "Imaging or endoscopy", "Reporting"]),
       block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing"], ["gastro"]),
       block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"], ["gastro"]),
+      block("EM09", "Rectal watch-and-wait surveillance round", "per surveillance round", ["Pelvic MRI", "Flexible endoscopy", "Biopsy if indicated", "Clinical assessment"], ["gastro"]),
       block("EM09", "Rectal response assessment", "per response assessment", ["Pelvic MRI", "Flexible endoscopy", "Clinical assessment", "Response reporting"], ["gastro"]),
       block("EM09", "Post-cystectomy surveillance round", "per surveillance round", ["Clinical review", "Imaging if indicated", "Laboratory testing"], ["urology"]),
       block("EM09", "Bladder-preservation response assessment", "per response assessment", ["Cystoscopy", "Urine cytology", "Imaging if indicated"], ["urology"]),
@@ -3955,6 +3957,10 @@
     registerActivityBuildingBlocks(
       ["CRCDUTCH-DX02"],
       [automaticBlock("Biopsy or polyp pathology"), automaticBlock("Specimen processing")]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-DX04"],
+      [automaticBlock("IHC or molecular pathology add-on")]
     );
     registerActivityBuildingBlocks(
       ["EAU-DX06", "EAUFULL-DX06", "EAUFULL-DX07", "EAUFULL-TX05", "EMC-DX06", "EMC-TX05", "CRCDUTCH-DX03"],
@@ -4023,6 +4029,7 @@
       ["CRCDUTCH-TX03", "CRCDUTCH-TX06"],
       [
         automaticBlock("Colorectal resection procedure episode"),
+        automaticBlock("Colorectal perioperative care / ERAS episode"),
         automaticBlock("Complex surgical specimen pathology"),
         automaticBlock("Ward admission day", 5)
       ]
@@ -4083,7 +4090,11 @@
       [automaticBlock("Rectal response assessment")]
     );
     registerActivityBuildingBlocks(
-      ["CRCDUTCH-FU04", "CRCDUTCH-FU05"],
+      ["CRCDUTCH-FU04"],
+      [automaticBlock("Rectal watch-and-wait surveillance round")]
+    );
+    registerActivityBuildingBlocks(
+      ["CRCDUTCH-FU05"],
       [automaticBlock("Post-CRC treatment surveillance round")]
     );
 
@@ -4514,8 +4525,8 @@
         sourceGroup: "reference",
         label: "Gastroenterology: Dutch CRC pathway",
         title: "Dutch CRC Hospital Diagnosis and Treatment Pathway",
-        status: "Expert-informed Dutch hospital pathway; cross-hospital execution and endpoint require confirmation",
-        scope: "Hospital pathway for suspected or confirmed colorectal cancer, starting with specialist intake and hospital diagnostic confirmation. It includes pathology, staging, MDO, colon, rectal, advanced-care, and follow-up routes. National FIT screening and non-cancer polyp outcomes are outside this CRC treatment boundary and should be assessed as a separate population-screening case.",
+        status: "Dutch guideline-based Erasmus MC CRC pathway; local activity counts remain study parameters",
+        scope: "Hospital pathway for suspected or confirmed colorectal cancer, starting with specialist intake and hospital diagnostic confirmation. It follows the Dutch CRC and colonoscopy-surveillance protocols used by Erasmus MC and includes pathology, staging, MDO, colon, rectal, advanced-care, and follow-up routes. National FIT screening and non-cancer polyp outcomes remain outside this CRC treatment boundary and require a separate population-screening case.",
         defaultSelected: "CRCDUTCH-JM01",
         lanes: [
           { y: 90, label: "Hospital diagnosis and confirmation" },
@@ -4836,9 +4847,9 @@
             module: "EM03",
             route: "diagnostic",
             moduleNote: "Colonoscopy remains in scope when diagnosis has not been completed before the first specialist contact. It can be switched off for a cohort entering with confirmed CRC.",
-            interpretation: "Colonoscopy, lesion assessment, biopsy, and recovery where required to establish the hospital diagnosis.",
-            rationale: "Removing national screening does not justify removing hospital diagnostic work. The occurrence depends on the selected entry population and referral completeness.",
-            resourceFlows: ["Endoscopy room use", "Bowel preparation", "Endoscope reprocessing", "Sedation", "Consumables", "Waste"]
+            interpretation: "Colonoscopy, lesion assessment, targeted biopsy, tattooing when required for later localization, and recovery where needed to establish the hospital diagnosis.",
+            rationale: "The Dutch CRC guideline recommends histological confirmation. CT colonography is reserved for patients in whom colonoscopy is contraindicated, and an incomplete preoperative colonoscopy is generally completed after surgery.",
+            resourceFlows: ["Endoscopy room use", "Bowel preparation", "Endoscope reprocessing", "Sedation", "Biopsy and tattooing materials", "Waste"]
           },
           {
             id: "CRCDUTCH-DX02",
@@ -4851,22 +4862,36 @@
             route: "diagnostic",
             moduleNote: "Pathology confirmation is retained as a separate reusable LCA building block.",
             interpretation: "Processing and review of biopsy or resection material to confirm colorectal cancer and relevant histological features.",
-            rationale: "The expert notes explicitly separate pathology and histology from imaging and treatment planning.",
+            rationale: "The Dutch CRC guideline aims for histological confirmation before treatment and separates specimen diagnosis from imaging and treatment planning.",
             resourceFlows: ["Specimen processing", "Staining", "Microscopy or digital pathology", "Reporting"]
           },
           {
-            id: "CRCDUTCH-DX03",
+            id: "CRCDUTCH-DX04",
             x: 500,
-            y: 220,
-            label: "CRC staging workup",
+            y: 90,
+            label: "MMR/MSI pathology testing if indicated",
+            domain: "Diagnostics",
+            type: "activity",
+            module: "EM02",
+            route: "diagnostic",
+            moduleNote: "This is a conditional pathology add-on, not a test assigned to every patient in the pathway.",
+            interpretation: "MMR immunohistochemistry, followed by MSI or MLH1 hypermethylation and BRAF testing when indicated by age, treatment context, or an inconclusive result.",
+            rationale: "The Dutch CRC guideline recommends MMR testing for defined diagnostic and treatment-indication groups. Keeping it explicit prevents molecular pathology consumables from being hidden in generic histology.",
+            resourceFlows: ["MMR immunohistochemistry", "MSI analysis if indicated", "MLH1 hypermethylation or BRAF testing if indicated", "Laboratory consumables"]
+          },
+          {
+            id: "CRCDUTCH-DX03",
+            x: 640,
+            y: 90,
+            label: "CT thorax/abdomen staging",
             domain: "Diagnostics",
             type: "activity",
             module: "EM03",
             route: "diagnostic",
-            moduleNote: "CRC staging is parameterized by colon or rectal site and by metastatic suspicion.",
-            interpretation: "Staging imaging and relevant laboratory assessment after colorectal cancer confirmation.",
-            rationale: "Staging determines localized, rectal organ-preservation, and advanced-care routes and therefore affects the LCA scenario.",
-            resourceFlows: ["CT", "MRI for rectal cancer if indicated", "Laboratory testing", "Radiology reporting"]
+            moduleNote: "Thorax and abdomen staging CT is separated from pelvic MRI, which is activated only in the rectal treatment branch.",
+            interpretation: "Contrast-enhanced CT of the thorax and abdomen for staging after primary colorectal cancer is diagnosed.",
+            rationale: "The Dutch CRC guideline recommends CT thorax and abdomen with intravenous contrast for diagnosed primary CRC. Additional liver MRI or ultrasound is conditional when CT findings remain uncertain.",
+            resourceFlows: ["CT thorax/abdomen with contrast", "Radiology reporting", "Additional liver MRI or ultrasound if indicated"]
           },
           {
             id: "CRCDUTCH-JM01",
@@ -4902,15 +4927,15 @@
             id: "CRCDUTCH-TX03",
             x: 860,
             y: 350,
-            label: "Colon surgery",
+            label: "Colon resection and perioperative care",
             domain: "Treatment",
             type: "activity",
             module: "EM07",
             route: "treatment",
-            moduleNote: "Colon surgery activates the reusable surgery module and should be parameterized by procedure, approach, admission, and complications boundary.",
-            interpretation: "Definitive surgery for localized colon cancer when indicated.",
-            rationale: "Surgery is expected to be a major environmental hotspot and must remain distinct from rectal surgery.",
-            resourceFlows: ["Operating room time", "Anesthesia", "Surgical instruments", "Admission days", "Waste"]
+            moduleNote: "This activity activates the colorectal resection, perioperative ERAS, complex specimen pathology, and inpatient-stay building blocks.",
+            interpretation: "Definitive colon resection plus the associated perioperative episode and admission for localized colon cancer when indicated.",
+            rationale: "The Dutch CRC guideline includes ERAS-oriented perioperative care, antibiotic and thrombosis prophylaxis, multimodal analgesia, early oral intake and mobilization, and avoidance of routine tubes or drains.",
+            resourceFlows: ["Operating room time", "Anesthesia", "Antibiotic prophylaxis", "VTE prophylaxis", "Multimodal analgesia", "Admission days", "Complex specimen pathology"]
           },
           {
             id: "CRCDUTCH-TX08",
@@ -4923,9 +4948,9 @@
             route: "treatment",
             oncology: true,
             moduleNote: "This decision separates postoperative surveillance from actual adjuvant systemic treatment and is excluded from calculation unless it triggers a resource-bearing activity.",
-            interpretation: "Postoperative indication decision based on stage, pathology, fitness, and expected benefit of adjuvant therapy.",
-            rationale: "A decision node is needed so colon surgery does not appear to require chemotherapy for every patient.",
-            resourceFlows: ["Pathology review", "Clinical decision record"]
+            interpretation: "Postoperative indication decision based on stage, resection pathology, MMR status where indicated, fitness, and expected benefit of adjuvant therapy.",
+            rationale: "A decision node is needed so colon surgery does not appear to require chemotherapy for every patient. Its pathology inputs are counted in the surgical and molecular pathology activities, not duplicated here.",
+            resourceFlows: ["Resection specimen pathology", "MMR status if indicated", "Clinical decision record"]
           },
           {
             id: "CRCDUTCH-TX04",
@@ -4982,24 +5007,24 @@
             module: "EM09",
             route: "followup",
             oncology: true,
-            moduleNote: "In Dutch clinical communication the English term is commonly retained as watch-and-waitbeleid. The surveillance schedule requires expert confirmation.",
-            interpretation: "Structured response surveillance after rectal neoadjuvant treatment when an organ-preserving watch-and-wait route is selected.",
-            rationale: "Repeated MRI, endoscopy, clinical assessment, and travel can materially affect the pathway result over time.",
-            resourceFlows: ["MRI", "Endoscopy", "Clinical assessment", "Patient travel"]
+            moduleNote: "In Dutch clinical communication the English term is commonly retained as watch-and-waitbeleid. The occurrence count must reflect the declared follow-up horizon.",
+            interpretation: "MRI and endoscopy every 3 months in year 1, every 6 months in year 2, and every 6 to 12 months in years 3 to 5, with targeted biopsy when scar changes are suspicious.",
+            rationale: "The Dutch CRC guideline specifies this intensive five-year schedule for watch-and-wait or other rectum-preserving follow-up. Repeated imaging, endoscopy, and travel can materially affect pathway impacts.",
+            resourceFlows: ["Pelvic MRI", "Flexible endoscopy", "Biopsy if indicated", "Clinical assessment", "Patient travel"]
           },
           {
             id: "CRCDUTCH-TX06",
             x: 990,
             y: 600,
-            label: "Rectal surgery if indicated",
+            label: "Rectal resection and perioperative care",
             domain: "Treatment",
             type: "activity",
             module: "EM07",
             route: "treatment",
-            moduleNote: "Rectal surgery is separate from colon surgery because duration, stoma care, admission, and prior treatment can differ.",
-            interpretation: "Rectal surgery after staging or neoadjuvant treatment when indicated.",
-            rationale: "Separate parameterization avoids hiding clinically important resource differences inside one generic surgery block.",
-            resourceFlows: ["Operating room time", "Anesthesia", "Surgical instruments", "Admission days", "Stoma materials if applicable"]
+            moduleNote: "Rectal resection activates the colorectal resection, perioperative ERAS, complex specimen pathology, and inpatient-stay building blocks, with local parameters for stoma use and prior therapy.",
+            interpretation: "Rectal resection plus the associated perioperative episode and admission after staging or neoadjuvant treatment when indicated.",
+            rationale: "Separate parameterization preserves differences in operative duration, stoma care, admission, and prior treatment without omitting the guideline-defined perioperative episode.",
+            resourceFlows: ["Operating room time", "Anesthesia", "Antibiotic prophylaxis", "VTE prophylaxis", "Admission days", "Stoma materials if applicable", "Complex specimen pathology"]
           },
           {
             id: "CRCDUTCH-TX07",
@@ -5025,10 +5050,10 @@
             type: "activity",
             module: "EM09",
             route: "followup",
-            moduleNote: "The surveillance time horizon must be stated because repeated imaging, colonoscopy, and visits can dominate long-term follow-up impacts.",
-            interpretation: "Follow-up after curative or disease-directed colorectal cancer treatment.",
-            rationale: "Peter's notes identify follow-up as a separate phase and leave the endpoint for explicit study definition.",
-            resourceFlows: ["Outpatient visits", "CEA or laboratory testing", "CT if indicated", "Colonoscopy", "Patient travel"]
+            moduleNote: "The occurrence counts for CEA, CT, and colonoscopy must be derived from the declared follow-up horizon instead of one generic visit count.",
+            interpretation: "After curative stage I to III treatment: CEA every 3 to 6 months in years 1 to 2 and every 6 to 12 months in years 3 to 5; CT thorax/abdomen at 12 months; colonoscopy within 3 months after surgery if the colon was not fully examined preoperatively, otherwise at 1 year, then according to colonoscopy-surveillance guidance.",
+            rationale: "The Dutch CRC and colonoscopy-surveillance guidelines define test-specific schedules. Colonoscopy generally continues at 3 years and at least every 5 years, with earlier stopping at age 80 or when life expectancy makes surveillance inappropriate.",
+            resourceFlows: ["CEA laboratory testing", "CT thorax/abdomen at 12 months", "Surveillance colonoscopy", "Clinical follow-up", "Patient travel"]
           }
         ],
         screeningReferenceEdges: [
@@ -5058,7 +5083,9 @@
         edges: [
           edge("CRCDUTCH-FC01", "CRCDUTCH-DX01", "diagnostic"),
           edge("CRCDUTCH-DX01", "CRCDUTCH-DX02", "diagnostic"),
-          edge("CRCDUTCH-DX02", "CRCDUTCH-DX03", "diagnostic"),
+          edge("CRCDUTCH-DX02", "CRCDUTCH-DX04", "diagnostic"),
+          edge("CRCDUTCH-DX04", "CRCDUTCH-DX03", "diagnostic"),
+          edge("CRCDUTCH-DX02", "CRCDUTCH-DX03", "diagnostic", { excludedBy: ["CRCDUTCH-DX04"] }),
           edge("CRCDUTCH-DX03", "CRCDUTCH-JM01", "diagnostic"),
           edge("CRCDUTCH-JM01", "CRCDUTCH-TX02", "treatment"),
           edge("CRCDUTCH-TX02", "CRCDUTCH-TX03", "treatment"),
@@ -5138,8 +5165,8 @@
         status: "Guideline-supported institution-neutral reference; local execution is not assumed"
       },
       crcDutch: {
-        source: "Dutch CRC guideline (2026) and Peter expert interview",
-        status: "Guideline-supported hospital pathway; entry boundary, local execution, and activity frequency require confirmation"
+        source: "Dutch CRC guideline (2026), Dutch colonoscopy-surveillance guideline, and Peter expert interview",
+        status: "Guideline-supported Erasmus MC pathway structure; local occurrence counts and cross-hospital execution require confirmation"
       }
     };
 
@@ -5154,8 +5181,8 @@
           status: "Onderbouwd door de richtlijn en instellingsneutraal; lokale uitvoering wordt niet verondersteld"
         },
         crcDutch: {
-          source: "Nederlandse CRC-richtlijn 2026 en expertinterview met Peter",
-          status: "Onderbouwd Nederlands ziekenhuiszorgpad; startgrens, lokale uitvoering en frequentie vereisen bevestiging"
+          source: "Nederlandse CRC-richtlijn 2026, richtlijn coloscopie-surveillance en expertinterview met Peter",
+          status: "Onderbouwde Erasmus MC-zorgpadstructuur; lokale aantallen en uitvoering tussen ziekenhuizen vereisen bevestiging"
         }
       },
       zh: {
@@ -5168,8 +5195,8 @@
           status: "有指南依据的机构中立参考路径；不假定本地一定执行"
         },
         crcDutch: {
-          source: "荷兰 CRC 指南（2026）及 Peter 专家访谈",
-          status: "有指南依据的荷兰医院路径；起始边界、本地执行和活动频次仍需确认"
+          source: "荷兰 CRC 指南（2026）、荷兰结肠镜监测指南及 Peter 专家访谈",
+          status: "有指南依据的 Erasmus MC 路径结构；本地发生次数和跨医院执行仍需确认"
         }
       },
       ja: {
@@ -5182,8 +5209,8 @@
           status: "ガイドラインに基づく施設中立の参照経路。地域での実施は仮定しない"
         },
         crcDutch: {
-          source: "オランダ CRC ガイドライン 2026 と Peter 専門家インタビュー",
-          status: "ガイドラインに基づくオランダ病院経路。開始境界、地域実施、頻度は確認が必要"
+          source: "オランダ CRC ガイドライン 2026、内視鏡サーベイランス指針、Peter 専門家インタビュー",
+          status: "ガイドラインに基づく Erasmus MC 経路構造。地域の実施回数と病院間分担は確認が必要"
         }
       },
       es: {
@@ -5196,8 +5223,8 @@
           status: "Referencia institucionalmente neutra respaldada por la guía; no se presupone ejecución local"
         },
         crcDutch: {
-          source: "Guía neerlandesa de CRC 2026 y entrevista experta con Peter",
-          status: "Vía hospitalaria neerlandesa respaldada por la guía; el límite inicial, la ejecución local y la frecuencia requieren confirmación"
+          source: "Guía neerlandesa de CRC 2026, guía de vigilancia por colonoscopia y entrevista con Peter",
+          status: "Estructura de la vía de Erasmus MC respaldada por guías; los recuentos locales y la ejecución entre hospitales requieren confirmación"
         }
       }
     };
@@ -5285,7 +5312,7 @@
       ],
       crcDutch: [
         { label: "Richtlijnendatabase: Colorectaal carcinoom (2026)", url: "https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html" },
-        { label: "RIVM: national CRC screening process", url: "https://www.rivm.nl/bevolkingsonderzoek-darmkanker/professionals" }
+        { label: "Richtlijnendatabase: coloscopie-surveillance na CRC", url: "https://richtlijnendatabase.nl/richtlijn/coloscopie_surveillance/coloscopie_surveillance_na_crc.html" }
       ]
     };
 
@@ -7647,8 +7674,8 @@
         crcDutch: {
           label: "Gastro: Dutch CRC pathway",
           title: "Dutch CRC Hospital Diagnosis and Treatment Pathway",
-          status: "Expert-informed Dutch hospital pathway; cross-hospital execution and endpoint require confirmation",
-          scope: "Hospital pathway for suspected or confirmed colorectal cancer, starting with specialist intake and hospital diagnostic confirmation. It includes pathology, staging, MDO, colon, rectal, advanced-care, and follow-up routes. National FIT screening and non-cancer polyp outcomes are outside this CRC treatment boundary and should be assessed as a separate population-screening case."
+          status: "Dutch guideline-based Erasmus MC CRC pathway; local activity counts remain study parameters",
+          scope: "Hospital pathway for suspected or confirmed colorectal cancer, starting with specialist intake and hospital diagnostic confirmation. It follows the Dutch CRC and colonoscopy-surveillance protocols used by Erasmus MC and includes pathology, staging, MDO, colon, rectal, advanced-care, and follow-up routes. National FIT screening and non-cancer polyp outcomes remain outside this CRC treatment boundary and require a separate population-screening case."
         }
       },
       nl: {
@@ -7673,8 +7700,8 @@
         crcDutch: {
           label: "Gastro: Nederlandse CRC-route",
           title: "Nederlandse ziekenhuisroute voor CRC-diagnose en behandeling",
-          status: "Expertgeinformeerde Nederlandse ziekenhuisroute; uitvoering tussen ziekenhuizen en eindpunt vereisen bevestiging",
-          scope: "Ziekenhuisroute voor vermoede of bevestigde colorectale kanker, vanaf specialistische intake en diagnostische bevestiging in het ziekenhuis. De route omvat pathologie, stadiering, MDO, colon-, rectum- en gevorderde behandelroutes en follow-up. Landelijke FIT-screening en niet-kwaadaardige poliepuitkomsten vallen buiten deze CRC-behandelgrens en horen in een afzonderlijke screeningscasus."
+          status: "Op Nederlandse richtlijnen gebaseerde Erasmus MC CRC-route; lokale aantallen blijven studieparameters",
+          scope: "Ziekenhuisroute voor vermoede of bevestigde colorectale kanker, vanaf specialistische intake en diagnostische bevestiging. De route volgt de Nederlandse CRC- en coloscopie-surveillancerichtlijnen die Erasmus MC gebruikt en omvat pathologie, stadiering, MDO, colon-, rectum- en gevorderde behandelroutes en follow-up. Landelijke FIT-screening en niet-kwaadaardige poliepuitkomsten blijven buiten deze CRC-behandelgrens en vereisen een afzonderlijke screeningscasus."
         }
       },
       zh: {
@@ -7699,8 +7726,8 @@
         crcDutch: {
           label: "胃肠病学：荷兰 CRC 路径",
           title: "荷兰 CRC 医院诊断与治疗路径",
-          status: "基于专家访谈的荷兰医院路径；跨医院执行和终点仍需确认",
-          scope: "针对疑似或确诊结直肠癌的医院路径，从专科接诊和院内诊断确认开始，包括病理、分期、MDO、结肠、直肠、晚期治疗和随访。国家 FIT 筛查以及非癌性息肉结局不属于当前 CRC 治疗边界，应作为独立的人群筛查案例评估。"
+          status: "基于荷兰指南的 Erasmus MC CRC 路径；本地活动次数仍是研究参数",
+          scope: "针对疑似或确诊结直肠癌的医院路径，从专科接诊和院内诊断确认开始。路径依据 Erasmus MC 使用的荷兰 CRC 和结肠镜监测指南，包括病理、分期、MDO、结肠、直肠、晚期治疗和随访。国家 FIT 筛查以及非癌性息肉结局仍位于当前 CRC 治疗边界之外，需要另设人群筛查案例。"
         }
       },
       ja: {
@@ -7725,8 +7752,8 @@
         crcDutch: {
           label: "消化器科：オランダ CRC 経路",
           title: "オランダ CRC 病院診断・治療パスウェイ",
-          status: "専門家情報に基づくオランダ病院経路です。病院間実施と終点は確認が必要です",
-          scope: "疑いまたは確定した大腸がんを対象に、専門医受診と病院内診断確認から始まる経路です。病理、病期評価、MDO、結腸、直腸、進行期治療、フォローアップを含みます。全国 FIT 検診と非がん性ポリープ転帰はこの CRC 治療境界外で、別の集団検診ケースとして評価します。"
+          status: "オランダ指針に基づく Erasmus MC CRC 経路です。地域の実施回数は研究パラメータです",
+          scope: "疑いまたは確定した大腸がんを対象に、専門医受診と病院内診断確認から始まる経路です。Erasmus MC が用いるオランダ CRC・内視鏡サーベイランス指針に従い、病理、病期評価、MDO、結腸、直腸、進行期治療、フォローアップを含みます。全国 FIT 検診と非がん性ポリープ転帰はこの CRC 治療境界外で、別の集団検診ケースが必要です。"
         }
       },
       es: {
@@ -7751,8 +7778,8 @@
         crcDutch: {
           label: "Gastro: vía CRC neerlandesa",
           title: "Vía hospitalaria neerlandesa de diagnóstico y tratamiento de CRC",
-          status: "Vía hospitalaria neerlandesa informada por expertos; la ejecución entre hospitales y el punto final requieren confirmación",
-          scope: "Vía hospitalaria para cáncer colorrectal sospechado o confirmado, desde la consulta especializada y confirmación diagnóstica hospitalaria. Incluye patología, estadificación, MDO, rutas de colon, recto, enfermedad avanzada y seguimiento. El cribado FIT nacional y los resultados de pólipos no cancerosos quedan fuera de este límite de tratamiento CRC y deben evaluarse como un caso poblacional independiente."
+          status: "Vía CRC de Erasmus MC basada en guías neerlandesas; los recuentos locales siguen siendo parámetros del estudio",
+          scope: "Vía hospitalaria para cáncer colorrectal sospechado o confirmado, desde la consulta especializada y la confirmación diagnóstica. Sigue las guías neerlandesas de CRC y vigilancia por colonoscopia utilizadas por Erasmus MC e incluye patología, estadificación, MDO, rutas de colon, recto, enfermedad avanzada y seguimiento. El cribado FIT nacional y los resultados de pólipos no cancerosos permanecen fuera de este límite y requieren un caso poblacional independiente."
         }
       }
     };
@@ -8462,7 +8489,7 @@
       "Colon versus rectal route decision": "結腸・直腸ルート判断",
       "Adjuvant systemic therapy if indicated": "必要時の術後補助全身療法",
       "Rectal neoadjuvant or radiotherapy route": "直腸術前または放射線ルート",
-      "Watch-and-wait response surveillance": "watch-and-wait 奏効監視",
+      "Watch-and-wait response surveillance": "非手術経過観察の奏効監視",
       "Rectal surgery if indicated": "必要時の直腸手術",
       "Advanced or palliative route": "進行期または緩和ルート",
       "Post-CRC treatment surveillance": "CRC 治療後サーベイランス"
@@ -8484,7 +8511,7 @@
       "Colon versus rectal route decision": "Decisión ruta colon o recto",
       "Adjuvant systemic therapy if indicated": "Terapia sistémica adyuvante si indicada",
       "Rectal neoadjuvant or radiotherapy route": "Ruta rectal neoadyuvante o radioterapia",
-      "Watch-and-wait response surveillance": "Vigilancia de respuesta watch-and-wait",
+      "Watch-and-wait response surveillance": "Vigilancia de respuesta sin cirugía",
       "Rectal surgery if indicated": "Cirugía rectal si indicada",
       "Advanced or palliative route": "Ruta avanzada o paliativa",
       "Post-CRC treatment surveillance": "Vigilancia tras tratamiento CRC"
@@ -8494,7 +8521,11 @@
       "Specialist hospital consultation": "Specialistisch ziekenhuisconsult",
       "Diagnostic colonoscopy and biopsy if needed": "Diagnostische coloscopie en zo nodig biopsie",
       "Histopathological CRC confirmation": "Histopathologische bevestiging van CRC",
+      "MMR/MSI pathology testing if indicated": "MMR/MSI-pathologie indien geïndiceerd",
+      "CT thorax/abdomen staging": "CT-thorax/abdomen-stadiëring",
       "Colon, rectal, or advanced route decision": "Besluit colon-, rectum- of gevorderde route",
+      "Colon resection and perioperative care": "Colonresectie en perioperatieve zorg",
+      "Rectal resection and perioperative care": "Rectumresectie en perioperatieve zorg",
       "Watch-and-wait surveillance": "Watch-and-waitbeleid en surveillance"
     });
 
@@ -8502,7 +8533,11 @@
       "Specialist hospital consultation": "医院专科接诊",
       "Diagnostic colonoscopy and biopsy if needed": "必要时诊断性结肠镜和活检",
       "Histopathological CRC confirmation": "CRC 组织病理学确认",
+      "MMR/MSI pathology testing if indicated": "必要时进行 MMR/MSI 病理检测",
+      "CT thorax/abdomen staging": "胸部/腹部 CT 分期",
       "Colon, rectal, or advanced route decision": "结肠、直肠或晚期路径决策",
+      "Colon resection and perioperative care": "结肠切除及围手术期照护",
+      "Rectal resection and perioperative care": "直肠切除及围手术期照护",
       "Watch-and-wait surveillance": "观察等待监测"
     });
 
@@ -8510,16 +8545,24 @@
       "Specialist hospital consultation": "病院専門医受診",
       "Diagnostic colonoscopy and biopsy if needed": "必要時の診断的大腸内視鏡・生検",
       "Histopathological CRC confirmation": "CRC 病理組織学的確認",
+      "MMR/MSI pathology testing if indicated": "必要時の MMR/MSI 病理検査",
+      "CT thorax/abdomen staging": "胸腹部 CT 病期評価",
       "Colon, rectal, or advanced route decision": "結腸・直腸・進行期ルート判断",
-      "Watch-and-wait surveillance": "watch-and-wait サーベイランス"
+      "Colon resection and perioperative care": "結腸切除と周術期ケア",
+      "Rectal resection and perioperative care": "直腸切除と周術期ケア",
+      "Watch-and-wait surveillance": "非手術経過観察サーベイランス"
     });
 
     Object.assign(nodeLabelText.es, {
       "Specialist hospital consultation": "Consulta hospitalaria especializada",
       "Diagnostic colonoscopy and biopsy if needed": "Colonoscopia diagnóstica y biopsia si procede",
       "Histopathological CRC confirmation": "Confirmación histopatológica de CRC",
+      "MMR/MSI pathology testing if indicated": "Prueba patológica MMR/MSI si está indicada",
+      "CT thorax/abdomen staging": "Estadificación por CT de tórax/abdomen",
       "Colon, rectal, or advanced route decision": "Decisión de ruta de colon, recto o avanzada",
-      "Watch-and-wait surveillance": "Vigilancia watch-and-wait"
+      "Colon resection and perioperative care": "Resección de colon y atención perioperatoria",
+      "Rectal resection and perioperative care": "Resección rectal y atención perioperatoria",
+      "Watch-and-wait surveillance": "Vigilancia sin cirugía"
     });
 
     const laneLabelText = {
@@ -9021,7 +9064,7 @@
       "Colon versus rectal route decision": "結腸 / 直腸",
       "Adjuvant systemic therapy if indicated": "補助療法?",
       "Rectal neoadjuvant or radiotherapy route": "直腸 RT",
-      "Watch-and-wait response surveillance": "watch-and-wait",
+      "Watch-and-wait response surveillance": "非手術経過観察",
       "Rectal surgery if indicated": "直腸手術",
       "Advanced or palliative route": "進行 / 緩和",
       "Post-CRC treatment surveillance": "CRC 後監視"
@@ -9043,7 +9086,7 @@
       "Colon versus rectal route decision": "Colon / recto",
       "Adjuvant systemic therapy if indicated": "Adyuvancia?",
       "Rectal neoadjuvant or radiotherapy route": "RT rectal",
-      "Watch-and-wait response surveillance": "watch-and-wait",
+      "Watch-and-wait response surveillance": "Vigilancia sin cirugía",
       "Rectal surgery if indicated": "Cirugía rectal",
       "Advanced or palliative route": "Avanzado",
       "Post-CRC treatment surveillance": "Vigilancia CRC"
@@ -9053,29 +9096,45 @@
       "Specialist hospital consultation": "Specialistisch consult",
       "Diagnostic colonoscopy and biopsy if needed": "Coloscopie ± biopsie",
       "Histopathological CRC confirmation": "CRC-pathologie",
+      "MMR/MSI pathology testing if indicated": "MMR/MSI indien nodig",
+      "CT thorax/abdomen staging": "CT thorax/abdomen",
       "Colon, rectal, or advanced route decision": "Colon / rectum / gevorderd",
+      "Colon resection and perioperative care": "Colonresectie + ERAS",
+      "Rectal resection and perioperative care": "Rectumresectie + ERAS",
       "Watch-and-wait surveillance": "Watch-and-waitbeleid"
     });
     Object.assign(shortNodeLabelText.zh, {
       "Specialist hospital consultation": "医院专科接诊",
       "Diagnostic colonoscopy and biopsy if needed": "结肠镜 ± 活检",
       "Histopathological CRC confirmation": "CRC 病理确认",
+      "MMR/MSI pathology testing if indicated": "MMR/MSI 检测",
+      "CT thorax/abdomen staging": "胸腹部 CT",
       "Colon, rectal, or advanced route decision": "结肠 / 直肠 / 晚期",
+      "Colon resection and perioperative care": "结肠切除 + ERAS",
+      "Rectal resection and perioperative care": "直肠切除 + ERAS",
       "Watch-and-wait surveillance": "观察等待监测"
     });
     Object.assign(shortNodeLabelText.ja, {
       "Specialist hospital consultation": "専門医受診",
       "Diagnostic colonoscopy and biopsy if needed": "内視鏡 ± 生検",
       "Histopathological CRC confirmation": "CRC 病理確認",
+      "MMR/MSI pathology testing if indicated": "MMR/MSI 検査",
+      "CT thorax/abdomen staging": "胸腹部 CT",
       "Colon, rectal, or advanced route decision": "結腸 / 直腸 / 進行期",
-      "Watch-and-wait surveillance": "watch-and-wait"
+      "Colon resection and perioperative care": "結腸切除 + ERAS",
+      "Rectal resection and perioperative care": "直腸切除 + ERAS",
+      "Watch-and-wait surveillance": "非手術経過観察"
     });
     Object.assign(shortNodeLabelText.es, {
       "Specialist hospital consultation": "Consulta especializada",
       "Diagnostic colonoscopy and biopsy if needed": "Colonoscopia ± biopsia",
       "Histopathological CRC confirmation": "Patología CRC",
+      "MMR/MSI pathology testing if indicated": "Prueba MMR/MSI",
+      "CT thorax/abdomen staging": "CT tórax/abdomen",
       "Colon, rectal, or advanced route decision": "Colon / recto / avanzado",
-      "Watch-and-wait surveillance": "Watch-and-wait"
+      "Colon resection and perioperative care": "Resección colon + ERAS",
+      "Rectal resection and perioperative care": "Resección rectal + ERAS",
+      "Watch-and-wait surveillance": "Vigilancia sin cirugía"
     });
 
     Object.assign(shortNodeLabelText.nl, {
@@ -9415,19 +9474,27 @@
 
     Object.assign(blockNameText.nl, {
       "Bladder-preservation response assessment": "Responsbeoordeling na blaassparende behandeling",
-      "Rectal response assessment": "Responsbeoordeling bij rectumcarcinoom"
+      "Rectal response assessment": "Responsbeoordeling bij rectumcarcinoom",
+      "Colorectal perioperative care / ERAS episode": "Perioperatieve colorectale zorg / ERAS-episode",
+      "Rectal watch-and-wait surveillance round": "Rectale watch-and-wait-surveillanceronde"
     });
     Object.assign(blockNameText.zh, {
       "Bladder-preservation response assessment": "保膀胱治疗后疗效评估",
-      "Rectal response assessment": "直肠癌疗效评估"
+      "Rectal response assessment": "直肠癌疗效评估",
+      "Colorectal perioperative care / ERAS episode": "结直肠围手术期照护 / ERAS 过程",
+      "Rectal watch-and-wait surveillance round": "直肠癌观察等待监测轮次"
     });
     Object.assign(blockNameText.ja, {
       "Bladder-preservation response assessment": "膀胱温存治療後の奏効評価",
-      "Rectal response assessment": "直腸がんの奏効評価"
+      "Rectal response assessment": "直腸がんの奏効評価",
+      "Colorectal perioperative care / ERAS episode": "大腸周術期ケア / ERAS エピソード",
+      "Rectal watch-and-wait surveillance round": "直腸がん非手術経過観察回"
     });
     Object.assign(blockNameText.es, {
       "Bladder-preservation response assessment": "Evaluación de respuesta tras preservación vesical",
-      "Rectal response assessment": "Evaluación de respuesta del cáncer rectal"
+      "Rectal response assessment": "Evaluación de respuesta del cáncer rectal",
+      "Colorectal perioperative care / ERAS episode": "Atención perioperatoria colorrectal / episodio ERAS",
+      "Rectal watch-and-wait surveillance round": "Ronda de vigilancia rectal sin cirugía"
     });
 
     const unitText = {
@@ -10051,6 +10118,10 @@
     Object.assign(unitText.zh, { "per response assessment": "每次疗效评估" });
     Object.assign(unitText.ja, { "per response assessment": "奏効評価 1 回あたり" });
     Object.assign(unitText.es, { "per response assessment": "por evaluación de respuesta" });
+    Object.assign(unitText.nl, { "per surgical episode": "per chirurgische episode" });
+    Object.assign(unitText.zh, { "per surgical episode": "每个手术过程" });
+    Object.assign(unitText.ja, { "per surgical episode": "手術エピソード 1 件あたり" });
+    Object.assign(unitText.es, { "per surgical episode": "por episodio quirúrgico" });
 
     Object.assign(resourceFlowText.nl, {
       "Pelvic MRI": "MRI van het bekken",
@@ -11159,6 +11230,102 @@
       "Ostomy appliances": "Dispositivos de ostomía",
       "Urinary drainage supplies": "Suministros de drenaje urinario",
       "Skin care materials": "Materiales para cuidado de la piel"
+    });
+
+    Object.assign(resourceFlowText.nl, {
+      "Biopsy and tattooing materials": "Biopsie- en tatoeagematerialen",
+      "MMR immunohistochemistry": "MMR-immunohistochemie",
+      "MSI analysis if indicated": "MSI-analyse indien geïndiceerd",
+      "MLH1 hypermethylation or BRAF testing if indicated": "MLH1-hypermethylering of BRAF-test indien geïndiceerd",
+      "Laboratory consumables": "Laboratoriumverbruiksmaterialen",
+      "CT thorax/abdomen with contrast": "CT thorax/abdomen met contrast",
+      "Additional liver MRI or ultrasound if indicated": "Aanvullende lever-MRI of echografie indien geïndiceerd",
+      "Antibiotic prophylaxis": "Antibioticaprofylaxe",
+      "VTE prophylaxis": "Tromboseprofylaxe",
+      "Multimodal analgesia": "Multimodale analgesie",
+      "Catheter or drain materials": "Katheter- of drainmaterialen",
+      "Early oral nutrition": "Vroege orale voeding",
+      "Complex specimen pathology": "Pathologie van complex resectiepreparaat",
+      "Resection specimen pathology": "Pathologie van resectiepreparaat",
+      "MMR status if indicated": "MMR-status indien geïndiceerd",
+      "Clinical decision record": "Klinisch besluitverslag",
+      "Biopsy if indicated": "Biopsie indien geïndiceerd",
+      "CEA laboratory testing": "CEA-laboratoriumonderzoek",
+      "CT thorax/abdomen at 12 months": "CT thorax/abdomen na 12 maanden",
+      "Surveillance colonoscopy": "Surveillancecoloscopie",
+      "Clinical follow-up": "Klinische follow-up"
+    });
+
+    Object.assign(resourceFlowText.zh, {
+      "Biopsy and tattooing materials": "活检和定位染色材料",
+      "MMR immunohistochemistry": "MMR 免疫组化",
+      "MSI analysis if indicated": "必要时进行 MSI 分析",
+      "MLH1 hypermethylation or BRAF testing if indicated": "必要时进行 MLH1 高甲基化或 BRAF 检测",
+      "Laboratory consumables": "实验室耗材",
+      "CT thorax/abdomen with contrast": "增强胸部/腹部 CT",
+      "Additional liver MRI or ultrasound if indicated": "必要时追加肝脏 MRI 或超声",
+      "Antibiotic prophylaxis": "抗生素预防",
+      "VTE prophylaxis": "静脉血栓栓塞预防",
+      "Multimodal analgesia": "多模式镇痛",
+      "Catheter or drain materials": "导管或引流材料",
+      "Early oral nutrition": "早期口服营养",
+      "Complex specimen pathology": "复杂切除标本病理",
+      "Resection specimen pathology": "切除标本病理",
+      "MMR status if indicated": "必要时的 MMR 状态",
+      "Clinical decision record": "临床决策记录",
+      "Biopsy if indicated": "必要时活检",
+      "CEA laboratory testing": "CEA 实验室检测",
+      "CT thorax/abdomen at 12 months": "12 个月时胸部/腹部 CT",
+      "Surveillance colonoscopy": "监测性结肠镜",
+      "Clinical follow-up": "临床随访"
+    });
+
+    Object.assign(resourceFlowText.ja, {
+      "Biopsy and tattooing materials": "生検・マーキング材料",
+      "MMR immunohistochemistry": "MMR 免疫組織化学",
+      "MSI analysis if indicated": "必要時の MSI 解析",
+      "MLH1 hypermethylation or BRAF testing if indicated": "必要時の MLH1 高メチル化または BRAF 検査",
+      "Laboratory consumables": "検査室消耗品",
+      "CT thorax/abdomen with contrast": "造影胸腹部 CT",
+      "Additional liver MRI or ultrasound if indicated": "必要時の追加肝 MRI または超音波",
+      "Antibiotic prophylaxis": "抗菌薬予防投与",
+      "VTE prophylaxis": "静脈血栓塞栓症予防",
+      "Multimodal analgesia": "多角的鎮痛",
+      "Catheter or drain materials": "カテーテルまたはドレーン材料",
+      "Early oral nutrition": "早期経口栄養",
+      "Complex specimen pathology": "複雑切除検体の病理",
+      "Resection specimen pathology": "切除検体の病理",
+      "MMR status if indicated": "必要時の MMR 状態",
+      "Clinical decision record": "臨床意思決定記録",
+      "Biopsy if indicated": "必要時の生検",
+      "CEA laboratory testing": "CEA 検査",
+      "CT thorax/abdomen at 12 months": "12 か月時の胸腹部 CT",
+      "Surveillance colonoscopy": "サーベイランス大腸内視鏡",
+      "Clinical follow-up": "臨床フォローアップ"
+    });
+
+    Object.assign(resourceFlowText.es, {
+      "Biopsy and tattooing materials": "Materiales de biopsia y tatuaje",
+      "MMR immunohistochemistry": "Inmunohistoquímica MMR",
+      "MSI analysis if indicated": "Análisis MSI si está indicado",
+      "MLH1 hypermethylation or BRAF testing if indicated": "Hipermetilación de MLH1 o prueba BRAF si está indicada",
+      "Laboratory consumables": "Consumibles de laboratorio",
+      "CT thorax/abdomen with contrast": "CT de tórax/abdomen con contraste",
+      "Additional liver MRI or ultrasound if indicated": "MRI hepática o ecografía adicional si está indicada",
+      "Antibiotic prophylaxis": "Profilaxis antibiótica",
+      "VTE prophylaxis": "Profilaxis de tromboembolia venosa",
+      "Multimodal analgesia": "Analgesia multimodal",
+      "Catheter or drain materials": "Materiales de catéter o drenaje",
+      "Early oral nutrition": "Nutrición oral precoz",
+      "Complex specimen pathology": "Patología de pieza de resección compleja",
+      "Resection specimen pathology": "Patología de pieza de resección",
+      "MMR status if indicated": "Estado MMR si está indicado",
+      "Clinical decision record": "Registro de decisión clínica",
+      "Biopsy if indicated": "Biopsia si está indicada",
+      "CEA laboratory testing": "Prueba de laboratorio CEA",
+      "CT thorax/abdomen at 12 months": "CT de tórax/abdomen a los 12 meses",
+      "Surveillance colonoscopy": "Colonoscopia de vigilancia",
+      "Clinical follow-up": "Seguimiento clínico"
     });
 
     function normaliseLanguage(value) {
@@ -13203,7 +13370,11 @@
         "Post-CRC treatment surveillance": "CRC surveillance",
         "Adjuvant treatment indication": "Adjuvant indication?",
         "Response-based rectal route decision": "Rectal response decision",
-        "Rectal response assessment and route decision": "Response + route"
+        "Rectal response assessment and route decision": "Response + route",
+        "MMR/MSI pathology testing if indicated": "MMR/MSI if indicated",
+        "CT thorax/abdomen staging": "CT thorax/abdomen",
+        "Colon resection and perioperative care": "Colon resection + ERAS",
+        "Rectal resection and perioperative care": "Rectal resection + ERAS"
       };
       if (state.language === "en") return replacements[node.label] || node.label;
       return shortNodeLabelText[state.language]?.[node.label] || localizedNodeLabel(node);

@@ -140,14 +140,13 @@ Building blocks are filtered separately from modules. Shared blocks, such as CT,
 
 ## Methodological Scope
 
-The gastroenterology view has been rebuilt around Dutch national guideline sources and the hospital treatment boundary discussed with clinical input. It starts at the first specialist hospital contact for suspected or confirmed colorectal cancer. Upstream national population screening is documented as contextual provenance, not modeled as part of the current treatment pathway. It does not assume that an Erasmus MC internal local CRC workflow is available. Local execution, department handover, treatment location, and surveillance time horizon still require expert confirmation.
+The gastroenterology view follows the Dutch colorectal cancer and colonoscopy-surveillance protocols supplied by the Erasmus MC clinical expert as the protocols used for local care. It starts at the first specialist hospital contact for suspected or confirmed colorectal cancer. Upstream national population screening is documented as contextual provenance, not modeled as part of the current treatment pathway. Guideline-defined activities and follow-up schedules are represented in the map; local occurrence counts, department handovers, treatment locations, and cross-hospital execution remain study parameters that require confirmation.
 
 Public gastroenterology reference sources:
 
 - [Dutch colorectal cancer guideline, 2026](https://richtlijnendatabase.nl/richtlijn/colorectaal_carcinoom_crc/startpagina_-_colorectaal_carcinoom.html)
-- [RIVM colorectal cancer screening process](https://www.rivm.nl/bevolkingsonderzoek-darmkanker/professionals)
-- [RIVM follow-up after a positive FIT result](https://www.rivm.nl/bevolkingsonderzoek-darmkanker/uitslag/vervolgonderzoek)
-- [Dutch colonoscopy surveillance guideline](https://richtlijnendatabase.nl/richtlijn/coloscopie_surveillance/kwaliteit_van_coloscopie_algemene_aspecten.html)
+- [Dutch colonoscopy surveillance guideline](https://richtlijnendatabase.nl/richtlijn/coloscopie_surveillance/startpagina.html)
+- [Dutch colonoscopy surveillance after colorectal cancer](https://richtlijnendatabase.nl/richtlijn/coloscopie_surveillance/coloscopie_surveillance_na_crc.html)
 
 The prototype applies a provisional qualitative LCA cut-off. Meeting-only MDT/MDO discussions, joint-clinic logic, decision-only or review-only activities, digital case review, digital letters, and purely administrative handovers remain visible when they are needed to preserve clinical pathway logic. They do not activate LCA calculation rows when their only additional inputs are staff time and minor office or ICT energy. This rule removes the former EM04 and EM05 dummy coefficients from the calculation. If a decision causes a separate laboratory test, imaging examination, treatment, or procedure, that resource-bearing activity must be modeled in the corresponding module. Patient and caregiver travel are modeled exclusively in EM10. If EM10 is outside the selected boundary, travel is excluded from the scenario and is not reassigned to another clinical module. Human labor is not characterized as an environmental resource flow; activity duration may still be used to allocate room, equipment, or service inputs. No numerical cut-off threshold has yet been validated, so all exclusions require documentation and sensitivity review during formal LCA modeling.
 

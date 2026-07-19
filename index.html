@@ -5288,7 +5288,7 @@
         resourceFlowsToModel: "Resource flows to model",
         baseQuantity: "Base quantity",
         uncertainty: "Uncertainty, +/- %",
-        impactCoefficient: "Impact coefficient, kg CO2-eq/unit",
+        impactCoefficient: "Impact coefficient, kg CO₂-eq/unit",
         defaultStatusGap: "Default status / data gap",
         baseContribution: "Base contribution",
         excludedFromTotal: "Excluded from total",
@@ -5464,7 +5464,7 @@
         resourceFlowsToModel: "Te modelleren resourceflows",
         baseQuantity: "Basishoeveelheid",
         uncertainty: "Onzekerheid, +/- %",
-        impactCoefficient: "Impactcoëfficiënt, kg CO2-eq/eenheid",
+        impactCoefficient: "Impactcoëfficiënt, kg CO₂-eq/eenheid",
         defaultStatusGap: "Standaardstatus / datagap",
         baseContribution: "Basisbijdrage",
         excludedFromTotal: "Uitgesloten van totaal",
@@ -5645,7 +5645,7 @@
           resourceFlowsToModel: "需要建模的资源流",
           baseQuantity: "基础数量",
           uncertainty: "不确定性，+/- %",
-          impactCoefficient: "影响系数，kg CO2-eq/单位",
+          impactCoefficient: "影响系数，kg CO₂-eq/单位",
           defaultStatusGap: "默认状态 / 数据缺口",
           baseContribution: "基础贡献",
           excludedFromTotal: "未计入总量",
@@ -11119,7 +11119,7 @@
     }
 
     function impactCoefficientLabel() {
-      return t("impactCoefficientDynamic", { unit: impactCategoryUnit() });
+      return t("impactCoefficientDynamic", { unit: displayUnit(impactCategoryUnit()) });
     }
 
     function rowFactor(row, categoryId = state.impactCategory) {
@@ -11144,13 +11144,13 @@
         }
         const option = document.createElement("option");
         option.value = category.id;
-        option.textContent = `${t(category.nameKey)} · ${category.unit}`;
+        option.textContent = `${t(category.nameKey)} · ${displayUnit(category.unit)}`;
         groups.get(category.groupKey).appendChild(option);
       });
       select.value = currentImpactCategory().id;
       document.getElementById("lcaImpactCategoryLabel").textContent = t("impactCategoryLabel");
       document.getElementById("impactMethodChip").textContent = t("impactMethodChip");
-      document.getElementById("lcaImpactCategoryName").textContent = `${impactCategoryName()} · ${impactCategoryUnit()}`;
+      document.getElementById("lcaImpactCategoryName").textContent = `${impactCategoryName()} · ${displayUnit(impactCategoryUnit())}`;
       document.getElementById("lcaImpactCategoryDescription").textContent = t(currentImpactCategory().descriptionKey);
       document.getElementById("lcaImpactMethodNote").textContent = `${t("impactMethodNote")} `;
       document.getElementById("efReferenceLink").textContent = t("efReferenceLink");
@@ -11206,8 +11206,12 @@
       return localizedLookup(blockNameText, blockName);
     }
 
+    function displayUnit(unit) {
+      return String(unit ?? "").replaceAll("CO2", "CO₂");
+    }
+
     function localizedUnit(unit) {
-      return localizedLookup(unitText, unit);
+      return displayUnit(localizedLookup(unitText, unit));
     }
 
     function localizedResourceFlow(flow) {
@@ -13374,7 +13378,7 @@
               </button>
               <span class="impact-category-group-label">${escapeHtml(t(category.groupKey))}</span>
             </td>
-            <td>${escapeHtml(category.unit)}</td>
+            <td>${escapeHtml(displayUnit(category.unit))}</td>
             <td>${escapeHtml(formatImpactNumber(low.perPathway))}</td>
             <td><strong>${escapeHtml(formatImpactNumber(base.perPathway))}</strong></td>
             <td>${escapeHtml(formatImpactNumber(high.perPathway))}</td>
@@ -13476,7 +13480,7 @@
       output.textContent = t("sankeyCutoffValue", { value: formatDecimal(state.sankeyCutoffPercent, 1) });
       intro.textContent = t("sankeyIntro", {
         category: impactCategoryName(),
-        unit: impactCategoryUnit()
+        unit: displayUnit(impactCategoryUnit())
       });
       const data = contributionSankeyData();
       if (data.total <= 0 || data.modules.length === 0) {
@@ -13740,7 +13744,7 @@
     function formatSensitivityImpact(value, analysis) {
       return analysis.source === "brightway"
         ? formatExternalImpact(value, analysis.unit)
-        : `${formatImpactNumber(value)} ${analysis.unit}`;
+        : `${formatImpactNumber(value)} ${displayUnit(analysis.unit)}`;
     }
 
     function sensitivityQuantityDetails(item) {
@@ -14372,7 +14376,7 @@
     }
 
     function formatImpact(value, categoryId = state.impactCategory) {
-      return `${formatImpactNumber(value)} ${impactCategoryUnit(categoryId)}`;
+      return `${formatImpactNumber(value)} ${displayUnit(impactCategoryUnit(categoryId))}`;
     }
 
     function formatNumber(value) {
@@ -14655,7 +14659,7 @@
       const formatted = absolute !== 0 && (absolute < 0.001 || absolute >= 1000000)
         ? number.toExponential(3)
         : number.toLocaleString(localeForCurrentLanguage(), { maximumSignificantDigits: 5 });
-      return `${formatted} ${unit}`;
+      return `${formatted} ${displayUnit(unit)}`;
     }
 
     function brightwayProvenanceText(result) {
@@ -15135,7 +15139,7 @@
       <p>${escapeHtml(data.pathwayScope)}</p>
       <div class="config">
         <div><strong>${escapeHtml(t("pathwayStatusLabel"))}</strong><br>${escapeHtml(data.pathwayStatus)}</div>
-        <div><strong>${escapeHtml(t("impactCategoryConfig"))}</strong><br>${escapeHtml(data.impactCategoryName)} (${escapeHtml(data.impactCategoryUnit)})</div>
+        <div><strong>${escapeHtml(t("impactCategoryConfig"))}</strong><br>${escapeHtml(data.impactCategoryName)} (${escapeHtml(displayUnit(data.impactCategoryUnit))})</div>
         <div><strong>${escapeHtml(t("cohortSize"))}</strong><br>${escapeHtml(formatNumber(data.caseCount))}</div>
         <div><strong>${escapeHtml(t("checkedModules"))}</strong><br>${escapeHtml(formatNumber(data.includedModuleCount))} / ${escapeHtml(formatNumber(data.moduleCount))}</div>
         <div><strong>${escapeHtml(t("rowsCounted"))}</strong><br>${escapeHtml(formatNumber(data.rows.filter((row) => row.included).length))} / ${escapeHtml(formatNumber(data.rows.length))}</div>
@@ -15155,7 +15159,7 @@
       <div class="metrics">${resultCards}</div>
       <p class="muted">${escapeHtml(t("categoryReportNote", {
         category: data.impactCategoryName,
-        unit: data.impactCategoryUnit
+        unit: displayUnit(data.impactCategoryUnit)
       }))}</p>
     </section>
 

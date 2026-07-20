@@ -9,7 +9,7 @@ ECO-PATH is a pathway-level framework for environmental assessment of healthcare
 The current prototype includes urology and gastroenterology examples:
 
 - Urology: one MIBC map with selectable Dutch operational and EAU 2026 clinical-reference views
-- Gastroenterology: Dutch national guideline-based CRC hospital pathway
+- Gastroenterology: Dutch guideline-based colorectal polyp and CRC hospital pathway
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
 
@@ -140,7 +140,7 @@ Building blocks are filtered separately from modules. Shared blocks, such as CT,
 
 ## Methodological Scope
 
-The gastroenterology view follows the Dutch colorectal cancer and colonoscopy-surveillance protocols supplied by the Erasmus MC clinical expert as the protocols used for local care. It starts at the first specialist hospital contact for suspected or confirmed colorectal cancer. Upstream national population screening is documented as contextual provenance, not modeled as part of the current treatment pathway. Guideline-defined activities and follow-up schedules are represented in the map; local occurrence counts, department handovers, treatment locations, and cross-hospital execution remain study parameters that require confirmation.
+The gastroenterology view follows the Dutch colorectal cancer and colonoscopy-surveillance protocols supplied by the Erasmus MC clinical expert as the protocols used for local care. It starts at the first specialist hospital contact for a suspected colorectal lesion. Diagnostic colonoscopy, endoscopic polyp removal, pathology, risk-based polyp management, polyp surveillance, and the confirmed CRC treatment routes are in scope. National FIT screening, invitation, home sampling, and screening-program logistics are excluded. Guideline-defined activities and follow-up schedules are represented in the map; local occurrence counts, department handovers, treatment locations, and cross-hospital execution remain study parameters that require confirmation.
 
 Public gastroenterology reference sources:
 

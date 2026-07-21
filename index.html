@@ -731,6 +731,10 @@
       align-items: start;
     }
 
+    body[data-workspace-step="pathway"] .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .layout > * {
       min-width: 0;
     }
@@ -3234,7 +3238,7 @@
     }
   </style>
 </head>
-<body>
+<body data-workspace-step="pathway">
   <header>
     <div class="topbar">
       <div class="brand-lockup">
@@ -3550,7 +3554,7 @@
         </section>
       </div>
 
-      <aside class="panel detail-panel" id="activityDetailPanel" aria-live="polite" data-workspace-panel="pathway activities">
+      <aside class="panel detail-panel" id="activityDetailPanel" aria-live="polite" data-workspace-panel="activities" hidden>
         <div id="activityDetail"></div>
       </aside>
     </section>

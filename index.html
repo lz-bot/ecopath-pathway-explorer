@@ -1948,7 +1948,7 @@
       box-shadow: inset 3px 0 0 var(--accent-dark);
     }
 
-    .activity-row:disabled {
+    .activity-row.outside-boundary {
       cursor: not-allowed;
       opacity: 0.46;
       color: var(--muted);
@@ -2696,16 +2696,6 @@
       color: var(--muted);
       font-size: 11px;
       line-height: 1.4;
-    }
-
-    .sensitivity-method-note {
-      margin: 0 0 12px;
-      border-left: 4px solid var(--accent);
-      padding: 8px 10px;
-      color: var(--muted);
-      background: var(--accent-soft);
-      font-size: 12px;
-      line-height: 1.45;
     }
 
     .sensitivity-summary {
@@ -3799,7 +3789,6 @@
               <small id="sensitivityGlobalReductionHelp"></small>
             </div>
           </div>
-          <p class="sensitivity-method-note" id="sensitivityMethodNote"></p>
           <div class="sensitivity-summary" id="sensitivitySummary"></div>
           <div class="sensitivity-table-wrap" id="sensitivityResults"></div>
         </div>
@@ -6529,7 +6518,7 @@
       workflowPathwayTitle: "Pathway and scope",
       workflowPathwayHint: "Choose the clinical boundary",
       workflowActivitiesTitle: "Activities",
-      workflowActivitiesHint: "Build the scenario",
+      workflowActivitiesHint: "Review and select care activities",
       workflowLcaTitle: "LCA model",
       workflowLcaHint: "Review automatic blocks",
       workflowResultsTitle: "Results",
@@ -6608,7 +6597,7 @@
       workflowPathwayTitle: "Zorgpad en afbakening",
       workflowPathwayHint: "Kies de klinische grens",
       workflowActivitiesTitle: "Activiteiten",
-      workflowActivitiesHint: "Bouw het scenario",
+      workflowActivitiesHint: "Bekijk en selecteer zorgactiviteiten",
       workflowLcaTitle: "LCA-model",
       workflowLcaHint: "Controleer automatische bouwstenen",
       workflowResultsTitle: "Resultaten",
@@ -6687,7 +6676,7 @@
       workflowPathwayTitle: "路径与边界",
       workflowPathwayHint: "选择临床边界",
       workflowActivitiesTitle: "活动",
-      workflowActivitiesHint: "组成情景路径",
+      workflowActivitiesHint: "查看并选择医疗活动",
       workflowLcaTitle: "LCA 模型",
       workflowLcaHint: "复核自动选择的构建单元",
       workflowResultsTitle: "结果",
@@ -6766,7 +6755,7 @@
       workflowPathwayTitle: "パスウェイと範囲",
       workflowPathwayHint: "臨床境界を選択",
       workflowActivitiesTitle: "活動",
-      workflowActivitiesHint: "シナリオを構成",
+      workflowActivitiesHint: "ケア活動を確認して選択",
       workflowLcaTitle: "LCA モデル",
       workflowLcaHint: "自動選択ブロックを確認",
       pathwayLinkedDescription: "現在の activity map で利用可能な modules です。map または activity list で activity を選択すると、明示的に対応付けられた module、building blocks、暫定数量が自動的に有効になります。",
@@ -6847,7 +6836,7 @@
       workflowPathwayTitle: "Vía y alcance",
       workflowPathwayHint: "Elegir el límite clínico",
       workflowActivitiesTitle: "Actividades",
-      workflowActivitiesHint: "Construir el escenario",
+      workflowActivitiesHint: "Revisar y seleccionar actividades asistenciales",
       workflowLcaTitle: "Modelo LCA",
       workflowLcaHint: "Revisar bloques automáticos",
       pathwayLinkedDescription: "Estos modules están disponibles en el mapa actual. Al seleccionar una activity en el mapa o en la lista se activan automáticamente su module, building blocks y cantidades provisionales con mapeo explícito.",
@@ -7191,6 +7180,7 @@
       allImpactTab: "All EF categories",
       sankeyTab: "Contribution Sankey",
       allImpactTableNote: "EF categories have different units and cannot be ranked from their raw values. Select a category name to use it in the detailed cards, coefficient table, and Sankey.",
+      allImpactReportNote: "EF categories use different units and their raw values should not be ranked across categories. The selected category is highlighted and detailed below.",
       lowPerFu: "Low / functional unit",
       basePerFu: "Base / functional unit",
       highPerFu: "High / functional unit",
@@ -7213,6 +7203,7 @@
       allImpactTab: "Alle EF-categorieën",
       sankeyTab: "Bijdragen-Sankey",
       allImpactTableNote: "EF-categorieën hebben verschillende eenheden; ruwe waarden mogen daarom niet onderling worden gerangschikt. Selecteer een categorienaam voor de detailkaarten, coëfficiëntentabel en Sankey.",
+      allImpactReportNote: "EF-categorieën hebben verschillende eenheden; rangschik ruwe waarden daarom niet tussen categorieën. De geselecteerde categorie is gemarkeerd en wordt hieronder uitgewerkt.",
       lowPerFu: "Laag / functionele eenheid",
       basePerFu: "Basis / functionele eenheid",
       highPerFu: "Hoog / functionele eenheid",
@@ -7235,6 +7226,7 @@
       allImpactTab: "全部 EF 类别",
       sankeyTab: "贡献桑基图",
       allImpactTableNote: "不同 EF 类别使用不同单位，不能根据原始数值直接排序比较。点击类别名称可将其用于详细结果卡、系数表和桑基图。",
+      allImpactReportNote: "不同 EF 类别使用不同单位，不能直接按原始数值跨类别排序。当前所选类别已高亮，并在下方详细展开。",
       lowPerFu: "低值 / 功能单位",
       basePerFu: "基准值 / 功能单位",
       highPerFu: "高值 / 功能单位",
@@ -7619,7 +7611,7 @@
       workflowActivitiesGuide1Title: "Narrow the list",
       workflowActivitiesGuide1Text: "Use the domain filter or search only when needed.",
       workflowActivitiesGuide2Title: "Inspect an activity",
-      workflowActivitiesGuide2Text: "Hover over the map or select an item in the list.",
+      workflowActivitiesGuide2Text: "Hover over an activity on the map or in the list to inspect it.",
       workflowActivitiesGuide3Title: "Confirm the scenario",
       workflowActivitiesGuide3Text: "Selected activities activate their mapped LCA building blocks.",
       workflowLcaGuide1Title: "Define goal and functional unit",
@@ -7685,7 +7677,7 @@
       workflowActivitiesGuide1Title: "Beperk de lijst",
       workflowActivitiesGuide1Text: "Gebruik het domeinfilter of zoeken alleen wanneer nodig.",
       workflowActivitiesGuide2Title: "Bekijk een activiteit",
-      workflowActivitiesGuide2Text: "Beweeg over de kaart of kies een item in de lijst.",
+      workflowActivitiesGuide2Text: "Beweeg over een activiteit op de kaart of in de lijst om deze te bekijken.",
       workflowActivitiesGuide3Title: "Bevestig het scenario",
       workflowActivitiesGuide3Text: "Geselecteerde activiteiten activeren gekoppelde LCA-bouwstenen.",
       workflowLcaGuide1Title: "Bepaal doel en functionele eenheid",
@@ -7751,7 +7743,7 @@
       workflowActivitiesGuide1Title: "缩小活动范围",
       workflowActivitiesGuide1Text: "仅在需要时使用领域筛选或搜索。",
       workflowActivitiesGuide2Title: "查看活动",
-      workflowActivitiesGuide2Text: "悬停在线路图上，或在列表中选择活动。",
+      workflowActivitiesGuide2Text: "将鼠标悬停在线路图或列表中的活动上即可查看详情。",
       workflowActivitiesGuide3Title: "确认情景",
       workflowActivitiesGuide3Text: "所选活动会自动激活对应的 LCA 构件。",
       workflowLcaGuide1Title: "定义目标和功能单位",
@@ -13458,6 +13450,16 @@
       scheduleDetailPanelSync();
     }
 
+    function previewActivityListNode(nodeId) {
+      const node = nodeById(currentPathway(), nodeId);
+      if (!node) return;
+      state.selected = node.id;
+      state.detailAnchor = "list";
+      renderDetail();
+      updateActivityListSelection();
+      scheduleDetailPanelSync();
+    }
+
     function selectMapNode(nodeId, detailAnchor = "map") {
       const node = nodeById(currentPathway(), nodeId);
       if (!node) return;
@@ -14244,12 +14246,17 @@
           "activity-row",
           state.selected === node.id ? "active" : "",
           isScenarioNodeSelected(node.id) ? "in-scenario" : "",
+          !insideBoundary ? "outside-boundary" : "",
           state.oncologyLens && node.oncology ? "oncology-highlight" : ""
         ].filter(Boolean).join(" ");
         button.dataset.nodeId = node.id;
-        button.disabled = !insideBoundary;
+        button.setAttribute("aria-disabled", String(!insideBoundary));
         if (!insideBoundary) button.title = t("assessmentNodeOutsideBoundary");
-        button.addEventListener("click", () => selectMapNode(node.id, "list"));
+        button.addEventListener("mouseenter", () => previewActivityListNode(node.id));
+        button.addEventListener("focus", () => previewActivityListNode(node.id));
+        button.addEventListener("click", () => {
+          if (insideBoundary) selectMapNode(node.id, "list");
+        });
         button.innerHTML = `
           <span class="code-pill">${escapeHtml(displayCode(node))}</span>
           <span class="activity-name">
@@ -14995,15 +15002,13 @@
     function renderSensitivityExplorer() {
       const summary = document.getElementById("sensitivitySummary");
       const results = document.getElementById("sensitivityResults");
-      const methodNote = document.getElementById("sensitivityMethodNote");
       const slider = document.getElementById("sensitivityReduction");
       const sliderValue = document.getElementById("sensitivityReductionValue");
       const reductionLabel = document.getElementById("sensitivityReductionLabel");
       const reductionControl = document.getElementById("sensitivityReductionControl");
-      if (!summary || !results || !methodNote || !slider || !sliderValue) return;
+      if (!summary || !results || !slider || !sliderValue) return;
       const assessment = currentAssessmentStatus();
       if (!assessment.valid) {
-        methodNote.textContent = t("assessmentExportBlocked");
         summary.innerHTML = assessmentGateHtml(assessment);
         results.innerHTML = "";
         return;
@@ -15026,15 +15031,6 @@
       const sourceLabel = analysis.source === "brightway"
         ? t("sensitivityDataSourceBrightway")
         : t("sensitivityDataSourceBrowser");
-      const methodText = analysis.source === "brightway"
-        ? t("sensitivityMethodBrightway")
-        : analysis.brightwayFallback
-          ? `${t("sensitivityMethodBrightwayFallback")} ${t("sensitivityMethodBrowser")}`
-          : t("sensitivityMethodBrowser");
-      const scenarioMethodText = quantityMode
-        ? t("sensitivityCountMethod")
-        : t("sensitivityPercentMethod");
-      methodNote.textContent = `${methodText} ${t("sensitivityPositiveOnly")} ${scenarioMethodText} ${t("sensitivityCombinedAssumption")}`;
 
       if (!analysis.rows.length || analysis.total <= 0) {
         summary.innerHTML = "";
@@ -15992,6 +15988,15 @@
         base: lcaScenarioValues("base", caseCount),
         high: lcaScenarioValues("high", caseCount)
       };
+      const impactCategories = impactCategoryRegistry.map((category) => ({
+        id: category.id,
+        name: t(category.nameKey),
+        group: t(category.groupKey),
+        unit: displayUnit(category.unit),
+        low: lcaScenarioValuesForCategory(category.id, "low", caseCount),
+        base: lcaScenarioValuesForCategory(category.id, "base", caseCount),
+        high: lcaScenarioValuesForCategory(category.id, "high", caseCount)
+      }));
       const topRows = rows
         .filter((row) => row.included && row.baseContribution > 0)
         .sort((a, b) => b.baseContribution - a.baseContribution)
@@ -16027,6 +16032,7 @@
         rows,
         modules,
         totals,
+        impactCategories,
         topRows,
         sensitivity: collectSensitivityAnalysis(5)
       };
@@ -16048,6 +16054,16 @@
           <small>${escapeHtml(data.assessment.resultLabel)}</small>
           <small>${escapeHtml(t("perPathway", { value: formatImpact(values.perPathway) }))}</small>
         </div>
+      `).join("");
+      const allImpactRows = data.impactCategories.map((category) => `
+        <tr class="${category.id === data.impactCategoryId ? "selected-impact" : ""}">
+          <td>${escapeHtml(category.name)}<br><small>${escapeHtml(category.group)}</small></td>
+          <td>${escapeHtml(category.unit)}</td>
+          <td>${escapeHtml(formatImpactNumber(category.low.perPathway))}</td>
+          <td><strong>${escapeHtml(formatImpactNumber(category.base.perPathway))}</strong></td>
+          <td>${escapeHtml(formatImpactNumber(category.high.perPathway))}</td>
+          <td><strong>${escapeHtml(formatImpactNumber(category.base.cohortExpected))}</strong></td>
+        </tr>
       `).join("");
       const moduleRows = data.modules.map((module) => `
         <tr class="${module.included ? "" : "excluded"}">
@@ -16263,6 +16279,9 @@
       color: var(--muted);
       background: #f2f6f8;
     }
+    tr.selected-impact td {
+      background: var(--sky-soft);
+    }
     .config {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -16330,7 +16349,25 @@
     </section>
 
     <section>
-      <h2>${escapeHtml(t("browserPrototypeResults"))}</h2>
+      <h2>${escapeHtml(t("allImpactTab"))}</h2>
+      <p class="muted">${escapeHtml(t("allImpactReportNote"))}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>${escapeHtml(t("impactCategoryLabel"))}</th>
+            <th>${escapeHtml(t("unit"))}</th>
+            <th>${escapeHtml(t("lowPerFu"))}</th>
+            <th>${escapeHtml(t("basePerFu"))}</th>
+            <th>${escapeHtml(t("highPerFu"))}</th>
+            <th>${escapeHtml(t("baseCohortHeader", { count: formatNumber(data.caseCount) }))}</th>
+          </tr>
+        </thead>
+        <tbody>${allImpactRows}</tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>${escapeHtml(t("browserPrototypeResults"))}: ${escapeHtml(data.impactCategoryName)}</h2>
       <div class="metrics">${resultCards}</div>
       <p class="muted">${escapeHtml(t("categoryReportNote", {
         category: data.impactCategoryName,
@@ -16378,8 +16415,6 @@
 
     <section>
       <h2>${escapeHtml(t("sensitivityReportTitle"))}</h2>
-      <p class="muted">${escapeHtml(t("sensitivityReportNote"))}</p>
-      <p class="muted">${escapeHtml(t("sensitivityCombinedAssumption"))}</p>
       <p><strong>${escapeHtml(t("sensitivitySource"))}:</strong> ${escapeHtml(data.sensitivity.source === "brightway" ? t("sensitivityDataSourceBrightway") : t("sensitivityDataSourceBrowser"))}. <strong>${escapeHtml(t("sensitivityModeLabel"))}:</strong> ${escapeHtml(data.sensitivity.mode === "quantity" ? t("sensitivityQuantityMode") : t("sensitivityIntensityMode"))}.</p>
       <p><strong>${escapeHtml(t("sensitivityCombinedScenario"))}:</strong> ${escapeHtml(sensitivityCombinedValue)}</p>
       <table>
@@ -16421,7 +16456,7 @@
         return;
       }
       const reportHtml = buildLcaReportHtml();
-      const filename = `ecopath-lca-report-${slugify(currentPathway().label)}-${state.impactCategory}-${reportDateStamp()}.html`;
+      const filename = `ecopath-lca-report-${slugify(currentPathway().label)}-all-ef-categories-${reportDateStamp()}.html`;
       const blob = new Blob([reportHtml], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");

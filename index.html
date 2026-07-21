@@ -1743,6 +1743,21 @@
       font-weight: 700;
     }
 
+    .building-block-chip .block-applicability.cross-pathway-reuse-badge,
+    .lca-cross-pathway-reuse-badge {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(0, 90, 160, 0.28);
+      border-radius: 4px;
+      padding: 2px 5px;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
     .candidate-legend {
       display: flex;
       flex-wrap: wrap;
@@ -3007,6 +3022,10 @@
       color: var(--accent-dark);
       font-size: 11px;
       font-weight: 700;
+    }
+
+    .lca-cross-pathway-reuse-badge {
+      margin-top: 4px;
     }
 
     .lca-source-cell {
@@ -5142,20 +5161,35 @@
 
     validateAutomaticActivityCoverage();
 
+    function mappedBuildingBlockNames(pathwayIds) {
+      const activityIds = new Set(
+        pathwayIds.flatMap((pathwayId) =>
+          (pathwayData[pathwayId]?.nodes || []).map((node) => node.id)
+        )
+      );
+      return new Set(
+        Array.from(activityIds).flatMap((activityId) =>
+          (activityBuildingBlockRegistry[activityId] || []).map((selection) => selection.name)
+        )
+      );
+    }
+
+    const mibcMappedBuildingBlocks = mappedBuildingBlockNames(["emc", "eauFull"]);
+    const crcMappedBuildingBlocks = mappedBuildingBlockNames(["crcDutch"]);
+    const crossPathwayReusableBuildingBlocks = new Set(
+      Array.from(mibcMappedBuildingBlocks).filter((blockName) => crcMappedBuildingBlocks.has(blockName))
+    );
+
     const languageOptions = [
       { id: "en", label: "English", htmlLang: "en" },
       { id: "nl", label: "Nederlands", htmlLang: "nl" },
-      { id: "zh", label: "中文", htmlLang: "zh" },
-      { id: "ja", label: "日本語", htmlLang: "ja" },
-      { id: "es", label: "Español", htmlLang: "es" }
+      { id: "zh", label: "中文", htmlLang: "zh" }
     ];
 
     const languageLocales = {
       en: "en-US",
       nl: "nl-NL",
-      zh: "zh-CN",
-      ja: "ja-JP",
-      es: "es-ES"
+      zh: "zh-CN"
     };
 
     const uiText = {
@@ -5978,9 +6012,12 @@
       eauUrologyDifference: "EAU emphasis: upper-tract assessment, formal health-status evaluation, current perioperative options, and treatment-specific follow-up.",
       references: "References",
       sharedBuildingBlock: "Shared building block",
+      generalBuildingBlockCandidate: "General candidate",
+      crossPathwayReusableBuildingBlock: "Reusable across MIBC + CRC",
+      crossPathwayReuseTooltip: "The same building-block definition is mapped in both current pathway families. Local quantities and LCI data still require validation.",
       urologyBuildingBlock: "Urology-specific candidate",
       gastroBuildingBlock: "Gastroenterology-specific candidate",
-      buildingBlockMapIntro: "ECO-PATH modules are reusable modeling zones shared across specialties. Only shared building blocks and candidates applicable to the current pathway are shown. EM10 is the single calculation owner of patient and caregiver travel; clinical building-block coefficients exclude travel. EM11 remains optional shared hospital support."
+      buildingBlockMapIntro: "ECO-PATH modules organize the model; reuse is marked at building-block level. A reuse label means the same block definition is currently mapped in both MIBC and CRC, but local quantities and LCI data still require validation. EM10 is the single calculation owner of patient and caregiver travel; clinical building-block coefficients exclude travel. EM11 remains optional shared hospital support."
     });
 
     Object.assign(uiText.nl, {
@@ -5995,9 +6032,12 @@
       eauUrologyDifference: "EAU-nadruk: beoordeling van de bovenste urinewegen, formele gezondheidsbeoordeling, actuele perioperatieve opties en behandelspecifieke follow-up.",
       references: "Referenties",
       sharedBuildingBlock: "Gedeelde bouwsteen",
+      generalBuildingBlockCandidate: "Algemene kandidaat",
+      crossPathwayReusableBuildingBlock: "Herbruikbaar voor MIBC + CRC",
+      crossPathwayReuseTooltip: "Dezelfde bouwsteendefinitie is aan beide huidige zorgpadfamilies gekoppeld. Lokale hoeveelheden en LCI-data moeten nog worden gevalideerd.",
       urologyBuildingBlock: "Urologiespecifieke kandidaat",
       gastroBuildingBlock: "Gastro-enterologiespecifieke kandidaat",
-      buildingBlockMapIntro: "ECO-PATH-modules zijn herbruikbare modelleerzones die specialismen delen. Alleen gedeelde bouwstenen en kandidaten voor het huidige zorgpad worden getoond. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische bouwsteencoëfficiënten sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning."
+      buildingBlockMapIntro: "ECO-PATH-modules structureren het model; hergebruik wordt op bouwsteenniveau gemarkeerd. Een hergebruiklabel betekent dat dezelfde bouwsteendefinitie momenteel aan MIBC en CRC is gekoppeld, maar lokale hoeveelheden en LCI-data moeten nog worden gevalideerd. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische bouwsteencoëfficiënten sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning."
     });
 
     Object.assign(uiText.zh, {
@@ -6012,9 +6052,12 @@
       eauUrologyDifference: "EAU 侧重点：上尿路评估、正式健康状态评估、当前围手术期方案和按治疗方式区分的随访。",
       references: "参考资料",
       sharedBuildingBlock: "跨专科共享 building block",
+      generalBuildingBlockCandidate: "通用候选项",
+      crossPathwayReusableBuildingBlock: "可跨 MIBC 与 CRC 复用",
+      crossPathwayReuseTooltip: "同一 building block 定义已映射到当前两类路径，但本地数量与 LCI 数据能否直接移植仍需验证。",
       urologyBuildingBlock: "泌尿科特异候选项",
       gastroBuildingBlock: "胃肠科特异候选项",
-      buildingBlockMapIntro: "ECO-PATH modules 是跨专科共享的可复用建模区域。页面只显示适用于当前路径的候选 building blocks。EM10 是患者及照护者出行的唯一核算归属，临床 building block 系数不包含出行；EM11 仍为可选的医院共享支持模块。"
+      buildingBlockMapIntro: "ECO-PATH modules 用于组织模型，复用性在 building block 层级标注。复用标签表示同一定义目前已同时映射到 MIBC 与 CRC，但本地数量及 LCI 数据能否直接移植仍需验证。EM10 是患者及照护者出行的唯一核算归属，临床 building block 系数不包含出行；EM11 仍为可选的医院共享支持模块。"
     });
 
     Object.assign(uiText.ja, {
@@ -11142,7 +11185,12 @@
 
     function readStoredLanguage() {
       try {
-        return normaliseLanguage(window.localStorage.getItem("ecopath-language"));
+        const storedLanguage = window.localStorage.getItem("ecopath-language");
+        const language = normaliseLanguage(storedLanguage);
+        if (storedLanguage && storedLanguage !== language) {
+          window.localStorage.setItem("ecopath-language", language);
+        }
+        return language;
       } catch {
         return "en";
       }
@@ -11733,8 +11781,17 @@
 
     function blockApplicabilityLabel(item) {
       const applicability = item.applicability || ["shared"];
-      if (applicability.includes("shared")) return t("sharedBuildingBlock");
+      if (crossPathwayReusableBuildingBlocks.has(item.name)) {
+        return t("crossPathwayReusableBuildingBlock");
+      }
+      if (applicability.includes("shared")) return t("generalBuildingBlockCandidate");
       return applicability.includes("gastro") ? t("gastroBuildingBlock") : t("urologyBuildingBlock");
+    }
+
+    function crossPathwayReuseBadge(blockName, className = "") {
+      if (!crossPathwayReusableBuildingBlocks.has(blockName)) return "";
+      const classes = ["lca-cross-pathway-reuse-badge", className].filter(Boolean).join(" ");
+      return `<small class="${classes}" title="${escapeHtml(t("crossPathwayReuseTooltip"))}">${escapeHtml(t("crossPathwayReusableBuildingBlock"))}</small>`;
     }
 
     function moduleRegistryIds() {
@@ -13578,13 +13635,14 @@
         const blockGrid = zone.querySelector(".building-block-grid");
         blocks.forEach((item) => {
           const blockCard = document.createElement("div");
+          const isCrossPathwayReusable = crossPathwayReusableBuildingBlocks.has(item.name);
           blockCard.className = [
             "building-block-chip",
             state.oncologyLens && isOncologyBuildingBlock(item) ? "oncology-highlight" : ""
           ].filter(Boolean).join(" ");
           blockCard.innerHTML = `
             <strong>${escapeHtml(localizedBlockName(item.name))}</strong>
-            <span class="block-applicability">${escapeHtml(blockApplicabilityLabel(item))}</span>
+            <span class="block-applicability${isCrossPathwayReusable ? " cross-pathway-reuse-badge" : ""}"${isCrossPathwayReusable ? ` title="${escapeHtml(t("crossPathwayReuseTooltip"))}"` : ""}>${escapeHtml(blockApplicabilityLabel(item))}</span>
             <span>${escapeHtml(t("unit"))}: ${escapeHtml(localizedUnit(item.unit))}</span>
             <span>${escapeHtml(t("resourceFlowsLabel"))}: ${escapeHtml(localizedResourceFlowList(item.resourceFlows))}</span>
           `;
@@ -13691,6 +13749,7 @@
                     </td>
                     <td>
                       <span class="lca-block-cell">${escapeHtml(localizedBlockName(row.block))}</span>
+                      ${crossPathwayReuseBadge(row.block)}
                       ${row.automaticallyIncluded ? `<small class="lca-auto-note">${escapeHtml(t("automaticFromActivities"))}</small>` : ""}
                     </td>
                     <td>${escapeHtml(localizedResourceFlowList(row.flow))}</td>

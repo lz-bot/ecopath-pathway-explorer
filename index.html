@@ -3396,8 +3396,8 @@
               <p id="methodModuleText">LCA modeling zone assigned to pathway activities. It is not another clinical activity.</p>
             </div>
             <div class="note-cell">
-              <strong id="methodResourceTitle">Resource flow</strong>
-              <p id="methodResourceText">Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.</p>
+              <strong id="methodResourceTitle">LCI input</strong>
+              <p id="methodResourceText">A quantified product, energy, transport, water, material, or waste-treatment exchange. Time records and allocation rules may determine the amount, but are not LCI inputs themselves.</p>
             </div>
             <div class="note-cell">
               <strong id="methodLciTitle">LCI / LCIA link</strong>
@@ -3420,6 +3420,10 @@
             <a href="https://eplca.jrc.ec.europa.eu/LCDN/developerEF.html" target="_blank" rel="noreferrer">EF 3.1 reference package</a>
             <a href="https://publications.jrc.ec.europa.eu/repository/handle/JRC130796" target="_blank" rel="noreferrer">JRC method documentation</a>
           </div>
+        </section>
+        <section class="methodology-section">
+          <h3 id="methodologyForegroundTitle">Building unit impact results</h3>
+          <p id="methodologyForegroundText"></p>
         </section>
         <section class="methodology-section">
           <h3 id="methodologyCalculationTitle">Calculation and uncertainty</h3>
@@ -3903,17 +3907,17 @@
       EM01: {
         name: "First contact and intake",
         definition: "First specialist contact, intake, and material-relevant preparation before diagnostic or treatment activities.",
-        resourceFlows: ["Room use", "Bowel preparation", "EHR use"]
+        resourceFlows: ["Bowel preparation products"]
       },
       EM02: {
         name: "Pathology",
         definition: "Pathology review, sample-related assessment, paper review, and diagnostic reassessment decisions.",
-        resourceFlows: ["Sample handling", "Microscopy or digital pathology", "Report generation"]
+        resourceFlows: ["Pathology materials", "Laboratory electricity", "Pathology waste"]
       },
       EM03: {
         name: "Imaging and endoscopy",
         definition: "Radiology, CT reassessment, MRI, PET-CT, cystoscopy, colonoscopy, or other pathway-specific diagnostic procedures.",
-        resourceFlows: ["Equipment electricity", "Contrast media or procedure materials"]
+        resourceFlows: ["Electricity", "Contrast media", "Procedure materials", "Water", "Waste treatment"]
       },
       EM04: {
         name: "Multidisciplinary care logic (cut-off)",
@@ -3928,32 +3932,32 @@
       EM06: {
         name: "Systemic therapy and oncology",
         definition: "Medical oncology review, chemotherapy, immunotherapy or targeted treatment, pharmacy preparation, monitoring, response assessment, and progression assessment.",
-        resourceFlows: ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Day-care chair time", "Laboratory monitoring", "Cytotoxic waste"]
+        resourceFlows: ["Medicines", "Infusion materials", "Laboratory reagents", "Packaging", "Cytotoxic waste treatment"]
       },
       EM07: {
         name: "Surgery",
         definition: "Endoscopic or operative treatment, including TURBT, organ resection, lymph-node dissection, urinary diversion, anesthesia, perioperative care, admission, and procedure-related waste.",
-        resourceFlows: ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Ward or ICU stay", "Surgical waste"]
+        resourceFlows: ["Allocated operating-room energy", "Anesthesia medicines and gases", "Sterile instruments", "Ward energy and supplies", "Surgical waste treatment"]
       },
       EM08: {
         name: "Radiotherapy",
         definition: "Radiotherapy decision, planning, external-beam fractions, chemoradiation, brachytherapy, and immobilization. Associated patient travel is owned by EM10.",
-        resourceFlows: ["Linear accelerator electricity", "Treatment planning", "Immobilization materials", "Fraction count"]
+        resourceFlows: ["Linear accelerator electricity", "Planning electricity", "Immobilization materials", "Treatment consumables"]
       },
       EM09: {
         name: "Follow-up",
         definition: "Treatment-specific surveillance, outpatient review, imaging or endoscopy, recurrence monitoring, diversion or stoma follow-up, and return-route contacts.",
-        resourceFlows: ["Outpatient visit", "Surveillance tests", "EHR use"]
+        resourceFlows: ["Laboratory reagents", "Imaging or endoscopy services", "Follow-up consumables"]
       },
       EM10: {
         name: "Patient travel and support",
         definition: "Single-owner cross-cutting module for patient and caregiver travel plus optional food, accommodation, home sampling, and digital support. Clinical building-block coefficients must not embed these flows.",
-        resourceFlows: ["Patient travel", "Caregiver travel", "Patient food", "Home sampling", "Digital support"]
+        resourceFlows: ["Passenger transport services", "Meals", "Accommodation", "Home-sampling materials", "Sample transport"]
       },
       EM11: {
         name: "Shared hospital support",
         definition: "Shared services and overhead processes that support multiple pathway activities and require allocation rules.",
-        resourceFlows: ["Building energy", "Cleaning", "Laundry", "ICT", "Waste handling", "Sterilization support"]
+        resourceFlows: ["Electricity", "Heating", "Cooling", "Cleaning materials", "Laundry service", "Waste treatment", "Sterilization energy and materials"]
       }
     };
 
@@ -3970,91 +3974,168 @@
       "Nursing time"
     ]);
 
+    const nonLciInputLabels = new Set([
+      "Activity duration",
+      "Additional operating room time",
+      "Administrative time",
+      "Allocation key",
+      "Allocation rule",
+      "App use",
+      "Attendance assumptions",
+      "Clinical assessment",
+      "Clinical decision record",
+      "Clinical documentation",
+      "Clinical follow-up",
+      "Clinical letter",
+      "Clinical review",
+      "Combined visits",
+      "Companion travel if included",
+      "CSSD allocation",
+      "Day-care chair time",
+      "Device use",
+      "Digital app use",
+      "Discharge record",
+      "Distance",
+      "EHR access",
+      "EHR documentation",
+      "EHR review",
+      "EHR transfer",
+      "EHR update",
+      "EHR use",
+      "Equipment time",
+      "Fraction count",
+      "Home monitoring device if used",
+      "Image access",
+      "Image display",
+      "Imaging review",
+      "Imaging transfer",
+      "Laboratory review",
+      "Machine time",
+      "Meeting room or digital platform",
+      "Mode share",
+      "Monitoring",
+      "Operating room time",
+      "Outpatient room use",
+      "Outpatient visit",
+      "Patient communication",
+      "Patient consultation",
+      "Patient instructions",
+      "Pathology reporting",
+      "Pathology review",
+      "Portal messages",
+      "Procedure room time",
+      "Procedure time",
+      "Radiology reporting",
+      "Record review",
+      "Referral communication",
+      "Report generation",
+      "Reporting",
+      "Response reporting",
+      "Result communication",
+      "Risk category assignment",
+      "Reporting system",
+      "Room time",
+      "Room use",
+      "Scheduling",
+      "Server allocation",
+      "Shared decision documentation",
+      "Source delivery time",
+      "Surveillance interval assignment",
+      "Treatment planning",
+      "Treatment planning workstation",
+      "Treatment route assignment",
+      "Uptake room time"
+    ]);
+
+    const nonLciInputPatterns = [
+      /\bEHR\b/i,
+      /(?:^|\s)(?:report|reporting|report generation|documentation|record|communication|consultation|assessment|coordination|assignment|planning)$/i
+    ];
+
     const cutoffBuildingBlockRegistry = [
-      block("EM01", "Referral processing", "per referral", ["Staff time", "EHR use", "Referral communication"]),
+      block("EM01", "Referral processing", "per referral", ["Staff time", "Referral communication"]),
       block("EM01", "Triage review", "per triage decision", ["Clinician time", "Record review", "Scheduling"]),
       block("EM01", "Intake scheduling", "per appointment", ["Administrative time", "Patient communication", "ICT"]),
-      block("EM01", "Return-to-referrer handover", "per transfer", ["Clinical letter", "EHR transfer", "Administrative time"]),
-      block("EM04", "MDT case discussion", "per case discussed", ["Clinician time", "Meeting room or digital platform", "Image display", "EHR use"]),
+      block("EM01", "Return-to-referrer handover", "per transfer", ["Clinical letter", "Administrative time"]),
+      block("EM04", "MDT case discussion", "per case discussed", ["Clinician time", "Meeting room or digital platform", "Image display"]),
       block("EM04", "Digital case review", "per review", ["Clinician time", "ICT", "Image access"]),
-      block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use", "EHR use"]),
-      block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use", "EHR use"]),
+      block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use"]),
+      block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use"]),
       block("EM05", "Shared decision-making session", "per session", ["Clinician time", "Decision aid material", "Patient communication"]),
-      block("EM05", "Fitness or pre-treatment assessment", "per assessment", ["Assessment time", "Laboratory review", "EHR documentation"]),
+      block("EM05", "Fitness or pre-treatment assessment", "per assessment", ["Assessment time", "Laboratory review"]),
       block("EM05", "Polyp risk stratification", "per case classified", ["Pathology review", "Risk category assignment", "Patient communication"], ["gastro"]),
       block("EM05", "Response or progression assessment", "per assessment", ["Clinical review", "Imaging review", "Laboratory review"]),
-      block("EM09", "Return-route follow-up handover", "per handover", ["Clinical letter", "Administrative time", "EHR transfer"]),
-      block("EM11", "ICT and EHR use", "per activity or case", ["Device use", "Server allocation", "Network use"])
+      block("EM09", "Return-route follow-up handover", "per handover", ["Clinical letter", "Administrative time"])
     ];
 
     const buildingBlockRegistry = [
-      block("EM01", "First specialist consultation", "per consultation", ["Room use", "EHR use"]),
-      block("EM01", "Inter-hospital clinical transfer", "per transfer", ["Specimen transport", "Imaging transfer", "EHR documentation"]),
+      block("EM01", "First specialist consultation", "per consultation", ["Room use"]),
+      block("EM01", "Inter-hospital clinical transfer", "per transfer", ["Specimen transport", "Imaging transfer"]),
       block("EM01", "Colonoscopy intake and bowel preparation", "per colonoscopy intake", ["Nurse time", "Bowel preparation", "Patient instructions", "Scheduling"], ["gastro"]),
 
-      block("EM02", "Pathology slide review", "per review", ["Pathologist time", "Microscopy or digital pathology", "Report generation"]),
+      block("EM02", "Pathology slide review", "per review", ["Allocated pathology laboratory electricity"]),
       block("EM02", "Specimen processing", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
-      block("EM02", "Diagnostic laboratory set", "per diagnostic set", ["Blood or urine collection", "Laboratory reagents", "Analyzer electricity", "Reporting"]),
+      block("EM02", "Diagnostic laboratory set", "per diagnostic set", ["Collection consumables", "Laboratory reagents", "Analyzer electricity"]),
       block("EM02", "Biopsy or polyp pathology", "per specimen", ["Container", "Slides", "Staining reagents", "Pathology waste"], ["gastro"]),
-      block("EM02", "IHC or molecular pathology add-on", "per test", ["Reagents", "Equipment time", "Consumables", "Hazardous waste"]),
+      block("EM02", "IHC or molecular pathology add-on", "per test", ["Reagents", "Allocated laboratory electricity", "Consumables", "Hazardous waste treatment"]),
       block("EM02", "Complex surgical specimen pathology", "per specimen", ["Cassette", "Paraffin embedding", "Staining", "Lab electricity"]),
 
-      block("EM03", "CT scan", "per scan", ["Scanner electricity", "Contrast media", "Disposables", "Radiology reporting"]),
-      block("EM03", "MRI scan", "per scan", ["Scanner electricity", "Room time", "Radiology reporting"]),
-      block("EM03", "PET-CT scan", "per scan", ["Radiotracer", "Scanner electricity", "Uptake room time", "Waste"]),
-      block("EM03", "Colonoscopy", "per procedure", ["Procedure materials", "Sedation", "Endoscope reprocessing", "Water", "Waste"], ["gastro"]),
-      block("EM03", "Polypectomy or endoscopic lesion removal", "per procedure", ["Polypectomy device", "Specimen container", "Procedure time", "Endoscopy waste"], ["gastro"]),
-      block("EM03", "Cystoscopy", "per procedure", ["Scope use", "Consumables", "Reprocessing", "Procedure room time"], ["urology"]),
+      block("EM03", "CT scan", "per scan", ["Allocated imaging electricity", "Contrast media", "Disposables"]),
+      block("EM03", "MRI scan", "per scan", ["Allocated imaging electricity"]),
+      block("EM03", "PET-CT scan", "per scan", ["Radiotracer", "Allocated imaging electricity", "Radioactive waste treatment"]),
+      block("EM03", "Colonoscopy", "per procedure", ["Procedure materials", "Sedative medicines", "Endoscope reprocessing service", "Water", "Endoscopy waste treatment"], ["gastro"]),
+      block("EM03", "Polypectomy or endoscopic lesion removal", "per procedure", ["Polypectomy device", "Specimen container", "Endoscopy waste treatment"], ["gastro"]),
+      block("EM03", "Cystoscopy", "per procedure", ["Reusable scope manufacture allocation", "Consumables", "Scope reprocessing service"], ["urology"]),
       block("EM03", "Ultrasound", "per scan", ["Equipment electricity", "Gel and covers", "Clinical staff time"]),
 
-      block("EM06", "Medical oncology consultation", "per visit", ["Oncologist time", "Room use", "EHR use"]),
-      block("EM06", "Chemotherapy infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Day-care chair time", "Cytotoxic waste"]),
-      block("EM06", "Immunotherapy or targeted infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Day-care chair time", "Monitoring"]),
-      block("EM06", "Oral systemic therapy cycle", "per cycle", ["Drug dose", "Dispensing", "Monitoring", "Packaging"]),
+      block("EM06", "Medical oncology consultation", "per visit", ["Oncologist time", "Room use"]),
+      block("EM06", "Chemotherapy infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Cytotoxic waste treatment"]),
+      block("EM06", "Immunotherapy or targeted infusion cycle", "per cycle", ["Drug dose", "Infusion materials", "Cytotoxic waste treatment"]),
+      block("EM06", "Oral systemic therapy cycle", "per cycle", ["Drug dose", "Pharmaceutical packaging"]),
       block("EM06", "Pharmacy preparation", "per preparation", ["Pharmacy staff time", "PPE", "Syringes or bags", "Cytotoxic waste"]),
-      block("EM06", "Therapy monitoring laboratory set", "per monitoring set", ["Blood draw", "Lab reagents", "Analyzer electricity", "Reporting"]),
+      block("EM06", "Therapy monitoring laboratory set", "per monitoring set", ["Phlebotomy consumables", "Lab reagents", "Analyzer electricity"]),
 
-      block("EM07", "TURBT procedure episode", "per procedure", ["Operating room time", "Irrigation fluid", "Urinary catheter", "Sterile instruments", "Surgical waste"], ["urology"]),
-      block("EM07", "Radical cystectomy procedure episode", "per procedure", ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Surgical waste"], ["urology"]),
-      block("EM07", "Urinary diversion procedure add-on", "per procedure", ["Additional operating room time", "Bowel anastomosis materials", "Ureteral stents or catheters", "Stoma starter supplies"], ["urology"]),
-      block("EM07", "Colorectal resection procedure episode", "per procedure", ["Operating room time", "Anesthesia medicines and gases", "Sterile instruments", "Stoma materials if used"], ["gastro"]),
+      block("EM07", "TURBT procedure episode", "per procedure", ["Allocated operating-room electricity and HVAC", "Irrigation fluid", "Urinary catheter", "Sterile instruments", "Surgical waste treatment"], ["urology"]),
+      block("EM07", "Radical cystectomy procedure episode", "per procedure", ["Allocated operating-room electricity and HVAC", "Anesthesia medicines and gases", "Sterile instruments", "Surgical waste treatment"], ["urology"]),
+      block("EM07", "Urinary diversion procedure add-on", "per procedure", ["Additional allocated operating-room electricity and HVAC", "Bowel anastomosis materials", "Ureteral stents or catheters", "Stoma starter supplies"], ["urology"]),
+      block("EM07", "Colorectal resection procedure episode", "per procedure", ["Allocated operating-room electricity and HVAC", "Anesthesia medicines and gases", "Sterile instruments", "Stoma materials if used"], ["gastro"]),
       block("EM07", "Colorectal perioperative care / ERAS episode", "per surgical episode", ["Antibiotic prophylaxis", "VTE prophylaxis", "Multimodal analgesia", "Catheter or drain materials", "Early oral nutrition"], ["gastro"]),
-      block("EM07", "Operating room time", "per OR hour", ["OR electricity", "Ventilation", "Lighting", "Equipment use"]),
+      block("EM07", "Operating-room energy allocation", "per OR hour", ["OR electricity", "Ventilation electricity", "Lighting electricity", "Equipment electricity"]),
       block("EM07", "Anesthesia episode", "per anesthesia", ["Anesthetic medicines", "Airway materials", "Monitoring consumables"]),
       block("EM07", "Sterile instrument set", "per set", ["CSSD processing", "Sterilization energy", "Packaging", "Transport"]),
       block("EM07", "Surgical consumable pack", "per procedure", ["Drapes", "Gowns", "Gloves", "Single-use instruments"]),
-      block("EM07", "Ward admission day", "per bed-day", ["Ward energy", "Nursing time", "Meals", "Linen", "Waste"]),
-      block("EM07", "ICU admission day", "per ICU day", ["ICU energy", "Monitoring equipment", "Consumables", "Medicines"]),
-      block("EM07", "Procedure-related clinical waste", "per kg waste", ["Waste mass", "Waste segregation", "Treatment route"]),
+      block("EM07", "Ward admission day", "per bed-day", ["Allocated ward energy", "Meals", "Laundry service", "Ward waste treatment"]),
+      block("EM07", "ICU admission day", "per ICU day", ["Allocated ICU energy", "Monitoring consumables", "Medicines"]),
+      block("EM07", "Procedure-related clinical waste", "per kg waste", ["Clinical waste treatment service"]),
 
-      block("EM08", "Radiotherapy planning", "per treatment plan", ["Planning CT", "Treatment planning workstation", "Staff time"]),
-      block("EM08", "Radiotherapy fraction", "per fraction", ["Linear accelerator electricity", "Machine time"]),
-      block("EM08", "Immobilization device", "per device", ["Thermoplastic mask or mold", "Setup materials", "Waste"]),
-      block("EM08", "Chemoradiation co-treatment add-on", "per cycle or fraction set", ["Systemic therapy inputs", "Extra monitoring", "Combined visits"]),
-      block("EM08", "Brachytherapy treatment episode", "per episode", ["Applicator or catheter set", "Imaging guidance", "Source delivery time", "Anesthesia if used"], ["urology"]),
+      block("EM08", "Radiotherapy planning", "per treatment plan", ["Planning CT service", "Allocated workstation electricity"]),
+      block("EM08", "Radiotherapy fraction", "per fraction", ["Linear accelerator electricity"]),
+      block("EM08", "Immobilization device", "per device", ["Thermoplastic mask or mold", "Setup materials", "Immobilization-device waste treatment"]),
+      block("EM08", "Chemoradiation co-treatment add-on", "per cycle or fraction set", ["Systemic therapy products", "Monitoring consumables"]),
+      block("EM08", "Brachytherapy treatment episode", "per episode", ["Applicator or catheter set", "Imaging service", "Anesthetic medicines if used"], ["urology"]),
 
-      block("EM09", "Outpatient follow-up visit", "per visit", ["Clinician time", "Room use", "EHR use"]),
-      block("EM09", "Surveillance test set", "per surveillance round", ["Blood test", "Imaging or endoscopy", "Reporting"]),
-      block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation", "Colonoscopy", "Endoscope reprocessing"], ["gastro"]),
-      block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["Clinical review", "CEA or laboratory testing", "Imaging if indicated", "Colonoscopy if indicated"], ["gastro"]),
-      block("EM09", "Rectal watch-and-wait surveillance round", "per surveillance round", ["Pelvic MRI", "Flexible endoscopy", "Biopsy if indicated", "Clinical assessment"], ["gastro"]),
-      block("EM09", "Rectal response assessment", "per response assessment", ["Pelvic MRI", "Flexible endoscopy", "Clinical assessment", "Response reporting"], ["gastro"]),
-      block("EM09", "Post-cystectomy surveillance round", "per surveillance round", ["Clinical review", "Imaging if indicated", "Laboratory testing"], ["urology"]),
-      block("EM09", "Bladder-preservation response assessment", "per response assessment", ["Cystoscopy", "Urine cytology", "Imaging if indicated"], ["urology"]),
-      block("EM09", "Bladder-preservation surveillance round", "per surveillance round", ["Cystoscopy", "Urine cytology", "Imaging if indicated"], ["urology"]),
+      block("EM09", "Outpatient follow-up visit", "per visit", ["Clinician time", "Room use"]),
+      block("EM09", "Surveillance test set", "per surveillance round", ["Laboratory testing service", "Imaging or endoscopy service"]),
+      block("EM09", "Post-polypectomy surveillance colonoscopy", "per surveillance colonoscopy", ["Bowel preparation product", "Colonoscopy service", "Endoscope reprocessing service"], ["gastro"]),
+      block("EM09", "Post-CRC treatment surveillance round", "per surveillance round", ["CEA or laboratory testing service", "Imaging service if indicated", "Colonoscopy service if indicated"], ["gastro"]),
+      block("EM09", "Rectal watch-and-wait surveillance round", "per surveillance round", ["Pelvic MRI service", "Flexible endoscopy service", "Biopsy materials if indicated"], ["gastro"]),
+      block("EM09", "Rectal response assessment", "per response assessment", ["Pelvic MRI service", "Flexible endoscopy service"], ["gastro"]),
+      block("EM09", "Post-cystectomy surveillance round", "per surveillance round", ["Imaging service if indicated", "Laboratory testing service"], ["urology"]),
+      block("EM09", "Bladder-preservation response assessment", "per response assessment", ["Cystoscopy service", "Urine cytology service", "Imaging service if indicated"], ["urology"]),
+      block("EM09", "Bladder-preservation surveillance round", "per surveillance round", ["Cystoscopy service", "Urine cytology service", "Imaging service if indicated"], ["urology"]),
       block("EM09", "Urinary diversion or stoma follow-up", "per visit", ["Ostomy appliances", "Urinary drainage supplies", "Skin care materials", "Clinical review"]),
-      block("EM09", "Home-based follow-up kit", "per kit", ["Sampling material", "Shipping", "Laboratory processing", "Digital app use"]),
+      block("EM09", "Home-based follow-up kit", "per kit", ["Sampling materials", "Sample transport service", "Laboratory processing service"]),
 
-      block("EM10", "Patient travel", "per round trip", ["Distance", "Mode share", "Companion travel if included"]),
-      block("EM10", "Caregiver travel", "per round trip", ["Distance", "Mode share", "Attendance assumptions"]),
-      block("EM10", "Patient food or accommodation", "per visit or day", ["Meals", "Accommodation", "Allocation rule"]),
+      block("EM10", "Patient travel", "per round trip", ["Passenger transport service by mode"]),
+      block("EM10", "Caregiver travel", "per round trip", ["Passenger transport service by mode"]),
+      block("EM10", "Patient food or accommodation", "per visit or day", ["Meals", "Accommodation service"]),
       block("EM10", "Digital patient support", "per episode", ["App use", "Portal messages", "Home monitoring device if used"]),
 
-      block("EM11", "Building energy allocation", "per room-hour or m2-hour", ["Electricity", "Heating", "Cooling", "Allocation key"]),
+      block("EM11", "Building energy allocation", "per room-hour or m2-hour", ["Allocated electricity", "Allocated heating", "Allocated cooling"]),
       block("EM11", "Cleaning service", "per room turnover", ["Cleaning materials", "Staff time", "Water", "Wastewater"]),
       block("EM11", "Laundry service", "per kg textile", ["Washing energy", "Water", "Detergent", "Transport"]),
-      block("EM11", "General waste handling", "per kg waste", ["Waste mass", "Treatment route", "Transport"]),
-      block("EM11", "Shared sterilization support", "per sterilization cycle", ["Autoclave energy", "Water", "Packaging", "CSSD allocation"])
+      block("EM11", "General waste handling", "per kg waste", ["Waste-treatment service by route", "Waste transport service"]),
+      block("EM11", "Shared sterilization support", "per sterilization cycle", ["Allocated autoclave energy", "Water", "Packaging"])
     ];
 
     const activityBuildingBlockRegistry = {};
@@ -4165,7 +4246,7 @@
     );
     registerActivityBuildingBlocks(
       ["EAUFULL-TX07", "EMC-TX07"],
-      [automaticBlock("Operating room time")]
+      [automaticBlock("Operating-room energy allocation")]
     );
     registerActivityBuildingBlocks(
       ["EAUFULL-TX08", "EMC-TX08"],
@@ -4416,33 +4497,35 @@
       return Number((climateFactor * category.demoScale).toPrecision(5));
     }
 
-    const lcaDefaultRows = buildingBlockRegistry.map((item, index) => {
-      const defaults = moduleCalculationDefaults[item.module] || { factor: 1 };
-      const quantity = defaultQuantityForBlock(item);
-      const factor = Number((defaults.factor * (1 + (index % 5) * 0.11)).toFixed(4));
-      return {
-        id: `${item.module.toLowerCase()}-${slugify(item.name)}`,
-        module: item.module,
-        block: item.name,
-        flow: item.resourceFlows.join("; "),
-        unit: item.unit,
-        quantity,
-        uncertainties: Object.fromEntries(
-          impactCategoryRegistry.map((category) => [category.id, demoCoefficientUncertainty])
-        ),
-        factors: Object.fromEntries(
-          impactCategoryRegistry.map((category) => [category.id, demoImpactCoefficient(category, factor)])
-        ),
-        editedFactors: {},
-        defaultQuantity: quantity,
-        automaticQuantity: 0,
-        quantityEdited: false,
-        automaticallyIncluded: false,
-        included: false,
-        applicability: item.applicability,
-        gap: `Dummy aggregate coefficient. Replace with foreground LCI for ${item.resourceFlows.join(", ")} and documented LCIA mapping.`
-      };
-    });
+    const lcaDefaultRows = buildingBlockRegistry
+      .filter((item) => item.resourceFlows.length > 0)
+      .map((item, index) => {
+        const defaults = moduleCalculationDefaults[item.module] || { factor: 1 };
+        const quantity = defaultQuantityForBlock(item);
+        const factor = Number((defaults.factor * (1 + (index % 5) * 0.11)).toFixed(4));
+        return {
+          id: `${item.module.toLowerCase()}-${slugify(item.name)}`,
+          module: item.module,
+          block: item.name,
+          flow: item.resourceFlows.join("; "),
+          unit: item.unit,
+          quantity,
+          uncertainties: Object.fromEntries(
+            impactCategoryRegistry.map((category) => [category.id, demoCoefficientUncertainty])
+          ),
+          factors: Object.fromEntries(
+            impactCategoryRegistry.map((category) => [category.id, demoImpactCoefficient(category, factor)])
+          ),
+          editedFactors: {},
+          defaultQuantity: quantity,
+          automaticQuantity: 0,
+          quantityEdited: false,
+          automaticallyIncluded: false,
+          included: false,
+          applicability: item.applicability,
+          gap: `Synthetic unit impact result. Replace it with a Brightway result from documented foreground LCI for ${item.resourceFlows.join(", ")}.`
+        };
+      });
 
     let lcaRows = lcaDefaultRows.map((row) => ({
       ...row,
@@ -4473,10 +4556,10 @@
           activity("EAU-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM02", "diagnostic", 360, 112, "Laboratory and urine-based diagnostic information used in the diagnostic pathway.", "This may be relevant for upstream pathway scope, but may fall outside a post-referral Erasmus MC boundary.", ["Laboratory materials", "Specimen transport", "Staff time"], ["Are these tests repeated at Erasmus MC or only reviewed from referring hospitals?"]),
           activity("EAU-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 500, 112, "Endoscopic visualization used in bladder cancer diagnosis and surveillance logic.", "Included in the guideline pathway. It should not be added to the EMC local map unless local experts confirm it occurs in the selected boundary.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy a pre-pathway activity for the current MIBC case?"]),
           activity("EAU-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 640, 112, "Transurethral resection provides tissue diagnosis and staging information.", "Important guideline activity, but likely upstream of the current EMC Bladder Cancer Center workflow unless repeated or reviewed.", ["Operating room time", "Anesthesia", "Instruments", "Pathology sample", "Waste"], ["Does the ECO-PATH MIBC model include TURBT or only pathology review after referral?"]),
-          activity("EAU-DX05", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 780, 112, "Pathological confirmation and staging information used for treatment selection.", "This can map to pathology review in the local pathway if Erasmus MC performs revision or reassessment.", ["Pathology staff time", "Slides or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
+          activity("EAU-DX05", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 780, 112, "Pathological confirmation and staging information used for treatment selection.", "This can map to pathology review in the local pathway if Erasmus MC performs revision or reassessment.", ["Pathology staff time", "Slides or digital pathology"], ["Which pathology material is reviewed locally?"]),
           activity("EAU-DX06", "Staging imaging", "Diagnostics", "activity", "EM03", "diagnostic", 920, 112, "Imaging for staging and assessment of treatment options.", "Guideline-level staging imaging can overlap with EMC radiology and CT reassessment nodes.", ["CT or MRI scan", "Contrast media", "Scanner electricity", "Patient travel"], ["Which imaging is new, repeated, or reviewed only?"]),
-          activity("EAU-DX07", "Fitness and health status assessment", "Diagnostics", "decision", "EM05", "diagnostic", 1060, 112, "Assessment of whether radical treatment, systemic therapy, bladder-sparing treatment, or palliative care is clinically appropriate.", "Retained as a decision node because it controls downstream resource demand.", ["Clinical staff time", "Assessment tools", "EHR documentation"], ["Which fitness variables are available from local records?"]),
-          activity("EAU-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1060, 292, "Multidisciplinary review before treatment initiation and treatment route selection.", "This is clinically central and a candidate ECO-PATH module across oncology pathways.", ["Clinician time", "Meeting room use", "Imaging display", "EHR access"], ["Which disciplines attend, and how often are cases re-discussed?"]),
+          activity("EAU-DX07", "Fitness and health status assessment", "Diagnostics", "decision", "EM05", "diagnostic", 1060, 112, "Assessment of whether radical treatment, systemic therapy, bladder-sparing treatment, or palliative care is clinically appropriate.", "Retained as a decision node because it controls downstream resource demand.", ["Clinical staff time", "Assessment tools"], ["Which fitness variables are available from local records?"]),
+          activity("EAU-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1060, 292, "Multidisciplinary review before treatment initiation and treatment route selection.", "This is clinically central and a candidate ECO-PATH module across oncology pathways.", ["Clinician time", "Meeting room use", "Imaging display"], ["Which disciplines attend, and how often are cases re-discussed?"]),
           activity("EAU-TX01", "Treatment intent decision", "Treatment planning", "decision", "EM05", "treatment", 920, 292, "Definition of curative, organ-sparing, systemic, or palliative intent.", "Kept separate from treatment delivery because it determines pathway topology.", ["Consultation time", "Shared decision documentation", "Scheduling"], ["Which alternatives are clinically comparable for environmental comparison?"]),
           activity("EAU-TX02", "Perioperative systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 780, 292, "Eligibility assessment for neoadjuvant, adjuvant, or other systemic therapy.", "Oncology should appear here as systemic therapy decision logic, not only as a professional label.", ["Medical oncology review", "Laboratory monitoring", "Pharmacy planning"], ["Which regimens, cycles, and dose assumptions are in scope?"]),
           activity("EAU-TX03", "Neoadjuvant or adjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 640, 292, "Systemic therapy delivered before or after local treatment when clinically indicated.", "This is the main oncology-related LCA activity because drugs, infusion materials, pharmacy preparation, and waste are concentrated here.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Day-care chair time", "Cytotoxic waste"], ["Which drug regimens are used locally for the target population?"]),
@@ -4522,20 +4605,20 @@
         ],
         nodes: [
           activity("EAUFULL-AC01", "Referral or presentation", "Access", "activity", "EM01", "diagnostic", 70, 92, "Entry boundary after suspected bladder cancer, presentation, or referral into MIBC workup.", "This node establishes the guideline scope and does not represent an additional consultation. The first resource-bearing clinical assessment is counted at DX01.", ["Referral record", "Boundary definition"], ["Define whether ECO-PATH starts at first presentation, first specialist referral, confirmed MIBC, or tertiary referral."]),
-          activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "This is the first resource-bearing specialist contact in the guideline pathway and is modeled in EM01. The DX code retains its clinical position in the diagnostic sequence.", ["Clinician time", "Outpatient room use", "EHR documentation"], ["Which baseline assessments are repeated after referral?"]),
+          activity("EAUFULL-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "History, physical examination, and baseline clinical assessment before staging and treatment selection.", "This is the first resource-bearing specialist contact in the guideline pathway and is modeled in EM01. The DX code retains its clinical position in the diagnostic sequence.", ["Clinician time", "Outpatient room use"], ["Which baseline assessments are repeated after referral?"]),
           activity("EAUFULL-DX02", "Urine cytology and laboratory workup", "Diagnostics", "activity", "EM02", "diagnostic", 290, 92, "Urine cytology and laboratory workup used in diagnostic assessment and treatment planning.", "This can affect resource use if tests are repeated locally or added before treatment.", ["Laboratory testing", "Specimen transport", "Staff time"], ["Are these tests performed locally or only reviewed from referring hospitals?"]),
           activity("EAUFULL-DX03", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 400, 92, "Endoscopic visualization and documentation of bladder tumor characteristics.", "Cystoscopy is guideline-relevant, but it may be outside a post-referral Erasmus MC boundary unless repeated locally.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is cystoscopy inside the selected pathway boundary?"]),
           activity("EAUFULL-DX04", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 510, 92, "Transurethral resection used for histopathological diagnosis and staging.", "TURBT is resource-intensive and should be explicit if the ECO-PATH boundary starts before confirmed MIBC.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Does the MIBC model include TURBT or only review of TURBT results?"]),
-          activity("EAUFULL-DX05", "Pathology report and specimen review", "Diagnostics", "activity", "EM02", "diagnostic", 620, 92, "Pathology report review, grade and invasion depth confirmation, and specimen adequacy assessment.", "Pathology is separated because EAU provides explicit diagnostic requirements and local workflows may include pathology revision.", ["Pathologist time", "Microscopy or digital pathology", "Report generation"], ["Which pathology material is reviewed locally?"]),
-          activity("EAUFULL-DX06", "CT chest abdomen pelvis staging with urothelial phase", "Diagnostics", "activity", "EM03", "diagnostic", 750, 92, "CT imaging of the chest, abdomen, and pelvis for confirmed MIBC, including urothelial assessment when it is part of the same staging protocol.", "EAU recommends CT staging before curative treatment. The urothelial phase should not be counted as a second scan when it is performed within the same acquisition.", ["Scanner electricity", "Contrast media", "Radiology reporting", "Patient travel"], ["Which CT phases are included in one local staging protocol and which examinations are genuinely additional?"]),
-          activity("EAUFULL-DX07", "Additional upper tract assessment if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 880, 92, "Additional upper-tract urothelial evaluation only when the standard staging CT does not answer the clinical question.", "This optional node prevents routine double counting of CT urography when the urothelial phase is already included in CT staging.", ["Scanner electricity", "Contrast media", "Radiology reporting"], ["Which indication triggers a genuinely separate upper-tract examination?"]),
-          activity("EAUFULL-DX08", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 1010, 92, "MRI for local staging or response assessment, and PET-CT where clinically indicated.", "These imaging options are guideline-relevant but should be parameterized only if they occur in the selected scenario.", ["MRI scan", "PET-CT scan", "Radiology reporting", "Patient travel"], ["Which additional imaging tests are used for the target population?"]),
-          activity("EAUFULL-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1100, 230, "Multidisciplinary team discussion before treatment initiation and route selection.", "MDT is the clinical bridge between diagnostic findings and treatment intent.", ["Clinician time", "Meeting room use", "Imaging display", "EHR access"], ["Which specialties attend and how often are patients re-discussed?"]),
-          activity("EAUFULL-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 950, 230, "Assessment of health status, frailty, comorbidity, cognition, and fitness for radical or bladder-sparing treatment.", "EAU includes health status because chronological age alone is insufficient for treatment choice.", ["Assessment time", "Laboratory review", "EHR documentation"], ["Which fitness scores or geriatric assessments are available locally?"]),
+          activity("EAUFULL-DX05", "Pathology report and specimen review", "Diagnostics", "activity", "EM02", "diagnostic", 620, 92, "Pathology report review, grade and invasion depth confirmation, and specimen adequacy assessment.", "Pathology is separated because EAU provides explicit diagnostic requirements and local workflows may include pathology revision.", ["Pathologist time", "Microscopy or digital pathology"], ["Which pathology material is reviewed locally?"]),
+          activity("EAUFULL-DX06", "CT chest abdomen pelvis staging with urothelial phase", "Diagnostics", "activity", "EM03", "diagnostic", 750, 92, "CT imaging of the chest, abdomen, and pelvis for confirmed MIBC, including urothelial assessment when it is part of the same staging protocol.", "EAU recommends CT staging before curative treatment. The urothelial phase should not be counted as a second scan when it is performed within the same acquisition.", ["Scanner electricity", "Contrast media", "Patient travel"], ["Which CT phases are included in one local staging protocol and which examinations are genuinely additional?"]),
+          activity("EAUFULL-DX07", "Additional upper tract assessment if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 880, 92, "Additional upper-tract urothelial evaluation only when the standard staging CT does not answer the clinical question.", "This optional node prevents routine double counting of CT urography when the urothelial phase is already included in CT staging.", ["Scanner electricity", "Contrast media"], ["Which indication triggers a genuinely separate upper-tract examination?"]),
+          activity("EAUFULL-DX08", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 1010, 92, "MRI for local staging or response assessment, and PET-CT where clinically indicated.", "These imaging options are guideline-relevant but should be parameterized only if they occur in the selected scenario.", ["MRI scan", "PET-CT scan", "Patient travel"], ["Which additional imaging tests are used for the target population?"]),
+          activity("EAUFULL-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1100, 230, "Multidisciplinary team discussion before treatment initiation and route selection.", "MDT is the clinical bridge between diagnostic findings and treatment intent.", ["Clinician time", "Meeting room use", "Imaging display"], ["Which specialties attend and how often are patients re-discussed?"]),
+          activity("EAUFULL-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 950, 230, "Assessment of health status, frailty, comorbidity, cognition, and fitness for radical or bladder-sparing treatment.", "EAU includes health status because chronological age alone is insufficient for treatment choice.", ["Assessment time", "Laboratory review"], ["Which fitness scores or geriatric assessments are available locally?"]),
           activity("EAUFULL-TX02", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 800, 230, "Eligibility assessment for cisplatin-based or alternative perioperative systemic therapy.", "This decision controls whether systemic therapy modules are active and which regimen parameters are needed.", ["Medical oncology review", "Laboratory monitoring", "Pharmacy planning"], ["Which eligibility criteria and regimens are used locally?"]),
           activity("EAUFULL-TX03", "Treatment intent and shared decision", "Treatment planning", "decision", "EM05", "treatment", 650, 230, "Decision on curative, bladder-sparing, systemic, or palliative treatment intent after informed discussion.", "This is kept separate because it defines the pathway scenario rather than the resource use of one procedure.", ["Consultation time", "Shared decision documentation", "Scheduling"], ["Which alternatives are clinically comparable for environmental comparison?"]),
           activity("EAUFULL-TX04", "Perioperative systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 500, 348, "Guideline-defined neoadjuvant, adjuvant, or perioperative systemic treatment according to eligibility and the current 2026 recommendations.", "The generic activity label accommodates evolving chemo-immunotherapy options without treating one regimen as universal. Each scenario still needs a dated regimen, cycle, dose, and monitoring specification.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring", "Cytotoxic waste"], ["Which EAU 2026 systemic option is relevant to the selected clinical scenario, and is it implemented in Dutch practice?"]),
-          activity("EAUFULL-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 650, 348, "Restaging assessment after neoadjuvant treatment to detect progression or metastatic disease before definitive treatment.", "EAU follow-up and treatment sections identify restaging as a relevant pathway-changing assessment.", ["CT scan", "MRI scan", "Radiology reporting", "Clinical review"], ["Which restaging modality is used locally?"]),
+          activity("EAUFULL-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 650, 348, "Restaging assessment after neoadjuvant treatment to detect progression or metastatic disease before definitive treatment.", "EAU follow-up and treatment sections identify restaging as a relevant pathway-changing assessment.", ["CT scan", "MRI scan"], ["Which restaging modality is used locally?"]),
           activity("EAUFULL-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 800, 348, "Radical cystectomy as a primary curative surgical option for eligible patients.", "This is a high-resource surgical activity and should be separated from planning decisions and follow-up.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Which surgical episode boundary should be used?"]),
           activity("EAUFULL-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 900, 348, "Pelvic lymph node dissection as part of the surgical treatment pathway where indicated.", "This can change operation time, instruments, pathology specimens, and downstream staging.", ["Operating room time", "Sterile instruments", "Pathology sample", "Surgical waste"], ["Should lymph node dissection be modeled as part of cystectomy or as a separate parameter?"]),
           activity("EAUFULL-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 1000, 348, "Choice of urinary diversion such as ileal conduit, neobladder, or other diversion options.", "EAU provides detailed diversion considerations. ECO-PATH needs this as a parameter because resource flows and follow-up differ by diversion.", ["Operating room time", "Surgical consumables", "Ward stay", "Patient education"], ["Which diversion types are relevant for the selected patient population?"]),
@@ -4616,24 +4699,24 @@
         ],
         nodes: [
           activity("EMC-FC01", "Referral to regional urology", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral or handover to regional urology after hematuria or another suspicion of bladder cancer.", "This marks the operational boundary before diagnosis at ASZ or another regional hospital. It does not represent a second consultation; the first resource-bearing urology assessment is counted at DX01.", ["Referral record", "Appointment handover"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
-          activity("EMC-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "Initial urology consultation and clinical assessment in the regional hospital.", "This is the first resource-bearing specialist contact and is modeled in EM01. Patient travel remains owned by the optional EM10 support module to prevent double counting.", ["Outpatient room use", "EHR documentation", "Clinical assessment"], ["Which baseline tests are routinely ordered at ASZ?"]),
+          activity("EMC-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "Initial urology consultation and clinical assessment in the regional hospital.", "This is the first resource-bearing specialist contact and is modeled in EM01. Patient travel remains owned by the optional EM10 support module to prevent double counting.", ["Outpatient room use", "Clinical assessment"], ["Which baseline tests are routinely ordered at ASZ?"]),
           activity("EMC-DX02", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 290, 92, "Cystoscopic visualization of a suspected bladder tumor in the regional hospital.", "Cystoscopy is a material and reprocessing activity that belongs inside the expanded Dutch boundary.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is flexible cystoscopy the default diagnostic procedure at ASZ?"]),
           activity("EMC-DX03", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 410, 92, "Transurethral resection of bladder tumor to obtain tissue and assess invasion.", "TURBT is performed before tertiary referral in this pathway and is environmentally relevant due to theatre, anesthesia, instruments, and pathology flows.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology specimen", "Surgical waste"], ["Confirm admission type, anesthesia, repeat TURBT frequency, and procedure location."]),
-          activity("EMC-DX04", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 530, 92, "Regional pathology establishes tumor type, grade, and muscle invasion after TURBT.", "Pathology determines whether the patient remains in a local non-MIBC pathway or enters the MIBC referral pathway.", ["Specimen processing", "Slides and staining", "Pathology reporting", "Laboratory electricity"], ["Which pathology tests and ancillary stains are used before referral?"]),
+          activity("EMC-DX04", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 530, 92, "Regional pathology establishes tumor type, grade, and muscle invasion after TURBT.", "Pathology determines whether the patient remains in a local non-MIBC pathway or enters the MIBC referral pathway.", ["Specimen processing", "Slides and staining", "Laboratory electricity"], ["Which pathology tests and ancillary stains are used before referral?"]),
           activity("EMC-DX05", "MIBC confirmation and referral decision", "Diagnostics", "decision", "EM05", "diagnostic", 650, 92, "Decision after pathology whether disease is muscle-invasive and requires tertiary multidisciplinary assessment.", "This is the main cross-hospital boundary decision. It preserves the large NMIBC branch without expanding that separate care pathway here.", ["Pathology review", "Clinical review", "Referral decision"], ["Confirm referral criteria, exclusions, and whether all non-metastatic MIBC in the ASZ region is referred to Erasmus MC."]),
           activity("EMC-FU01", "Non-MIBC local pathway", "Follow-up", "activity", "EM09", "return", 800, 92, "Patients without confirmed MIBC leave the current MIBC scope and continue local treatment or surveillance.", "This endpoint prevents the pathway from implying that most patients with a detected bladder lesion proceed to Erasmus MC MIBC care.", ["Local follow-up", "Surveillance cystoscopy", "Patient travel"], ["Should a separate NMIBC pathway be developed later?"]),
-          activity("EMC-DX06", "CT chest abdomen pelvis staging", "Diagnostics", "activity", "EM03", "diagnostic", 650, 220, "Cross-sectional staging to assess non-metastatic status before or around tertiary referral.", "Recent thoracic and abdominal imaging is part of the information needed for Erasmus MC assessment.", ["Scanner electricity", "Contrast media", "Radiology reporting", "Patient travel"], ["Which staging CT protocol is performed at ASZ and how recent must it be at referral?"]),
-          activity("EMC-DX07", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 800, 220, "Additional local staging or problem-solving imaging when clinically indicated.", "This is a scenario-dependent activity, not a default for every patient.", ["MRI scan", "PET-CT scan", "Radiology reporting", "Patient travel"], ["Which indications trigger PET-CT or MRI in regional practice?"]),
+          activity("EMC-DX06", "CT chest abdomen pelvis staging", "Diagnostics", "activity", "EM03", "diagnostic", 650, 220, "Cross-sectional staging to assess non-metastatic status before or around tertiary referral.", "Recent thoracic and abdominal imaging is part of the information needed for Erasmus MC assessment.", ["Scanner electricity", "Contrast media", "Patient travel"], ["Which staging CT protocol is performed at ASZ and how recent must it be at referral?"]),
+          activity("EMC-DX07", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 800, 220, "Additional local staging or problem-solving imaging when clinically indicated.", "This is a scenario-dependent activity, not a default for every patient.", ["MRI scan", "PET-CT scan", "Patient travel"], ["Which indications trigger PET-CT or MRI in regional practice?"]),
           activity("EMC-FC02", "Transfer to Erasmus MC", "Access", "activity", "EM01", "diagnostic", 940, 220, "Transfer of the confirmed MIBC referral package from ASZ or another regional hospital to Erasmus MC.", "The activity marks the institutional handover. Its administrative-only components are subject to cut-off, but travel or repeated clinical work remains in scope.", ["Referral package", "Pathology material transfer", "Imaging transfer", "Patient travel"], ["Which documents, specimens, and images must be complete before transfer?"]),
-          activity("EMC-DX08", "Pathology review", "Diagnostics", "activity", "EM02", "diagnostic", 1080, 220, "Erasmus MC review of regional TURBT pathology and diagnostic material.", "Specialist review can confirm muscle invasion, variant histology, grade, and adequacy before route selection.", ["Slide transport", "Microscopy or digital pathology", "Report generation"], ["Is central pathology revision performed for all referred MIBC cases?"]),
-          activity("EMC-DX09", "Repeat or supplemental staging imaging if required", "Diagnostics", "activity", "EM03", "diagnostic", 1080, 348, "Conditional repeat or supplemental staging imaging when transferred imaging is too old, incomplete, or of insufficient quality.", "Selecting this optional node means that an additional scan occurs and therefore activates a CT building block. Imaging review alone remains under the provisional cut-off.", ["Scanner electricity", "Contrast media", "Radiology reporting"], ["What age, quality, or staging criteria trigger repeat imaging, and which modality is used?"]),
+          activity("EMC-DX08", "Pathology review", "Diagnostics", "activity", "EM02", "diagnostic", 1080, 220, "Erasmus MC review of regional TURBT pathology and diagnostic material.", "Specialist review can confirm muscle invasion, variant histology, grade, and adequacy before route selection.", ["Slide transport", "Microscopy or digital pathology"], ["Is central pathology revision performed for all referred MIBC cases?"]),
+          activity("EMC-DX09", "Repeat or supplemental staging imaging if required", "Diagnostics", "activity", "EM03", "diagnostic", 1080, 348, "Conditional repeat or supplemental staging imaging when transferred imaging is too old, incomplete, or of insufficient quality.", "Selecting this optional node means that an additional scan occurs and therefore activates a CT building block. Imaging review alone remains under the provisional cut-off.", ["Scanner electricity", "Contrast media"], ["What age, quality, or staging criteria trigger repeat imaging, and which modality is used?"]),
           activity("EMC-JM01", "Joint clinic", "Joint clinic and MDT", "activity", "EM04", "diagnostic", 940, 348, "Patient-facing multidisciplinary bladder cancer clinic at Erasmus MC.", "The visit supports shared assessment. Staff labor alone is not characterized, but patient travel, room use, and any additional procedures remain relevant.", ["Patient travel", "Outpatient room use", "Additional tests if ordered"], ["Which specialties are present and can this visit be remote for selected patients?"]),
-          activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 800, 348, "Multidisciplinary review of staging, pathology, fitness, and treatment options.", "The meeting remains visible because it determines the pathway, but its minor office and ICT inputs are provisionally excluded from LCA calculation.", ["Imaging display", "EHR access", "Meeting room electricity"], ["How many MDO discussions occur per patient and which repeat discussions change treatment?"]),
+          activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 800, 348, "Multidisciplinary review of staging, pathology, fitness, and treatment options.", "The meeting remains visible because it determines the pathway, but its minor office and ICT inputs are provisionally excluded from LCA calculation.", ["Imaging display", "Meeting room electricity"], ["How many MDO discussions occur per patient and which repeat discussions change treatment?"]),
           activity("EMC-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 660, 348, "Assessment of health status, comorbidity, frailty, and suitability for curative or bladder-preserving treatment.", "Fitness affects clinical comparability and route selection, so it must remain explicit even if its direct impact is small.", ["Patient travel", "Assessment tools", "Laboratory review"], ["Which fitness or geriatric instruments are used locally?"]),
           activity("EMC-TX02", "Treatment intent and shared decision", "Treatment planning", "decision", "EM05", "treatment", 520, 348, "Selection of curative surgery, bladder-preserving treatment, systemic treatment, or palliative intent after multidisciplinary counseling.", "This is the principal scenario-building node. It does not imply that all displayed alternatives are clinically equivalent.", ["Patient consultation", "Decision aids", "Patient travel"], ["Which treatment alternatives are comparable for the intended ECO-PATH decision question?"]),
           activity("EMC-TX03", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 390, 390, "Eligibility assessment for perioperative systemic therapy, including regimen-specific contraindications.", "Systemic treatment practice evolves over time, so this activity requires versioned regimen and eligibility assumptions.", ["Laboratory monitoring", "Medical oncology review", "Treatment planning"], ["Which Dutch and Erasmus MC regimens are current for the selected population and year?"]),
           activity("EMC-TX04", "Neoadjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 250, 410, "Systemic treatment before definitive local therapy when selected.", "This node contains medicine, pharmacy, infusion, monitoring, and waste flows and should be parameterized by regimen and cycle.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring", "Cytotoxic waste"], ["Does the selected scenario use chemotherapy alone or a newer perioperative combination?"]),
-          activity("EMC-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 100, 410, "Restaging after systemic therapy before definitive treatment.", "Restaging can detect progression and redirect the pathway.", ["CT scan", "MRI if indicated", "Radiology reporting", "Patient travel"], ["Which restaging modality and timing are used locally?"]),
+          activity("EMC-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 100, 410, "Restaging after systemic therapy before definitive treatment.", "Restaging can detect progression and redirect the pathway.", ["CT scan", "MRI if indicated", "Patient travel"], ["Which restaging modality and timing are used locally?"]),
           activity("EMC-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 390, 470, "Radical cystectomy as a definitive curative treatment route.", "This is a high-resource surgical building block that needs procedure, anesthesia, admission, and waste data.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Confirm surgical approach, operation time, and admission boundary."]),
           activity("EMC-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 530, 470, "Pelvic lymph node dissection performed with radical cystectomy where indicated.", "It can alter operation duration, pathology workload, and resource demand.", ["Operating room time", "Surgical instruments", "Pathology specimens", "Waste"], ["Model as a separate parameter or part of the cystectomy package?"]),
           activity("EMC-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 670, 470, "Choice and delivery implications of ileal conduit, neobladder, or another urinary diversion.", "Diversion type changes surgery, materials, admission, education, and long-term follow-up.", ["Surgical consumables", "Operating room time", "Stoma materials", "Patient education"], ["Which diversion types and frequencies should be represented?"]),
@@ -4703,7 +4786,7 @@
             moduleNote: "This is the first specialist hospital contact inside the colorectal lesion boundary. National screening-program activities remain upstream and excluded.",
             interpretation: "Specialist intake for a suspected colorectal lesion, including referral review and planning of the diagnostic work-up.",
             rationale: "The confirmed ECO-PATH boundary starts in specialist hospital care. FIT invitation, home sampling, laboratory screening, and screening logistics are not part of this pathway.",
-            resourceFlows: ["Patient travel", "Outpatient room use", "EHR review", "Diagnostic planning"]
+            resourceFlows: ["Patient travel", "Outpatient room use", "Diagnostic planning"]
           },
           {
             id: "CRCDUTCH-DX01",
@@ -4745,7 +4828,7 @@
             moduleNote: "Pathology classifies biopsy or polypectomy material and supplies the information needed to distinguish polyp management from CRC staging.",
             interpretation: "Specimen processing and histopathological classification of a colorectal lesion, including relevant polyp features or confirmation of CRC.",
             rationale: "The Dutch CRC and colonoscopy-surveillance protocols use histology and lesion characteristics to direct either risk-based polyp management or the cancer pathway.",
-            resourceFlows: ["Specimen processing", "Staining", "Microscopy or digital pathology", "Reporting"]
+            resourceFlows: ["Specimen processing", "Staining", "Microscopy or digital pathology"]
           },
           {
             id: "CRCDUTCH-DX06",
@@ -4832,7 +4915,7 @@
             moduleNote: "Thorax and abdomen staging CT is separated from pelvic MRI, which is activated only in the rectal treatment branch.",
             interpretation: "Contrast-enhanced CT of the thorax and abdomen for staging after primary colorectal cancer is diagnosed.",
             rationale: "The Dutch CRC guideline recommends CT thorax and abdomen with intravenous contrast for diagnosed primary CRC. Additional liver MRI or ultrasound is conditional when CT findings remain uncertain.",
-            resourceFlows: ["CT thorax/abdomen with contrast", "Radiology reporting", "Additional liver MRI or ultrasound if indicated"]
+            resourceFlows: ["CT thorax/abdomen with contrast", "Additional liver MRI or ultrasound if indicated"]
           },
           {
             id: "CRCDUTCH-JM01",
@@ -4936,7 +5019,7 @@
             moduleNote: "This combined node includes the resource-bearing response assessment and the subsequent choice between watch-and-wait surveillance and rectal surgery.",
             interpretation: "Pelvic MRI, flexible endoscopy, and clinical response assessment after neoadjuvant or radiotherapy treatment, followed by route selection.",
             rationale: "Dutch CRC guidance includes restaging after neoadjuvant treatment. The decision remains explicit because watch-and-wait and immediate surgery are alternative patient routes, but the preceding assessment must not be removed by the meeting-only cut-off.",
-            resourceFlows: ["Pelvic MRI", "Flexible endoscopy", "Clinical assessment", "Response reporting"]
+            resourceFlows: ["Pelvic MRI", "Flexible endoscopy", "Clinical assessment"]
           },
           {
             id: "CRCDUTCH-FU04",
@@ -5474,6 +5557,7 @@
         const profile = pathwayEvidenceProfiles[pathwayId];
         pathwayData[pathwayId].nodes.forEach((node) => {
           node.evidence = { pathwayId, ...profile };
+          node.resourceFlows = directLciInputs(node.resourceFlows);
         });
       });
       const missing = ["emc", "eauFull", "crcDutch"].flatMap((pathwayId) =>
@@ -5493,7 +5577,6 @@
             || !(node.protocolStep || node.interpretation)
             || !node.rationale
             || !Array.isArray(node.resourceFlows)
-            || node.resourceFlows.length === 0
           ))
           .map((node) => `${pathwayId}: ${node.id}`)
       );
@@ -5711,7 +5794,8 @@
         ecopathModule: "ECO-PATH module",
         moduleExplanation: "{module} {name}. This is the LCA modeling zone assigned to the selected activity, not a separate clinical activity. Candidate building blocks are shown in the LCA section. {definition}",
         cutoffActivityExplanation: "{module} {name} remains the clinical classification for this pathway decision or review. It does not activate a standalone LCA calculation row under the current provisional cut-off. Any separate travel, laboratory test, imaging examination, treatment, or procedure caused by the decision must be modeled through the corresponding resource-bearing module.",
-        resourceFlows: "Candidate resource flows",
+        resourceFlows: "Candidate LCI inputs",
+        noDirectLciInputs: "No direct LCI input is assigned under the current cut-off. The activity remains in the clinical pathway but does not create a standalone impact row.",
         expertConfirmation: "Expert confirmation needed",
         clinicalProtocolFallback: "{label} is represented as a {type} in the {domain} domain. This display text is a localized working summary for review, and the English source text remains the underlying protocol record.",
         clinicalRationaleFallback: "This element is retained because it can affect pathway structure, resource use, module selection, or data collection. Expert confirmation is still required before formal LCA use.",
@@ -5723,10 +5807,10 @@
         methodActivityText: "Clinical or operational action placed on the pathway map and reviewed by experts.",
         methodModuleTitle: "ECO-PATH module",
         methodModuleText: "LCA modeling zone assigned to pathway activities. It is not another clinical activity.",
-        methodResourceTitle: "Resource flow",
-        methodResourceText: "Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.",
+        methodResourceTitle: "LCI input",
+        methodResourceText: "A quantified product, energy, transport, water, material, or waste-treatment exchange. Time records and allocation rules may determine the amount, but are not LCI inputs themselves.",
         methodLciTitle: "LCI / LCIA link",
-        methodLciText: "Resource flows form a documented foreground inventory and connect reviewed unit processes to background datasets for LCIA.",
+        methodLciText: "LCI inputs form a documented foreground inventory. Brightway links them to background datasets and applies a versioned LCIA method; users do not create characterization factors from activity times or allocation rules.",
         lcaHeading: "Modular LCA calculation demo",
         lcaIntro: "Selected activities automatically activate their mapped modules, building blocks, and provisional quantities. Review the automatic selection and edit route-dependent quantities before calculation.",
         automaticFromActivities: "Auto from selected activities",
@@ -5741,7 +5825,7 @@
         pathwayStatus: "{pathway}: {pathwayModules} pathway modules + {supportModules} support modules",
         candidateBlockCount: "{blocks} candidate building blocks: {pathwayModules} pathway modules + {supportModules} support modules",
         unit: "Unit",
-        resourceFlowsLabel: "Resource flows",
+        resourceFlowsLabel: "LCI inputs",
         dummyGapTemplate: "Dummy aggregate coefficient. Replace with foreground LCI for {flows} and documented LCIA mapping.",
         baseQuantityAria: "{block} base quantity",
         uncertaintyAria: "{block} uncertainty percent",
@@ -5756,7 +5840,7 @@
         moduleOutsideBoundary: "; module outside boundary",
         use: "Use",
         buildingBlock: "Building block",
-        resourceFlowsToModel: "Resource flows to model",
+        resourceFlowsToModel: "LCI inputs to model",
         baseQuantity: "Base quantity",
         uncertainty: "Uncertainty, +/- %",
         impactCoefficient: "Unit impact result (demo), kg CO₂-eq/unit",
@@ -5890,7 +5974,8 @@
         ecopathModule: "ECO-PATH-module",
         moduleExplanation: "{module} {name}. Dit is de LCA-modelleerzone voor de geselecteerde activiteit, geen afzonderlijke klinische activiteit. Kandidaatbouwstenen staan in het LCA-gedeelte. {definition}",
         cutoffActivityExplanation: "{module} {name} blijft de klinische classificatie voor deze beslissing of beoordeling in het zorgpad. Onder de huidige voorlopige cut-off activeert dit geen afzonderlijke LCA-berekeningsrij. Afzonderlijke reizen, laboratoriumtests, beeldvorming, behandelingen of procedures die uit het besluit volgen, moeten via de bijbehorende hulpbrondragende module worden gemodelleerd.",
-        resourceFlows: "Kandidaat-resourceflows",
+        resourceFlows: "Kandidaat-LCI-inputs",
+        noDirectLciInputs: "Onder de huidige cut-off is geen directe LCI-input toegewezen. De activiteit blijft in het klinische zorgpad, maar krijgt geen afzonderlijke impactrij.",
         expertConfirmation: "Expertbevestiging nodig",
         clinicalProtocolFallback: "{label} is opgenomen als {type} binnen het domein {domain}. Deze tekst is een gelokaliseerde werksamenvatting voor review; de Engelse brontekst blijft het onderliggende protocolrecord.",
         clinicalRationaleFallback: "Dit element is behouden omdat het zorgpadstructuur, resourcegebruik, modulekeuze of dataverzameling kan beinvloeden. Expertbevestiging blijft nodig voordat het formeel voor LCA wordt gebruikt.",
@@ -5902,10 +5987,10 @@
         methodActivityText: "Klinische of operationele handeling op de zorgpadkaart en beoordeeld door experts.",
         methodModuleTitle: "ECO-PATH-module",
         methodModuleText: "LCA-modelleerzone toegewezen aan zorgpadactiviteiten. Het is geen extra klinische activiteit.",
-        methodResourceTitle: "Resourceflow",
-        methodResourceText: "Meetbare input of output binnen een module, zoals reizen, apparaattijd, energie, materialen of afval.",
+        methodResourceTitle: "LCI-input",
+        methodResourceText: "Een gekwantificeerd product, energie-, transport-, water-, materiaal- of afvalverwerkingsexchange. Tijdregistraties en allocatieregels kunnen de hoeveelheid bepalen, maar zijn zelf geen LCI-input.",
         methodLciTitle: "LCI / LCIA-koppeling",
-        methodLciText: "Hulpbronstromen vormen een gedocumenteerde voorgrondinventaris en koppelen beoordeelde eenheidsprocessen aan achtergronddatasets voor LCIA.",
+        methodLciText: "LCI-inputs vormen een gedocumenteerde voorgrondinventaris. Brightway koppelt deze aan achtergronddatasets en past een versiegebonden LCIA-methode toe; gebruikers maken geen karakterisatiefactoren uit tijdregistraties of allocatieregels.",
         lcaHeading: "Modulaire LCA-berekeningsdemo",
         lcaIntro: "Geselecteerde activiteiten activeren automatisch hun gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer de automatische selectie en pas routeafhankelijke hoeveelheden aan voor de berekening.",
         automaticFromActivities: "Automatisch uit geselecteerde activiteiten",
@@ -5920,7 +6005,7 @@
         pathwayStatus: "{pathway}: {pathwayModules} zorgpadmodules + {supportModules} ondersteunende modules",
         candidateBlockCount: "{blocks} kandidaatbouwstenen: {pathwayModules} zorgpadmodules + {supportModules} ondersteunende modules",
         unit: "Eenheid",
-        resourceFlowsLabel: "Resourceflows",
+        resourceFlowsLabel: "LCI-inputs",
         dummyGapTemplate: "Dummy-aggregaatcoefficient. Vervang deze door foreground-LCI voor {flows} en gedocumenteerde LCIA-koppeling.",
         baseQuantityAria: "{block} basishoeveelheid",
         uncertaintyAria: "{block} onzekerheidspercentage",
@@ -5935,7 +6020,7 @@
         moduleOutsideBoundary: "; module buiten grens",
         use: "Gebruik",
         buildingBlock: "Bouwsteen",
-        resourceFlowsToModel: "Te modelleren resourceflows",
+        resourceFlowsToModel: "Te modelleren LCI-inputs",
         baseQuantity: "Basishoeveelheid",
         uncertainty: "Onzekerheid, +/- %",
         impactCoefficient: "Eenheidsimpact (demo), kg CO₂-eq/eenheid",
@@ -6074,7 +6159,8 @@
           ecopathModule: "ECO-PATH 模块",
           moduleExplanation: "{module} {name}。这是分配给所选活动的 LCA 建模区域，不是另一个临床活动。候选构建块显示在 LCA 部分。{definition}",
           cutoffActivityExplanation: "{module} {name} 仍作为该路径决策或复核的临床分类保留。根据当前暂定 cut-off，它不会激活单独的 LCA 计算行。由该决策引起的单独出行、实验室检查、影像检查、治疗或操作，必须在相应的实质资源模块中建模。",
-          resourceFlows: "候选资源流",
+          resourceFlows: "候选 LCI 输入",
+          noDirectLciInputs: "当前 cut-off 下未分配直接 LCI 输入。该活动仍保留在临床路径中，但不会单独生成影响计算行。",
           expertConfirmation: "需要专家确认",
           clinicalProtocolFallback: "{label} 在路径图中作为 {domain} 领域的{type}表示。这里显示的是本地化工作摘要，英文原始文本仍作为底层 protocol 记录保留。",
           clinicalRationaleFallback: "保留该元素是因为它可能影响路径结构、资源使用、模块选择或数据收集。正式用于 LCA 前仍需专家确认。",
@@ -6086,10 +6172,10 @@
           methodActivityText: "放置在路径图上、并由专家审核的临床或运营动作。",
           methodModuleTitle: "ECO-PATH 模块",
           methodModuleText: "分配给路径活动的 LCA 建模区域。它不是另一个临床活动。",
-          methodResourceTitle: "资源流",
-          methodResourceText: "模块内可测量的输入或输出，例如出行、设备时间、能源、材料或废弃物。",
+          methodResourceTitle: "LCI 输入",
+          methodResourceText: "量化的产品、能源、运输、水、材料或废物处理交换。时间记录和分配规则可以用于确定数量，但它们本身不是 LCI 输入。",
           methodLciTitle: "LCI / LCIA 连接",
-          methodLciText: "资源流构成有记录的前景清单，并把经复核的单位过程连接到背景数据库以开展 LCIA。",
+          methodLciText: "LCI 输入构成有记录的前景清单。Brightway 将其连接到背景数据库并应用带版本的 LCIA 方法；用户不应根据活动时间或分配规则自行创建表征因子。",
           lcaHeading: "模块化 LCA 计算演示",
           lcaIntro: "所选 activities 会自动启用其映射的 modules、building blocks 和临时数量。计算前请检查自动选择并调整与具体路线有关的数量。",
           automaticFromActivities: "由所选 activities 自动启用",
@@ -6104,7 +6190,7 @@
           pathwayStatus: "{pathway}：{pathwayModules} 个路径模块 + {supportModules} 个支持模块",
           candidateBlockCount: "{blocks} 个候选构建块：{pathwayModules} 个路径模块 + {supportModules} 个支持模块",
           unit: "单位",
-          resourceFlowsLabel: "资源流",
+          resourceFlowsLabel: "LCI 输入",
           dummyGapTemplate: "示例聚合系数。请用 {flows} 的前景 LCI 和已记录的 LCIA 映射替换。",
           baseQuantityAria: "{block} 基础数量",
           uncertaintyAria: "{block} 不确定性百分比",
@@ -6119,7 +6205,7 @@
           moduleOutsideBoundary: "；模块在边界外",
           use: "使用",
           buildingBlock: "构建块",
-          resourceFlowsToModel: "需要建模的资源流",
+          resourceFlowsToModel: "需要建模的 LCI 输入",
           baseQuantity: "基础数量",
           uncertainty: "不确定性，+/- %",
           impactCoefficient: "单位影响结果（演示），kg CO₂-eq/单位",
@@ -7316,7 +7402,9 @@
       methodologyLcaTitle: "Life cycle assessment",
       methodologyLcaText: "Goal and scope, functional unit, system boundary, inventory, impact assessment, and interpretation are organized using ISO 14040 and ISO 14044 principles.",
       methodologyEfTitle: "Impact assessment",
-      methodologyEfText: "The interface exposes the 16 EF 3.1 no LT impact categories. Browser unit-impact results are synthetic. The current app does not create foreground unit processes; formal results require reviewed unit-process inventories, linked background datasets, and verified method mappings.",
+      methodologyEfText: "The interface exposes the 16 EF 3.1 no LT impact categories. EF characterization factors map elementary flows to impact categories and must come from a versioned method package; they are not user-defined activity coefficients.",
+      methodologyForegroundTitle: "Building unit impact results",
+      methodologyForegroundText: "The appropriate in-tool builder is a foreground LCI editor, not a characterization-factor editor. For one reference unit of a building block, it should record physical technosphere and biosphere exchanges, quantities, units, sources, allocation drivers, and uncertainty. The local Brightway service then links those exchanges to reviewed datasets and returns a unit impact result for every selected EF category. Time records, room use, equipment time, and allocation rules may determine exchange quantities but do not receive characterization factors themselves. The current browser values remain synthetic until this reviewed foreground model is available.",
       methodologyCalculationTitle: "Calculation and uncertainty",
       methodologyCalculationText: "Brightway is the intended calculation engine and should calculate the LCIA result for one reference unit of each mapped foreground process. The current plus-or-minus field covers uncertainty in the browser's unit-impact result only. Parameter distributions, pathway variation, scenarios, and structural model variants require explicit backend models.",
       helpStep3: "For a complete assessment, choose a valid route preset or select one connected patient route from the fixed hospital-entry start to a valid endpoint. For a partial exploration, select the connected activities directly on the map; the segment boundary is inferred from that selection.",
@@ -7387,7 +7475,9 @@
       methodologyLcaTitle: "Levenscyclusanalyse",
       methodologyLcaText: "Doel en reikwijdte, functionele eenheid, systeemgrens, inventarisatie, impactbeoordeling en interpretatie zijn ingericht volgens de principes van ISO 14040 en ISO 14044.",
       methodologyEfTitle: "Impactbeoordeling",
-      methodologyEfText: "De interface toont de 16 EF 3.1 no LT-impactcategorieën. Eenheidsimpacten in de browser zijn synthetisch. De huidige app maakt geen voorgrond-eenheidsprocessen; formele resultaten vereisen beoordeelde procesinventarissen, gekoppelde achtergronddatasets en geverifieerde methodemappings.",
+      methodologyEfText: "De interface toont de 16 EF 3.1 no LT-impactcategorieën. EF-karakterisatiefactoren koppelen elementaire stromen aan impactcategorieën en moeten uit een versiegebonden methodepakket komen; het zijn geen door gebruikers gedefinieerde activiteitscoëfficiënten.",
+      methodologyForegroundTitle: "Eenheidsimpacten opbouwen",
+      methodologyForegroundText: "De juiste builder in de tool is een editor voor de voorgrond-LCI, geen editor voor karakterisatiefactoren. Voor één referentie-eenheid van een bouwsteen worden fysieke technosfeer- en biosfeerexchanges, hoeveelheden, eenheden, bronnen, allocatiedrivers en onzekerheid vastgelegd. De lokale Brightway-service koppelt deze exchanges vervolgens aan beoordeelde datasets en retourneert een eenheidsimpact voor elke geselecteerde EF-categorie. Tijdregistraties, ruimtegebruik, apparaattijd en allocatieregels kunnen hoeveelheden bepalen, maar krijgen zelf geen karakterisatiefactor. De huidige browserwaarden blijven synthetisch totdat dit beoordeelde voorgrondmodel beschikbaar is.",
       methodologyCalculationTitle: "Berekening en onzekerheid",
       methodologyCalculationText: "Brightway is de beoogde rekenmachine en moet het LCIA-resultaat voor één referentie-eenheid van elk gekoppeld voorgrondproces berekenen. Het huidige plus-of-minveld betreft alleen onzekerheid in de eenheidsimpact van de browser. Parameterverdelingen, zorgpadvariatie, scenario's en structurele modelvarianten vereisen expliciete backendmodellen.",
       helpStep3: "Kies voor een volledige beoordeling een geldig zorgpad of selecteer één verbonden patiënttraject vanaf het vaste begin bij ziekenhuisinstroom tot een geldig eindpunt. Selecteer bij een deeltraject de verbonden activiteiten rechtstreeks op de kaart; de segmentgrens wordt uit die selectie afgeleid.",
@@ -7458,7 +7548,9 @@
       methodologyLcaTitle: "生命周期评价",
       methodologyLcaText: "目标与范围、功能单位、系统边界、清单、影响评价和解释按照 ISO 14040 与 ISO 14044 的原则组织。",
       methodologyEfTitle: "影响评价",
-      methodologyEfText: "界面展示 EF 3.1 no LT 的 16 个影响类别。浏览器中的单位影响结果为合成演示数据。当前工具不会创建前景单位过程；正式结果需要经复核的单位过程清单、已连接的背景数据库以及经核对的方法映射。",
+      methodologyEfText: "界面展示 EF 3.1 no LT 的 16 个影响类别。EF 表征因子用于把 elementary flows 映射到影响类别，必须来自带版本的正式方法包，不能由用户根据活动数据自行定义。",
+      methodologyForegroundTitle: "构建单位影响结果",
+      methodologyForegroundText: "工具中适合增加的是前景 LCI 编辑器，而不是表征因子编辑器。针对一个 building block 的一个参考单位，用户应记录物理 technosphere 与 biosphere exchanges、数量、单位、数据来源、分配依据和不确定性。本地 Brightway 服务再把这些 exchanges 连接到经复核的数据库，并返回每个所选 EF 类别的单位影响结果。时间记录、房间使用、设备时间和分配规则可以用于确定 exchange 数量，但其本身不应用表征因子。完成并复核此前景模型之前，当前浏览器数值仍为合成演示数据。",
       methodologyCalculationTitle: "计算与不确定性",
       methodologyCalculationText: "Brightway 是预定的计算引擎，应计算每个已映射前景过程在一个参考单位下的 LCIA 结果。当前正负百分比只表示浏览器单位影响结果的不确定性；参数分布、路径变异、情景和模型结构变体需要在后端建立明确模型。",
       helpStep3: "完整评估应选择合法路径预设，或从固定入院起点到合法终点手动选择一条连续患者路径。局部探索则直接在线路图中选择连续 activities，工具会根据所选内容自动推断片段边界。",
@@ -9637,7 +9729,7 @@
         "Oral systemic therapy cycle": "Orale systemische therapiecyclus",
         "Pharmacy preparation": "Apotheekbereiding",
         "Therapy monitoring laboratory set": "Laboratoriumset voor therapiemonitoring",
-        "Operating room time": "Operatiekamertijd",
+        "Operating-room energy allocation": "Allocatie van operatiekamerenergie",
         "Anesthesia episode": "Anesthesie-episode",
         "Sterile instrument set": "Steriele instrumentenset",
         "Surgical consumable pack": "Chirurgisch verbruiksmaterialenpakket",
@@ -9693,7 +9785,7 @@
         "Oral systemic therapy cycle": "口服系统治疗周期",
         "Pharmacy preparation": "药房配制",
         "Therapy monitoring laboratory set": "治疗监测实验室组合",
-        "Operating room time": "手术室时间",
+        "Operating-room energy allocation": "手术室能源分配",
         "Anesthesia episode": "麻醉过程",
         "Sterile instrument set": "无菌器械包",
         "Surgical consumable pack": "手术耗材包",
@@ -11698,6 +11790,88 @@
       "Surveillance interval assignment": "Asignación del intervalo de vigilancia"
     });
 
+    Object.assign(resourceFlowText.nl, {
+      "Collection consumables": "Afnamematerialen",
+      "Sedative medicines": "Sedativa",
+      "Endoscope reprocessing service": "Dienst voor endoscoopreiniging en -desinfectie",
+      "Endoscopy waste treatment": "Verwerking van endoscopieafval",
+      "Reusable scope manufacture allocation": "Toegerekend aandeel van productie herbruikbare scoop",
+      "Scope reprocessing service": "Dienst voor scoopreiniging en -desinfectie",
+      "Pharmaceutical packaging": "Farmaceutische verpakking",
+      "Phlebotomy consumables": "Materialen voor bloedafname",
+      "Allocated ward energy": "Toegerekende energie van de verpleegafdeling",
+      "Laundry service": "Wasserijdienst",
+      "Ward waste treatment": "Verwerking van afdelingsafval",
+      "Allocated ICU energy": "Toegerekende IC-energie",
+      "Immobilization-device waste treatment": "Afvalverwerking van immobilisatiehulpmiddel",
+      "Systemic therapy products": "Producten voor systemische therapie",
+      "Imaging service": "Beeldvormingsdienst",
+      "Anesthetic medicines if used": "Anesthetica indien gebruikt",
+      "Laboratory testing service": "Laboratoriumtestdienst",
+      "Imaging or endoscopy service": "Beeldvormings- of endoscopiedienst",
+      "Bowel preparation product": "Darmvoorbereidingsmiddel",
+      "Colonoscopy service": "Coloscopiedienst",
+      "CEA or laboratory testing service": "CEA- of laboratoriumtestdienst",
+      "Imaging service if indicated": "Beeldvormingsdienst indien geïndiceerd",
+      "Colonoscopy service if indicated": "Coloscopiedienst indien geïndiceerd",
+      "Pelvic MRI service": "MRI-dienst van het bekken",
+      "Flexible endoscopy service": "Flexibele endoscopiedienst",
+      "Biopsy materials if indicated": "Biopsiematerialen indien geïndiceerd",
+      "Cystoscopy service": "Cystoscopiedienst",
+      "Urine cytology service": "Urinecytologiedienst",
+      "Sampling materials": "Afnamematerialen",
+      "Sample transport service": "Monstertransportdienst",
+      "Laboratory processing service": "Laboratoriumverwerkingsdienst",
+      "Accommodation service": "Verblijfsdienst",
+      "Allocated electricity": "Toegerekende elektriciteit",
+      "Allocated heating": "Toegerekende verwarming",
+      "Allocated cooling": "Toegerekende koeling",
+      "Waste-treatment service by route": "Afvalverwerkingsdienst per route",
+      "Waste transport service": "Afvaltransportdienst",
+      "Allocated autoclave energy": "Toegerekende autoclaafenergie"
+    });
+
+    Object.assign(resourceFlowText.zh, {
+      "Collection consumables": "采样耗材",
+      "Sedative medicines": "镇静药物",
+      "Endoscope reprocessing service": "内镜清洗消毒服务",
+      "Endoscopy waste treatment": "内镜废弃物处理",
+      "Reusable scope manufacture allocation": "可重复使用内镜制造分摊",
+      "Scope reprocessing service": "内镜再处理服务",
+      "Pharmaceutical packaging": "药品包装",
+      "Phlebotomy consumables": "采血耗材",
+      "Allocated ward energy": "分摊的病房能源",
+      "Laundry service": "洗涤服务",
+      "Ward waste treatment": "病房废弃物处理",
+      "Allocated ICU energy": "分摊的 ICU 能源",
+      "Immobilization-device waste treatment": "固定装置废弃物处理",
+      "Systemic therapy products": "系统治疗产品",
+      "Imaging service": "影像服务",
+      "Anesthetic medicines if used": "如使用则包括麻醉药物",
+      "Laboratory testing service": "实验室检测服务",
+      "Imaging or endoscopy service": "影像或内镜服务",
+      "Bowel preparation product": "肠道准备药品",
+      "Colonoscopy service": "结肠镜服务",
+      "CEA or laboratory testing service": "CEA 或实验室检测服务",
+      "Imaging service if indicated": "有指征时的影像服务",
+      "Colonoscopy service if indicated": "有指征时的结肠镜服务",
+      "Pelvic MRI service": "盆腔 MRI 服务",
+      "Flexible endoscopy service": "软式内镜服务",
+      "Biopsy materials if indicated": "有指征时的活检材料",
+      "Cystoscopy service": "膀胱镜服务",
+      "Urine cytology service": "尿细胞学服务",
+      "Sampling materials": "采样材料",
+      "Sample transport service": "样本运输服务",
+      "Laboratory processing service": "实验室处理服务",
+      "Accommodation service": "住宿服务",
+      "Allocated electricity": "分摊的电力",
+      "Allocated heating": "分摊的供暖",
+      "Allocated cooling": "分摊的制冷",
+      "Waste-treatment service by route": "按处理路径区分的废弃物处理服务",
+      "Waste transport service": "废弃物运输服务",
+      "Allocated autoclave energy": "分摊的高压灭菌能源"
+    });
+
     function normaliseLanguage(value) {
       return languageOptions.some((item) => item.id === value) ? value : "en";
     }
@@ -12010,11 +12184,29 @@
       return localizedLookup(resourceFlowText, flow);
     }
 
-    function localizedResourceFlowList(flows) {
+    function directLciInputs(flows) {
       const items = Array.isArray(flows)
         ? flows
         : String(flows).split(";").map((item) => item.trim()).filter(Boolean);
-      return items.map(localizedResourceFlow).join("; ");
+      return items.filter((flow) => (
+        !excludedHumanLaborFlowLabels.has(flow)
+        && !nonLciInputLabels.has(flow)
+        && !nonLciInputPatterns.some((pattern) => pattern.test(flow))
+      ));
+    }
+
+    function localizedResourceFlowList(flows) {
+      return directLciInputs(flows).map(localizedResourceFlow).join("; ");
+    }
+
+    function mappedLciInputsForNode(node) {
+      const mappedBlockNames = new Set(
+        (activityBuildingBlockRegistry[node.id] || []).map((selection) => selection.name)
+      );
+      const inputs = buildingBlockRegistry
+        .filter((item) => mappedBlockNames.has(item.name))
+        .flatMap((item) => item.resourceFlows);
+      return [...new Set(directLciInputs(inputs))];
     }
 
     function localizedActivityEvidence(node) {
@@ -12061,7 +12253,7 @@
         name,
         unit,
         applicability,
-        resourceFlows: resourceFlows.filter((flow) => !excludedHumanLaborFlowLabels.has(flow))
+        resourceFlows: directLciInputs(resourceFlows)
       };
     }
 
@@ -12106,7 +12298,7 @@
         y,
         protocolStep,
         rationale,
-        resourceFlows,
+        resourceFlows: directLciInputs(resourceFlows),
         openQuestions,
         oncology: isOncologyModule(module)
           || /oncology|chemo|chemoradiation|systemic therapy|radiotherapy|radiation|cytotoxic/.test(oncologyText)
@@ -12348,7 +12540,9 @@
     }
 
     function currentBuildingBlocks() {
-      return buildingBlockRegistry.filter((item) => appliesToPathway(item));
+      return buildingBlockRegistry
+        .filter((item) => item.resourceFlows.length > 0)
+        .filter((item) => appliesToPathway(item));
     }
 
     function crossPathwayReuseBadge(blockName, className = "") {
@@ -12815,6 +13009,8 @@
       setText("methodologyLcaText", "methodologyLcaText");
       setText("methodologyEfTitle", "methodologyEfTitle");
       setText("methodologyEfText", "methodologyEfText");
+      setText("methodologyForegroundTitle", "methodologyForegroundTitle");
+      setText("methodologyForegroundText", "methodologyForegroundText");
       setText("methodologyCalculationTitle", "methodologyCalculationTitle");
       setText("methodologyCalculationText", "methodologyCalculationText");
       const methodologyButton = document.getElementById("openMethodologyDialog");
@@ -14166,6 +14362,7 @@
         detail.innerHTML = `<div class="empty">${escapeHtml(t("noActivitySelected"))}</div>`;
         return;
       }
+      const candidateInputs = mappedLciInputsForNode(node);
       detail.innerHTML = `
         <div class="detail-title">
           <div class="code-pill">${escapeHtml(displayCode(node))}</div>
@@ -14192,7 +14389,9 @@
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("resourceFlows"))}</strong>
-            <ul class="resource-list">${node.resourceFlows.map((item) => `<li>${escapeHtml(localizedResourceFlow(item))}</li>`).join("")}</ul>
+            ${candidateInputs.length
+              ? `<ul class="resource-list">${candidateInputs.map((item) => `<li>${escapeHtml(localizedResourceFlow(item))}</li>`).join("")}</ul>`
+              : `<p>${escapeHtml(t("noDirectLciInputs"))}</p>`}
           </div>
         </div>
       `;
@@ -15771,7 +15970,7 @@
         });
       } else {
         badge.textContent = t("brightwayServiceUnavailable");
-        detail.textContent = service.error || t("brightwayServiceUnavailableDetail");
+        detail.textContent = t("brightwayServiceUnavailableDetail");
       }
       calculateButton.disabled = !currentAssessmentStatus().valid
         || !service.connected
@@ -15799,12 +15998,12 @@
         service.connected = info.ready === true && Boolean(info.session_token);
         service.token = service.connected ? info.session_token : "";
         service.info = info;
-        service.error = service.connected ? "" : (info.error || t("brightwayServiceUnavailableDetail"));
+        service.error = service.connected ? "" : (info.error || "service unavailable");
       } catch {
         service.connected = false;
         service.token = "";
         service.info = null;
-        service.error = t("brightwayServiceUnavailableDetail");
+        service.error = "service unavailable";
       } finally {
         window.clearTimeout(timeout);
         service.checking = false;

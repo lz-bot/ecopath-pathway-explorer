@@ -2948,7 +2948,7 @@
 
     .lca-table {
       width: 100%;
-      min-width: 1120px;
+      min-width: 960px;
       border-collapse: collapse;
       background: var(--panel);
       font-size: 13px;
@@ -3026,11 +3026,6 @@
 
     .lca-cross-pathway-reuse-badge {
       margin-top: 4px;
-    }
-
-    .lca-source-cell {
-      color: var(--muted);
-      min-width: 210px;
     }
 
     .lca-priority-list {
@@ -3478,8 +3473,7 @@
                 <path d="m3 21 7-7"></path>
               </svg>
             </button>
-            <svg id="pathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="svgTitle svgDesc">
-              <title id="svgTitle">Pathway activity map</title>
+            <svg id="pathwaySvg" viewBox="0 0 1200 680" role="img" aria-label="Pathway activity map" aria-describedby="svgDesc">
               <desc id="svgDesc">Interactive pathway map with coded activities and ECO-PATH modules.</desc>
             </svg>
           </div>
@@ -3739,8 +3733,7 @@
               <path d="m3 21 7-7"></path>
             </svg>
           </button>
-          <svg id="fullscreenPathwaySvg" viewBox="0 0 1200 680" role="img" aria-labelledby="fullscreenSvgTitle fullscreenSvgDesc">
-            <title id="fullscreenSvgTitle">Pathway activity map</title>
+          <svg id="fullscreenPathwaySvg" viewBox="0 0 1200 680" role="img" aria-label="Pathway activity map" aria-describedby="fullscreenSvgDesc">
             <desc id="fullscreenSvgDesc">Fullscreen interactive pathway map with coded activities and ECO-PATH modules.</desc>
           </svg>
         </div>
@@ -5264,7 +5257,7 @@
         lcaCutoff: "LCA cut-off",
         lcaStatus: "LCA status",
         lcaEligible: "Module eligible",
-        protocolInterpretation: "Protocol-to-activity interpretation",
+        protocolInterpretation: "Activity definition",
         whyKept: "Why this element is kept",
         ecopathModule: "ECO-PATH module",
         moduleExplanation: "{module} {name}. This is the LCA modeling zone assigned to the selected activity, not a separate clinical activity. Candidate building blocks are shown in the LCA section. {definition}",
@@ -5336,7 +5329,7 @@
         formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.",
         lcaWarning: "Selected activities automatically activate their explicitly mapped pathway modules, building blocks, and provisional quantities. Repeated activities aggregate quantities, such as two selected CT activities producing two CT scans. EM10 is the only calculation owner of patient and caregiver travel; do not embed travel in another module coefficient. EM11 remains optional shared hospital support. Alternative regimens, imaging choices, fraction counts, cycle counts, admission days, and all dummy impact coefficients require review before the result is used as evidence.",
         noActiveRows: "No building block row is active. Check at least one module and one building block row to include it in the calculation.",
-        priorityRow: "{module} {block}: {impact} per demo pathway instance. {gap}",
+        priorityRow: "{module} {block}: {impact} per demo pathway instance.",
         reportTitle: "ECO-PATH LCA report: {pathway}",
         generatedFrom: "Generated {date} from the interactive ECO-PATH pathway explorer.",
         scopeConfig: "Scope and current configuration",
@@ -5443,7 +5436,7 @@
         lcaCutoff: "LCA-cut-off",
         lcaStatus: "LCA-status",
         lcaEligible: "Module toepasbaar",
-        protocolInterpretation: "Protocol-naar-activiteit interpretatie",
+        protocolInterpretation: "Activiteitsdefinitie",
         whyKept: "Waarom dit element is behouden",
         ecopathModule: "ECO-PATH-module",
         moduleExplanation: "{module} {name}. Dit is de LCA-modelleerzone voor de geselecteerde activiteit, geen afzonderlijke klinische activiteit. Kandidaatbouwstenen staan in het LCA-gedeelte. {definition}",
@@ -5515,7 +5508,7 @@
         formulaNote: "S = aangevinkte bouwsteenrijen binnen aangevinkte modules. q = aantal of resourcehoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u = relatieve onzekerheid, N = cohortgrootte. Dit is een demobibliotheek, geen definitief zorgpadscenario.",
         lcaWarning: "Geselecteerde activiteiten activeren automatisch de expliciet gekoppelde zorgpadmodules, bouwstenen en voorlopige hoeveelheden. Herhaalde activiteiten worden opgeteld. Alleen EM10 berekent patiënten- en mantelzorgerreizen; neem reizen niet op in een andere modulecoëfficiënt. EM11 blijft optionele gedeelde ziekenhuisondersteuning. Alternatieve regimes, beeldvorming, fracties, cycli, opnamedagen en dummy-impactcoëfficiënten moeten worden gecontroleerd.",
         noActiveRows: "Geen bouwsteenrij is actief. Vink ten minste één module en één bouwsteenrij aan om deze mee te nemen.",
-        priorityRow: "{module} {block}: {impact} per demo-zorgpadinstantie. {gap}",
+        priorityRow: "{module} {block}: {impact} per demo-zorgpadinstantie.",
         reportTitle: "ECO-PATH LCA-rapport: {pathway}",
         generatedFrom: "Gegenereerd {date} vanuit de interactieve ECO-PATH zorgpadverkenner.",
         scopeConfig: "Scope en huidige configuratie",
@@ -5627,7 +5620,7 @@
           lcaCutoff: "LCA cut-off",
           lcaStatus: "LCA 状态",
           lcaEligible: "模块可纳入",
-          protocolInterpretation: "Protocol 到活动解释",
+          protocolInterpretation: "活动定义",
           whyKept: "保留此元素的原因",
           ecopathModule: "ECO-PATH 模块",
           moduleExplanation: "{module} {name}。这是分配给所选活动的 LCA 建模区域，不是另一个临床活动。候选构建块显示在 LCA 部分。{definition}",
@@ -5699,7 +5692,7 @@
           formulaNote: "S = 已勾选模块内的已勾选构建块行。q = 发生次数或资源数量，c = LCIA 影响系数，j = 影响类别，u = 相对不确定性，N = 队列规模。这里是候选构建块库演示，不是最终路径情景。",
           lcaWarning: "所选 activities 会自动启用显式映射的路径 modules、building blocks 和临时数量；重复 activity 会累计数量。患者及照护者出行只能在 EM10 中计算，不应再写入其他模块系数；EM11 仍为可选的医院共享支持模块。治疗方案、影像选择、放疗分次、治疗周期、住院日和 dummy 影响系数均需在正式使用前复核。",
           noActiveRows: "当前没有启用的构建块行。请至少勾选一个模块和一个构建块行。",
-          priorityRow: "{module} {block}：每个演示路径实例 {impact}。{gap}",
+          priorityRow: "{module} {block}：每个演示路径实例 {impact}。",
           reportTitle: "ECO-PATH LCA 报告：{pathway}",
           generatedFrom: "由交互式 ECO-PATH 路径探索器于 {date} 生成。",
           scopeConfig: "范围和当前配置",
@@ -6013,11 +6006,11 @@
       references: "References",
       sharedBuildingBlock: "Shared building block",
       generalBuildingBlockCandidate: "General candidate",
-      crossPathwayReusableBuildingBlock: "Reusable across MIBC + CRC",
+      crossPathwayReusableBuildingBlock: "Reusable",
       crossPathwayReuseTooltip: "The same building-block definition is mapped in both current pathway families. Local quantities and LCI data still require validation.",
       urologyBuildingBlock: "Urology-specific candidate",
       gastroBuildingBlock: "Gastroenterology-specific candidate",
-      buildingBlockMapIntro: "ECO-PATH modules organize the model; reuse is marked at building-block level. A reuse label means the same block definition is currently mapped in both MIBC and CRC, but local quantities and LCI data still require validation. EM10 is the single calculation owner of patient and caregiver travel; clinical building-block coefficients exclude travel. EM11 remains optional shared hospital support."
+      buildingBlockMapIntro: "Modules group candidate building blocks. Selected activities activate the relevant calculation rows."
     });
 
     Object.assign(uiText.nl, {
@@ -6033,11 +6026,11 @@
       references: "Referenties",
       sharedBuildingBlock: "Gedeelde bouwsteen",
       generalBuildingBlockCandidate: "Algemene kandidaat",
-      crossPathwayReusableBuildingBlock: "Herbruikbaar voor MIBC + CRC",
+      crossPathwayReusableBuildingBlock: "Herbruikbaar",
       crossPathwayReuseTooltip: "Dezelfde bouwsteendefinitie is aan beide huidige zorgpadfamilies gekoppeld. Lokale hoeveelheden en LCI-data moeten nog worden gevalideerd.",
       urologyBuildingBlock: "Urologiespecifieke kandidaat",
       gastroBuildingBlock: "Gastro-enterologiespecifieke kandidaat",
-      buildingBlockMapIntro: "ECO-PATH-modules structureren het model; hergebruik wordt op bouwsteenniveau gemarkeerd. Een hergebruiklabel betekent dat dezelfde bouwsteendefinitie momenteel aan MIBC en CRC is gekoppeld, maar lokale hoeveelheden en LCI-data moeten nog worden gevalideerd. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische bouwsteencoëfficiënten sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning."
+      buildingBlockMapIntro: "Modules groeperen kandidaatbouwstenen. Geselecteerde activiteiten activeren de relevante rekenregels."
     });
 
     Object.assign(uiText.zh, {
@@ -6053,11 +6046,11 @@
       references: "参考资料",
       sharedBuildingBlock: "跨专科共享 building block",
       generalBuildingBlockCandidate: "通用候选项",
-      crossPathwayReusableBuildingBlock: "可跨 MIBC 与 CRC 复用",
+      crossPathwayReusableBuildingBlock: "可复用",
       crossPathwayReuseTooltip: "同一 building block 定义已映射到当前两类路径，但本地数量与 LCI 数据能否直接移植仍需验证。",
       urologyBuildingBlock: "泌尿科特异候选项",
       gastroBuildingBlock: "胃肠科特异候选项",
-      buildingBlockMapIntro: "ECO-PATH modules 用于组织模型，复用性在 building block 层级标注。复用标签表示同一定义目前已同时映射到 MIBC 与 CRC，但本地数量及 LCI 数据能否直接移植仍需验证。EM10 是患者及照护者出行的唯一核算归属，临床 building block 系数不包含出行；EM11 仍为可选的医院共享支持模块。"
+      buildingBlockMapIntro: "Modules 用于归组候选 building blocks；所选 activities 会启用相应计算行。"
     });
 
     Object.assign(uiText.ja, {
@@ -6128,7 +6121,7 @@
       impactGroupHumanHealth: "Human health",
       impactGroupEcosystems: "Ecosystems",
       impactGroupResources: "Resource use",
-      lcaIntro: "Selected activities automatically activate explicitly mapped modules, building blocks, and provisional quantities. Review alternatives and quantities before calculation. All 16 EF 3.1 categories still use synthetic demonstration coefficients and an editable 30% coefficient-uncertainty assumption until verified Brightway mappings are supplied.",
+      lcaIntro: "Selected activities activate their mapped modules and calculation rows. Review quantities and impact coefficients before calculation.",
       impactClimate: "Climate change (GWP100)",
       impactClimateDescription: "Primary ECO-PATH view. Reports the 100-year global warming potential of life-cycle greenhouse-gas emissions.",
       impactOzoneDepletion: "Ozone depletion",
@@ -6209,7 +6202,7 @@
       impactGroupHumanHealth: "Menselijke gezondheid",
       impactGroupEcosystems: "Ecosystemen",
       impactGroupResources: "Hulpbronnengebruik",
-      lcaIntro: "Geselecteerde activiteiten activeren automatisch expliciet gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer alternatieven en hoeveelheden voor de berekening. De 16 EF 3.1-categorieën gebruiken synthetische demonstratiecoëfficiënten en 30% coëfficiëntonzekerheid totdat geverifieerde Brightway-koppelingen beschikbaar zijn.",
+      lcaIntro: "Geselecteerde activiteiten activeren de gekoppelde modules en rekenregels. Controleer hoeveelheden en impactcoëfficiënten voor de berekening.",
       impactClimate: "Klimaatverandering (GWP100)",
       impactClimateDescription: "Primaire ECO-PATH-weergave. Toont het aardopwarmingsvermogen over 100 jaar van broeikasgasemissies in de levenscyclus.",
       impactOzoneDepletion: "Ozonafbraak",
@@ -6290,7 +6283,7 @@
       impactGroupHumanHealth: "人类健康",
       impactGroupEcosystems: "生态系统",
       impactGroupResources: "资源使用",
-      lcaIntro: "所选 activities 会自动启用显式映射的 modules、building blocks 和临时数量。计算前请检查治疗路线和数量。在提供经验证的 Brightway 映射前，16 类 EF 3.1 指标仍使用 synthetic 演示系数和可编辑的 30% 系数不确定性假设。",
+      lcaIntro: "所选 activities 会启用对应的 modules 和计算行。计算前请检查数量与影响系数。",
       impactClimate: "气候变化（GWP100）",
       impactClimateDescription: "ECO-PATH 的首选视图，表示生命周期温室气体排放的 100 年全球变暖潜势。",
       impactOzoneDepletion: "臭氧层消耗",
@@ -12778,10 +12771,9 @@
       const boundaryCorridor = state.assessmentMode === "complete"
         ? assessmentBoundaryCorridor(pathway)
         : new Set(pathway.nodes.map((node) => node.id));
-      const titleId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgTitle" : "svgTitle";
       const descId = svgId === "fullscreenPathwaySvg" ? "fullscreenSvgDesc" : "svgDesc";
       clear(svg);
-      svg.appendChild(createSvgElement("title", { id: titleId })).textContent = localizedPathwayTitle();
+      svg.setAttribute("aria-label", localizedPathwayTitle());
       svg.appendChild(createSvgElement("desc", { id: descId })).textContent = localizedPathwayScope();
 
       (pathway.careZones || []).forEach((zone) => {
@@ -12789,7 +12781,6 @@
           points: zone.points,
           class: `care-zone-shape ${zone.kind}`
         });
-        shape.appendChild(createSvgElement("title")).textContent = t(zone.labelKey);
         svg.appendChild(shape);
       });
 
@@ -13433,7 +13424,6 @@
         detail.innerHTML = `<div class="empty">${escapeHtml(t("noActivitySelected"))}</div>`;
         return;
       }
-      const evidence = localizedActivityEvidence(node);
       detail.innerHTML = `
         <div class="detail-title">
           <div class="code-pill">${escapeHtml(displayCode(node))}</div>
@@ -13455,31 +13445,12 @@
             <p>${escapeHtml(localizedClinicalProtocol(node))}</p>
           </div>
           <div class="detail-block">
-            <strong>${escapeHtml(t("whyKept"))}</strong>
-            <p>${escapeHtml(localizedClinicalRationale(node))}</p>
-          </div>
-          <div class="detail-block">
-            <strong>${escapeHtml(t("activityEvidence"))}</strong>
-            <p><b>${escapeHtml(t("evidenceSource"))}:</b> ${escapeHtml(evidence.source)}</p>
-            <p><b>${escapeHtml(t("evidenceStatus"))}:</b> ${escapeHtml(evidence.status)}</p>
-          </div>
-          <div class="detail-block">
             <strong>${escapeHtml(t("ecopathModule"))}</strong>
-            <p>${escapeHtml(isLcaCutoffNode(node)
-              ? t("cutoffActivityExplanation", { module: node.module, name: moduleName(node.module) })
-              : t("moduleExplanation", {
-                module: node.module,
-                name: moduleName(node.module),
-                definition: moduleDefinition(node.module)
-              }))}</p>
+            <p><b>${escapeHtml(node.module)} ${escapeHtml(moduleName(node.module))}</b></p>
           </div>
           <div class="detail-block">
             <strong>${escapeHtml(t("resourceFlows"))}</strong>
             <ul class="resource-list">${node.resourceFlows.map((item) => `<li>${escapeHtml(localizedResourceFlow(item))}</li>`).join("")}</ul>
-          </div>
-          <div class="detail-block">
-            <strong>${escapeHtml(t("expertConfirmation"))}</strong>
-            <ul class="question-list">${localizedClinicalQuestions(node).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
           </div>
         </div>
       `;
@@ -13729,7 +13700,6 @@
                   <th>${escapeHtml(t("baseQuantity"))}</th>
                   <th>${escapeHtml(impactCoefficientLabel())}</th>
                   <th>${escapeHtml(t("uncertainty"))}</th>
-                  <th>${escapeHtml(t("defaultStatusGap"))}</th>
                   <th>${escapeHtml(t("baseContribution"))}</th>
                 </tr>
               </thead>
@@ -13757,7 +13727,6 @@
                     <td><input type="number" min="0" step="1" inputmode="decimal" value="${escapeHtml(row.quantity)}" data-lca-row="${index}" data-lca-field="quantity" aria-label="${escapeHtml(t("baseQuantityAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
                     <td><input type="number" min="0" step="any" inputmode="decimal" value="${escapeHtml(rowFactor(row))}" data-lca-row="${index}" data-lca-field="factor" aria-label="${escapeHtml(t("impactCoefficientAria", { block: localizedBlockName(row.block), category: impactCategoryName() }))}"${rowDisabledAttr}></td>
                     <td><input type="number" min="0" max="1000" step="1" value="${escapeHtml(rowUncertainty(row))}" data-lca-row="${index}" data-lca-field="uncertainty" aria-label="${escapeHtml(t("uncertaintyAria", { block: localizedBlockName(row.block) }))}"${rowDisabledAttr}></td>
-                    <td class="lca-source-cell">${escapeHtml(localizedGap(row))}</td>
                     <td><span id="lcaContribution-${escapeHtml(row.id)}"></span></td>
                   </tr>
                 `;
@@ -14526,10 +14495,6 @@
           lcaRows[rowIndex][field] = value;
           if (field === "quantity") lcaRows[rowIndex].quantityEdited = true;
         }
-        if (field === "factor") {
-          const sourceCell = input.closest("tr")?.querySelector(".lca-source-cell");
-          if (sourceCell) sourceCell.textContent = localizedGap(lcaRows[rowIndex]);
-        }
         renderLcaOutputs();
       });
       moduleCalculations.addEventListener("change", (event) => {
@@ -14702,8 +14667,7 @@
         item.textContent = t("priorityRow", {
           module: row.module,
           block: localizedBlockName(row.block),
-          impact: formatImpact(row.weightedImpact),
-          gap: localizedGap(row)
+          impact: formatImpact(row.weightedImpact)
         });
         list.appendChild(item);
       });

@@ -104,6 +104,13 @@
       padding: 0;
     }
 
+    .methodology-button {
+      min-height: 40px;
+      padding: 0 12px;
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
     .help-icon {
       width: 19px;
       height: 19px;
@@ -175,6 +182,43 @@
     .help-dialog-body > p {
       color: var(--muted);
       margin-bottom: 14px;
+    }
+
+    .methodology-sections {
+      display: grid;
+      gap: 16px;
+    }
+
+    .methodology-section {
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .methodology-section:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .methodology-section h3 {
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .methodology-section p {
+      margin-bottom: 8px;
+      color: var(--muted);
+    }
+
+    .methodology-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      font-size: 13px;
+    }
+
+    .methodology-links a {
+      color: var(--accent-dark);
+      font-weight: 700;
     }
 
     .help-steps {
@@ -2626,6 +2670,10 @@
       align-items: center;
     }
 
+    .sensitivity-reduction-control[hidden] {
+      display: none;
+    }
+
     .sensitivity-reduction-control .sensitivity-control-label {
       grid-column: 1 / -1;
       margin-bottom: 0;
@@ -2783,6 +2831,20 @@
     .sensitivity-row-control input[type="range"] {
       width: 100%;
       accent-color: var(--accent-dark);
+    }
+
+    .sensitivity-row-control input[type="number"] {
+      width: 96px;
+      min-height: 38px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .sensitivity-row-control input[type="number"]:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
     }
 
     .sensitivity-row-control input[type="range"]:disabled {
@@ -3253,6 +3315,9 @@
         </div>
       </div>
       <div class="topbar-actions">
+        <button class="methodology-button" type="button" id="openMethodologyDialog" aria-haspopup="dialog" aria-controls="methodologyDialog">
+          <span id="methodologyButtonText">Methods</span>
+        </button>
         <button class="help-button" type="button" id="openHelpDialog" aria-haspopup="dialog" aria-controls="helpDialog">
           <span class="help-icon" aria-hidden="true">?</span>
           <span class="sr-only" id="helpButtonText">How to use</span>
@@ -3288,6 +3353,50 @@
         <p id="helpCutoffText"></p>
         <ul id="helpCutoffList"></ul>
       </section>
+    </div>
+  </dialog>
+
+  <dialog class="help-dialog" id="methodologyDialog" aria-labelledby="methodologyDialogTitle">
+    <div class="help-dialog-header">
+      <h2 id="methodologyDialogTitle">Methods and references</h2>
+      <button type="button" id="closeMethodologyDialog">Close</button>
+    </div>
+    <div class="help-dialog-body">
+      <p id="methodologyIntro"></p>
+      <div class="methodology-sections">
+        <section class="methodology-section">
+          <h3 id="methodologyPathwayTitle">Pathway mapping</h3>
+          <p id="methodologyPathwayText"></p>
+          <div class="methodology-links">
+            <a href="https://metromapping.org/en/" target="_blank" rel="noreferrer">Metro Mapping</a>
+            <a href="https://doi.org/10.1136/bmjebm-2022-112168" target="_blank" rel="noreferrer">Griffioen et al.</a>
+            <a href="https://doi.org/10.1186/s12913-021-06254-1" target="_blank" rel="noreferrer">Antonacci et al.</a>
+          </div>
+        </section>
+        <section class="methodology-section">
+          <h3 id="methodologyLcaTitle">Life cycle assessment</h3>
+          <p id="methodologyLcaText"></p>
+          <div class="methodology-links">
+            <a href="https://www.iso.org/standard/37456.html" target="_blank" rel="noreferrer">ISO 14040</a>
+            <a href="https://www.iso.org/standard/38498.html" target="_blank" rel="noreferrer">ISO 14044</a>
+          </div>
+        </section>
+        <section class="methodology-section">
+          <h3 id="methodologyEfTitle">Impact assessment</h3>
+          <p id="methodologyEfText"></p>
+          <div class="methodology-links">
+            <a href="https://eplca.jrc.ec.europa.eu/LCDN/developerEF.html" target="_blank" rel="noreferrer">EF 3.1 reference package</a>
+            <a href="https://publications.jrc.ec.europa.eu/repository/handle/JRC130796" target="_blank" rel="noreferrer">JRC method documentation</a>
+          </div>
+        </section>
+        <section class="methodology-section">
+          <h3 id="methodologyCalculationTitle">Calculation and uncertainty</h3>
+          <p id="methodologyCalculationText"></p>
+          <div class="methodology-links">
+            <a href="https://docs.brightway.dev/en/latest/" target="_blank" rel="noreferrer">Brightway documentation</a>
+          </div>
+        </section>
+      </div>
     </div>
   </dialog>
 
@@ -7186,15 +7295,27 @@
     });
 
     Object.assign(uiText.en, {
-      helpStep5: "Define the functional unit, review automatic building blocks, and calculate results. Use contribution analysis to locate hotspots and the sensitivity explorer to test one parameter at a time. Quantity changes require guideline support, clinical equivalence, and expert approval. Use the local Brightway companion for mapped results; browser coefficients remain demonstration data.",
+      methodologyButton: "Methods",
+      methodologyTitle: "Methods and references",
+      methodologyIntro: "This prototype links clinical pathway reconstruction to modular process-based LCA. These references document the approach; they do not validate the current clinical content or demonstration coefficients.",
+      methodologyPathwayTitle: "Protocol-to-activity pathway mapping",
+      methodologyPathwayText: "Protocol and workflow sources are decomposed into activities and decision points, then represented as a metro-style care pathway. The map is an auditable modeling interface, not proof that a local pathway is complete.",
+      methodologyLcaTitle: "Life cycle assessment",
+      methodologyLcaText: "Goal and scope, functional unit, system boundary, inventory, impact assessment, and interpretation are organized using ISO 14040 and ISO 14044 principles.",
+      methodologyEfTitle: "Impact assessment",
+      methodologyEfText: "The interface exposes the 16 EF 3.1 no LT impact categories. Browser coefficients are synthetic; formal results require documented foreground inventories and verified method mappings.",
+      methodologyCalculationTitle: "Calculation and uncertainty",
+      methodologyCalculationText: "Brightway is the intended calculation engine. The current plus-or-minus field covers impact-coefficient uncertainty only. Parameter distributions, pathway variation, scenarios, and structural model variants require explicit backend models.",
+      helpStep3: "For a complete assessment, choose a valid route preset or select one connected patient route from the fixed hospital-entry start to a valid endpoint. For a partial exploration, select the connected activities directly on the map; the segment boundary is inferred from that selection.",
+      helpStep5: "Define the functional unit, review automatic building blocks, and calculate results. Use contribution analysis to locate hotspots and the sensitivity explorer to test one parameter at a time. Activity-count scenarios use whole numbers and require clinical justification. Use the local Brightway companion for mapped results; browser coefficients remain demonstration data.",
       sensitivityTitle: "Sensitivity and improvement explorer",
       sensitivityIntro: "Rank the top five contributors, test each one independently, and combine only the checked changes.",
       sensitivityModeLabel: "Scenario lever",
       sensitivityIntensityMode: "Impact intensity",
-      sensitivityQuantityMode: "Activity quantity",
+      sensitivityQuantityMode: "Activity count",
       sensitivityReductionLabel: "Tested reduction",
       sensitivityCoefficientReductionLabel: "Apply one coefficient reduction to checked contributors",
-      sensitivitySameQuantityReductionLabel: "Apply one quantity reduction to checked contributors",
+      sensitivitySameQuantityReductionLabel: "Set whole-number scenario counts per contributor",
       sensitivityGlobalReductionHelp: "Master control: moving this slider overwrites the individual percentages of checked contributors.",
       sensitivityMethodBrowser: "Screening only: results use synthetic browser coefficients. Treat the ranking as a data-collection and scenario-testing priority, not an intervention recommendation.",
       sensitivityMethodBrightway: "Uses imported Brightway building-block contributions for the selected category. Each row tests one parameter at a time with all other parameters fixed.",
@@ -7217,6 +7338,7 @@
       sensitivityClinicalSafeguard: "Quantity scenarios are not recommendations to reduce care. Test them only with guideline support, clinical equivalence, patient acceptability, and expert approval.",
       sensitivityPositiveOnly: "Only positive contributions are ranked; avoided burdens and negative credits require separate interpretation.",
       sensitivityPercentMethod: "Each checked row has its own percentage. The master slider sets one shared percentage for all checked rows; unchecked contributors are unchanged.",
+      sensitivityCountMethod: "Each checked row uses a whole-number scenario count. Counts scale the mapped contribution linearly; a baseline count of 1 remains 1 because a lower positive count does not exist.",
       sensitivityCombinedAssumption: "Individual rows are one-at-a-time tests. The combined result adds the selected reductions under a linear independence assumption and does not model interactions between changes.",
       sensitivityCombinedScenario: "Combined selected scenario",
       sensitivityCombinedValue: "{count} selected · decrease {amount} ({reduction}%) · result {total}",
@@ -7227,9 +7349,12 @@
       sensitivityIndividualNewTotal: "Individual modeled result",
       sensitivityNotSelected: "Not included in the combined scenario",
       sensitivitySelectContributor: "Include {block} in the combined sensitivity scenario",
-      sensitivityAdjustContributor: "Set the independent reduction for {block}",
-      sensitivityQuantityInterpretation: "Base quantity: {quantity} · {unit}. A {reduction}% test gives {remaining} · {unit}.",
-      sensitivityQuantityUnavailable: "No usable base quantity is available for clinical-unit interpretation.",
+      sensitivityAdjustContributor: "Set the independent scenario value for {block}",
+      sensitivityScenarioCount: "Scenario count: {scenario} {unit}",
+      sensitivityBaselineCount: "baseline {quantity}",
+      sensitivityQuantityInterpretation: "Baseline count: {quantity} {unit}; scenario count: {scenario} {unit}; change: -{change}.",
+      sensitivityQuantityOne: "The baseline count is 1. It cannot be lowered without excluding the activity.",
+      sensitivityQuantityUnavailable: "No positive whole-number baseline count is available for this scenario.",
       sensitivityUnknownReferenceUnit: "Reference unit unavailable",
       sensitivityReportTitle: "Sensitivity and improvement screening",
       sensitivityReportNote: "Individual rows are one-at-a-time tests. The selected combination is an additive deterministic scenario, not a clinical recommendation or a global or probabilistic sensitivity analysis.",
@@ -7239,15 +7364,27 @@
     });
 
     Object.assign(uiText.nl, {
-      helpStep5: "Definieer de functionele eenheid, controleer automatische bouwstenen en bereken resultaten. Gebruik de bijdrageanalyse voor hotspots en de gevoeligheidsverkenner om één parameter per keer te testen. Hoeveelheidswijzigingen vereisen richtlijnonderbouwing, klinische gelijkwaardigheid en goedkeuring door experts. Gebruik de lokale Brightway-koppeling voor gekoppelde resultaten; browsercoëfficiënten blijven demonstratiedata.",
+      methodologyButton: "Methoden",
+      methodologyTitle: "Methoden en referenties",
+      methodologyIntro: "Dit prototype koppelt reconstructie van zorgpaden aan modulaire proces-LCA. Deze referenties beschrijven de aanpak; zij valideren de huidige klinische inhoud of demonstratiecoëfficiënten niet.",
+      methodologyPathwayTitle: "Protocol-naar-activiteit-zorgpadmapping",
+      methodologyPathwayText: "Protocol- en werkstroombronnen worden opgesplitst in activiteiten en beslispunten en vervolgens weergegeven als een metrokaart van het zorgpad. De kaart is een controleerbare modelinterface, geen bewijs dat een lokaal zorgpad volledig is.",
+      methodologyLcaTitle: "Levenscyclusanalyse",
+      methodologyLcaText: "Doel en reikwijdte, functionele eenheid, systeemgrens, inventarisatie, impactbeoordeling en interpretatie zijn ingericht volgens de principes van ISO 14040 en ISO 14044.",
+      methodologyEfTitle: "Impactbeoordeling",
+      methodologyEfText: "De interface toont de 16 EF 3.1 no LT-impactcategorieën. Browsercoëfficiënten zijn synthetisch; formele resultaten vereisen gedocumenteerde voorgrondinventarissen en geverifieerde methodemappings.",
+      methodologyCalculationTitle: "Berekening en onzekerheid",
+      methodologyCalculationText: "Brightway is de beoogde rekenmachine. Het huidige plus-of-minveld betreft alleen onzekerheid in de impactcoëfficiënt. Parameterverdelingen, zorgpadvariatie, scenario's en structurele modelvarianten vereisen expliciete backendmodellen.",
+      helpStep3: "Kies voor een volledige beoordeling een geldig zorgpad of selecteer één verbonden patiënttraject vanaf het vaste begin bij ziekenhuisinstroom tot een geldig eindpunt. Selecteer bij een deeltraject de verbonden activiteiten rechtstreeks op de kaart; de segmentgrens wordt uit die selectie afgeleid.",
+      helpStep5: "Definieer de functionele eenheid, controleer automatische bouwstenen en bereken resultaten. Gebruik de bijdrageanalyse voor hotspots en de gevoeligheidsverkenner om één parameter per keer te testen. Activiteitsaantallen zijn gehele getallen en vereisen klinische onderbouwing. Gebruik de lokale Brightway-koppeling voor gekoppelde resultaten; browsercoëfficiënten blijven demonstratiedata.",
       sensitivityTitle: "Gevoeligheids- en verbeterverkenner",
       sensitivityIntro: "Rangschik de vijf grootste bijdragen, test elke bijdrage afzonderlijk en combineer alleen de aangevinkte wijzigingen.",
       sensitivityModeLabel: "Scenarioparameter",
       sensitivityIntensityMode: "Impactintensiteit",
-      sensitivityQuantityMode: "Activiteitsvolume",
+      sensitivityQuantityMode: "Aantal activiteiten",
       sensitivityReductionLabel: "Geteste reductie",
       sensitivityCoefficientReductionLabel: "Pas één coëfficiëntreductie toe op aangevinkte bijdragen",
-      sensitivitySameQuantityReductionLabel: "Pas één volumereductie toe op aangevinkte bijdragen",
+      sensitivitySameQuantityReductionLabel: "Stel per bijdrage een geheel scenarioaantal in",
       sensitivityGlobalReductionHelp: "Hoofdregelaar: verplaatsen overschrijft de afzonderlijke percentages van alle aangevinkte bijdragen.",
       sensitivityMethodBrowser: "Alleen screening: de resultaten gebruiken synthetische browsercoëfficiënten. Gebruik de rangschikking als prioriteit voor dataverzameling en scenariotesten, niet als interventieadvies.",
       sensitivityMethodBrightway: "Gebruikt geïmporteerde Brightway-bijdragen per bouwsteen voor de geselecteerde categorie. Elke rij test één parameter afzonderlijk en houdt alle andere parameters constant.",
@@ -7270,6 +7407,7 @@
       sensitivityClinicalSafeguard: "Volumescenario's zijn geen advies om zorg te verminderen. Test ze alleen met richtlijnonderbouwing, klinische gelijkwaardigheid, patiëntacceptatie en goedkeuring door experts.",
       sensitivityPositiveOnly: "Alleen positieve bijdragen worden gerangschikt; vermeden lasten en negatieve credits vereisen afzonderlijke interpretatie.",
       sensitivityPercentMethod: "Elke aangevinkte rij heeft een eigen percentage. De hoofdregelaar stelt één gedeeld percentage in voor alle aangevinkte rijen; niet-aangevinkte bijdragen veranderen niet.",
+      sensitivityCountMethod: "Elke aangevinkte rij gebruikt een geheel scenarioaantal. Aantallen schalen de gekoppelde bijdrage lineair; een basisaantal van 1 blijft 1 omdat geen lager positief aantal bestaat.",
       sensitivityCombinedAssumption: "Afzonderlijke rijen zijn één-voor-één-tests. Het gecombineerde resultaat telt de geselecteerde reducties op onder de aanname van lineaire onafhankelijkheid en modelleert geen interacties tussen wijzigingen.",
       sensitivityCombinedScenario: "Gecombineerd geselecteerd scenario",
       sensitivityCombinedValue: "{count} geselecteerd · daling {amount} ({reduction}%) · resultaat {total}",
@@ -7280,9 +7418,12 @@
       sensitivityIndividualNewTotal: "Individueel gemodelleerd resultaat",
       sensitivityNotSelected: "Niet opgenomen in het gecombineerde scenario",
       sensitivitySelectContributor: "Neem {block} op in het gecombineerde gevoeligheidsscenario",
-      sensitivityAdjustContributor: "Stel de afzonderlijke reductie in voor {block}",
-      sensitivityQuantityInterpretation: "Basishoeveelheid: {quantity} · {unit}. Een testreductie van {reduction}% geeft {remaining} · {unit}.",
-      sensitivityQuantityUnavailable: "Er is geen bruikbare basishoeveelheid voor interpretatie in klinische eenheden.",
+      sensitivityAdjustContributor: "Stel de afzonderlijke scenariowaarde in voor {block}",
+      sensitivityScenarioCount: "Scenarioaantal: {scenario} {unit}",
+      sensitivityBaselineCount: "basis {quantity}",
+      sensitivityQuantityInterpretation: "Basisaantal: {quantity} {unit}; scenarioaantal: {scenario} {unit}; wijziging: -{change}.",
+      sensitivityQuantityOne: "Het basisaantal is 1. Dit kan niet worden verlaagd zonder de activiteit uit te sluiten.",
+      sensitivityQuantityUnavailable: "Er is geen positief geheel basisaantal voor dit scenario beschikbaar.",
       sensitivityUnknownReferenceUnit: "Referentie-eenheid niet beschikbaar",
       sensitivityReportTitle: "Screening van gevoeligheid en verbetering",
       sensitivityReportNote: "Afzonderlijke rijen zijn één-voor-één-tests. De geselecteerde combinatie is een additief deterministisch scenario, geen klinisch advies en geen globale of probabilistische gevoeligheidsanalyse.",
@@ -7292,15 +7433,27 @@
     });
 
     Object.assign(uiText.zh, {
-      helpStep5: "定义功能单位，检查自动启用的 building blocks 并计算结果。使用贡献分析定位热点，再用敏感性探索器逐一测试参数。活动数量变化必须有指南依据、临床等效性和专家批准。正式映射结果应使用本地 Brightway 连接；浏览器系数仍是演示数据。",
+      methodologyButton: "方法",
+      methodologyTitle: "方法与参考文献",
+      methodologyIntro: "本原型把临床路径重建与模块化过程 LCA 相连接。以下资料用于说明方法，不代表当前临床内容或演示系数已经得到验证。",
+      methodologyPathwayTitle: "从 protocol 到 activity 的路径绘制",
+      methodologyPathwayText: "将 protocol 和工作流程资料拆解为 activities 与决策点，再用地铁式路径图表示。该图是可追溯的建模界面，并不能单独证明本地路径已经完整。",
+      methodologyLcaTitle: "生命周期评价",
+      methodologyLcaText: "目标与范围、功能单位、系统边界、清单、影响评价和解释按照 ISO 14040 与 ISO 14044 的原则组织。",
+      methodologyEfTitle: "影响评价",
+      methodologyEfText: "界面展示 EF 3.1 no LT 的 16 个影响类别。浏览器中的系数为合成演示数据；正式结果需要有记录的前景清单和经核对的方法映射。",
+      methodologyCalculationTitle: "计算与不确定性",
+      methodologyCalculationText: "Brightway 是预定的计算引擎。当前正负百分比只表示影响系数不确定性；参数分布、路径变异、情景和模型结构变体需要在后端建立明确模型。",
+      helpStep3: "完整评估应选择合法路径预设，或从固定入院起点到合法终点手动选择一条连续患者路径。局部探索则直接在线路图中选择连续 activities，工具会根据所选内容自动推断片段边界。",
+      helpStep5: "定义功能单位，检查自动启用的 building blocks 并计算结果。使用贡献分析定位热点，再用敏感性探索器逐一测试参数。活动次数情景使用整数，并需要临床依据。正式映射结果应使用本地 Brightway 连接；浏览器系数仍是演示数据。",
       sensitivityTitle: "敏感性与改进探索器",
       sensitivityIntro: "列出前五项贡献者，逐项独立测试，并只组合已勾选的变化。",
       sensitivityModeLabel: "情景参数",
       sensitivityIntensityMode: "单位影响强度",
-      sensitivityQuantityMode: "活动数量",
+      sensitivityQuantityMode: "活动次数",
       sensitivityReductionLabel: "测试降幅",
       sensitivityCoefficientReductionLabel: "对已勾选贡献者统一设置影响系数降幅",
-      sensitivitySameQuantityReductionLabel: "对已勾选贡献者统一设置活动数量降幅",
+      sensitivitySameQuantityReductionLabel: "为每项贡献者设置整数情景次数",
       sensitivityGlobalReductionHelp: "总滑块：移动后会覆盖所有已勾选贡献者各自的百分比。",
       sensitivityMethodBrowser: "仅用于筛查：结果使用浏览器中的合成演示系数。该排序用于确定数据收集和情景测试优先级，不是干预建议。",
       sensitivityMethodBrightway: "使用所选影响类别的 Brightway building-block 贡献。每次只测试一个参数，其余参数保持不变。",
@@ -7323,6 +7476,7 @@
       sensitivityClinicalSafeguard: "活动数量情景不是减少医疗服务的建议。只有在指南支持、临床等效、患者可接受且经专家批准时才能测试。",
       sensitivityPositiveOnly: "这里只排序正贡献；避免负荷和负值抵扣需要单独解释。",
       sensitivityPercentMethod: "每个已勾选行都有独立百分比。总滑块只为所有已勾选行统一设置一个百分比；未勾选贡献者保持不变。",
+      sensitivityCountMethod: "每个已勾选行使用整数情景次数。次数按线性关系缩放已映射贡献；基准次数为 1 时保持为 1，因为不存在更低的正整数次数。",
       sensitivityCombinedAssumption: "每一行仍是单因素测试；组合结果在线性独立假设下相加所选降幅，不模拟多项变化之间的交互作用。",
       sensitivityCombinedScenario: "所选项目的组合情景",
       sensitivityCombinedValue: "已选 {count} 项 · 减少 {amount}（{reduction}%）· 新结果 {total}",
@@ -7333,9 +7487,12 @@
       sensitivityIndividualNewTotal: "单项模拟结果",
       sensitivityNotSelected: "未计入组合情景",
       sensitivitySelectContributor: "将 {block} 纳入组合敏感性情景",
-      sensitivityAdjustContributor: "设置 {block} 的独立降幅",
-      sensitivityQuantityInterpretation: "基准数量：{quantity} · {unit}。测试减少 {reduction}% 后为 {remaining} · {unit}。",
-      sensitivityQuantityUnavailable: "当前没有可用于临床单位解释的有效基准数量。",
+      sensitivityAdjustContributor: "设置 {block} 的独立情景值",
+      sensitivityScenarioCount: "情景次数：{scenario} {unit}",
+      sensitivityBaselineCount: "基准 {quantity}",
+      sensitivityQuantityInterpretation: "基准次数：{quantity} {unit}；情景次数：{scenario} {unit}；变化：-{change}。",
+      sensitivityQuantityOne: "基准次数为 1；如果不排除该活动，就不能再降低。",
+      sensitivityQuantityUnavailable: "该情景没有可用的正整数基准次数。",
       sensitivityUnknownReferenceUnit: "参考单位不可用",
       sensitivityReportTitle: "敏感性与改进筛查",
       sensitivityReportNote: "每一行是单因素测试；所选组合是确定性的可加情景，不是临床建议，也不代表全局或概率敏感性分析。",
@@ -7456,7 +7613,7 @@
       pathwaySetupSourceTitle: "Choose pathway source",
       pathwaySetupSourceText: "Use Specialties in the upper-right page header to choose Urology or Gastroenterology and, for Urology, the Dutch pathway or EAU reference.",
       pathwaySetupBoundaryTitle: "Declare the boundary",
-      pathwaySetupBoundaryText: "Choose Complete for a fixed hospital-entry start and a valid clinical endpoint. Choose Partial to set any segment start and endpoint.",
+      pathwaySetupBoundaryText: "Choose Complete for a fixed hospital-entry start and a valid clinical endpoint. In Partial mode, select the segment directly on the map.",
       pathwaySetupRouteTitle: "Build the route",
       pathwaySetupRouteText: "Choose a complete-route preset or select a connected route manually, then continue to Activities.",
       workflowActivitiesGuide1Title: "Narrow the list",
@@ -7497,11 +7654,12 @@
       assessmentBeyondEndpoint: "One or more selected activities do not lead to the declared endpoint.",
       assessmentBoundaryNoPath: "No directed pathway connects the declared start and endpoint.",
       assessmentBoundaryRule: "Complete mode fixes the hospital-entry start. Choose a clinical route preset to select all included activities automatically, or build a route manually to one of the valid endpoints. Optional conditional activities are not added by default.",
-      assessmentPartialBoundaryRule: "Partial mode allows any activity to be the segment start or endpoint. Select one connected directed segment between them; activities outside that corridor are excluded from the result.",
+      assessmentPartialBoundaryRule: "Partial mode infers the segment boundary from the connected activities selected directly on the map.",
       assessmentNodeOutsideBoundary: "Outside the declared start-to-end corridor",
       assessmentBranchConflict: "A decision point contains more than one competing outgoing route.",
+      assessmentPartialAmbiguousBoundary: "The selected activities must have one inferred start and one inferred endpoint.",
       assessmentValidComplete: "Complete connected pathway: {start} to {end}. LCA calculation is enabled.",
-      assessmentValidPartial: "Connected partial segment. Results are exploratory and do not represent a full patient pathway.",
+      assessmentValidPartial: "Connected partial segment: {start} to {end}. Results are exploratory and do not represent a full patient pathway.",
       completePathwayResult: "Complete pathway result",
       partialSegmentResult: "Partial segment result",
       assessmentBlockedTitle: "A valid assessment route is required",
@@ -7521,7 +7679,7 @@
       pathwaySetupSourceTitle: "Kies de zorgpadbron",
       pathwaySetupSourceText: "Gebruik rechtsboven in de paginakop het menu Specialismen om Urologie of Gastro-enterologie te kiezen en, bij Urologie, het Nederlandse zorgpad of de EAU-referentie.",
       pathwaySetupBoundaryTitle: "Leg de grens vast",
-      pathwaySetupBoundaryText: "Kies Volledig voor een vast begin bij ziekenhuisinstroom en een geldig klinisch eindpunt. Kies Deeltraject om zelf begin en eind te bepalen.",
+      pathwaySetupBoundaryText: "Kies Volledig voor een vast begin bij ziekenhuisinstroom en een geldig klinisch eindpunt. Selecteer in Deeltraject het segment rechtstreeks op de kaart.",
       pathwaySetupRouteTitle: "Bouw de route",
       pathwaySetupRouteText: "Kies een vooraf ingesteld volledig zorgpad of selecteer handmatig een verbonden route en ga daarna naar Activiteiten.",
       workflowActivitiesGuide1Title: "Beperk de lijst",
@@ -7562,11 +7720,12 @@
       assessmentBeyondEndpoint: "Een of meer geselecteerde activiteiten leiden niet naar het opgegeven eindpunt.",
       assessmentBoundaryNoPath: "Er bestaat geen gerichte route tussen het opgegeven begin- en eindpunt.",
       assessmentBoundaryRule: "De volledige modus gebruikt een vast begin bij ziekenhuisinstroom. Kies een vooraf ingesteld klinisch zorgpad om alle activiteiten automatisch te selecteren, of bouw handmatig een route naar een geldig eindpunt. Optionele activiteiten worden niet standaard toegevoegd.",
-      assessmentPartialBoundaryRule: "In de deelmodus kan elke activiteit het begin- of eindpunt zijn. Selecteer daartussen één verbonden, gerichte route; activiteiten buiten dit traject tellen niet mee.",
+      assessmentPartialBoundaryRule: "De deelmodus leidt de segmentgrens af uit de verbonden activiteiten die rechtstreeks op de kaart zijn geselecteerd.",
       assessmentNodeOutsideBoundary: "Buiten het opgegeven traject van begin tot eind",
       assessmentBranchConflict: "Een beslispunt bevat meer dan één concurrerende uitgaande route.",
+      assessmentPartialAmbiguousBoundary: "De geselecteerde activiteiten moeten één afgeleid beginpunt en één afgeleid eindpunt hebben.",
       assessmentValidComplete: "Volledig verbonden zorgpad: {start} tot {end}. LCA-berekening is ingeschakeld.",
-      assessmentValidPartial: "Verbonden deeltraject. De resultaten zijn verkennend en vormen geen volledig patiënttraject.",
+      assessmentValidPartial: "Verbonden deeltraject: {start} tot {end}. De resultaten zijn verkennend en vormen geen volledig patiënttraject.",
       completePathwayResult: "Resultaat volledig zorgpad",
       partialSegmentResult: "Resultaat deeltraject",
       assessmentBlockedTitle: "Een geldige beoordelingsroute is vereist",
@@ -7586,7 +7745,7 @@
       pathwaySetupSourceTitle: "选择路径来源",
       pathwaySetupSourceText: "使用页面右上角的“专科”菜单选择泌尿科或胃肠病学；在泌尿科下可继续选择荷兰路径或 EAU 参考路径。",
       pathwaySetupBoundaryTitle: "指定评估边界",
-      pathwaySetupBoundaryText: "完整评估使用固定的入院起点和合法临床终点；局部探索可自由指定片段起点和终点。",
+      pathwaySetupBoundaryText: "完整评估使用固定的入院起点和合法临床终点；局部探索直接在线路图中选择片段。",
       pathwaySetupRouteTitle: "构建路径",
       pathwaySetupRouteText: "选择一个完整路径预设，或手动选择连续路径，然后进入“活动”步骤。",
       workflowActivitiesGuide1Title: "缩小活动范围",
@@ -7627,11 +7786,12 @@
       assessmentBeyondEndpoint: "部分所选活动不能通向指定终点。",
       assessmentBoundaryNoPath: "指定起点与终点之间不存在有向路径。",
       assessmentBoundaryRule: "完整模式固定从入院节点开始。选择临床路径预设可自动勾选其中全部活动，也可以手动构建通向合法终点的路径。可选的条件活动不会默认加入。",
-      assessmentPartialBoundaryRule: "局部模式允许任意活动作为片段起点或终点。请选择两者之间的一条连续有向路径；区间外活动不会计入结果。",
+      assessmentPartialBoundaryRule: "局部模式根据直接在线路图中选择的连续活动自动推断片段边界。",
       assessmentNodeOutsideBoundary: "位于指定起点至终点区间之外",
       assessmentBranchConflict: "同一决策点选择了多个互斥的后续路径。",
+      assessmentPartialAmbiguousBoundary: "所选活动必须只能推断出一个片段起点和一个片段终点。",
       assessmentValidComplete: "完整连续路径：{start} 至 {end}。已启用 LCA 计算。",
-      assessmentValidPartial: "连续的局部片段。结果仅用于探索，不代表完整患者路径。",
+      assessmentValidPartial: "连续局部片段：{start} 至 {end}。结果仅用于探索，不代表完整患者路径。",
       completePathwayResult: "完整路径结果",
       partialSegmentResult: "局部片段结果",
       assessmentBlockedTitle: "需要有效的评估路径",
@@ -11663,6 +11823,7 @@
       sensitivityMode: "intensity",
       sensitivityReductionPercent: 20,
       sensitivityRowReductions: {},
+      sensitivityRowQuantities: {},
       sensitivitySelectedKeys: [],
       lcaExpandedModules: {},
       functionalUnits: {},
@@ -12038,6 +12199,7 @@
     }
 
     function isAssessmentNodeSelectable(nodeId) {
+      if (state.assessmentMode === "partial") return true;
       return assessmentBoundaryCorridor().has(nodeId);
     }
 
@@ -12045,6 +12207,7 @@
       const pathway = currentPathway();
       const selectedIds = new Set(scenarioSetForPathway());
       const boundary = assessmentBoundaryForPathway();
+      const completeMode = state.assessmentMode === "complete";
       const issues = [];
       const activeEdges = pathway.edges.filter((edgeItem) => isScenarioEdgeActive(edgeItem, selectedIds));
       const directed = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
@@ -12057,7 +12220,7 @@
         undirected.get(edgeItem.to)?.push(edgeItem.from);
       });
 
-      if (!assessmentBoundaryCorridor(pathway, boundary).has(boundary.end)) {
+      if (completeMode && !assessmentBoundaryCorridor(pathway, boundary).has(boundary.end)) {
         issues.push(t("assessmentBoundaryNoPath"));
       }
 
@@ -12077,7 +12240,9 @@
       );
       if (hasCompetingBranchSelection) issues.push(t("assessmentBranchConflict"));
 
-      if (selectedIds.size > 0) {
+      let resolvedStartId = boundary.start;
+      let resolvedEndId = boundary.end;
+      if (selectedIds.size > 0 && completeMode) {
         if (!selectedIds.has(boundary.start)) issues.push(t("assessmentStartMissing"));
         if (!selectedIds.has(boundary.end)) issues.push(t("assessmentEndMissing"));
         if (selectedIds.has(boundary.start)) {
@@ -12089,21 +12254,38 @@
           const ableToReachEnd = traverseScenarioGraph(boundary.end, reverseDirected);
           if (ableToReachEnd.size !== selectedIds.size) issues.push(t("assessmentBeyondEndpoint"));
         }
+      } else if (selectedIds.size > 0) {
+        const inferredStarts = Array.from(selectedIds).filter((nodeId) => (reverseDirected.get(nodeId) || []).length === 0);
+        const inferredEnds = Array.from(selectedIds).filter((nodeId) => (directed.get(nodeId) || []).length === 0);
+        if (inferredStarts.length !== 1 || inferredEnds.length !== 1) {
+          issues.push(t("assessmentPartialAmbiguousBoundary"));
+        } else {
+          [resolvedStartId] = inferredStarts;
+          [resolvedEndId] = inferredEnds;
+          const reachable = traverseScenarioGraph(resolvedStartId, directed);
+          const ableToReachEnd = traverseScenarioGraph(resolvedEndId, reverseDirected);
+          if (reachable.size !== selectedIds.size || ableToReachEnd.size !== selectedIds.size) {
+            issues.push(t("assessmentDisconnected"));
+          }
+        }
       }
 
-      const startNode = nodeById(pathway, boundary.start);
-      const endNode = nodeById(pathway, boundary.end);
+      const startNode = nodeById(pathway, resolvedStartId);
+      const endNode = nodeById(pathway, resolvedEndId);
       const valid = issues.length === 0;
-      const resultLabel = state.assessmentMode === "complete"
+      const resultLabel = completeMode
         ? t("completePathwayResult")
         : t("partialSegmentResult");
       const message = valid
-        ? state.assessmentMode === "complete"
+        ? completeMode
           ? t("assessmentValidComplete", {
-            start: startNode ? localizedNodeLabel(startNode) : boundary.start,
-            end: endNode ? localizedNodeLabel(endNode) : boundary.end
+            start: startNode ? localizedNodeLabel(startNode) : resolvedStartId,
+            end: endNode ? localizedNodeLabel(endNode) : resolvedEndId
           })
-          : t("assessmentValidPartial")
+          : t("assessmentValidPartial", {
+            start: startNode ? localizedNodeLabel(startNode) : resolvedStartId,
+            end: endNode ? localizedNodeLabel(endNode) : resolvedEndId
+          })
         : issues.join(" ");
       return {
         mode: state.assessmentMode,
@@ -12111,10 +12293,10 @@
         issues,
         message,
         resultLabel,
-        startId: boundary.start,
-        endId: boundary.end,
-        startLabel: startNode ? localizedNodeLabel(startNode) : boundary.start,
-        endLabel: endNode ? localizedNodeLabel(endNode) : boundary.end,
+        startId: resolvedStartId,
+        endId: resolvedEndId,
+        startLabel: startNode ? localizedNodeLabel(startNode) : resolvedStartId,
+        endLabel: endNode ? localizedNodeLabel(endNode) : resolvedEndId,
         selectedCount: selectedIds.size
       };
     }
@@ -12378,6 +12560,7 @@
     }
 
     function reconcileScenarioSelectionToBoundary(pathwayId = state.pathway) {
+      if (state.assessmentMode === "partial") return false;
       const pathway = pathwayData[pathwayId];
       const boundary = assessmentBoundaryForPathway(pathwayId);
       const corridor = assessmentBoundaryCorridor(pathway, boundary);
@@ -12406,6 +12589,8 @@
       const boundary = assessmentBoundaryForPathway();
       if (!isAssessmentNodeSelectable(nodeId)) return false;
       if (
+        state.assessmentMode === "complete"
+        &&
         selectedIds.has(nodeId)
         && [boundary.start, boundary.end].includes(nodeId)
       ) {
@@ -12601,6 +12786,20 @@
       setText("helpStep5", "helpStep5");
       setText("helpCutoffTitle", "helpCutoffTitle");
       setText("helpCutoffText", "helpCutoffText");
+      setText("methodologyButtonText", "methodologyButton");
+      setText("methodologyDialogTitle", "methodologyTitle");
+      setText("closeMethodologyDialog", "closeHelp");
+      setText("methodologyIntro", "methodologyIntro");
+      setText("methodologyPathwayTitle", "methodologyPathwayTitle");
+      setText("methodologyPathwayText", "methodologyPathwayText");
+      setText("methodologyLcaTitle", "methodologyLcaTitle");
+      setText("methodologyLcaText", "methodologyLcaText");
+      setText("methodologyEfTitle", "methodologyEfTitle");
+      setText("methodologyEfText", "methodologyEfText");
+      setText("methodologyCalculationTitle", "methodologyCalculationTitle");
+      setText("methodologyCalculationText", "methodologyCalculationText");
+      const methodologyButton = document.getElementById("openMethodologyDialog");
+      if (methodologyButton) methodologyButton.setAttribute("aria-label", t("methodologyButton"));
       setText("workflowHeading", "workflowHeading");
       setText("workflowPathwayTitle", "workflowPathwayTitle");
       setText("workflowPathwayHint", "workflowPathwayHint");
@@ -13205,7 +13404,7 @@
       if (clearFullscreenButton) clearFullscreenButton.disabled = selectedCount === 0;
       if (completeButton) completeButton.setAttribute("aria-pressed", String(completeMode));
       if (partialButton) partialButton.setAttribute("aria-pressed", String(!completeMode));
-      if (boundaryControls) boundaryControls.hidden = false;
+      if (boundaryControls) boundaryControls.hidden = !completeMode;
       if (routePresetField) routePresetField.hidden = !completeMode;
       setText("assessmentStartLabel", completeMode ? "completeAssessmentStart" : "partialAssessmentStart");
       setText("assessmentEndLabel", completeMode ? "completeAssessmentEnd" : "partialAssessmentEnd");
@@ -13215,14 +13414,14 @@
       const allNodes = pathway.nodes;
       const fixedStartNode = nodeById(pathway, pathwayAssessmentDefaults[state.pathway].start);
       const validEndpointIds = new Set(validCompleteEndpointIds());
-      const endNodes = completeMode
-        ? allNodes.filter((node) => validEndpointIds.has(node.id))
-        : allNodes;
-      renderAssessmentBoundarySelect(startSelect, assessment.startId, completeMode && fixedStartNode ? [fixedStartNode] : allNodes);
-      renderAssessmentBoundarySelect(endSelect, assessment.endId, endNodes);
-      if (startSelect) startSelect.disabled = completeMode;
-      if (endSelect) endSelect.disabled = false;
-      if (completeMode) renderCompleteRoutePresetSelect(routePresetSelect);
+      if (completeMode) {
+        const endNodes = allNodes.filter((node) => validEndpointIds.has(node.id));
+        renderAssessmentBoundarySelect(startSelect, assessment.startId, fixedStartNode ? [fixedStartNode] : allNodes);
+        renderAssessmentBoundarySelect(endSelect, assessment.endId, endNodes);
+        if (startSelect) startSelect.disabled = true;
+        if (endSelect) endSelect.disabled = false;
+        renderCompleteRoutePresetSelect(routePresetSelect);
+      }
       if (validationStatus) {
         validationStatus.textContent = assessment.message;
         validationStatus.classList.toggle("valid", assessment.valid);
@@ -14678,19 +14877,33 @@
     function sensitivityQuantityDetails(item) {
       const quantity = Number(item.row?.quantity);
       return {
-        quantity: Number.isFinite(quantity) ? quantity : null,
+        quantity: Number.isInteger(quantity) && quantity >= 1 ? quantity : null,
         referenceUnit: item.row ? localizedUnit(item.row.unit) : t("sensitivityUnknownReferenceUnit")
       };
     }
 
+    function clampSensitivityScenarioQuantity(value, baselineQuantity) {
+      if (!Number.isInteger(baselineQuantity) || baselineQuantity < 1) return null;
+      const numeric = Number(value);
+      const integer = Number.isFinite(numeric) ? Math.trunc(numeric) : baselineQuantity;
+      return Math.min(baselineQuantity, Math.max(1, integer));
+    }
+
+    function sensitivityScenarioQuantityForKey(mappingKey, baselineQuantity) {
+      return clampSensitivityScenarioQuantity(
+        state.sensitivityRowQuantities[mappingKey],
+        baselineQuantity
+      );
+    }
+
     function sensitivityQuantityInterpretationText(item) {
       if (item.quantity == null) return t("sensitivityQuantityUnavailable");
-      const reduction = clampSensitivityReduction(item.testedReductionPercent, 20);
+      if (item.quantity === 1) return t("sensitivityQuantityOne");
       return t("sensitivityQuantityInterpretation", {
-        quantity: formatDecimal(item.quantity, 2),
+        quantity: formatDecimal(item.quantity, 0),
         unit: item.referenceUnit,
-        reduction: formatDecimal(reduction, 0),
-        remaining: formatDecimal(item.quantity * (1 - reduction / 100), 2)
+        scenario: formatDecimal(item.scenarioQuantity, 0),
+        change: formatDecimal(item.quantityChange, 0)
       });
     }
 
@@ -14706,6 +14919,13 @@
     }
 
     function sensitivityTestLabel(item) {
+      if (state.sensitivityMode === "quantity") {
+        if (item.quantity == null) return t("sensitivityQuantityUnavailable");
+        return t("sensitivityScenarioCount", {
+          scenario: formatDecimal(item.scenarioQuantity, 0),
+          unit: item.referenceUnit
+        });
+      }
       return t("sensitivityReductionTest", { value: formatDecimal(item.testedReductionPercent, 0) });
     }
 
@@ -14722,14 +14942,27 @@
           .map((item) => {
             const quantityDetails = sensitivityQuantityDetails(item);
             const rowReductionPercent = sensitivityReductionForKey(item.mappingKey);
-            const reductionRate = rowReductionPercent / 100;
+            const quantityMode = state.sensitivityMode === "quantity";
+            const scenarioQuantity = quantityMode && quantityDetails.quantity != null
+              ? sensitivityScenarioQuantityForKey(item.mappingKey, quantityDetails.quantity)
+              : quantityDetails.quantity;
+            const quantityChange = quantityDetails.quantity != null && scenarioQuantity != null
+              ? quantityDetails.quantity - scenarioQuantity
+              : 0;
+            const reductionRate = quantityMode
+              ? quantityDetails.quantity != null
+                ? quantityChange / quantityDetails.quantity
+                : 0
+              : rowReductionPercent / 100;
             const reduction = item.value * reductionRate;
             const requestedSelected = selectedKeys.has(item.mappingKey);
             return {
               ...item,
               ...quantityDetails,
+              scenarioQuantity,
+              quantityChange,
               requestedSelected,
-              selected: requestedSelected,
+              selected: requestedSelected && (!quantityMode || quantityDetails.quantity > 1),
               reductionRate,
               testedReductionPercent: reductionRate * 100,
               sharePercent: (item.value / total) * 100,
@@ -14766,6 +14999,7 @@
       const slider = document.getElementById("sensitivityReduction");
       const sliderValue = document.getElementById("sensitivityReductionValue");
       const reductionLabel = document.getElementById("sensitivityReductionLabel");
+      const reductionControl = document.getElementById("sensitivityReductionControl");
       if (!summary || !results || !methodNote || !slider || !sliderValue) return;
       const assessment = currentAssessmentStatus();
       if (!assessment.valid) {
@@ -14779,6 +15013,7 @@
         button.setAttribute("aria-pressed", String(button.dataset.sensitivityMode === state.sensitivityMode));
       });
       const quantityMode = state.sensitivityMode === "quantity";
+      if (reductionControl) reductionControl.hidden = quantityMode;
       if (reductionLabel) {
         reductionLabel.textContent = quantityMode
           ? t("sensitivitySameQuantityReductionLabel")
@@ -14796,7 +15031,10 @@
         : analysis.brightwayFallback
           ? `${t("sensitivityMethodBrightwayFallback")} ${t("sensitivityMethodBrowser")}`
           : t("sensitivityMethodBrowser");
-      methodNote.textContent = `${methodText} ${t("sensitivityPositiveOnly")} ${t("sensitivityPercentMethod")} ${t("sensitivityCombinedAssumption")}`;
+      const scenarioMethodText = quantityMode
+        ? t("sensitivityCountMethod")
+        : t("sensitivityPercentMethod");
+      methodNote.textContent = `${methodText} ${t("sensitivityPositiveOnly")} ${scenarioMethodText} ${t("sensitivityCombinedAssumption")}`;
 
       if (!analysis.rows.length || analysis.total <= 0) {
         summary.innerHTML = "";
@@ -14834,7 +15072,15 @@
       const rows = analysis.rows.map((item, index) => {
         const quantityInterpretation = sensitivityQuantityInterpretationText(item);
         const testLabel = sensitivityTestLabel(item);
-        const rowControl = `
+        const rowControl = quantityMode
+          ? `
+            <div class="sensitivity-row-control">
+              <label class="sr-only" for="sensitivity-row-${escapeHtml(item.mappingKey)}">${escapeHtml(t("sensitivityAdjustContributor", { block: `${item.module} ${item.block}` }))}</label>
+              <input id="sensitivity-row-${escapeHtml(item.mappingKey)}" type="number" min="1" max="${escapeHtml(item.quantity ?? 1)}" step="1" inputmode="numeric" value="${escapeHtml(item.scenarioQuantity ?? 1)}" data-sensitivity-row-quantity="${escapeHtml(item.mappingKey)}" ${(item.selected && item.quantity > 1) ? "" : "disabled"}>
+              <output>${escapeHtml(t("sensitivityBaselineCount", { quantity: item.quantity == null ? "-" : formatDecimal(item.quantity, 0) }))}</output>
+            </div>
+          `
+          : `
             <div class="sensitivity-row-control">
               <label class="sr-only" for="sensitivity-row-${escapeHtml(item.mappingKey)}">${escapeHtml(t("sensitivityAdjustContributor", { block: `${item.module} ${item.block}` }))}</label>
               <input id="sensitivity-row-${escapeHtml(item.mappingKey)}" type="range" min="5" max="50" step="5" value="${escapeHtml(formatDecimal(item.testedReductionPercent, 0))}" data-sensitivity-row-reduction="${escapeHtml(item.mappingKey)}" ${item.selected ? "" : "disabled"}>
@@ -14852,12 +15098,18 @@
             <span>${escapeHtml(t("sensitivityIndividualNewTotal"))}: ${escapeHtml(formatSensitivityImpact(item.newTotal, analysis))}</span>
             ${analysis.mode === "quantity" ? `<span class="quantity-interpretation">${escapeHtml(quantityInterpretation)}</span>` : ""}
           `
-          : `${rowControl}<span>${escapeHtml(t("sensitivityNotSelected"))}</span>`;
+          : `${rowControl}<span>${escapeHtml(
+            quantityMode && item.quantity === 1
+              ? t("sensitivityQuantityOne")
+              : quantityMode && item.quantity == null
+                ? t("sensitivityQuantityUnavailable")
+                : t("sensitivityNotSelected")
+          )}</span>`;
         return `
         <tr class="${item.selected ? "selected" : ""}">
           <td class="sensitivity-select-cell">
             <label>
-              <input type="checkbox" data-sensitivity-select="${escapeHtml(item.mappingKey)}" ${item.selected ? "checked" : ""} aria-label="${escapeHtml(t("sensitivitySelectContributor", { block: `${item.module} ${item.block}` }))}">
+              <input type="checkbox" data-sensitivity-select="${escapeHtml(item.mappingKey)}" ${item.selected ? "checked" : ""} ${quantityMode && !(item.quantity > 1) ? "disabled" : ""} aria-label="${escapeHtml(t("sensitivitySelectContributor", { block: `${item.module} ${item.block}` }))}">
               <span>${index + 1}</span>
             </label>
           </td>
@@ -14922,6 +15174,7 @@
         });
       });
       document.getElementById("sensitivityReduction").addEventListener("input", (event) => {
+        if (state.sensitivityMode === "quantity") return;
         const value = clampSensitivityReduction(event.target.value, 20);
         state.sensitivityReductionPercent = value;
         state.sensitivitySelectedKeys.forEach((mappingKey) => {
@@ -14938,6 +15191,16 @@
         if (output) output.textContent = `${value}%`;
       });
       document.getElementById("sensitivityResults").addEventListener("change", (event) => {
+        const quantityInput = event.target.closest("[data-sensitivity-row-quantity]");
+        if (quantityInput) {
+          const mappingKey = quantityInput.dataset.sensitivityRowQuantity;
+          const row = lcaRows.find((candidate) => candidate.id === mappingKey);
+          const baselineQuantity = Number(row?.quantity);
+          const value = clampSensitivityScenarioQuantity(quantityInput.value, baselineQuantity);
+          if (value != null) state.sensitivityRowQuantities[mappingKey] = value;
+          renderSensitivityExplorer();
+          return;
+        }
         const rowSlider = event.target.closest("[data-sensitivity-row-reduction]");
         if (rowSlider) {
           state.sensitivityRowReductions[rowSlider.dataset.sensitivityRowReduction] = clampSensitivityReduction(
@@ -14952,8 +15215,19 @@
         const selected = new Set(state.sensitivitySelectedKeys);
         if (checkbox.checked) {
           selected.add(checkbox.dataset.sensitivitySelect);
-          if (!Object.prototype.hasOwnProperty.call(state.sensitivityRowReductions, checkbox.dataset.sensitivitySelect)) {
-            state.sensitivityRowReductions[checkbox.dataset.sensitivitySelect] = 20;
+          const mappingKey = checkbox.dataset.sensitivitySelect;
+          if (state.sensitivityMode === "quantity") {
+            const row = lcaRows.find((candidate) => candidate.id === mappingKey);
+            const baselineQuantity = Number(row?.quantity);
+            if (
+              Number.isInteger(baselineQuantity)
+              && baselineQuantity >= 1
+              && !Object.prototype.hasOwnProperty.call(state.sensitivityRowQuantities, mappingKey)
+            ) {
+              state.sensitivityRowQuantities[mappingKey] = baselineQuantity;
+            }
+          } else if (!Object.prototype.hasOwnProperty.call(state.sensitivityRowReductions, mappingKey)) {
+            state.sensitivityRowReductions[mappingKey] = 20;
           }
         } else {
           selected.delete(checkbox.dataset.sensitivitySelect);
@@ -16163,9 +16437,11 @@
 
     function bindControls() {
       const helpDialog = document.getElementById("helpDialog");
+      const methodologyDialog = document.getElementById("methodologyDialog");
       document.getElementById("openHelpDialog").addEventListener("click", () => {
         document.getElementById("languageSelector").removeAttribute("open");
         document.getElementById("specialtySelector").removeAttribute("open");
+        if (methodologyDialog && methodologyDialog.open) methodologyDialog.close();
         if (helpDialog && !helpDialog.open) helpDialog.showModal();
       });
       document.getElementById("closeHelpDialog").addEventListener("click", () => {
@@ -16173,6 +16449,18 @@
       });
       helpDialog.addEventListener("click", (event) => {
         if (event.target === helpDialog) helpDialog.close();
+      });
+      document.getElementById("openMethodologyDialog").addEventListener("click", () => {
+        document.getElementById("languageSelector").removeAttribute("open");
+        document.getElementById("specialtySelector").removeAttribute("open");
+        if (helpDialog && helpDialog.open) helpDialog.close();
+        if (methodologyDialog && !methodologyDialog.open) methodologyDialog.showModal();
+      });
+      document.getElementById("closeMethodologyDialog").addEventListener("click", () => {
+        if (methodologyDialog && methodologyDialog.open) methodologyDialog.close();
+      });
+      methodologyDialog.addEventListener("click", (event) => {
+        if (event.target === methodologyDialog) methodologyDialog.close();
       });
       document.getElementById("languageSelector").addEventListener("toggle", (event) => {
         if (event.target.open) document.getElementById("specialtySelector").removeAttribute("open");

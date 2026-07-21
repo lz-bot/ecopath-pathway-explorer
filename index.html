@@ -7214,7 +7214,6 @@
       sensitivityShare: "{value}% of pathway",
       sensitivityReductionTest: "Reduce by {value}%",
       sensitivityPathwayReduction: "-{value}% of pathway",
-      sensitivityOperationalSafeguard: "Operational intensity scenarios must preserve clinical function, patient safety, infection control, access, and regulatory requirements.",
       sensitivityClinicalSafeguard: "Quantity scenarios are not recommendations to reduce care. Test them only with guideline support, clinical equivalence, patient acceptability, and expert approval.",
       sensitivityPositiveOnly: "Only positive contributions are ranked; avoided burdens and negative credits require separate interpretation.",
       sensitivityPercentMethod: "Each checked row has its own percentage. The master slider sets one shared percentage for all checked rows; unchecked contributors are unchanged.",
@@ -7268,7 +7267,6 @@
       sensitivityShare: "{value}% van zorgpad",
       sensitivityReductionTest: "Verlaag met {value}%",
       sensitivityPathwayReduction: "-{value}% van zorgpad",
-      sensitivityOperationalSafeguard: "Scenario's voor impactintensiteit moeten de klinische functie, patiëntveiligheid, infectiepreventie, toegankelijkheid en regelgeving behouden.",
       sensitivityClinicalSafeguard: "Volumescenario's zijn geen advies om zorg te verminderen. Test ze alleen met richtlijnonderbouwing, klinische gelijkwaardigheid, patiëntacceptatie en goedkeuring door experts.",
       sensitivityPositiveOnly: "Alleen positieve bijdragen worden gerangschikt; vermeden lasten en negatieve credits vereisen afzonderlijke interpretatie.",
       sensitivityPercentMethod: "Elke aangevinkte rij heeft een eigen percentage. De hoofdregelaar stelt één gedeeld percentage in voor alle aangevinkte rijen; niet-aangevinkte bijdragen veranderen niet.",
@@ -7322,7 +7320,6 @@
       sensitivityShare: "占路径 {value}%",
       sensitivityReductionTest: "降低 {value}%",
       sensitivityPathwayReduction: "路径降低 {value}%",
-      sensitivityOperationalSafeguard: "单位影响强度情景必须保持临床功能、患者安全、感染控制、医疗可及性并符合监管要求。",
       sensitivityClinicalSafeguard: "活动数量情景不是减少医疗服务的建议。只有在指南支持、临床等效、患者可接受且经专家批准时才能测试。",
       sensitivityPositiveOnly: "这里只排序正贡献；避免负荷和负值抵扣需要单独解释。",
       sensitivityPercentMethod: "每个已勾选行都有独立百分比。总滑块只为所有已勾选行统一设置一个百分比；未勾选贡献者保持不变。",
@@ -7376,7 +7373,6 @@
       sensitivityShare: "パスウェイの {value}%",
       sensitivityReductionTest: "{value}% 削減",
       sensitivityPathwayReduction: "パスウェイの -{value}%",
-      sensitivityOperationalSafeguard: "影響原単位シナリオでは、臨床機能、患者安全、感染管理、アクセス、規制要件を維持する必要があります。",
       sensitivityClinicalSafeguard: "活動量シナリオは医療削減の推奨ではありません。ガイドライン、臨床的同等性、患者受容性、専門家承認がある場合のみ試験してください。",
       sensitivityPositiveOnly: "正の寄与だけを順位付けします。回避負荷や負のクレジットは別に解釈する必要があります。",
       sensitivityPercentMethod: "チェックした各行には個別の割合があります。一括スライダーはチェックした全行に同じ割合を設定し、未選択の寄与は変更しません。",
@@ -7430,7 +7426,6 @@
       sensitivityShare: "{value}% de la vía",
       sensitivityReductionTest: "Reducir un {value}%",
       sensitivityPathwayReduction: "-{value}% de la vía",
-      sensitivityOperationalSafeguard: "Los escenarios de intensidad deben conservar la función clínica, la seguridad, el control de infecciones, el acceso y los requisitos regulatorios.",
       sensitivityClinicalSafeguard: "Los escenarios de cantidad no recomiendan reducir la atención. Pruébelos solo con respaldo de guías, equivalencia clínica, aceptación del paciente y aprobación experta.",
       sensitivityPositiveOnly: "Solo se clasifican contribuciones positivas; las cargas evitadas y los créditos negativos requieren interpretación separada.",
       sensitivityPercentMethod: "Cada fila marcada tiene su propio porcentaje. El control maestro asigna un porcentaje común a todas las filas marcadas; las demás no cambian.",
@@ -14760,7 +14755,7 @@
         combinedNewTotal: total - combinedReduction,
         safeguard: state.sensitivityMode === "quantity"
           ? t("sensitivityClinicalSafeguard")
-          : t("sensitivityOperationalSafeguard")
+          : ""
       };
     }
 
@@ -14886,8 +14881,22 @@
           </thead>
           <tbody>${rows}</tbody>
         </table>
-        <p class="sensitivity-safeguard">${escapeHtml(analysis.safeguard)}</p>
+        ${analysis.safeguard ? `<p class="sensitivity-safeguard">${escapeHtml(analysis.safeguard)}</p>` : ""}
       `;
+    }
+
+    function restoreLcaControlViewport(selector, viewportTop) {
+      requestAnimationFrame(() => {
+        const control = document.querySelector(selector);
+        if (!control) return;
+        const offset = control.getBoundingClientRect().top - viewportTop;
+        const root = document.documentElement;
+        const previousScrollBehavior = root.style.scrollBehavior;
+        root.style.scrollBehavior = "auto";
+        window.scrollBy(0, offset);
+        root.style.scrollBehavior = previousScrollBehavior;
+        control.focus({ preventScroll: true });
+      });
     }
 
     function bindLcaControls() {
@@ -14978,17 +14987,24 @@
         const checkbox = event.target;
         const rowIndex = Number(checkbox.dataset.lcaRowToggle);
         if (Number.isInteger(rowIndex) && lcaRows[rowIndex]) {
+          const viewportTop = checkbox.getBoundingClientRect().top;
+          const moduleId = checkbox.closest("[data-lca-module]")?.dataset.lcaModule;
+          if (moduleId) state.lcaExpandedModules[moduleId] = true;
           lcaRows[rowIndex].included = checkbox.checked;
           renderLcaTable();
           renderLcaOutputs();
+          restoreLcaControlViewport(`[data-lca-row-toggle="${rowIndex}"]`, viewportTop);
           return;
         }
         const moduleId = checkbox.dataset.lcaModuleToggle;
         if (!moduleId || !(moduleId in lcaModuleIncluded)) return;
+        const viewportTop = checkbox.getBoundingClientRect().top;
         lcaModuleIncluded[moduleId] = checkbox.checked;
+        state.lcaExpandedModules[moduleId] = checkbox.checked;
         renderBuildingBlockMap();
         renderLcaTable();
         renderLcaOutputs();
+        restoreLcaControlViewport(`[data-lca-module-toggle="${moduleId}"]`, viewportTop);
       });
     }
 

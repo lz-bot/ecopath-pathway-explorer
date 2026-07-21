@@ -2042,17 +2042,6 @@
       font-size: 12px;
     }
 
-    .impact-category-method-note {
-      grid-column: 1 / -1;
-      border-top: 1px solid rgba(0, 90, 160, 0.16);
-      padding-top: 6px;
-    }
-
-    .impact-category-method-note a {
-      color: var(--accent-dark);
-      font-weight: 700;
-    }
-
     .export-status {
       flex-basis: 100%;
       color: var(--muted);
@@ -3382,58 +3371,6 @@
       </div>
     </section>
 
-    <details class="goal-scope-panel" id="goalScopePanel" data-workspace-panel="pathway">
-      <summary>
-        <span class="goal-scope-summary-copy">
-          <strong id="goalScopeTitle">Goal, scope and functional unit</strong>
-          <span id="functionalUnitSummary"></span>
-        </span>
-      </summary>
-      <div class="goal-scope-content">
-        <p class="scope-note" id="goalScopeIntro"></p>
-        <p class="scope-note" id="goalScopeModelEffect"></p>
-        <div class="goal-scope-grid">
-          <div class="field field-wide">
-            <label for="fuClinicalFunction" id="fuClinicalFunctionLabel">Clinical function</label>
-            <input id="fuClinicalFunction" type="text" data-fu-field="clinicalFunction">
-          </div>
-          <div class="field">
-            <label for="fuPopulation" id="fuPopulationLabel">Patient population</label>
-            <input id="fuPopulation" type="text" data-fu-field="population">
-          </div>
-          <div class="field">
-            <label for="fuStartPoint" id="fuStartPointLabel">Start point</label>
-            <input id="fuStartPoint" type="text" data-fu-field="startPoint">
-          </div>
-          <div class="field">
-            <label for="fuEndPoint" id="fuEndPointLabel">Endpoint</label>
-            <input id="fuEndPoint" type="text" data-fu-field="endPoint">
-          </div>
-          <div class="field">
-            <label for="fuTimeHorizon" id="fuTimeHorizonLabel">Time horizon</label>
-            <input id="fuTimeHorizon" type="text" data-fu-field="timeHorizon">
-          </div>
-          <div class="field">
-            <label for="fuGeography" id="fuGeographyLabel">Geography</label>
-            <input id="fuGeography" type="text" data-fu-field="geography">
-          </div>
-          <div class="field">
-            <label for="fuReferenceAmount" id="fuReferenceAmountLabel">Reference amount</label>
-            <input id="fuReferenceAmount" type="number" min="0.000001" step="any" data-fu-field="referenceAmount">
-          </div>
-          <div class="field">
-            <label for="fuReferenceUnit" id="fuReferenceUnitLabel">Reference unit</label>
-            <input id="fuReferenceUnit" type="text" data-fu-field="referenceUnit">
-          </div>
-          <div class="field field-wide">
-            <label for="fuComparability" id="fuComparabilityLabel">Clinical comparability condition</label>
-            <textarea id="fuComparability" data-fu-field="comparability"></textarea>
-          </div>
-        </div>
-        <p class="functional-unit-statement" id="functionalUnitStatement"></p>
-      </div>
-    </details>
-
     <section class="layout">
       <div>
         <section class="panel map-panel" data-workspace-panel="pathway">
@@ -3579,6 +3516,58 @@
     </section>
     </div>
 
+    <details class="goal-scope-panel" id="goalScopePanel" data-workspace-panel="lca">
+      <summary>
+        <span class="goal-scope-summary-copy">
+          <strong id="goalScopeTitle">Goal, scope and functional unit</strong>
+          <span id="functionalUnitSummary"></span>
+        </span>
+      </summary>
+      <div class="goal-scope-content">
+        <p class="scope-note" id="goalScopeIntro"></p>
+        <p class="scope-note" id="goalScopeModelEffect"></p>
+        <div class="goal-scope-grid">
+          <div class="field field-wide">
+            <label for="fuClinicalFunction" id="fuClinicalFunctionLabel">Clinical function</label>
+            <input id="fuClinicalFunction" type="text" data-fu-field="clinicalFunction">
+          </div>
+          <div class="field">
+            <label for="fuPopulation" id="fuPopulationLabel">Patient population</label>
+            <input id="fuPopulation" type="text" data-fu-field="population">
+          </div>
+          <div class="field">
+            <label for="fuStartPoint" id="fuStartPointLabel">Start point</label>
+            <input id="fuStartPoint" type="text" data-fu-field="startPoint">
+          </div>
+          <div class="field">
+            <label for="fuEndPoint" id="fuEndPointLabel">Endpoint</label>
+            <input id="fuEndPoint" type="text" data-fu-field="endPoint">
+          </div>
+          <div class="field">
+            <label for="fuTimeHorizon" id="fuTimeHorizonLabel">Time horizon</label>
+            <input id="fuTimeHorizon" type="text" data-fu-field="timeHorizon">
+          </div>
+          <div class="field">
+            <label for="fuGeography" id="fuGeographyLabel">Geography</label>
+            <input id="fuGeography" type="text" data-fu-field="geography">
+          </div>
+          <div class="field">
+            <label for="fuReferenceAmount" id="fuReferenceAmountLabel">Reference amount</label>
+            <input id="fuReferenceAmount" type="number" min="0.000001" step="any" data-fu-field="referenceAmount">
+          </div>
+          <div class="field">
+            <label for="fuReferenceUnit" id="fuReferenceUnitLabel">Reference unit</label>
+            <input id="fuReferenceUnit" type="text" data-fu-field="referenceUnit">
+          </div>
+          <div class="field field-wide">
+            <label for="fuComparability" id="fuComparabilityLabel">Clinical comparability condition</label>
+            <textarea id="fuComparability" data-fu-field="comparability"></textarea>
+          </div>
+        </div>
+        <p class="functional-unit-statement" id="functionalUnitStatement"></p>
+      </div>
+    </details>
+
     <section class="panel lca-panel" id="lcaCalculator" aria-label="LCA building block calculator" hidden>
       <div class="panel-heading">
         <div>
@@ -3601,10 +3590,6 @@
           <span class="impact-method-chip" id="impactMethodChip">EF v3.1 no LT · demo</span>
           <strong id="lcaImpactCategoryName"></strong>
           <p id="lcaImpactCategoryDescription"></p>
-          <p class="impact-category-method-note">
-            <span id="lcaImpactMethodNote"></span>
-            <a id="efReferenceLink" href="https://eplca.jrc.ec.europa.eu/LCDN/developerEF.html" target="_blank" rel="noreferrer">EF 3.1 reference package</a>
-          </p>
         </div>
       </div>
 
@@ -3696,13 +3681,6 @@
               <div class="sensitivity-mode-control" role="group" aria-labelledby="sensitivityModeLabel">
                 <button type="button" id="sensitivityIntensityMode" data-sensitivity-mode="intensity" aria-pressed="true">Impact intensity</button>
                 <button type="button" id="sensitivityQuantityMode" data-sensitivity-mode="quantity" aria-pressed="false">Activity quantity</button>
-              </div>
-            </div>
-            <div id="sensitivityQuantityBasisControl" hidden>
-              <span class="sensitivity-control-label" id="sensitivityQuantityBasisLabel">Quantity test basis</span>
-              <div class="sensitivity-mode-control" role="group" aria-labelledby="sensitivityQuantityBasisLabel">
-                <button type="button" id="sensitivityPercentBasis" data-sensitivity-quantity-basis="percent" aria-pressed="true">Same percentage</button>
-                <button type="button" id="sensitivityOneUnitBasis" data-sensitivity-quantity-basis="oneUnit" aria-pressed="false">One fewer unit</button>
               </div>
             </div>
             <div class="sensitivity-reduction-control" id="sensitivityReductionControl">
@@ -6504,8 +6482,6 @@
       impactResourceUseFossilsDescription: "Potential depletion of fossil energy resources, reported in megajoules.",
       impactResourceUseMineralsMetals: "Resource use, minerals and metals",
       impactResourceUseMineralsMetalsDescription: "Potential depletion of mineral and metal resources, expressed as antimony equivalents.",
-      impactMethodNote: "Category names and units follow EF 3.1. Verify the exact 'no LT' Brightway method key, foreground inventory, characterization factors, and data-specific uncertainty before interpretation.",
-      efReferenceLink: "EF 3.1 reference package",
       impactCoefficientDynamic: "Impact coefficient, {unit}/reference unit",
       impactCoefficientAria: "{block} {category} impact coefficient",
       categoryFactorGap: "No verified {category} coefficient is mapped. Enter a value only after foreground LCI and EF v3.1 no LT mapping.",
@@ -6585,8 +6561,6 @@
       impactResourceUseFossilsDescription: "Potentiële uitputting van fossiele energiebronnen, uitgedrukt in megajoules.",
       impactResourceUseMineralsMetals: "Hulpbronnengebruik, mineralen en metalen",
       impactResourceUseMineralsMetalsDescription: "Potentiële uitputting van mineralen en metalen, uitgedrukt als antimoon-equivalenten.",
-      impactMethodNote: "Categorienamen en eenheden volgen EF 3.1. Controleer vóór interpretatie de exacte Brightway-methodevariant 'no LT', voorgrondinventaris, karakterisatiefactoren en dataspecifieke onzekerheid.",
-      efReferenceLink: "EF 3.1-referentiepakket",
       impactCoefficientDynamic: "Impactcoëfficiënt, {unit}/referentie-eenheid",
       impactCoefficientAria: "Impactcoëfficiënt {category} voor {block}",
       categoryFactorGap: "Er is geen geverifieerde coëfficiënt voor {category} gekoppeld. Voer alleen een waarde in na koppeling van voorgrond-LCI en EF v3.1 no LT.",
@@ -6666,8 +6640,6 @@
       impactResourceUseFossilsDescription: "化石能源资源的潜在消耗，以兆焦耳表示。",
       impactResourceUseMineralsMetals: "资源使用，矿物和金属",
       impactResourceUseMineralsMetalsDescription: "矿物和金属资源的潜在消耗，以锑当量表示。",
-      impactMethodNote: "类别名称和单位遵循 EF 3.1。正式解释前必须核对 Brightway 中准确的 no LT 方法键、前景清单、表征因子和数据特定不确定性。",
-      efReferenceLink: "EF 3.1 参考包",
       impactCoefficientDynamic: "影响系数，{unit}/参考单位",
       impactCoefficientAria: "{block} 的 {category} 影响系数",
       categoryFactorGap: "尚未映射经过验证的 {category} 系数。仅在完成前景 LCI 与 EF v3.1 no LT 映射后输入。",
@@ -6749,8 +6721,6 @@
       impactResourceUseFossilsDescription: "化石エネルギー資源の潜在的な枯渇をメガジュールで示します。",
       impactResourceUseMineralsMetals: "資源利用（鉱物・金属）",
       impactResourceUseMineralsMetalsDescription: "鉱物・金属資源の潜在的な枯渇をアンチモン当量で示します。",
-      impactMethodNote: "カテゴリ名と単位は EF 3.1 に準拠します。解釈前に Brightway の正確な no LT メソッドキー、フォアグラウンドインベントリ、特性化係数、データ固有の不確実性を確認してください。",
-      efReferenceLink: "EF 3.1 参照パッケージ",
       impactCoefficientDynamic: "影響係数、{unit}/参照単位",
       impactCoefficientAria: "{block} の {category} 影響係数",
       categoryFactorGap: "検証済みの {category} 係数は未対応です。フォアグラウンド LCI と EF v3.1 no LT の対応後にのみ入力してください。",
@@ -6832,8 +6802,6 @@
       impactResourceUseFossilsDescription: "Agotamiento potencial de recursos energéticos fósiles, expresado en megajulios.",
       impactResourceUseMineralsMetals: "Uso de recursos, minerales y metales",
       impactResourceUseMineralsMetalsDescription: "Agotamiento potencial de minerales y metales, expresado como equivalentes de antimonio.",
-      impactMethodNote: "Los nombres y unidades siguen EF 3.1. Antes de interpretar, verifique la clave exacta no LT en Brightway, el inventario de primer plano, los factores de caracterización y la incertidumbre específica de los datos.",
-      efReferenceLink: "Paquete de referencia EF 3.1",
       impactCoefficientDynamic: "Coeficiente de impacto, {unit}/unidad de referencia",
       impactCoefficientAria: "Coeficiente de {category} para {block}",
       categoryFactorGap: "No se ha mapeado un coeficiente verificado de {category}. Introduzca un valor solo tras mapear el LCI de primer plano y EF v3.1 no LT.",
@@ -7224,9 +7192,6 @@
       sensitivityModeLabel: "Scenario lever",
       sensitivityIntensityMode: "Impact intensity",
       sensitivityQuantityMode: "Activity quantity",
-      sensitivityQuantityBasisLabel: "Quantity test basis",
-      sensitivityPercentBasis: "Same percentage",
-      sensitivityOneUnitBasis: "One fewer reference unit",
       sensitivityReductionLabel: "Tested reduction",
       sensitivityCoefficientReductionLabel: "Apply one coefficient reduction to checked contributors",
       sensitivitySameQuantityReductionLabel: "Apply one quantity reduction to checked contributors",
@@ -7253,7 +7218,6 @@
       sensitivityClinicalSafeguard: "Quantity scenarios are not recommendations to reduce care. Test them only with guideline support, clinical equivalence, patient acceptability, and expert approval.",
       sensitivityPositiveOnly: "Only positive contributions are ranked; avoided burdens and negative credits require separate interpretation.",
       sensitivityPercentMethod: "Each checked row has its own percentage. The master slider sets one shared percentage for all checked rows; unchecked contributors are unchanged.",
-      sensitivityOneUnitMethod: "One reference unit is removed from each checked row using its base quantity. Confirm that quantity represents actual visits, days, scans, cycles, or another count.",
       sensitivityCombinedAssumption: "Individual rows are one-at-a-time tests. The combined result adds the selected reductions under a linear independence assumption and does not model interactions between changes.",
       sensitivityCombinedScenario: "Combined selected scenario",
       sensitivityCombinedValue: "{count} selected · decrease {amount} ({reduction}%) · result {total}",
@@ -7265,13 +7229,9 @@
       sensitivityNotSelected: "Not included in the combined scenario",
       sensitivitySelectContributor: "Include {block} in the combined sensitivity scenario",
       sensitivityAdjustContributor: "Set the independent reduction for {block}",
-      sensitivityQuantityInterpretation: "Base quantity: {quantity} · {unit}. One fewer reference unit = {percent}%.",
-      sensitivityOneUnitChange: "Quantity {from} → {to} (one fewer; {value}%)",
-      sensitivityWholeBlockWarning: "At a base quantity of 1, one fewer unit removes the entire building block.",
+      sensitivityQuantityInterpretation: "Base quantity: {quantity} · {unit}. A {reduction}% test gives {remaining} · {unit}.",
       sensitivityQuantityUnavailable: "No usable base quantity is available for clinical-unit interpretation.",
-      sensitivityOneUnitUnavailable: "One-unit test unavailable; set a base quantity of at least 1.",
       sensitivityUnknownReferenceUnit: "Reference unit unavailable",
-      sensitivityNotAvailable: "not available",
       sensitivityReportTitle: "Sensitivity and improvement screening",
       sensitivityReportNote: "Individual rows are one-at-a-time tests. The selected combination is an additive deterministic scenario, not a clinical recommendation or a global or probabilistic sensitivity analysis.",
       sensitivityDataSourceBrowser: "Browser demonstration coefficients",
@@ -7286,9 +7246,6 @@
       sensitivityModeLabel: "Scenarioparameter",
       sensitivityIntensityMode: "Impactintensiteit",
       sensitivityQuantityMode: "Activiteitsvolume",
-      sensitivityQuantityBasisLabel: "Basis voor volumetest",
-      sensitivityPercentBasis: "Hetzelfde percentage",
-      sensitivityOneUnitBasis: "Eén referentie-eenheid minder",
       sensitivityReductionLabel: "Geteste reductie",
       sensitivityCoefficientReductionLabel: "Pas één coëfficiëntreductie toe op aangevinkte bijdragen",
       sensitivitySameQuantityReductionLabel: "Pas één volumereductie toe op aangevinkte bijdragen",
@@ -7315,7 +7272,6 @@
       sensitivityClinicalSafeguard: "Volumescenario's zijn geen advies om zorg te verminderen. Test ze alleen met richtlijnonderbouwing, klinische gelijkwaardigheid, patiëntacceptatie en goedkeuring door experts.",
       sensitivityPositiveOnly: "Alleen positieve bijdragen worden gerangschikt; vermeden lasten en negatieve credits vereisen afzonderlijke interpretatie.",
       sensitivityPercentMethod: "Elke aangevinkte rij heeft een eigen percentage. De hoofdregelaar stelt één gedeeld percentage in voor alle aangevinkte rijen; niet-aangevinkte bijdragen veranderen niet.",
-      sensitivityOneUnitMethod: "Van elke aangevinkte rij wordt op basis van de basishoeveelheid één referentie-eenheid afgetrokken. Bevestig dat de hoeveelheid werkelijke bezoeken, dagen, scans, cycli of een andere telling weergeeft.",
       sensitivityCombinedAssumption: "Afzonderlijke rijen zijn één-voor-één-tests. Het gecombineerde resultaat telt de geselecteerde reducties op onder de aanname van lineaire onafhankelijkheid en modelleert geen interacties tussen wijzigingen.",
       sensitivityCombinedScenario: "Gecombineerd geselecteerd scenario",
       sensitivityCombinedValue: "{count} geselecteerd · daling {amount} ({reduction}%) · resultaat {total}",
@@ -7327,13 +7283,9 @@
       sensitivityNotSelected: "Niet opgenomen in het gecombineerde scenario",
       sensitivitySelectContributor: "Neem {block} op in het gecombineerde gevoeligheidsscenario",
       sensitivityAdjustContributor: "Stel de afzonderlijke reductie in voor {block}",
-      sensitivityQuantityInterpretation: "Basishoeveelheid: {quantity} · {unit}. Eén referentie-eenheid minder = {percent}%.",
-      sensitivityOneUnitChange: "Hoeveelheid {from} → {to} (één minder; {value}%)",
-      sensitivityWholeBlockWarning: "Bij een basishoeveelheid van 1 verwijdert één eenheid minder de volledige bouwsteen.",
+      sensitivityQuantityInterpretation: "Basishoeveelheid: {quantity} · {unit}. Een testreductie van {reduction}% geeft {remaining} · {unit}.",
       sensitivityQuantityUnavailable: "Er is geen bruikbare basishoeveelheid voor interpretatie in klinische eenheden.",
-      sensitivityOneUnitUnavailable: "Test met één eenheid minder is niet beschikbaar; stel een basishoeveelheid van minimaal 1 in.",
       sensitivityUnknownReferenceUnit: "Referentie-eenheid niet beschikbaar",
-      sensitivityNotAvailable: "niet beschikbaar",
       sensitivityReportTitle: "Screening van gevoeligheid en verbetering",
       sensitivityReportNote: "Afzonderlijke rijen zijn één-voor-één-tests. De geselecteerde combinatie is een additief deterministisch scenario, geen klinisch advies en geen globale of probabilistische gevoeligheidsanalyse.",
       sensitivityDataSourceBrowser: "Demonstratiecoëfficiënten uit de browser",
@@ -7348,9 +7300,6 @@
       sensitivityModeLabel: "情景参数",
       sensitivityIntensityMode: "单位影响强度",
       sensitivityQuantityMode: "活动数量",
-      sensitivityQuantityBasisLabel: "数量测试方式",
-      sensitivityPercentBasis: "相同百分比",
-      sensitivityOneUnitBasis: "每项减少 1 个参考单位",
       sensitivityReductionLabel: "测试降幅",
       sensitivityCoefficientReductionLabel: "对已勾选贡献者统一设置影响系数降幅",
       sensitivitySameQuantityReductionLabel: "对已勾选贡献者统一设置活动数量降幅",
@@ -7377,7 +7326,6 @@
       sensitivityClinicalSafeguard: "活动数量情景不是减少医疗服务的建议。只有在指南支持、临床等效、患者可接受且经专家批准时才能测试。",
       sensitivityPositiveOnly: "这里只排序正贡献；避免负荷和负值抵扣需要单独解释。",
       sensitivityPercentMethod: "每个已勾选行都有独立百分比。总滑块只为所有已勾选行统一设置一个百分比；未勾选贡献者保持不变。",
-      sensitivityOneUnitMethod: "根据基准数量，从每个已勾选行减少 1 个参考单位。请确认该数量确实代表就诊次数、住院日、扫描、疗程或其他计数。",
       sensitivityCombinedAssumption: "每一行仍是单因素测试；组合结果在线性独立假设下相加所选降幅，不模拟多项变化之间的交互作用。",
       sensitivityCombinedScenario: "所选项目的组合情景",
       sensitivityCombinedValue: "已选 {count} 项 · 减少 {amount}（{reduction}%）· 新结果 {total}",
@@ -7389,13 +7337,9 @@
       sensitivityNotSelected: "未计入组合情景",
       sensitivitySelectContributor: "将 {block} 纳入组合敏感性情景",
       sensitivityAdjustContributor: "设置 {block} 的独立降幅",
-      sensitivityQuantityInterpretation: "基准数量：{quantity} · {unit}。减少 1 个参考单位 = {percent}%。",
-      sensitivityOneUnitChange: "数量 {from} → {to}（减少 1 个；{value}%）",
-      sensitivityWholeBlockWarning: "基准数量为 1 时，减少 1 个单位等于移除整个 building block。",
+      sensitivityQuantityInterpretation: "基准数量：{quantity} · {unit}。测试减少 {reduction}% 后为 {remaining} · {unit}。",
       sensitivityQuantityUnavailable: "当前没有可用于临床单位解释的有效基准数量。",
-      sensitivityOneUnitUnavailable: "无法测试减少 1 个单位；请先把基准数量设为至少 1。",
       sensitivityUnknownReferenceUnit: "参考单位不可用",
-      sensitivityNotAvailable: "不可用",
       sensitivityReportTitle: "敏感性与改进筛查",
       sensitivityReportNote: "每一行是单因素测试；所选组合是确定性的可加情景，不是临床建议，也不代表全局或概率敏感性分析。",
       sensitivityDataSourceBrowser: "浏览器演示系数",
@@ -7410,9 +7354,6 @@
       sensitivityModeLabel: "シナリオ変数",
       sensitivityIntensityMode: "影響原単位",
       sensitivityQuantityMode: "活動量",
-      sensitivityQuantityBasisLabel: "活動量テストの基準",
-      sensitivityPercentBasis: "同じ割合",
-      sensitivityOneUnitBasis: "各項目で参照単位を 1 減らす",
       sensitivityReductionLabel: "試験する削減率",
       sensitivityCoefficientReductionLabel: "チェックした寄与に同じ影響係数削減率を適用",
       sensitivitySameQuantityReductionLabel: "チェックした寄与に同じ活動量削減率を適用",
@@ -7439,7 +7380,6 @@
       sensitivityClinicalSafeguard: "活動量シナリオは医療削減の推奨ではありません。ガイドライン、臨床的同等性、患者受容性、専門家承認がある場合のみ試験してください。",
       sensitivityPositiveOnly: "正の寄与だけを順位付けします。回避負荷や負のクレジットは別に解釈する必要があります。",
       sensitivityPercentMethod: "チェックした各行には個別の割合があります。一括スライダーはチェックした全行に同じ割合を設定し、未選択の寄与は変更しません。",
-      sensitivityOneUnitMethod: "各チェック行の基準量から参照単位を 1 減らします。基準量が実際の受診、日数、スキャン、サイクルなどの回数を表すことを確認してください。",
       sensitivityCombinedAssumption: "各行は一因子試験です。組合せ結果は線形独立を仮定して選択した削減量を加算し、変更間の相互作用はモデル化しません。",
       sensitivityCombinedScenario: "選択項目の組合せシナリオ",
       sensitivityCombinedValue: "{count} 項目 · {amount} 削減（{reduction}%）· 結果 {total}",
@@ -7451,13 +7391,9 @@
       sensitivityNotSelected: "組合せシナリオに含まれていません",
       sensitivitySelectContributor: "{block} を組合せ感度シナリオに含める",
       sensitivityAdjustContributor: "{block} の個別削減率を設定",
-      sensitivityQuantityInterpretation: "基準量: {quantity} · {unit}。参照単位を 1 減らす = {percent}%。",
-      sensitivityOneUnitChange: "活動量 {from} → {to}（1 減少、{value}%）",
-      sensitivityWholeBlockWarning: "基準量が 1 の場合、1 単位の削減は構成ブロック全体の除外に相当します。",
+      sensitivityQuantityInterpretation: "基準量: {quantity} · {unit}。{reduction}% の削減テスト後は {remaining} · {unit} です。",
       sensitivityQuantityUnavailable: "臨床単位で解釈できる有効な基準量がありません。",
-      sensitivityOneUnitUnavailable: "1 単位削減を試験できません。基準量を 1 以上に設定してください。",
       sensitivityUnknownReferenceUnit: "参照単位は利用できません",
-      sensitivityNotAvailable: "利用不可",
       sensitivityReportTitle: "感度・改善スクリーニング",
       sensitivityReportNote: "各行は一因子試験です。選択した組合せは加算的な決定論シナリオであり、臨床推奨でもグローバルまたは確率的感度分析でもありません。",
       sensitivityDataSourceBrowser: "ブラウザのデモ係数",
@@ -7472,9 +7408,6 @@
       sensitivityModeLabel: "Palanca del escenario",
       sensitivityIntensityMode: "Intensidad de impacto",
       sensitivityQuantityMode: "Cantidad de actividad",
-      sensitivityQuantityBasisLabel: "Base de la prueba de cantidad",
-      sensitivityPercentBasis: "Mismo porcentaje",
-      sensitivityOneUnitBasis: "Una unidad de referencia menos",
       sensitivityReductionLabel: "Reducción probada",
       sensitivityCoefficientReductionLabel: "Aplicar una reducción del coeficiente a las contribuciones marcadas",
       sensitivitySameQuantityReductionLabel: "Aplicar una reducción de cantidad a las contribuciones marcadas",
@@ -7501,7 +7434,6 @@
       sensitivityClinicalSafeguard: "Los escenarios de cantidad no recomiendan reducir la atención. Pruébelos solo con respaldo de guías, equivalencia clínica, aceptación del paciente y aprobación experta.",
       sensitivityPositiveOnly: "Solo se clasifican contribuciones positivas; las cargas evitadas y los créditos negativos requieren interpretación separada.",
       sensitivityPercentMethod: "Cada fila marcada tiene su propio porcentaje. El control maestro asigna un porcentaje común a todas las filas marcadas; las demás no cambian.",
-      sensitivityOneUnitMethod: "Se resta una unidad de referencia de cada fila marcada usando su cantidad base. Confirme que la cantidad representa visitas, días, exploraciones, ciclos u otro recuento real.",
       sensitivityCombinedAssumption: "Cada fila es una prueba de un factor. El resultado combinado suma las reducciones seleccionadas bajo un supuesto de independencia lineal y no modela interacciones entre cambios.",
       sensitivityCombinedScenario: "Escenario combinado seleccionado",
       sensitivityCombinedValue: "{count} seleccionados · disminución {amount} ({reduction}%) · resultado {total}",
@@ -7513,13 +7445,9 @@
       sensitivityNotSelected: "No incluido en el escenario combinado",
       sensitivitySelectContributor: "Incluir {block} en el escenario combinado de sensibilidad",
       sensitivityAdjustContributor: "Definir la reducción independiente de {block}",
-      sensitivityQuantityInterpretation: "Cantidad base: {quantity} · {unit}. Una unidad de referencia menos = {percent}%.",
-      sensitivityOneUnitChange: "Cantidad {from} → {to} (una menos; {value}%)",
-      sensitivityWholeBlockWarning: "Con una cantidad base de 1, una unidad menos elimina todo el bloque de construcción.",
+      sensitivityQuantityInterpretation: "Cantidad base: {quantity} · {unit}. Una reducción de prueba del {reduction}% da {remaining} · {unit}.",
       sensitivityQuantityUnavailable: "No hay una cantidad base utilizable para interpretar unidades clínicas.",
-      sensitivityOneUnitUnavailable: "La prueba de una unidad menos no está disponible; establezca una cantidad base de al menos 1.",
       sensitivityUnknownReferenceUnit: "Unidad de referencia no disponible",
-      sensitivityNotAvailable: "no disponible",
       sensitivityReportTitle: "Cribado de sensibilidad y mejora",
       sensitivityReportNote: "Cada fila es una prueba de un factor. La combinación seleccionada es un escenario determinista aditivo, no una recomendación clínica ni un análisis de sensibilidad global o probabilístico.",
       sensitivityDataSourceBrowser: "Coeficientes de demostración del navegador",
@@ -7542,10 +7470,10 @@
       workflowActivitiesGuide2Text: "Hover over the map or select an item in the list.",
       workflowActivitiesGuide3Title: "Confirm the scenario",
       workflowActivitiesGuide3Text: "Selected activities activate their mapped LCA building blocks.",
-      workflowLcaGuide1Title: "Review active modules",
-      workflowLcaGuide1Text: "Pathway choices activate mapped building blocks.",
-      workflowLcaGuide2Title: "Check model inputs",
-      workflowLcaGuide2Text: "Edit quantities, impact coefficients, and uncertainty.",
+      workflowLcaGuide1Title: "Define goal and functional unit",
+      workflowLcaGuide1Text: "Set the modeled service, population, boundary, time horizon, geography, and reference unit.",
+      workflowLcaGuide2Title: "Review model inputs",
+      workflowLcaGuide2Text: "Check auto-selected building blocks, quantities, impact coefficients, and uncertainty.",
       workflowLcaGuide3Title: "Choose an impact category",
       workflowLcaGuide3Text: "Select an EF category, then continue to Results.",
       workflowResultsGuide1Title: "Compare categories",
@@ -7607,10 +7535,10 @@
       workflowActivitiesGuide2Text: "Beweeg over de kaart of kies een item in de lijst.",
       workflowActivitiesGuide3Title: "Bevestig het scenario",
       workflowActivitiesGuide3Text: "Geselecteerde activiteiten activeren gekoppelde LCA-bouwstenen.",
-      workflowLcaGuide1Title: "Controleer actieve modules",
-      workflowLcaGuide1Text: "De zorgpadkeuze activeert gekoppelde bouwstenen.",
+      workflowLcaGuide1Title: "Bepaal doel en functionele eenheid",
+      workflowLcaGuide1Text: "Leg zorgfunctie, populatie, grens, tijdshorizon, geografie en referentie-eenheid vast.",
       workflowLcaGuide2Title: "Controleer modelinvoer",
-      workflowLcaGuide2Text: "Pas hoeveelheden, impactcoëfficiënten en onzekerheid aan.",
+      workflowLcaGuide2Text: "Controleer automatisch geselecteerde bouwstenen, hoeveelheden, impactcoëfficiënten en onzekerheid.",
       workflowLcaGuide3Title: "Kies een impactcategorie",
       workflowLcaGuide3Text: "Selecteer een EF-categorie en ga daarna naar Resultaten.",
       workflowResultsGuide1Title: "Vergelijk categorieën",
@@ -7672,10 +7600,10 @@
       workflowActivitiesGuide2Text: "悬停在线路图上，或在列表中选择活动。",
       workflowActivitiesGuide3Title: "确认情景",
       workflowActivitiesGuide3Text: "所选活动会自动激活对应的 LCA 构件。",
-      workflowLcaGuide1Title: "检查已激活模块",
-      workflowLcaGuide1Text: "路径选择会自动激活对应构件。",
+      workflowLcaGuide1Title: "定义目标和功能单位",
+      workflowLcaGuide1Text: "设置医疗服务、患者人群、边界、时间范围、地域和参考单位。",
       workflowLcaGuide2Title: "检查模型输入",
-      workflowLcaGuide2Text: "调整数量、影响系数和不确定性。",
+      workflowLcaGuide2Text: "检查自动选中的构件、数量、影响系数和不确定性。",
       workflowLcaGuide3Title: "选择影响类别",
       workflowLcaGuide3Text: "选择 EF 类别，然后进入“结果”。",
       workflowResultsGuide1Title: "比较影响类别",
@@ -11738,7 +11666,6 @@
       lcaResultView: "all",
       sankeyCutoffPercent: 0.5,
       sensitivityMode: "intensity",
-      sensitivityQuantityBasis: "percent",
       sensitivityReductionPercent: 20,
       sensitivityRowReductions: {},
       sensitivitySelectedKeys: [],
@@ -11845,8 +11772,6 @@
       document.getElementById("impactMethodChip").textContent = t("impactMethodChip");
       document.getElementById("lcaImpactCategoryName").textContent = `${impactCategoryName()} · ${displayUnit(impactCategoryUnit())}`;
       document.getElementById("lcaImpactCategoryDescription").textContent = t(currentImpactCategory().descriptionKey);
-      document.getElementById("lcaImpactMethodNote").textContent = `${t("impactMethodNote")} `;
-      document.getElementById("efReferenceLink").textContent = t("efReferenceLink");
     }
 
     function localizedPathwayField(pathwayId, field) {
@@ -12784,9 +12709,6 @@
       setText("sensitivityModeLabel", "sensitivityModeLabel");
       setText("sensitivityIntensityMode", "sensitivityIntensityMode");
       setText("sensitivityQuantityMode", "sensitivityQuantityMode");
-      setText("sensitivityQuantityBasisLabel", "sensitivityQuantityBasisLabel");
-      setText("sensitivityPercentBasis", "sensitivityPercentBasis");
-      setText("sensitivityOneUnitBasis", "sensitivityOneUnitBasis");
       setText("sensitivityReductionLabel", "sensitivityReductionLabel");
       setText("sensitivityGlobalReductionHelp", "sensitivityGlobalReductionHelp");
       setText("brightwayBridgeTitle", "brightwayBridgeTitle");
@@ -14760,25 +14682,20 @@
 
     function sensitivityQuantityDetails(item) {
       const quantity = Number(item.row?.quantity);
-      const eligibleForOneUnit = Number.isFinite(quantity) && quantity >= 1;
       return {
         quantity: Number.isFinite(quantity) ? quantity : null,
-        referenceUnit: item.row ? localizedUnit(item.row.unit) : t("sensitivityUnknownReferenceUnit"),
-        eligibleForOneUnit,
-        oneUnitRate: eligibleForOneUnit ? 1 / quantity : 0,
-        remainingQuantity: eligibleForOneUnit ? Math.max(0, quantity - 1) : null,
-        removesWholeBlock: eligibleForOneUnit && quantity === 1
+        referenceUnit: item.row ? localizedUnit(item.row.unit) : t("sensitivityUnknownReferenceUnit")
       };
     }
 
     function sensitivityQuantityInterpretationText(item) {
       if (item.quantity == null) return t("sensitivityQuantityUnavailable");
+      const reduction = clampSensitivityReduction(item.testedReductionPercent, 20);
       return t("sensitivityQuantityInterpretation", {
         quantity: formatDecimal(item.quantity, 2),
         unit: item.referenceUnit,
-        percent: item.eligibleForOneUnit
-          ? formatDecimal(item.oneUnitRate * 100, 2)
-          : t("sensitivityNotAvailable")
+        reduction: formatDecimal(reduction, 0),
+        remaining: formatDecimal(item.quantity * (1 - reduction / 100), 2)
       });
     }
 
@@ -14793,16 +14710,8 @@
       return clampSensitivityReduction(stored, 20);
     }
 
-    function sensitivityTestLabel(item, analysis) {
-      if (!analysis.oneUnitMode) {
-        return t("sensitivityReductionTest", { value: formatDecimal(item.testedReductionPercent, 0) });
-      }
-      if (!item.eligibleForOneUnit) return t("sensitivityOneUnitUnavailable");
-      return t("sensitivityOneUnitChange", {
-        from: formatDecimal(item.quantity, 2),
-        to: formatDecimal(item.remainingQuantity, 2),
-        value: formatDecimal(item.testedReductionPercent, 2)
-      });
+    function sensitivityTestLabel(item) {
+      return t("sensitivityReductionTest", { value: formatDecimal(item.testedReductionPercent, 0) });
     }
 
     function collectSensitivityAnalysis(limit = 5) {
@@ -14810,7 +14719,6 @@
       const reductionPercent = clampSensitivityReduction(state.sensitivityReductionPercent, 20);
       const total = Number(sourceData.total) || 0;
       const selectedKeys = new Set(state.sensitivitySelectedKeys);
-      const oneUnitMode = state.sensitivityMode === "quantity" && state.sensitivityQuantityBasis === "oneUnit";
       const rows = total > 0
         ? sourceData.items
           .slice()
@@ -14819,16 +14727,14 @@
           .map((item) => {
             const quantityDetails = sensitivityQuantityDetails(item);
             const rowReductionPercent = sensitivityReductionForKey(item.mappingKey);
-            const reductionRate = oneUnitMode
-              ? quantityDetails.oneUnitRate
-              : rowReductionPercent / 100;
+            const reductionRate = rowReductionPercent / 100;
             const reduction = item.value * reductionRate;
             const requestedSelected = selectedKeys.has(item.mappingKey);
             return {
               ...item,
               ...quantityDetails,
               requestedSelected,
-              selected: requestedSelected && (!oneUnitMode || quantityDetails.eligibleForOneUnit),
+              selected: requestedSelected,
               reductionRate,
               testedReductionPercent: reductionRate * 100,
               sharePercent: (item.value / total) * 100,
@@ -14839,15 +14745,13 @@
             };
           })
         : [];
-      const selectedRows = rows.filter((row) => row.selected && (!oneUnitMode || row.eligibleForOneUnit));
+      const selectedRows = rows.filter((row) => row.selected);
       const combinedReduction = selectedRows.reduce((sum, row) => sum + row.reduction, 0);
       return {
         ...sourceData,
         total,
         reductionPercent,
         mode: state.sensitivityMode,
-        quantityBasis: state.sensitivityQuantityBasis,
-        oneUnitMode,
         rows,
         selectedRows,
         selectedCount: selectedRows.length,
@@ -14866,9 +14770,7 @@
       const methodNote = document.getElementById("sensitivityMethodNote");
       const slider = document.getElementById("sensitivityReduction");
       const sliderValue = document.getElementById("sensitivityReductionValue");
-      const reductionControl = document.getElementById("sensitivityReductionControl");
       const reductionLabel = document.getElementById("sensitivityReductionLabel");
-      const quantityBasisControl = document.getElementById("sensitivityQuantityBasisControl");
       if (!summary || !results || !methodNote || !slider || !sliderValue) return;
       const assessment = currentAssessmentStatus();
       if (!assessment.valid) {
@@ -14881,13 +14783,7 @@
       document.querySelectorAll("[data-sensitivity-mode]").forEach((button) => {
         button.setAttribute("aria-pressed", String(button.dataset.sensitivityMode === state.sensitivityMode));
       });
-      document.querySelectorAll("[data-sensitivity-quantity-basis]").forEach((button) => {
-        button.setAttribute("aria-pressed", String(button.dataset.sensitivityQuantityBasis === state.sensitivityQuantityBasis));
-      });
       const quantityMode = state.sensitivityMode === "quantity";
-      const oneUnitMode = quantityMode && state.sensitivityQuantityBasis === "oneUnit";
-      if (quantityBasisControl) quantityBasisControl.hidden = !quantityMode;
-      if (reductionControl) reductionControl.hidden = oneUnitMode;
       if (reductionLabel) {
         reductionLabel.textContent = quantityMode
           ? t("sensitivitySameQuantityReductionLabel")
@@ -14905,10 +14801,7 @@
         : analysis.brightwayFallback
           ? `${t("sensitivityMethodBrightwayFallback")} ${t("sensitivityMethodBrowser")}`
           : t("sensitivityMethodBrowser");
-      const testBasisText = oneUnitMode
-        ? t("sensitivityOneUnitMethod")
-        : t("sensitivityPercentMethod");
-      methodNote.textContent = `${methodText} ${t("sensitivityPositiveOnly")} ${testBasisText} ${t("sensitivityCombinedAssumption")}`;
+      methodNote.textContent = `${methodText} ${t("sensitivityPositiveOnly")} ${t("sensitivityPercentMethod")} ${t("sensitivityCombinedAssumption")}`;
 
       if (!analysis.rows.length || analysis.total <= 0) {
         summary.innerHTML = "";
@@ -14945,10 +14838,8 @@
 
       const rows = analysis.rows.map((item, index) => {
         const quantityInterpretation = sensitivityQuantityInterpretationText(item);
-        const testLabel = sensitivityTestLabel(item, analysis);
-        const rowControl = analysis.oneUnitMode
-          ? ""
-          : `
+        const testLabel = sensitivityTestLabel(item);
+        const rowControl = `
             <div class="sensitivity-row-control">
               <label class="sr-only" for="sensitivity-row-${escapeHtml(item.mappingKey)}">${escapeHtml(t("sensitivityAdjustContributor", { block: `${item.module} ${item.block}` }))}</label>
               <input id="sensitivity-row-${escapeHtml(item.mappingKey)}" type="range" min="5" max="50" step="5" value="${escapeHtml(formatDecimal(item.testedReductionPercent, 0))}" data-sensitivity-row-reduction="${escapeHtml(item.mappingKey)}" ${item.selected ? "" : "disabled"}>
@@ -14965,16 +14856,13 @@
             }))}</span>
             <span>${escapeHtml(t("sensitivityIndividualNewTotal"))}: ${escapeHtml(formatSensitivityImpact(item.newTotal, analysis))}</span>
             ${analysis.mode === "quantity" ? `<span class="quantity-interpretation">${escapeHtml(quantityInterpretation)}</span>` : ""}
-            ${item.removesWholeBlock && analysis.mode === "quantity" ? `<span class="quantity-interpretation whole-block-warning">${escapeHtml(t("sensitivityWholeBlockWarning"))}</span>` : ""}
           `
-          : analysis.oneUnitMode && !item.eligibleForOneUnit
-            ? `<span>${escapeHtml(t("sensitivityOneUnitUnavailable"))}</span>`
-            : `${rowControl}<span>${escapeHtml(t("sensitivityNotSelected"))}</span>`;
+          : `${rowControl}<span>${escapeHtml(t("sensitivityNotSelected"))}</span>`;
         return `
         <tr class="${item.selected ? "selected" : ""}">
           <td class="sensitivity-select-cell">
             <label>
-              <input type="checkbox" data-sensitivity-select="${escapeHtml(item.mappingKey)}" ${item.selected ? "checked" : ""} ${analysis.oneUnitMode && !item.eligibleForOneUnit ? "disabled" : ""} aria-label="${escapeHtml(t("sensitivitySelectContributor", { block: `${item.module} ${item.block}` }))}">
+              <input type="checkbox" data-sensitivity-select="${escapeHtml(item.mappingKey)}" ${item.selected ? "checked" : ""} aria-label="${escapeHtml(t("sensitivitySelectContributor", { block: `${item.module} ${item.block}` }))}">
               <span>${index + 1}</span>
             </label>
           </td>
@@ -15021,14 +14909,6 @@
       document.querySelectorAll("[data-sensitivity-mode]").forEach((button) => {
         button.addEventListener("click", () => {
           state.sensitivityMode = button.dataset.sensitivityMode === "quantity" ? "quantity" : "intensity";
-          renderSensitivityExplorer();
-        });
-      });
-      document.querySelectorAll("[data-sensitivity-quantity-basis]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.sensitivityQuantityBasis = button.dataset.sensitivityQuantityBasis === "oneUnit"
-            ? "oneUnit"
-            : "percent";
           renderSensitivityExplorer();
         });
       });
@@ -15936,14 +15816,13 @@
         ? data.sensitivity.rows.map((row, index) => {
           const response = row.selected
             ? `
-              <strong>${escapeHtml(sensitivityTestLabel(row, data.sensitivity))}</strong><br>
+              <strong>${escapeHtml(sensitivityTestLabel(row))}</strong><br>
               ${escapeHtml(t("sensitivityIndividualResult"))}: ${escapeHtml(t("sensitivityIndividualReductionValue", {
                 amount: formatSensitivityImpact(row.reduction, data.sensitivity),
                 percent: formatDecimal(row.pathwayReductionPercent, 2)
               }))}<br>
               ${escapeHtml(t("sensitivityIndividualNewTotal"))}: ${escapeHtml(formatSensitivityImpact(row.newTotal, data.sensitivity))}
               ${data.sensitivity.mode === "quantity" ? `<br><small>${escapeHtml(sensitivityQuantityInterpretationText(row))}</small>` : ""}
-              ${row.removesWholeBlock && data.sensitivity.mode === "quantity" ? `<br><small>${escapeHtml(t("sensitivityWholeBlockWarning"))}</small>` : ""}
             `
             : escapeHtml(t("sensitivityNotSelected"));
           return `

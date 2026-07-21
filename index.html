@@ -3364,6 +3364,31 @@
           </div>
         </section>
         <section class="methodology-section">
+          <h3 id="methodStructureTitle">ECO-PATH model structure</h3>
+          <div class="method-note" aria-label="ECO-PATH model structure">
+            <div class="note-cell">
+              <strong id="methodProtocolTitle">Protocol step</strong>
+              <p id="methodProtocolText">Source instruction from a guideline, protocol, or workflow diagram.</p>
+            </div>
+            <div class="note-cell">
+              <strong id="methodActivityTitle">Activity</strong>
+              <p id="methodActivityText">Clinical or operational action placed on the pathway map and reviewed by experts.</p>
+            </div>
+            <div class="note-cell">
+              <strong id="methodModuleTitle">ECO-PATH module</strong>
+              <p id="methodModuleText">LCA modeling zone assigned to pathway activities. It is not another clinical activity.</p>
+            </div>
+            <div class="note-cell">
+              <strong id="methodResourceTitle">Resource flow</strong>
+              <p id="methodResourceText">Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.</p>
+            </div>
+            <div class="note-cell">
+              <strong id="methodLciTitle">LCI / LCIA link</strong>
+              <p id="methodLciText">Resource flows are mapped to inventory data and impact coefficients for calculation.</p>
+            </div>
+          </div>
+        </section>
+        <section class="methodology-section">
           <h3 id="methodologyLcaTitle">Life cycle assessment</h3>
           <p id="methodologyLcaText"></p>
           <div class="methodology-links">
@@ -3585,28 +3610,6 @@
           <div class="activity-list" id="activityList"></div>
         </section>
 
-        <section class="method-note" aria-label="Method notes" data-workspace-panel="activities">
-          <div class="note-cell">
-            <strong id="methodProtocolTitle">Protocol step</strong>
-            <p id="methodProtocolText">Source instruction from a guideline, protocol, or workflow diagram.</p>
-          </div>
-          <div class="note-cell">
-            <strong id="methodActivityTitle">Activity</strong>
-            <p id="methodActivityText">Clinical or operational action placed on the pathway map and reviewed by experts.</p>
-          </div>
-          <div class="note-cell">
-            <strong id="methodModuleTitle">ECO-PATH module</strong>
-            <p id="methodModuleText">LCA modeling zone assigned to pathway activities. It is not another clinical activity.</p>
-          </div>
-          <div class="note-cell">
-            <strong id="methodResourceTitle">Resource flow</strong>
-            <p id="methodResourceText">Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.</p>
-          </div>
-          <div class="note-cell">
-            <strong id="methodLciTitle">LCI / LCIA link</strong>
-            <p id="methodLciText">Resource flows are mapped to inventory data and impact coefficients for calculation.</p>
-          </div>
-        </section>
       </div>
 
       <aside class="panel detail-panel" id="activityDetailPanel" aria-live="polite" data-workspace-panel="activities" hidden>
@@ -7292,6 +7295,7 @@
       methodologyIntro: "This prototype links clinical pathway reconstruction to modular process-based LCA. These references document the approach; they do not validate the current clinical content or demonstration coefficients.",
       methodologyPathwayTitle: "Protocol-to-activity pathway mapping",
       methodologyPathwayText: "Protocol and workflow sources are decomposed into activities and decision points, then represented as a metro-style care pathway. The map is an auditable modeling interface, not proof that a local pathway is complete.",
+      methodStructureTitle: "ECO-PATH model structure",
       methodologyLcaTitle: "Life cycle assessment",
       methodologyLcaText: "Goal and scope, functional unit, system boundary, inventory, impact assessment, and interpretation are organized using ISO 14040 and ISO 14044 principles.",
       methodologyEfTitle: "Impact assessment",
@@ -7361,6 +7365,7 @@
       methodologyIntro: "Dit prototype koppelt reconstructie van zorgpaden aan modulaire proces-LCA. Deze referenties beschrijven de aanpak; zij valideren de huidige klinische inhoud of demonstratiecoëfficiënten niet.",
       methodologyPathwayTitle: "Protocol-naar-activiteit-zorgpadmapping",
       methodologyPathwayText: "Protocol- en werkstroombronnen worden opgesplitst in activiteiten en beslispunten en vervolgens weergegeven als een metrokaart van het zorgpad. De kaart is een controleerbare modelinterface, geen bewijs dat een lokaal zorgpad volledig is.",
+      methodStructureTitle: "Structuur van het ECO-PATH-model",
       methodologyLcaTitle: "Levenscyclusanalyse",
       methodologyLcaText: "Doel en reikwijdte, functionele eenheid, systeemgrens, inventarisatie, impactbeoordeling en interpretatie zijn ingericht volgens de principes van ISO 14040 en ISO 14044.",
       methodologyEfTitle: "Impactbeoordeling",
@@ -7430,6 +7435,7 @@
       methodologyIntro: "本原型把临床路径重建与模块化过程 LCA 相连接。以下资料用于说明方法，不代表当前临床内容或演示系数已经得到验证。",
       methodologyPathwayTitle: "从 protocol 到 activity 的路径绘制",
       methodologyPathwayText: "将 protocol 和工作流程资料拆解为 activities 与决策点，再用地铁式路径图表示。该图是可追溯的建模界面，并不能单独证明本地路径已经完整。",
+      methodStructureTitle: "ECO-PATH 模型结构",
       methodologyLcaTitle: "生命周期评价",
       methodologyLcaText: "目标与范围、功能单位、系统边界、清单、影响评价和解释按照 ISO 14040 与 ISO 14044 的原则组织。",
       methodologyEfTitle: "影响评价",
@@ -12784,6 +12790,7 @@
       setText("methodologyIntro", "methodologyIntro");
       setText("methodologyPathwayTitle", "methodologyPathwayTitle");
       setText("methodologyPathwayText", "methodologyPathwayText");
+      setText("methodStructureTitle", "methodStructureTitle");
       setText("methodologyLcaTitle", "methodologyLcaTitle");
       setText("methodologyLcaText", "methodologyLcaText");
       setText("methodologyEfTitle", "methodologyEfTitle");

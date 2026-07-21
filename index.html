@@ -440,14 +440,21 @@
       margin: 0 auto;
       padding: 18px;
       display: grid;
-      grid-template-columns: 210px minmax(0, 1fr);
+      grid-template-columns: 230px minmax(0, 1fr);
       gap: 16px;
       align-items: start;
     }
 
-    .workflow-nav {
+    .workflow-sidebar {
       position: sticky;
       top: var(--sticky-workspace-top, 98px);
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .workflow-nav,
+    .workflow-guide {
       display: grid;
       gap: 8px;
       padding: 12px;
@@ -457,11 +464,17 @@
       box-shadow: var(--shadow);
     }
 
-    .workflow-nav h2 {
+    .workflow-nav h2,
+    .workflow-guide h3 {
       margin: 0 0 3px;
       color: var(--muted);
       font-size: 12px;
       text-transform: uppercase;
+    }
+
+    .workflow-guide {
+      background: var(--accent-soft);
+      box-shadow: none;
     }
 
     .workflow-step {
@@ -1114,25 +1127,22 @@
 
     .pathway-step-guide {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin: 12px 0 0;
+      grid-template-columns: 1fr;
+      margin: 0;
       padding: 0;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      background: var(--panel-soft);
       list-style: none;
     }
 
     .pathway-step-guide li {
       display: grid;
-      grid-template-columns: 28px minmax(0, 1fr);
+      grid-template-columns: 24px minmax(0, 1fr);
       gap: 8px;
       align-items: start;
-      padding: 10px 12px;
+      padding: 9px 0;
     }
 
     .pathway-step-guide li + li {
-      border-left: 1px solid var(--line);
+      border-top: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
     }
 
     .pathway-step-number {
@@ -3069,12 +3079,19 @@
         grid-template-columns: 1fr;
       }
 
-      .workflow-nav {
+      .workflow-sidebar {
         position: sticky;
         top: 76px;
         z-index: 15;
+      }
+
+      .workflow-nav {
         grid-template-columns: repeat(4, minmax(120px, 1fr));
         overflow-x: auto;
+      }
+
+      .workflow-guide {
+        display: none;
       }
 
       .workflow-nav h2 {
@@ -3146,15 +3163,6 @@
         width: 100%;
       }
 
-      .pathway-step-guide {
-        grid-template-columns: 1fr;
-      }
-
-      .pathway-step-guide li + li {
-        border-top: 1px solid var(--line);
-        border-left: 0;
-      }
-
     }
 
     @media (max-width: 620px) {
@@ -3209,8 +3217,10 @@
       .help-cutoff-note ul {
         columns: 1;
       }
-      .workflow-nav {
+      .workflow-sidebar {
         top: 70px;
+      }
+      .workflow-nav {
         grid-template-columns: repeat(4, 136px);
         padding: 7px;
       }
@@ -3274,24 +3284,43 @@
   </dialog>
 
   <main class="workspace-shell">
-    <aside class="workflow-nav" aria-label="ECO-PATH workflow steps">
-      <h2 id="workflowHeading">Workflow</h2>
-      <button class="workflow-step active" type="button" data-workspace-step="pathway" aria-current="step">
-        <span class="workflow-step-number">1</span>
-        <span><strong id="workflowPathwayTitle">Pathway and scope</strong><small id="workflowPathwayHint">Choose the clinical boundary</small></span>
-      </button>
-      <button class="workflow-step" type="button" data-workspace-step="activities">
-        <span class="workflow-step-number">2</span>
-        <span><strong id="workflowActivitiesTitle">Activities</strong><small id="workflowActivitiesHint">Build the scenario</small></span>
-      </button>
-      <button class="workflow-step" type="button" data-workspace-step="lca">
-        <span class="workflow-step-number">3</span>
-        <span><strong id="workflowLcaTitle">LCA model</strong><small id="workflowLcaHint">Select modules and blocks</small></span>
-      </button>
-      <button class="workflow-step" type="button" data-workspace-step="results">
-        <span class="workflow-step-number">4</span>
-        <span><strong id="workflowResultsTitle">Results</strong><small id="workflowResultsHint">Review and export</small></span>
-      </button>
+    <aside class="workflow-sidebar">
+      <nav class="workflow-nav" aria-label="ECO-PATH workflow steps">
+        <h2 id="workflowHeading">Workflow</h2>
+        <button class="workflow-step active" type="button" data-workspace-step="pathway" aria-current="step">
+          <span class="workflow-step-number">1</span>
+          <span><strong id="workflowPathwayTitle">Pathway and scope</strong><small id="workflowPathwayHint">Choose the clinical boundary</small></span>
+        </button>
+        <button class="workflow-step" type="button" data-workspace-step="activities">
+          <span class="workflow-step-number">2</span>
+          <span><strong id="workflowActivitiesTitle">Activities</strong><small id="workflowActivitiesHint">Build the scenario</small></span>
+        </button>
+        <button class="workflow-step" type="button" data-workspace-step="lca">
+          <span class="workflow-step-number">3</span>
+          <span><strong id="workflowLcaTitle">LCA model</strong><small id="workflowLcaHint">Select modules and blocks</small></span>
+        </button>
+        <button class="workflow-step" type="button" data-workspace-step="results">
+          <span class="workflow-step-number">4</span>
+          <span><strong id="workflowResultsTitle">Results</strong><small id="workflowResultsHint">Review and export</small></span>
+        </button>
+      </nav>
+      <section class="workflow-guide" aria-live="polite">
+        <h3 id="workflowGuideTitle">Pathway and scope</h3>
+        <ol class="pathway-step-guide" id="pathwayStepGuide" aria-label="Pathway setup order">
+          <li>
+            <span class="pathway-step-number" aria-hidden="true">1</span>
+            <span><strong id="workflowGuideStep1Title">Choose pathway source</strong><small id="workflowGuideStep1Text">Select the specialty and reference view.</small></span>
+          </li>
+          <li>
+            <span class="pathway-step-number" aria-hidden="true">2</span>
+            <span><strong id="workflowGuideStep2Title">Declare the boundary</strong><small id="workflowGuideStep2Text">Choose the assessment mode, start, and endpoint.</small></span>
+          </li>
+          <li>
+            <span class="pathway-step-number" aria-hidden="true">3</span>
+            <span><strong id="workflowGuideStep3Title">Build the route</strong><small id="workflowGuideStep3Text">Select connected activities on the map.</small></span>
+          </li>
+        </ol>
+      </section>
     </aside>
 
     <div class="workspace-content">
@@ -3423,20 +3452,6 @@
               </div>
             </div>
           </details>
-          <ol class="pathway-step-guide" id="pathwayStepGuide" aria-label="Pathway setup order">
-            <li>
-              <span class="pathway-step-number" aria-hidden="true">1</span>
-              <span><strong id="pathwaySetupSourceTitle">Choose pathway source</strong><small id="pathwaySetupSourceText">Select the specialty and reference view.</small></span>
-            </li>
-            <li>
-              <span class="pathway-step-number" aria-hidden="true">2</span>
-              <span><strong id="pathwaySetupBoundaryTitle">Declare the boundary</strong><small id="pathwaySetupBoundaryText">Choose the assessment mode, start, and endpoint.</small></span>
-            </li>
-            <li>
-              <span class="pathway-step-number" aria-hidden="true">3</span>
-              <span><strong id="pathwaySetupRouteTitle">Build the route</strong><small id="pathwaySetupRouteText">Select connected activities on the map.</small></span>
-            </li>
-          </ol>
           <div class="pathway-scenario-bar" aria-label="Selected pathway scenario">
             <div class="assessment-mode-control" role="group" aria-label="Assessment mode" id="assessmentModeControl">
               <button type="button" id="completeAssessmentMode" data-assessment-mode="complete" aria-pressed="true">Complete pathway assessment</button>
@@ -4458,8 +4473,8 @@
       emc: {
         label: "Urology: Dutch / EAU MIBC comparison",
         title: "Dutch MIBC Pathway: Regional Diagnosis to Erasmus MC Treatment",
-        status: "Expert-informed operational reconstruction; older EAU-based NVU guidance and local confirmation required",
-        scope: "Hospital pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up. The map combines Dutch guidance with Joost expert input and does not assert that every activity occurs for every patient.",
+        status: "",
+        scope: "Hospital pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up. The map represents possible routes, and not every activity occurs for every patient.",
         defaultSelected: "EMC-FC02",
         careZones: [
           {
@@ -4481,23 +4496,23 @@
           { y: 590, label: "Bladder preservation and follow-up", labelY: 634 }
         ],
         nodes: [
-          activity("EMC-FC01", "Referral to regional urology", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral or handover to regional urology after hematuria or another suspicion of bladder cancer.", "Joost described this as the operational boundary before diagnosis at ASZ or another regional hospital. It does not represent a second consultation; the first resource-bearing urology assessment is counted at DX01.", ["Referral record", "Appointment handover"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
+          activity("EMC-FC01", "Referral to regional urology", "Access", "activity", "EM01", "diagnostic", 70, 92, "Referral or handover to regional urology after hematuria or another suspicion of bladder cancer.", "This marks the operational boundary before diagnosis at ASZ or another regional hospital. It does not represent a second consultation; the first resource-bearing urology assessment is counted at DX01.", ["Referral record", "Appointment handover"], ["Confirm whether the model starts at ASZ registration, first urology consultation, or diagnostic cystoscopy."]),
           activity("EMC-DX01", "History and physical assessment", "Diagnostics", "activity", "EM01", "diagnostic", 180, 92, "Initial urology consultation and clinical assessment in the regional hospital.", "This is the first resource-bearing specialist contact and is modeled in EM01. Patient travel remains owned by the optional EM10 support module to prevent double counting.", ["Outpatient room use", "EHR documentation", "Clinical assessment"], ["Which baseline tests are routinely ordered at ASZ?"]),
           activity("EMC-DX02", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 290, 92, "Cystoscopic visualization of a suspected bladder tumor in the regional hospital.", "Cystoscopy is a material and reprocessing activity that belongs inside the expanded Dutch boundary.", ["Scope use", "Disposables", "Cleaning and reprocessing", "Patient travel"], ["Is flexible cystoscopy the default diagnostic procedure at ASZ?"]),
-          activity("EMC-DX03", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 410, 92, "Transurethral resection of bladder tumor to obtain tissue and assess invasion.", "TURBT is performed before tertiary referral in the pathway described by Joost and is environmentally relevant due to theatre, anesthesia, instruments, and pathology flows.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology specimen", "Surgical waste"], ["Confirm admission type, anesthesia, repeat TURBT frequency, and procedure location."]),
+          activity("EMC-DX03", "TURBT for diagnosis and staging", "Diagnostics", "activity", "EM07", "diagnostic", 410, 92, "Transurethral resection of bladder tumor to obtain tissue and assess invasion.", "TURBT is performed before tertiary referral in this pathway and is environmentally relevant due to theatre, anesthesia, instruments, and pathology flows.", ["Operating room time", "Anesthesia", "Sterile instruments", "Pathology specimen", "Surgical waste"], ["Confirm admission type, anesthesia, repeat TURBT frequency, and procedure location."]),
           activity("EMC-DX04", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 530, 92, "Regional pathology establishes tumor type, grade, and muscle invasion after TURBT.", "Pathology determines whether the patient remains in a local non-MIBC pathway or enters the MIBC referral pathway.", ["Specimen processing", "Slides and staining", "Pathology reporting", "Laboratory electricity"], ["Which pathology tests and ancillary stains are used before referral?"]),
           activity("EMC-DX05", "MIBC confirmation and referral decision", "Diagnostics", "decision", "EM05", "diagnostic", 650, 92, "Decision after pathology whether disease is muscle-invasive and requires tertiary multidisciplinary assessment.", "This is the main cross-hospital boundary decision. It preserves the large NMIBC branch without expanding that separate care pathway here.", ["Pathology review", "Clinical review", "Referral decision"], ["Confirm referral criteria, exclusions, and whether all non-metastatic MIBC in the ASZ region is referred to Erasmus MC."]),
           activity("EMC-FU01", "Non-MIBC local pathway", "Follow-up", "activity", "EM09", "return", 800, 92, "Patients without confirmed MIBC leave the current MIBC scope and continue local treatment or surveillance.", "This endpoint prevents the pathway from implying that most patients with a detected bladder lesion proceed to Erasmus MC MIBC care.", ["Local follow-up", "Surveillance cystoscopy", "Patient travel"], ["Should a separate NMIBC pathway be developed later?"]),
-          activity("EMC-DX06", "CT chest abdomen pelvis staging", "Diagnostics", "activity", "EM03", "diagnostic", 650, 220, "Cross-sectional staging to assess non-metastatic status before or around tertiary referral.", "Joost identified recent thoracic and abdominal imaging as part of the information needed for Erasmus MC assessment.", ["Scanner electricity", "Contrast media", "Radiology reporting", "Patient travel"], ["Which staging CT protocol is performed at ASZ and how recent must it be at referral?"]),
+          activity("EMC-DX06", "CT chest abdomen pelvis staging", "Diagnostics", "activity", "EM03", "diagnostic", 650, 220, "Cross-sectional staging to assess non-metastatic status before or around tertiary referral.", "Recent thoracic and abdominal imaging is part of the information needed for Erasmus MC assessment.", ["Scanner electricity", "Contrast media", "Radiology reporting", "Patient travel"], ["Which staging CT protocol is performed at ASZ and how recent must it be at referral?"]),
           activity("EMC-DX07", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 800, 220, "Additional local staging or problem-solving imaging when clinically indicated.", "This is a scenario-dependent activity, not a default for every patient.", ["MRI scan", "PET-CT scan", "Radiology reporting", "Patient travel"], ["Which indications trigger PET-CT or MRI in regional practice?"]),
-          activity("EMC-FC02", "Transfer to Erasmus MC", "Access", "activity", "EM01", "diagnostic", 940, 220, "Transfer of the confirmed MIBC referral package from ASZ or another regional hospital to Erasmus MC.", "The activity marks the institutional handover described in the interview. Its administrative-only components are subject to cut-off, but travel or repeated clinical work remains in scope.", ["Referral package", "Pathology material transfer", "Imaging transfer", "Patient travel"], ["Which documents, specimens, and images must be complete before transfer?"]),
+          activity("EMC-FC02", "Transfer to Erasmus MC", "Access", "activity", "EM01", "diagnostic", 940, 220, "Transfer of the confirmed MIBC referral package from ASZ or another regional hospital to Erasmus MC.", "The activity marks the institutional handover. Its administrative-only components are subject to cut-off, but travel or repeated clinical work remains in scope.", ["Referral package", "Pathology material transfer", "Imaging transfer", "Patient travel"], ["Which documents, specimens, and images must be complete before transfer?"]),
           activity("EMC-DX08", "Pathology review", "Diagnostics", "activity", "EM02", "diagnostic", 1080, 220, "Erasmus MC review of regional TURBT pathology and diagnostic material.", "Specialist review can confirm muscle invasion, variant histology, grade, and adequacy before route selection.", ["Slide transport", "Microscopy or digital pathology", "Report generation"], ["Is central pathology revision performed for all referred MIBC cases?"]),
           activity("EMC-DX09", "Repeat or supplemental staging imaging if required", "Diagnostics", "activity", "EM03", "diagnostic", 1080, 348, "Conditional repeat or supplemental staging imaging when transferred imaging is too old, incomplete, or of insufficient quality.", "Selecting this optional node means that an additional scan occurs and therefore activates a CT building block. Imaging review alone remains under the provisional cut-off.", ["Scanner electricity", "Contrast media", "Radiology reporting"], ["What age, quality, or staging criteria trigger repeat imaging, and which modality is used?"]),
           activity("EMC-JM01", "Joint clinic", "Joint clinic and MDT", "activity", "EM04", "diagnostic", 940, 348, "Patient-facing multidisciplinary bladder cancer clinic at Erasmus MC.", "The visit supports shared assessment. Staff labor alone is not characterized, but patient travel, room use, and any additional procedures remain relevant.", ["Patient travel", "Outpatient room use", "Additional tests if ordered"], ["Which specialties are present and can this visit be remote for selected patients?"]),
           activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 800, 348, "Multidisciplinary review of staging, pathology, fitness, and treatment options.", "The meeting remains visible because it determines the pathway, but its minor office and ICT inputs are provisionally excluded from LCA calculation.", ["Imaging display", "EHR access", "Meeting room electricity"], ["How many MDO discussions occur per patient and which repeat discussions change treatment?"]),
           activity("EMC-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 660, 348, "Assessment of health status, comorbidity, frailty, and suitability for curative or bladder-preserving treatment.", "Fitness affects clinical comparability and route selection, so it must remain explicit even if its direct impact is small.", ["Patient travel", "Assessment tools", "Laboratory review"], ["Which fitness or geriatric instruments are used locally?"]),
           activity("EMC-TX02", "Treatment intent and shared decision", "Treatment planning", "decision", "EM05", "treatment", 520, 348, "Selection of curative surgery, bladder-preserving treatment, systemic treatment, or palliative intent after multidisciplinary counseling.", "This is the principal scenario-building node. It does not imply that all displayed alternatives are clinically equivalent.", ["Patient consultation", "Decision aids", "Patient travel"], ["Which treatment alternatives are comparable for the intended ECO-PATH decision question?"]),
-          activity("EMC-TX03", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 390, 390, "Eligibility assessment for perioperative systemic therapy, including regimen-specific contraindications.", "Joost noted that systemic treatment practice is evolving. The activity therefore requires versioned regimen and eligibility assumptions.", ["Laboratory monitoring", "Medical oncology review", "Treatment planning"], ["Which Dutch and Erasmus MC regimens are current for the selected population and year?"]),
+          activity("EMC-TX03", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 390, 390, "Eligibility assessment for perioperative systemic therapy, including regimen-specific contraindications.", "Systemic treatment practice evolves over time, so this activity requires versioned regimen and eligibility assumptions.", ["Laboratory monitoring", "Medical oncology review", "Treatment planning"], ["Which Dutch and Erasmus MC regimens are current for the selected population and year?"]),
           activity("EMC-TX04", "Neoadjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 250, 410, "Systemic treatment before definitive local therapy when selected.", "This node contains medicine, pharmacy, infusion, monitoring, and waste flows and should be parameterized by regimen and cycle.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring", "Cytotoxic waste"], ["Does the selected scenario use chemotherapy alone or a newer perioperative combination?"]),
           activity("EMC-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 100, 410, "Restaging after systemic therapy before definitive treatment.", "Restaging can detect progression and redirect the pathway.", ["CT scan", "MRI if indicated", "Radiology reporting", "Patient travel"], ["Which restaging modality and timing are used locally?"]),
           activity("EMC-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 390, 470, "Radical cystectomy as a definitive curative treatment route.", "This is a high-resource surgical building block that needs procedure, anesthesia, admission, and waste data.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Confirm surgical approach, operation time, and admission boundary."]),
@@ -4512,7 +4527,7 @@
           activity("EMC-TX15", "Response assessment and salvage decision", "Follow-up", "decision", "EM09", "return", 980, 590, "Response assessment after bladder preservation and decision on salvage treatment if needed.", "This combined node represents a resource-bearing cystoscopy or imaging assessment before the salvage decision, so it is not treated as meeting-only logic.", ["Cystoscopy", "Urine cytology", "Surveillance imaging", "Clinical review"], ["Which response-assessment schedule and salvage assumptions are used locally?"]),
           activity("EMC-TX16", "Advanced systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "return", 250, 590, "Systemic treatment for advanced or metastatic disease when this route is in scope.", "This route has a different clinical intent and may require a separate functional unit or scenario.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring"], ["Should metastatic disease remain in this pathway model or be modeled separately?"]),
           activity("EMC-TX17", "Palliative radiotherapy or symptom control", "Radiotherapy", "activity", "EM08", "return", 100, 590, "Symptom-directed local treatment or palliative radiotherapy.", "Palliative care should not be compared directly with curative pathways without an appropriate decision context and functional unit.", ["Radiotherapy fractions", "Supportive medicines", "Patient travel"], ["Which palliative activities and time horizon are in scope?"]),
-          activity("EMC-FU02", "Follow-up and surveillance", "Follow-up", "activity", "EM09", "followup", 1080, 590, "Oncologic and functional follow-up after treatment.", "Joost noted that follow-up may extend for years and that imaging frequency is an important scenario parameter.", ["Outpatient visits", "Cystoscopy", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["Compare Dutch and EAU follow-up schedules and confirm the model time horizon."]),
+          activity("EMC-FU02", "Follow-up and surveillance", "Follow-up", "activity", "EM09", "followup", 1080, 590, "Oncologic and functional follow-up after treatment.", "Follow-up may extend for years, and imaging frequency is an important scenario parameter.", ["Outpatient visits", "Cystoscopy", "Surveillance imaging", "Laboratory tests", "Patient travel"], ["Compare Dutch and EAU follow-up schedules and confirm the model time horizon."]),
           activity("EMC-FU03", "Return to referring hospital", "Follow-up", "activity", "EM09", "return", 1080, 470, "Shared follow-up or return of selected care to ASZ or another referring hospital.", "The node preserves the multi-hospital boundary and prevents all follow-up from being assigned to Erasmus MC.", ["Patient travel", "Local follow-up visits", "Transfer documentation"], ["Which follow-up activities remain at Erasmus MC and which return to ASZ?"])
         ],
         edges: [
@@ -4559,7 +4574,7 @@
         nodes: [
           {
             id: "CRCDUTCH-FC01",
-            x: 70,
+            x: 65,
             y: 90,
             label: "Specialist hospital consultation",
             domain: "Access",
@@ -4573,7 +4588,7 @@
           },
           {
             id: "CRCDUTCH-DX01",
-            x: 200,
+            x: 185,
             y: 90,
             label: "Diagnostic colonoscopy",
             domain: "Diagnostics",
@@ -4587,7 +4602,7 @@
           },
           {
             id: "CRCDUTCH-DX05",
-            x: 340,
+            x: 305,
             y: 90,
             label: "Endoscopic lesion removal if indicated",
             domain: "Diagnostics",
@@ -4601,7 +4616,7 @@
           },
           {
             id: "CRCDUTCH-DX02",
-            x: 480,
+            x: 425,
             y: 90,
             label: "Histopathological lesion classification",
             domain: "Diagnostics",
@@ -4615,7 +4630,7 @@
           },
           {
             id: "CRCDUTCH-DX06",
-            x: 620,
+            x: 545,
             y: 90,
             label: "Polyp or CRC outcome decision",
             domain: "Diagnostics",
@@ -4630,7 +4645,7 @@
           },
           {
             id: "CRCDUTCH-FU01",
-            x: 790,
+            x: 760,
             y: 90,
             label: "Low-risk polyp: discharge to usual care",
             domain: "Follow-up",
@@ -4645,7 +4660,7 @@
           },
           {
             id: "CRCDUTCH-TX01",
-            x: 790,
+            x: 760,
             y: 205,
             label: "High-risk polyp surveillance indication",
             domain: "Treatment planning",
@@ -4660,7 +4675,7 @@
           },
           {
             id: "CRCDUTCH-FU03",
-            x: 980,
+            x: 990,
             y: 205,
             label: "Post-polypectomy surveillance colonoscopy",
             domain: "Follow-up",
@@ -4674,7 +4689,7 @@
           },
           {
             id: "CRCDUTCH-DX04",
-            x: 680,
+            x: 470,
             y: 300,
             label: "MMR/MSI pathology testing if indicated",
             domain: "Diagnostics",
@@ -4688,7 +4703,7 @@
           },
           {
             id: "CRCDUTCH-DX03",
-            x: 800,
+            x: 590,
             y: 300,
             label: "CT thorax/abdomen staging",
             domain: "Diagnostics",
@@ -4702,7 +4717,7 @@
           },
           {
             id: "CRCDUTCH-JM01",
-            x: 920,
+            x: 710,
             y: 300,
             label: "CRC MDO",
             domain: "Joint clinic and MDT",
@@ -4718,7 +4733,7 @@
           },
           {
             id: "CRCDUTCH-TX02",
-            x: 1050,
+            x: 820,
             y: 300,
             label: "Colon, rectal, or advanced route decision",
             domain: "Treatment",
@@ -4732,7 +4747,7 @@
           },
           {
             id: "CRCDUTCH-TX03",
-            x: 790,
+            x: 870,
             y: 405,
             label: "Colon resection and perioperative care",
             domain: "Treatment",
@@ -4746,7 +4761,7 @@
           },
           {
             id: "CRCDUTCH-TX08",
-            x: 950,
+            x: 1000,
             y: 405,
             label: "Adjuvant treatment indication",
             domain: "Treatment",
@@ -4761,7 +4776,7 @@
           },
           {
             id: "CRCDUTCH-TX04",
-            x: 1110,
+            x: 1130,
             y: 405,
             label: "Adjuvant systemic therapy if indicated",
             domain: "Treatment",
@@ -4776,7 +4791,7 @@
           },
           {
             id: "CRCDUTCH-TX05",
-            x: 790,
+            x: 870,
             y: 510,
             label: "Rectal neoadjuvant or radiotherapy route",
             domain: "Treatment",
@@ -4791,7 +4806,7 @@
           },
           {
             id: "CRCDUTCH-TX09",
-            x: 950,
+            x: 1000,
             y: 510,
             label: "Rectal response assessment and route decision",
             domain: "Follow-up",
@@ -4806,7 +4821,7 @@
           },
           {
             id: "CRCDUTCH-FU04",
-            x: 1110,
+            x: 1130,
             y: 510,
             label: "Watch-and-wait surveillance",
             domain: "Follow-up",
@@ -4821,7 +4836,7 @@
           },
           {
             id: "CRCDUTCH-TX06",
-            x: 900,
+            x: 1000,
             y: 620,
             label: "Rectal resection and perioperative care",
             domain: "Treatment",
@@ -4835,7 +4850,7 @@
           },
           {
             id: "CRCDUTCH-TX07",
-            x: 700,
+            x: 870,
             y: 620,
             label: "Advanced or palliative route",
             domain: "Treatment",
@@ -4850,7 +4865,7 @@
           },
           {
             id: "CRCDUTCH-FU05",
-            x: 1110,
+            x: 1130,
             y: 620,
             label: "Post-CRC treatment surveillance",
             domain: "Follow-up",
@@ -4948,74 +4963,74 @@
 
     const pathwayEvidenceProfiles = {
       emc: {
-        source: "Erasmus MC 2022 MIBC workflow, EAU/NVU guidance, and Joost expert interview",
-        status: "Expert-informed Dutch operational reconstruction; current execution and activity frequency require local confirmation"
+        source: "Erasmus MC 2022 MIBC workflow and EAU/NVU guidance",
+        status: "Dutch operational pathway representation"
       },
       eauFull: {
         source: "EAU 2026 MIBC diagnostic evaluation, disease management, and follow-up chapters",
         status: "Guideline-supported institution-neutral reference; local execution is not assumed"
       },
       crcDutch: {
-        source: "Dutch CRC guideline (2026), Dutch colonoscopy-surveillance guideline, and Peter expert interview",
-        status: "Guideline-supported Erasmus MC pathway structure; local occurrence counts and cross-hospital execution require confirmation"
+        source: "Dutch CRC guideline (2026) and Dutch colonoscopy-surveillance guideline",
+        status: "Guideline-supported hospital pathway structure"
       }
     };
 
     const pathwayEvidenceText = {
       nl: {
         emc: {
-          source: "Erasmus MC MIBC-zorgpad 2022, EAU/NVU-richtlijnen en expertinterview met Joost",
-          status: "Expertgestuurde Nederlandse operationele reconstructie; actuele uitvoering en frequentie vereisen lokale bevestiging"
+          source: "Erasmus MC MIBC-zorgpad 2022 en EAU/NVU-richtlijnen",
+          status: "Nederlandse operationele zorgpadweergave"
         },
         eauFull: {
           source: "EAU MIBC 2026: diagnostische evaluatie, ziektebehandeling en follow-up",
           status: "Onderbouwd door de richtlijn en instellingsneutraal; lokale uitvoering wordt niet verondersteld"
         },
         crcDutch: {
-          source: "Nederlandse CRC-richtlijn 2026, richtlijn coloscopie-surveillance en expertinterview met Peter",
-          status: "Onderbouwde Erasmus MC-zorgpadstructuur; lokale aantallen en uitvoering tussen ziekenhuizen vereisen bevestiging"
+          source: "Nederlandse CRC-richtlijn 2026 en richtlijn coloscopie-surveillance",
+          status: "Door richtlijnen onderbouwde ziekenhuisroute"
         }
       },
       zh: {
         emc: {
-          source: "Erasmus MC 2022 MIBC 本地路径、EAU/NVU 指南及 Joost 专家访谈",
-          status: "基于专家意见重建的荷兰实际路径；当前执行方式和活动频次仍需本地确认"
+          source: "Erasmus MC 2022 MIBC 本地路径及 EAU/NVU 指南",
+          status: "荷兰运营路径展示"
         },
         eauFull: {
           source: "EAU 2026 MIBC 诊断评估、疾病管理和随访章节",
           status: "有指南依据的机构中立参考路径；不假定本地一定执行"
         },
         crcDutch: {
-          source: "荷兰 CRC 指南（2026）、荷兰结肠镜监测指南及 Peter 专家访谈",
-          status: "有指南依据的 Erasmus MC 路径结构；本地发生次数和跨医院执行仍需确认"
+          source: "荷兰 CRC 指南（2026）及荷兰结肠镜监测指南",
+          status: "有指南依据的医院路径结构"
         }
       },
       ja: {
         emc: {
-          source: "Erasmus MC 2022 MIBC ローカル経路、EAU/NVU ガイドライン、Joost 専門家インタビュー",
-          status: "専門家情報に基づくオランダの実務経路再構成。現在の実施方法と頻度は地域確認が必要"
+          source: "Erasmus MC 2022 MIBC ローカル経路および EAU/NVU ガイドライン",
+          status: "オランダの運用経路表示"
         },
         eauFull: {
           source: "EAU 2026 MIBC の診断評価、疾患管理、フォローアップ章",
           status: "ガイドラインに基づく施設中立の参照経路。地域での実施は仮定しない"
         },
         crcDutch: {
-          source: "オランダ CRC ガイドライン 2026、内視鏡サーベイランス指針、Peter 専門家インタビュー",
-          status: "ガイドラインに基づく Erasmus MC 経路構造。地域の実施回数と病院間分担は確認が必要"
+          source: "オランダ CRC ガイドライン 2026 および内視鏡サーベイランス指針",
+          status: "ガイドラインに基づく病院経路"
         }
       },
       es: {
         emc: {
-          source: "Vía local MIBC de Erasmus MC 2022, guías EAU/NVU y entrevista experta con Joost",
-          status: "Reconstrucción operativa neerlandesa informada por expertos; la ejecución y frecuencia actuales requieren confirmación local"
+          source: "Vía local MIBC de Erasmus MC 2022 y guías EAU/NVU",
+          status: "Representación de la vía operativa neerlandesa"
         },
         eauFull: {
           source: "EAU MIBC 2026: evaluación diagnóstica, manejo de la enfermedad y seguimiento",
           status: "Referencia institucionalmente neutra respaldada por la guía; no se presupone ejecución local"
         },
         crcDutch: {
-          source: "Guía neerlandesa de CRC 2026, guía de vigilancia por colonoscopia y entrevista con Peter",
-          status: "Estructura de la vía de Erasmus MC respaldada por guías; los recuentos locales y la ejecución entre hospitales requieren confirmación"
+          source: "Guía neerlandesa de CRC 2026 y guía de vigilancia por colonoscopia",
+          status: "Vía hospitalaria respaldada por guías"
         }
       }
     };
@@ -6005,7 +6020,6 @@
       eauUrologyDifference: "EAU emphasis: upper-tract assessment, formal health-status evaluation, current perioperative options, and treatment-specific follow-up.",
       references: "References",
       sharedBuildingBlock: "Shared building block",
-      generalBuildingBlockCandidate: "General candidate",
       crossPathwayReusableBuildingBlock: "Reusable",
       crossPathwayReuseTooltip: "The same building-block definition is mapped in both current pathway families. Local quantities and LCI data still require validation.",
       urologyBuildingBlock: "Urology-specific candidate",
@@ -6025,7 +6039,6 @@
       eauUrologyDifference: "EAU-nadruk: beoordeling van de bovenste urinewegen, formele gezondheidsbeoordeling, actuele perioperatieve opties en behandelspecifieke follow-up.",
       references: "Referenties",
       sharedBuildingBlock: "Gedeelde bouwsteen",
-      generalBuildingBlockCandidate: "Algemene kandidaat",
       crossPathwayReusableBuildingBlock: "Herbruikbaar",
       crossPathwayReuseTooltip: "Dezelfde bouwsteendefinitie is aan beide huidige zorgpadfamilies gekoppeld. Lokale hoeveelheden en LCI-data moeten nog worden gevalideerd.",
       urologyBuildingBlock: "Urologiespecifieke kandidaat",
@@ -6045,7 +6058,6 @@
       eauUrologyDifference: "EAU 侧重点：上尿路评估、正式健康状态评估、当前围手术期方案和按治疗方式区分的随访。",
       references: "参考资料",
       sharedBuildingBlock: "跨专科共享 building block",
-      generalBuildingBlockCandidate: "通用候选项",
       crossPathwayReusableBuildingBlock: "可复用",
       crossPathwayReuseTooltip: "同一 building block 定义已映射到当前两类路径，但本地数量与 LCI 数据能否直接移植仍需验证。",
       urologyBuildingBlock: "泌尿科特异候选项",
@@ -7186,6 +7198,24 @@
       pathwaySetupBoundaryText: "Choose complete or partial assessment; set start and endpoint for a complete pathway.",
       pathwaySetupRouteTitle: "Build the route",
       pathwaySetupRouteText: "Select connected activities on the map, then continue to Activities.",
+      workflowActivitiesGuide1Title: "Narrow the list",
+      workflowActivitiesGuide1Text: "Use the domain filter or search only when needed.",
+      workflowActivitiesGuide2Title: "Inspect an activity",
+      workflowActivitiesGuide2Text: "Hover over the map or select an item in the list.",
+      workflowActivitiesGuide3Title: "Confirm the scenario",
+      workflowActivitiesGuide3Text: "Selected activities activate their mapped LCA building blocks.",
+      workflowLcaGuide1Title: "Review active modules",
+      workflowLcaGuide1Text: "Pathway choices activate mapped building blocks.",
+      workflowLcaGuide2Title: "Check model inputs",
+      workflowLcaGuide2Text: "Edit quantities, impact coefficients, and uncertainty.",
+      workflowLcaGuide3Title: "Choose an impact category",
+      workflowLcaGuide3Text: "Select an EF category, then continue to Results.",
+      workflowResultsGuide1Title: "Compare categories",
+      workflowResultsGuide1Text: "Review the complete EF impact result table.",
+      workflowResultsGuide2Title: "Inspect contributors",
+      workflowResultsGuide2Text: "Use contribution, Sankey, and sensitivity views.",
+      workflowResultsGuide3Title: "Export or calculate",
+      workflowResultsGuide3Text: "Create a report or send the scenario to Brightway.",
       assessmentModeLabel: "Assessment purpose",
       completeAssessmentMode: "Complete pathway assessment",
       partialAssessmentMode: "Partial segment exploration",
@@ -7226,6 +7256,24 @@
       pathwaySetupBoundaryText: "Kies een volledige of gedeeltelijke beoordeling; stel voor een volledig zorgpad het begin- en eindpunt in.",
       pathwaySetupRouteTitle: "Bouw de route",
       pathwaySetupRouteText: "Selecteer verbonden activiteiten op de kaart en ga daarna door naar Activiteiten.",
+      workflowActivitiesGuide1Title: "Beperk de lijst",
+      workflowActivitiesGuide1Text: "Gebruik het domeinfilter of zoeken alleen wanneer nodig.",
+      workflowActivitiesGuide2Title: "Bekijk een activiteit",
+      workflowActivitiesGuide2Text: "Beweeg over de kaart of kies een item in de lijst.",
+      workflowActivitiesGuide3Title: "Bevestig het scenario",
+      workflowActivitiesGuide3Text: "Geselecteerde activiteiten activeren gekoppelde LCA-bouwstenen.",
+      workflowLcaGuide1Title: "Controleer actieve modules",
+      workflowLcaGuide1Text: "De zorgpadkeuze activeert gekoppelde bouwstenen.",
+      workflowLcaGuide2Title: "Controleer modelinvoer",
+      workflowLcaGuide2Text: "Pas hoeveelheden, impactcoëfficiënten en onzekerheid aan.",
+      workflowLcaGuide3Title: "Kies een impactcategorie",
+      workflowLcaGuide3Text: "Selecteer een EF-categorie en ga daarna naar Resultaten.",
+      workflowResultsGuide1Title: "Vergelijk categorieën",
+      workflowResultsGuide1Text: "Bekijk de volledige EF-resultatentabel.",
+      workflowResultsGuide2Title: "Bekijk bijdragen",
+      workflowResultsGuide2Text: "Gebruik bijdrage-, Sankey- en gevoeligheidsweergaven.",
+      workflowResultsGuide3Title: "Exporteer of bereken",
+      workflowResultsGuide3Text: "Maak een rapport of stuur het scenario naar Brightway.",
       assessmentModeLabel: "Doel van de beoordeling",
       completeAssessmentMode: "Volledige zorgpadbeoordeling",
       partialAssessmentMode: "Verkenning van een deeltraject",
@@ -7266,6 +7314,24 @@
       pathwaySetupBoundaryText: "选择完整或局部评估；完整路径需设置起点和终点。",
       pathwaySetupRouteTitle: "构建路径",
       pathwaySetupRouteText: "在图中选择连续活动，然后进入“活动”步骤。",
+      workflowActivitiesGuide1Title: "缩小活动范围",
+      workflowActivitiesGuide1Text: "仅在需要时使用领域筛选或搜索。",
+      workflowActivitiesGuide2Title: "查看活动",
+      workflowActivitiesGuide2Text: "悬停在线路图上，或在列表中选择活动。",
+      workflowActivitiesGuide3Title: "确认情景",
+      workflowActivitiesGuide3Text: "所选活动会自动激活对应的 LCA 构件。",
+      workflowLcaGuide1Title: "检查已激活模块",
+      workflowLcaGuide1Text: "路径选择会自动激活对应构件。",
+      workflowLcaGuide2Title: "检查模型输入",
+      workflowLcaGuide2Text: "调整数量、影响系数和不确定性。",
+      workflowLcaGuide3Title: "选择影响类别",
+      workflowLcaGuide3Text: "选择 EF 类别，然后进入“结果”。",
+      workflowResultsGuide1Title: "比较影响类别",
+      workflowResultsGuide1Text: "查看完整的 EF 结果表。",
+      workflowResultsGuide2Title: "查看主要贡献",
+      workflowResultsGuide2Text: "使用贡献、桑基图和敏感性分析。",
+      workflowResultsGuide3Title: "导出或计算",
+      workflowResultsGuide3Text: "生成报告，或将情景发送至 Brightway。",
       assessmentModeLabel: "评估目的",
       completeAssessmentMode: "完整路径评估",
       partialAssessmentMode: "局部片段探索",
@@ -7487,8 +7553,8 @@
         emc: {
           label: "Dutch / EAU MIBC comparison",
           title: "Dutch MIBC Pathway: Regional Diagnosis to Erasmus MC Treatment",
-          status: "Expert-informed operational reconstruction; older EAU-based NVU guidance and local confirmation required",
-          scope: "Operational pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up. Joost's interview notes suggest a narrower primary LCA episode from MDO to discharge and early check-up; this proposed assessment boundary remains distinct from the complete operational map and requires confirmation."
+          status: "",
+          scope: "Operational pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up."
         },
         crcDutch: {
           label: "Gastro: Dutch colorectal pathway",
@@ -7513,8 +7579,8 @@
         emc: {
           label: "Nederlandse / EAU MIBC-vergelijking",
           title: "Nederlandse MIBC-route: regionale diagnose tot behandeling in Erasmus MC",
-          status: "Expertgeinformeerde operationele reconstructie; oudere op EAU gebaseerde NVU-richtlijn en lokale bevestiging nodig",
-          scope: "Operationele route vanaf urologische beoordeling in Albert Schweitzer ziekenhuis of een ander regionaal ziekenhuis. Cystoscopie, TURBT, pathologie en eerste stadiering gaan vooraf aan verwijzing; patiënten met bevestigde MIBC gaan daarna naar Erasmus MC voor beoordeling, multidisciplinaire behandelplanning, behandeling en gedeelde follow-up. De interviewnotities van Joost suggereren een smallere primaire LCA-episode van MDO tot ontslag en vroege controle; deze voorgestelde beoordelingsgrens blijft onderscheiden van de volledige operationele kaart en vereist bevestiging."
+          status: "",
+          scope: "Operationele route vanaf urologische beoordeling in Albert Schweitzer ziekenhuis of een ander regionaal ziekenhuis. Cystoscopie, TURBT, pathologie en eerste stadiering gaan vooraf aan verwijzing; patiënten met bevestigde MIBC gaan daarna naar Erasmus MC voor beoordeling, multidisciplinaire behandelplanning, behandeling en gedeelde follow-up."
         },
         crcDutch: {
           label: "Gastro: Nederlandse colorectale route",
@@ -7539,8 +7605,8 @@
         emc: {
           label: "荷兰 / EAU MIBC 对照",
           title: "荷兰 MIBC 路径：从区域医院诊断到 Erasmus MC 治疗",
-          status: "基于专家访谈的运营重建；NVU 指南源自较早版 EAU，仍需本地确认",
-          scope: "完整运营路径从 Albert Schweitzer 医院或其他区域医院的泌尿科评估开始。膀胱镜、TURBT、病理和初始分期在转诊前完成；确认 MIBC 后进入 Erasmus MC 复核、多学科治疗规划、治疗和共享随访。Joost 的访谈笔记提出可把主要 LCA 评估期缩小为从 MDO 到出院及早期复查；这一拟议评估边界与完整运营图分开，仍需确认。"
+          status: "",
+          scope: "完整运营路径从 Albert Schweitzer 医院或其他区域医院的泌尿科评估开始。膀胱镜、TURBT、病理和初始分期在转诊前完成；确认 MIBC 后进入 Erasmus MC 复核、多学科治疗规划、治疗和共享随访。"
         },
         crcDutch: {
           label: "胃肠病学：荷兰结直肠路径",
@@ -7565,8 +7631,8 @@
         emc: {
           label: "オランダ / EAU MIBC 比較",
           title: "オランダ MIBC 経路：地域診断から Erasmus MC 治療まで",
-          status: "専門家情報に基づく運用再構成です。NVU 指針は旧版 EAU ベースで、ローカル確認が必要です",
-          scope: "Albert Schweitzer 病院または他の地域病院での泌尿器科評価から始まる完全な運用経路です。膀胱鏡、TURBT、病理、初期病期評価を紹介前に行い、MIBC 確定後に Erasmus MC でレビュー、多職種治療計画、治療、共同フォローアップを行います。Joost の面談メモは MDO から退院および早期受診までの狭い LCA 評価期間を示唆します。この評価境界は完全な運用図と区別し、確認が必要です。"
+          status: "",
+          scope: "Albert Schweitzer 病院または他の地域病院での泌尿器科評価から始まる完全な運用経路です。膀胱鏡、TURBT、病理、初期病期評価を紹介前に行い、MIBC 確定後に Erasmus MC でレビュー、多職種治療計画、治療、共同フォローアップを行います。"
         },
         crcDutch: {
           label: "消化器科：オランダ大腸経路",
@@ -7591,8 +7657,8 @@
         emc: {
           label: "Comparación MIBC neerlandesa / EAU",
           title: "Vía MIBC neerlandesa: del diagnóstico regional al tratamiento en Erasmus MC",
-          status: "Reconstrucción operativa basada en entrevista experta; la guía NVU deriva de una EAU anterior y requiere confirmación local",
-          scope: "Vía operativa completa que comienza con evaluación urológica en Albert Schweitzer u otro hospital regional. Cistoscopia, TURBT, patología y estadificación inicial preceden la referencia; tras confirmar MIBC, el paciente entra en revisión, planificación multidisciplinaria, tratamiento y seguimiento compartido de Erasmus MC. Las notas de Joost sugieren un episodio LCA principal más estrecho desde MDO hasta el alta y control temprano; este límite de evaluación se mantiene separado del mapa operativo completo y requiere confirmación."
+          status: "",
+          scope: "Vía operativa completa que comienza con evaluación urológica en Albert Schweitzer u otro hospital regional. Cistoscopia, TURBT, patología y estadificación inicial preceden la referencia; tras confirmar MIBC, el paciente entra en revisión, planificación multidisciplinaria, tratamiento y seguimiento compartido de Erasmus MC."
         },
         crcDutch: {
           label: "Gastro: vía colorrectal neerlandesa",
@@ -11772,15 +11838,6 @@
       return buildingBlockRegistry.filter((item) => appliesToPathway(item));
     }
 
-    function blockApplicabilityLabel(item) {
-      const applicability = item.applicability || ["shared"];
-      if (crossPathwayReusableBuildingBlocks.has(item.name)) {
-        return t("crossPathwayReusableBuildingBlock");
-      }
-      if (applicability.includes("shared")) return t("generalBuildingBlockCandidate");
-      return applicability.includes("gastro") ? t("gastroBuildingBlock") : t("urologyBuildingBlock");
-    }
-
     function crossPathwayReuseBadge(blockName, className = "") {
       if (!crossPathwayReusableBuildingBlocks.has(blockName)) return "";
       const classes = ["lca-cross-pathway-reuse-badge", className].filter(Boolean).join(" ");
@@ -12201,12 +12258,6 @@
       setText("fuReferenceUnitLabel", "fuReferenceUnit");
       setText("fuComparabilityLabel", "fuComparability");
       setText("pathwayContextTitle", "pathwayContextTitle");
-      setText("pathwaySetupSourceTitle", "pathwaySetupSourceTitle");
-      setText("pathwaySetupSourceText", "pathwaySetupSourceText");
-      setText("pathwaySetupBoundaryTitle", "pathwaySetupBoundaryTitle");
-      setText("pathwaySetupBoundaryText", "pathwaySetupBoundaryText");
-      setText("pathwaySetupRouteTitle", "pathwaySetupRouteTitle");
-      setText("pathwaySetupRouteText", "pathwaySetupRouteText");
       setText("pathwayScenarioTitle", "pathwayScenario");
       setText("pathwayScenarioSubtitle", "pathwayScenarioSubtitle");
       setText("completeAssessmentMode", "completeAssessmentMode");
@@ -12335,6 +12386,52 @@
       document.documentElement.style.setProperty("--sticky-workspace-top", `${offset}px`);
     }
 
+    const workflowGuideConfig = {
+      pathway: {
+        titleKey: "workflowPathwayTitle",
+        steps: [
+          ["pathwaySetupSourceTitle", "pathwaySetupSourceText"],
+          ["pathwaySetupBoundaryTitle", "pathwaySetupBoundaryText"],
+          ["pathwaySetupRouteTitle", "pathwaySetupRouteText"]
+        ]
+      },
+      activities: {
+        titleKey: "workflowActivitiesTitle",
+        steps: [
+          ["workflowActivitiesGuide1Title", "workflowActivitiesGuide1Text"],
+          ["workflowActivitiesGuide2Title", "workflowActivitiesGuide2Text"],
+          ["workflowActivitiesGuide3Title", "workflowActivitiesGuide3Text"]
+        ]
+      },
+      lca: {
+        titleKey: "workflowLcaTitle",
+        steps: [
+          ["workflowLcaGuide1Title", "workflowLcaGuide1Text"],
+          ["workflowLcaGuide2Title", "workflowLcaGuide2Text"],
+          ["workflowLcaGuide3Title", "workflowLcaGuide3Text"]
+        ]
+      },
+      results: {
+        titleKey: "workflowResultsTitle",
+        steps: [
+          ["workflowResultsGuide1Title", "workflowResultsGuide1Text"],
+          ["workflowResultsGuide2Title", "workflowResultsGuide2Text"],
+          ["workflowResultsGuide3Title", "workflowResultsGuide3Text"]
+        ]
+      }
+    };
+
+    function renderWorkflowGuide() {
+      const config = workflowGuideConfig[state.workspaceStep] || workflowGuideConfig.pathway;
+      const guide = document.getElementById("pathwayStepGuide");
+      setText("workflowGuideTitle", config.titleKey);
+      config.steps.forEach(([titleKey, textKey], index) => {
+        setText(`workflowGuideStep${index + 1}Title`, titleKey);
+        setText(`workflowGuideStep${index + 1}Text`, textKey);
+      });
+      if (guide) guide.setAttribute("aria-label", t(config.titleKey));
+    }
+
     function renderWorkspaceStep() {
       const validSteps = ["pathway", "activities", "lca", "results"];
       if (!validSteps.includes(state.workspaceStep)) state.workspaceStep = "pathway";
@@ -12356,6 +12453,7 @@
         else button.removeAttribute("aria-current");
       });
       document.body.dataset.workspaceStep = state.workspaceStep;
+      renderWorkflowGuide();
     }
 
     function switchWorkspaceStep(step) {
@@ -12624,7 +12722,12 @@
     function renderHeader() {
       document.getElementById("pathwayTitle").textContent = localizedPathwayTitle();
       document.getElementById("pathwayScope").textContent = localizedPathwayScope();
-      document.getElementById("pathwayStatus").textContent = localizedPathwayStatus();
+      const pathwayStatus = localizedPathwayStatus();
+      const statusChip = document.getElementById("pathwayStatus");
+      if (statusChip) {
+        statusChip.textContent = pathwayStatus;
+        statusChip.hidden = !pathwayStatus;
+      }
       const contextSummary = document.getElementById("pathwayContextSummaryText");
       if (contextSummary) contextSummary.textContent = localizedPathwayTitle();
       const fullscreenTitle = document.getElementById("fullscreenPathwayTitle");
@@ -12632,7 +12735,10 @@
       const fullscreenStatus = document.getElementById("fullscreenPathwayStatus");
       if (fullscreenTitle) fullscreenTitle.textContent = localizedPathwayTitle();
       if (fullscreenScope) fullscreenScope.textContent = localizedPathwayScope();
-      if (fullscreenStatus) fullscreenStatus.textContent = localizedPathwayStatus();
+      if (fullscreenStatus) {
+        fullscreenStatus.textContent = pathwayStatus;
+        fullscreenStatus.hidden = !pathwayStatus;
+      }
     }
 
     function renderPathwayReferences() {
@@ -13613,7 +13719,7 @@
           ].filter(Boolean).join(" ");
           blockCard.innerHTML = `
             <strong>${escapeHtml(localizedBlockName(item.name))}</strong>
-            <span class="block-applicability${isCrossPathwayReusable ? " cross-pathway-reuse-badge" : ""}"${isCrossPathwayReusable ? ` title="${escapeHtml(t("crossPathwayReuseTooltip"))}"` : ""}>${escapeHtml(blockApplicabilityLabel(item))}</span>
+            ${isCrossPathwayReusable ? `<span class="block-applicability cross-pathway-reuse-badge" title="${escapeHtml(t("crossPathwayReuseTooltip"))}">${escapeHtml(t("crossPathwayReusableBuildingBlock"))}</span>` : ""}
             <span>${escapeHtml(t("unit"))}: ${escapeHtml(localizedUnit(item.unit))}</span>
             <span>${escapeHtml(t("resourceFlowsLabel"))}: ${escapeHtml(localizedResourceFlowList(item.resourceFlows))}</span>
           `;

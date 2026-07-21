@@ -2812,7 +2812,7 @@
 
     .sensitivity-row-control {
       display: grid;
-      grid-template-columns: minmax(130px, 1fr) auto;
+      grid-template-columns: minmax(96px, 1fr) auto auto;
       gap: 8px;
       align-items: center;
       margin-bottom: 8px;
@@ -2847,6 +2847,23 @@
       color: var(--accent-dark);
       font-weight: 700;
       text-align: right;
+    }
+
+    .sensitivity-set-minimum {
+      min-height: 38px;
+      padding: 6px 10px;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--accent-pale);
+      color: var(--accent-dark);
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .sensitivity-set-minimum:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     .sensitivity-table .sensitivity-response .quantity-interpretation {
@@ -3384,7 +3401,7 @@
             </div>
             <div class="note-cell">
               <strong id="methodLciTitle">LCI / LCIA link</strong>
-              <p id="methodLciText">Resource flows are mapped to inventory data and impact coefficients for calculation.</p>
+              <p id="methodLciText">Resource flows form a documented foreground inventory and connect reviewed unit processes to background datasets for LCIA.</p>
             </div>
           </div>
         </section>
@@ -3674,7 +3691,7 @@
       <div class="panel-heading">
         <div>
           <h2 id="lcaHeading">Modular LCA calculation demo</h2>
-          <p class="scope-note" id="lcaIntro">Editable calculation rows for candidate building blocks. Modules define the LCA boundary; row checkboxes define which building blocks are active in the current scenario. Each row uses a placeholder occurrence count and dummy impact coefficient so the interface can show the calculation logic and identify the data that still need to be collected.</p>
+          <p class="scope-note" id="lcaIntro">Editable calculation rows for candidate building blocks. Modules define the LCA boundary; row checkboxes define which building blocks are active in the current scenario. Each row uses a placeholder occurrence count and synthetic unit impact result so the interface can show the calculation logic and identify the data that still need to be collected.</p>
         </div>
         <div class="lca-header-actions">
           <span class="status-chip" id="lcaPathwayStatus"></span>
@@ -5709,7 +5726,7 @@
         methodResourceTitle: "Resource flow",
         methodResourceText: "Measurable input or output inside a module, such as travel, equipment time, energy, materials, or waste.",
         methodLciTitle: "LCI / LCIA link",
-        methodLciText: "Resource flows are mapped to inventory data and impact coefficients for calculation.",
+        methodLciText: "Resource flows form a documented foreground inventory and connect reviewed unit processes to background datasets for LCIA.",
         lcaHeading: "Modular LCA calculation demo",
         lcaIntro: "Selected activities automatically activate their mapped modules, building blocks, and provisional quantities. Review the automatic selection and edit route-dependent quantities before calculation.",
         automaticFromActivities: "Auto from selected activities",
@@ -5728,7 +5745,7 @@
         dummyGapTemplate: "Dummy aggregate coefficient. Replace with foreground LCI for {flows} and documented LCIA mapping.",
         baseQuantityAria: "{block} base quantity",
         uncertaintyAria: "{block} uncertainty percent",
-        impactCoefficientAria: "{block} impact coefficient",
+        impactCoefficientAria: "{block} unit impact result",
         pathwayLinkedTitle: "Pathway-linked modules from current map",
         pathwayLinkedDescription: "These modules are available in the current activity map. Selecting an activity on the map or in the activity list activates its explicitly mapped module, building blocks, and provisional quantities.",
         supportModulesTitle: "Optional cross-cutting support modules",
@@ -5742,7 +5759,7 @@
         resourceFlowsToModel: "Resource flows to model",
         baseQuantity: "Base quantity",
         uncertainty: "Uncertainty, +/- %",
-        impactCoefficient: "Impact coefficient, kg CO₂-eq/unit",
+        impactCoefficient: "Unit impact result (demo), kg CO₂-eq/unit",
         defaultStatusGap: "Default status / data gap",
         baseContribution: "Base contribution",
         excludedFromTotal: "Excluded from total",
@@ -5758,8 +5775,8 @@
         formulaUncertainty: "Uncertainty range",
         formulaLibrary: "Building block library",
         formulaCohort: "Cohort impact",
-        formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.",
-        lcaWarning: "Selected activities automatically activate their explicitly mapped pathway modules, building blocks, and provisional quantities. Repeated activities aggregate quantities, such as two selected CT activities producing two CT scans. EM10 is the only calculation owner of patient and caregiver travel; do not embed travel in another module coefficient. EM11 remains optional shared hospital support. Alternative regimens, imaging choices, fraction counts, cycle counts, admission days, and all dummy impact coefficients require review before the result is used as evidence.",
+        formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = unit LCIA result, j = impact category, u = relative uncertainty, N = cohort size. This is a candidate block library demo, not a finalized pathway scenario.",
+        lcaWarning: "Selected activities automatically activate their explicitly mapped pathway modules, building blocks, and provisional quantities. Repeated activities aggregate quantities, such as two selected CT activities producing two CT scans. EM10 is the only calculation owner of patient and caregiver travel; do not embed travel in another module result. EM11 remains optional shared hospital support. Alternative regimens, imaging choices, fraction counts, cycle counts, admission days, and all synthetic unit impact results require review before the result is used as evidence.",
         noActiveRows: "No building block row is active. Check at least one module and one building block row to include it in the calculation.",
         priorityRow: "{module} {block}: {impact} per demo pathway instance.",
         reportTitle: "ECO-PATH LCA report: {pathway}",
@@ -5770,13 +5787,13 @@
         rowsCounted: "Rows counted",
         selectedPathwayActivities: "Selected pathway activities",
         scenarioResults: "Scenario results",
-        valuesDummyNote: "These values are calculated from current browser inputs. The default occurrence counts and impact coefficients are dummy values until replaced with hospital LCI data and documented LCIA mappings.",
+        valuesDummyNote: "These values are calculated from current browser inputs. The default occurrence counts and unit impact results are demonstration values until replaced with hospital LCI data and documented LCIA mappings.",
         selectedPathwayScenario: "Selected pathway scenario",
         code: "Code",
         assignedModule: "Assigned module",
         noSelectedReport: "No pathway activity was selected. Pathway-linked modules remain outside the LCA boundary unless manually checked.",
         calculationFormula: "Calculation formula",
-        formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. N is cohort size.",
+        formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the unit LCIA result. N is cohort size.",
         moduleBoundary: "Module boundary and subtotals",
         name: "Name",
         role: "Role",
@@ -5810,7 +5827,7 @@
         helpStep4: "Een geselecteerde activiteit activeert automatisch de gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer routealternatieven, aantallen en handmatige aanvullingen voor de berekening.",
         helpStep5: "Controleer onzekerheid en datalacunes en exporteer daarna het rapport in de gekozen taal.",
         helpCutoffTitle: "Voorlopige LCA-cut-off",
-        helpCutoffText: "Klinische beslis- en beoordelingspunten blijven op de kaart staan. Activiteiten die alleen uit overleg, besluitvorming, beoordeling, digitale brieven of administratie bestaan, worden uitgesloten als ze uitsluitend personeeltijd en gering kantoor- of ICT-energiegebruik toevoegen. EM04 multidisciplinaire zorglogica en EM05 klinische beslislogica leveren daarom geen berekeningsrijen op. Als een besluit leidt tot een afzonderlijke laboratoriumtest, beeldvorming, behandeling of procedure, moet die hulpbrondragende activiteit in de betreffende module worden gemodelleerd. Patiënten- en mantelzorgerreizen worden uitsluitend in EM10 berekend; klinische bouwsteencoëfficiënten sluiten reizen uit om dubbeltelling te voorkomen. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan wel als allocatiesleutel voor ruimte- of apparatuurinputs dienen. Er is nog geen numerieke drempel gevalideerd; deze uitsluiting moet bij formele LCA-modellering worden vastgelegd en opnieuw beoordeeld.",
+        helpCutoffText: "Klinische beslis- en beoordelingspunten blijven op de kaart staan. Activiteiten die alleen uit overleg, besluitvorming, beoordeling, digitale brieven of administratie bestaan, worden uitgesloten als ze uitsluitend personeeltijd en gering kantoor- of ICT-energiegebruik toevoegen. EM04 multidisciplinaire zorglogica en EM05 klinische beslislogica leveren daarom geen berekeningsrijen op. Als een besluit leidt tot een afzonderlijke laboratoriumtest, beeldvorming, behandeling of procedure, moet die hulpbrondragende activiteit in de betreffende module worden gemodelleerd. Patiënten- en mantelzorgerreizen worden uitsluitend in EM10 berekend; klinische procesinventarissen sluiten reizen uit om dubbeltelling te voorkomen. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan wel als allocatiesleutel voor ruimte- of apparatuurinputs dienen. Er is nog geen numerieke drempel gevalideerd; deze uitsluiting moet bij formele LCA-modellering worden vastgelegd en opnieuw beoordeeld.",
         lcaCutoffSummary: "Voorlopige cut-off toegepast: EM04 multidisciplinaire zorglogica, EM05 klinische beslislogica en andere bouwstenen voor alleen overleg, beoordeling, digitale brieven of zuivere administratie staan niet in de berekeningsrijen. Patiënten- en mantelzorgerreizen vallen uitsluitend onder EM10.",
         languageSelector: "Taal",
         specialtySummary: "Specialismen",
@@ -5888,13 +5905,13 @@
         methodResourceTitle: "Resourceflow",
         methodResourceText: "Meetbare input of output binnen een module, zoals reizen, apparaattijd, energie, materialen of afval.",
         methodLciTitle: "LCI / LCIA-koppeling",
-        methodLciText: "Resourceflows worden gekoppeld aan inventarisdata en impactcoëfficiënten voor berekening.",
+        methodLciText: "Hulpbronstromen vormen een gedocumenteerde voorgrondinventaris en koppelen beoordeelde eenheidsprocessen aan achtergronddatasets voor LCIA.",
         lcaHeading: "Modulaire LCA-berekeningsdemo",
         lcaIntro: "Geselecteerde activiteiten activeren automatisch hun gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer de automatische selectie en pas routeafhankelijke hoeveelheden aan voor de berekening.",
         automaticFromActivities: "Automatisch uit geselecteerde activiteiten",
         exportReport: "LCA-rapport exporteren",
         buildingBlockMapHeading: "Kandidaatbouwstenen per LCA-module",
-        buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische modulecoëfficiënten sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning.",
+        buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische procesinventarissen sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning.",
         moduleZone: "Modulezone",
         candidateBuildingBlock: "Kandidaatbouwsteen",
         candidateBuildingBlockCount: "{count} kandidaatbouwstenen",
@@ -5907,7 +5924,7 @@
         dummyGapTemplate: "Dummy-aggregaatcoefficient. Vervang deze door foreground-LCI voor {flows} en gedocumenteerde LCIA-koppeling.",
         baseQuantityAria: "{block} basishoeveelheid",
         uncertaintyAria: "{block} onzekerheidspercentage",
-        impactCoefficientAria: "{block} impactcoefficient",
+        impactCoefficientAria: "Eenheidsimpact voor {block}",
         pathwayLinkedTitle: "Zorgpadgebonden modules uit de huidige kaart",
         pathwayLinkedDescription: "Deze modules zijn beschikbaar in de huidige activiteitenkaart. Een activiteit selecteren op de kaart of in de lijst activeert automatisch de expliciet gekoppelde module, bouwstenen en voorlopige hoeveelheden.",
         supportModulesTitle: "Optionele overkoepelende ondersteunende modules",
@@ -5921,7 +5938,7 @@
         resourceFlowsToModel: "Te modelleren resourceflows",
         baseQuantity: "Basishoeveelheid",
         uncertainty: "Onzekerheid, +/- %",
-        impactCoefficient: "Impactcoëfficiënt, kg CO₂-eq/eenheid",
+        impactCoefficient: "Eenheidsimpact (demo), kg CO₂-eq/eenheid",
         defaultStatusGap: "Standaardstatus / datagap",
         baseContribution: "Basisbijdrage",
         excludedFromTotal: "Uitgesloten van totaal",
@@ -5937,8 +5954,8 @@
         formulaUncertainty: "Onzekerheidsbereik",
         formulaLibrary: "Bouwsteenbibliotheek",
         formulaCohort: "Cohortimpact",
-        formulaNote: "S = aangevinkte bouwsteenrijen binnen aangevinkte modules. q = aantal of resourcehoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u = relatieve onzekerheid, N = cohortgrootte. Dit is een demobibliotheek, geen definitief zorgpadscenario.",
-        lcaWarning: "Geselecteerde activiteiten activeren automatisch de expliciet gekoppelde zorgpadmodules, bouwstenen en voorlopige hoeveelheden. Herhaalde activiteiten worden opgeteld. Alleen EM10 berekent patiënten- en mantelzorgerreizen; neem reizen niet op in een andere modulecoëfficiënt. EM11 blijft optionele gedeelde ziekenhuisondersteuning. Alternatieve regimes, beeldvorming, fracties, cycli, opnamedagen en dummy-impactcoëfficiënten moeten worden gecontroleerd.",
+        formulaNote: "S = aangevinkte bouwsteenrijen binnen aangevinkte modules. q = aantal of resourcehoeveelheid, c = LCIA-resultaat per eenheid, j = impactcategorie, u = relatieve onzekerheid, N = cohortgrootte. Dit is een demobibliotheek, geen definitief zorgpadscenario.",
+        lcaWarning: "Geselecteerde activiteiten activeren automatisch de expliciet gekoppelde zorgpadmodules, bouwstenen en voorlopige hoeveelheden. Herhaalde activiteiten worden opgeteld. Alleen EM10 berekent patiënten- en mantelzorgerreizen; neem reizen niet op in een ander moduleresultaat. EM11 blijft optionele gedeelde ziekenhuisondersteuning. Alternatieve regimes, beeldvorming, fracties, cycli, opnamedagen en synthetische eenheidsimpacten moeten worden gecontroleerd.",
         noActiveRows: "Geen bouwsteenrij is actief. Vink ten minste één module en één bouwsteenrij aan om deze mee te nemen.",
         priorityRow: "{module} {block}: {impact} per demo-zorgpadinstantie.",
         reportTitle: "ECO-PATH LCA-rapport: {pathway}",
@@ -5949,13 +5966,13 @@
         rowsCounted: "Getelde rijen",
         selectedPathwayActivities: "Geselecteerde zorgpadactiviteiten",
         scenarioResults: "Scenarioresultaten",
-        valuesDummyNote: "Deze waarden zijn berekend op basis van huidige browserinvoer. De standaard aantallen en impactcoëfficiënten zijn dummywaarden totdat ze zijn vervangen door ziekenhuis-LCI-data en gedocumenteerde LCIA-koppelingen.",
+        valuesDummyNote: "Deze waarden zijn berekend op basis van huidige browserinvoer. De standaard aantallen en eenheidsimpacten zijn demonstratiewaarden totdat ze zijn vervangen door ziekenhuis-LCI-data en gedocumenteerde LCIA-koppelingen.",
         selectedPathwayScenario: "Geselecteerd zorgpadscenario",
         code: "Code",
         assignedModule: "Toegewezen module",
         noSelectedReport: "Er is geen zorgpadactiviteit geselecteerd. Zorgpadgebonden modules blijven buiten de LCA-grens tenzij ze handmatig zijn aangevinkt.",
         calculationFormula: "Berekeningsformule",
-        formulaReportNote: "S is de set aangevinkte bouwsteenrijen binnen aangevinkte modules. q is aantal of resourcehoeveelheid. c is de impactcoëfficiënt. N is cohortgrootte.",
+        formulaReportNote: "S is de set aangevinkte bouwsteenrijen binnen aangevinkte modules. q is aantal of resourcehoeveelheid. c is het LCIA-resultaat per eenheid. N is cohortgrootte.",
         moduleBoundary: "Modulegrens en subtotalen",
         name: "Naam",
         role: "Rol",
@@ -5972,7 +5989,7 @@
         excluded: "Uitgesloten",
         noCheckedTotal: "Er is momenteel geen combinatie van aangevinkte module en bouwsteenrij opgenomen in het LCA-totaal.",
         methodLimitations: "Methodenotitie en beperkingen",
-        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport. Het prototype gebruikt een voorlopige kwalitatieve cut-off voor EM04 multidisciplinaire zorglogica, EM05 klinische beslislogica en andere overleg-, digitale brief- en administratieactiviteiten zonder afzonderlijke hulpbrondragende procedure. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan als allocatieparameter worden gebruikt. Patiënten- en mantelzorgerreizen worden uitsluitend aan EM10 toegewezen en uit klinische bouwsteencoëfficiënten verwijderd om dubbeltelling te voorkomen. Deze regels vereisen documentatie en gevoeligheidsanalyse bij formele LCA-modellering.",
+        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport. Het prototype gebruikt een voorlopige kwalitatieve cut-off voor EM04 multidisciplinaire zorglogica, EM05 klinische beslislogica en andere overleg-, digitale brief- en administratieactiviteiten zonder afzonderlijke hulpbrondragende procedure. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan als allocatieparameter worden gebruikt. Patiënten- en mantelzorgerreizen worden uitsluitend aan EM10 toegewezen en uit klinische procesinventarissen verwijderd om dubbeltelling te voorkomen. Deze regels vereisen documentatie en gevoeligheidsanalyse bij formele LCA-modellering.",
         reportFooter: "ECO-PATH demo voor zorgpadniveau milieubeoordeling. Rapport lokaal in de browser gegenereerd.",
         reportExported: "Rapport geexporteerd: {filename}"
       }
@@ -6072,7 +6089,7 @@
           methodResourceTitle: "资源流",
           methodResourceText: "模块内可测量的输入或输出，例如出行、设备时间、能源、材料或废弃物。",
           methodLciTitle: "LCI / LCIA 连接",
-          methodLciText: "资源流会映射到清单数据和影响系数，用于计算。",
+          methodLciText: "资源流构成有记录的前景清单，并把经复核的单位过程连接到背景数据库以开展 LCIA。",
           lcaHeading: "模块化 LCA 计算演示",
           lcaIntro: "所选 activities 会自动启用其映射的 modules、building blocks 和临时数量。计算前请检查自动选择并调整与具体路线有关的数量。",
           automaticFromActivities: "由所选 activities 自动启用",
@@ -6091,7 +6108,7 @@
           dummyGapTemplate: "示例聚合系数。请用 {flows} 的前景 LCI 和已记录的 LCIA 映射替换。",
           baseQuantityAria: "{block} 基础数量",
           uncertaintyAria: "{block} 不确定性百分比",
-          impactCoefficientAria: "{block} 影响系数",
+          impactCoefficientAria: "{block} 的单位影响结果",
           pathwayLinkedTitle: "当前路径图中的路径关联模块",
           pathwayLinkedDescription: "这些模块来自当前活动图。在地图或 activity 列表中选择 activity 后，会自动启用其显式映射的 module、building blocks 和临时数量。",
           supportModulesTitle: "可选的跨活动支持模块",
@@ -6105,7 +6122,7 @@
           resourceFlowsToModel: "需要建模的资源流",
           baseQuantity: "基础数量",
           uncertainty: "不确定性，+/- %",
-          impactCoefficient: "影响系数，kg CO₂-eq/单位",
+          impactCoefficient: "单位影响结果（演示），kg CO₂-eq/单位",
           defaultStatusGap: "默认状态 / 数据缺口",
           baseContribution: "基础贡献",
           excludedFromTotal: "未计入总量",
@@ -6121,8 +6138,8 @@
           formulaUncertainty: "不确定性范围",
           formulaLibrary: "构建块库",
           formulaCohort: "队列影响",
-          formulaNote: "S = 已勾选模块内的已勾选构建块行。q = 发生次数或资源数量，c = LCIA 影响系数，j = 影响类别，u = 相对不确定性，N = 队列规模。这里是候选构建块库演示，不是最终路径情景。",
-          lcaWarning: "所选 activities 会自动启用显式映射的路径 modules、building blocks 和临时数量；重复 activity 会累计数量。患者及照护者出行只能在 EM10 中计算，不应再写入其他模块系数；EM11 仍为可选的医院共享支持模块。治疗方案、影像选择、放疗分次、治疗周期、住院日和 dummy 影响系数均需在正式使用前复核。",
+          formulaNote: "S = 已勾选模块内的已勾选构建块行。q = 发生次数或资源数量，c = 单位 LCIA 结果，j = 影响类别，u = 相对不确定性，N = 队列规模。这里是候选构建块库演示，不是最终路径情景。",
+          lcaWarning: "所选 activities 会自动启用显式映射的路径 modules、building blocks 和临时数量；重复 activity 会累计数量。患者及照护者出行只能在 EM10 中计算，不应再写入其他模块结果；EM11 仍为可选的医院共享支持模块。治疗方案、影像选择、放疗分次、治疗周期、住院日和合成单位影响结果均需在正式使用前复核。",
           noActiveRows: "当前没有启用的构建块行。请至少勾选一个模块和一个构建块行。",
           priorityRow: "{module} {block}：每个演示路径实例 {impact}。",
           reportTitle: "ECO-PATH LCA 报告：{pathway}",
@@ -6133,13 +6150,13 @@
           rowsCounted: "计入行数",
           selectedPathwayActivities: "已选路径活动",
           scenarioResults: "情景结果",
-          valuesDummyNote: "这些数值由当前浏览器输入计算得到。在替换为医院 LCI 数据和已记录的 LCIA 映射之前，默认发生次数和影响系数均为示例值。",
+          valuesDummyNote: "这些数值由当前浏览器输入计算得到。在替换为医院 LCI 数据和已记录的 LCIA 映射之前，默认发生次数和单位影响结果均为演示值。",
           selectedPathwayScenario: "已选路径情景",
           code: "代码",
           assignedModule: "分配模块",
           noSelectedReport: "当前未选择路径活动。除非手动勾选，否则路径关联模块不进入 LCA 边界。",
           calculationFormula: "计算公式",
-          formulaReportNote: "S 是已勾选模块内已勾选构建块行的集合。q 是发生次数或资源数量。c 是影响系数。N 是队列规模。",
+          formulaReportNote: "S 是已勾选模块内已勾选构建块行的集合。q 是发生次数或资源数量。c 是单位 LCIA 结果。N 是队列规模。",
           moduleBoundary: "模块边界和小计",
           name: "名称",
           role: "角色",
@@ -6530,19 +6547,19 @@
       domainFilterHelp: "Clinical navigation category. It does not define the LCA inventory boundary.",
       moduleFilterHelp: "Reusable LCA modeling zone used to inspect activities that share an inventory model. It is not a second clinical category.",
       helpStep2: "Use Domain to navigate clinical activities. An ECO-PATH module (EM) is a reusable LCA modeling zone for activities that share inventory logic; use the advanced EM filter only to inspect those assignments.",
-      uncertainty: "Impact coefficient uncertainty, +/- %",
-      uncertaintyAria: "{block} impact coefficient uncertainty percent",
-      formulaUncertainty: "Impact coefficient range",
+      uncertainty: "Unit impact result uncertainty (demo), +/- %",
+      uncertaintyAria: "{block} unit impact result uncertainty percent",
+      formulaUncertainty: "Unit impact result range",
       formulaParameters: "Parameter meanings",
       formulaSymbolS: "Building-block rows included in the calculation",
       formulaSymbolQ: "Occurrences or resource amount for row i",
-      formulaSymbolC: "Impact coefficient for row i in category j",
+      formulaSymbolC: "Unit impact result for row i in category j",
       formulaSymbolJ: "Selected EF impact category",
-      formulaSymbolU: "Relative uncertainty assigned only to the impact coefficient",
+      formulaSymbolU: "Relative uncertainty assigned only to the unit impact result",
       formulaSymbolN: "Number of patient pathways in the cohort",
       formulaExcludedUncertainty: "Not covered by this field: quantity, pathway, scenario, or structural uncertainty.",
-      formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = LCIA impact coefficient, j = impact category, u_c = relative uncertainty assigned to c only, N = cohort size. Quantity, pathway, scenario, and structural uncertainty are not represented by this field.",
-      formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the impact coefficient. u_c is the relative uncertainty assigned to c only. N is cohort size.",
+      formulaNote: "S = checked building block rows inside checked modules. q = occurrence count or resource amount, c = unit LCIA result, j = impact category, u_c = relative uncertainty assigned to c only, N = cohort size. Quantity, pathway, scenario, and structural uncertainty are not represented by this field.",
+      formulaReportNote: "S is the set of checked building block rows inside checked modules. q is occurrence count or resource amount. c is the unit LCIA result. u_c is the relative uncertainty assigned to c only. N is cohort size.",
       helpStep5: "Define the functional unit and review all provisional quantities, uncertainty assumptions, and data gaps. Start the local Brightway companion with a reviewed mapping to calculate directly in Results; JSON remains an audit and fallback route. Export the report in the selected language.",
       impactCategoryLabel: "Impact category",
       impactMethodChip: "EF v3.1 no LT · demo",
@@ -6550,7 +6567,7 @@
       impactGroupHumanHealth: "Human health",
       impactGroupEcosystems: "Ecosystems",
       impactGroupResources: "Resource use",
-      lcaIntro: "Selected activities activate their mapped modules and calculation rows. Review quantities and impact coefficients before calculation.",
+      lcaIntro: "Selected activities activate their mapped modules and calculation rows. Review quantities and unit impact results before calculation.",
       impactClimate: "Climate change (GWP100)",
       impactClimateDescription: "Primary ECO-PATH view. Reports the 100-year global warming potential of life-cycle greenhouse-gas emissions.",
       impactOzoneDepletion: "Ozone depletion",
@@ -6583,16 +6600,16 @@
       impactResourceUseFossilsDescription: "Potential depletion of fossil energy resources, reported in megajoules.",
       impactResourceUseMineralsMetals: "Resource use, minerals and metals",
       impactResourceUseMineralsMetalsDescription: "Potential depletion of mineral and metal resources, expressed as antimony equivalents.",
-      impactCoefficientDynamic: "Impact coefficient, {unit}/reference unit",
-      impactCoefficientAria: "{block} {category} impact coefficient",
-      categoryFactorGap: "No verified {category} coefficient is mapped. Enter a value only after foreground LCI and EF v3.1 no LT mapping.",
-      categoryDummyFactorGap: "Synthetic {category} demonstration coefficient with a +/- {uncertainty}% assumption. Replace it with documented foreground LCI and LCIA mapping.",
-      categoryUserFactorGap: "User-entered {category} coefficient. Verify the EF v3.1 no LT dataset and characterization-factor mapping before use.",
-      climateDataWarning: "GWP is the default view. Quantities and coefficients remain synthetic demonstration data until replaced with validated foreground LCI and LCIA mappings.",
-      categoryDataWarning: "{category} currently uses synthetic demonstration coefficients and a +/- {uncertainty}% coefficient range. This is not an EF default or a validated result.",
-      noCategoryFactors: "No active building block has a non-zero {category} coefficient.",
+      impactCoefficientDynamic: "Unit impact result (demo), {unit}/reference unit",
+      impactCoefficientAria: "{block} {category} unit impact result",
+      categoryFactorGap: "No verified {category} unit impact result is mapped. Enter a value only after foreground LCI and EF v3.1 no LT mapping.",
+      categoryDummyFactorGap: "Synthetic {category} unit impact result with a +/- {uncertainty}% assumption. Replace it with a Brightway result from documented foreground LCI and verified LCIA mapping.",
+      categoryUserFactorGap: "User-entered {category} unit impact result. Verify the foreground model, EF v3.1 no LT method, and calculation record before use.",
+      climateDataWarning: "GWP is the default view. Quantities and unit impact results remain synthetic demonstration data until replaced with validated foreground LCI and LCIA mappings.",
+      categoryDataWarning: "{category} currently uses synthetic unit impact results and a +/- {uncertainty}% range. This is not an EF default or a validated result.",
+      noCategoryFactors: "No active building block has a non-zero {category} unit impact result.",
       impactCategoryConfig: "Impact category",
-      categoryReportNote: "Selected category: {category} ({unit}). Synthetic coefficients and the 30% uncertainty assumption are interface placeholders, not verified EF results."
+      categoryReportNote: "Selected category: {category} ({unit}). Synthetic unit impact results and the 30% uncertainty assumption are interface placeholders, not verified EF results."
     });
 
     Object.assign(uiText.nl, {
@@ -6609,19 +6626,19 @@
       domainFilterHelp: "Klinische navigatiecategorie. Dit bepaalt niet de LCA-inventarisgrens.",
       moduleFilterHelp: "Herbruikbare LCA-modelzone voor activiteiten met hetzelfde inventarismodel. Dit is geen tweede klinische categorie.",
       helpStep2: "Gebruik Domein om door klinische activiteiten te navigeren. Een ECO-PATH-module (EM) is een herbruikbare LCA-modelzone voor activiteiten met dezelfde inventarislogica; gebruik het geavanceerde EM-filter alleen om die toewijzingen te bekijken.",
-      uncertainty: "Onzekerheid impactcoëfficiënt, +/- %",
-      uncertaintyAria: "Onzekerheidspercentage impactcoëfficiënt voor {block}",
-      formulaUncertainty: "Bereik impactcoëfficiënt",
+      uncertainty: "Onzekerheid eenheidsimpact (demo), +/- %",
+      uncertaintyAria: "Onzekerheidspercentage van de eenheidsimpact voor {block}",
+      formulaUncertainty: "Bereik eenheidsimpact",
       formulaParameters: "Betekenis van de parameters",
       formulaSymbolS: "Bouwsteenrijen die in de berekening zijn opgenomen",
       formulaSymbolQ: "Aantal of hulpbronhoeveelheid voor rij i",
-      formulaSymbolC: "Impactcoëfficiënt voor rij i in categorie j",
+      formulaSymbolC: "Eenheidsimpact voor rij i in categorie j",
       formulaSymbolJ: "Geselecteerde EF-impactcategorie",
-      formulaSymbolU: "Relatieve onzekerheid uitsluitend van de impactcoëfficiënt",
+      formulaSymbolU: "Relatieve onzekerheid uitsluitend van de eenheidsimpact",
       formulaSymbolN: "Aantal patiënttrajecten in het cohort",
       formulaExcludedUncertainty: "Niet opgenomen in dit veld: onzekerheid in hoeveelheid, zorgpad, scenario of modelstructuur.",
-      formulaNote: "S = aangevinkte bouwstenen binnen aangevinkte modules. q = aantal of hulpbronhoeveelheid, c = LCIA-impactcoëfficiënt, j = impactcategorie, u_c = relatieve onzekerheid uitsluitend van c, N = cohortgrootte. Onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur staat niet in dit veld.",
-      formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is de impactcoëfficiënt. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
+      formulaNote: "S = aangevinkte bouwstenen binnen aangevinkte modules. q = aantal of hulpbronhoeveelheid, c = LCIA-resultaat per eenheid, j = impactcategorie, u_c = relatieve onzekerheid uitsluitend van c, N = cohortgrootte. Onzekerheid in hoeveelheden, zorgpad, scenario en modelstructuur staat niet in dit veld.",
+      formulaReportNote: "S bevat aangevinkte bouwstenen binnen aangevinkte modules. q is aantal of hulpbronhoeveelheid. c is het LCIA-resultaat per eenheid. u_c is uitsluitend de relatieve onzekerheid van c. N is cohortgrootte.",
       helpStep5: "Definieer de functionele eenheid en controleer alle voorlopige hoeveelheden, onzekerheidsaannames en datalacunes. Start de lokale Brightway-companion met een beoordeelde mapping om direct in Resultaten te rekenen; JSON blijft beschikbaar voor audit en als terugvalroute. Exporteer het rapport in de gekozen taal.",
       impactCategoryLabel: "Impactcategorie",
       impactMethodChip: "EF v3.1 no LT · demo",
@@ -6629,7 +6646,7 @@
       impactGroupHumanHealth: "Menselijke gezondheid",
       impactGroupEcosystems: "Ecosystemen",
       impactGroupResources: "Hulpbronnengebruik",
-      lcaIntro: "Geselecteerde activiteiten activeren de gekoppelde modules en rekenregels. Controleer hoeveelheden en impactcoëfficiënten voor de berekening.",
+      lcaIntro: "Geselecteerde activiteiten activeren de gekoppelde modules en rekenregels. Controleer hoeveelheden en eenheidsimpacten voor de berekening.",
       impactClimate: "Klimaatverandering (GWP100)",
       impactClimateDescription: "Primaire ECO-PATH-weergave. Toont het aardopwarmingsvermogen over 100 jaar van broeikasgasemissies in de levenscyclus.",
       impactOzoneDepletion: "Ozonafbraak",
@@ -6662,16 +6679,16 @@
       impactResourceUseFossilsDescription: "Potentiële uitputting van fossiele energiebronnen, uitgedrukt in megajoules.",
       impactResourceUseMineralsMetals: "Hulpbronnengebruik, mineralen en metalen",
       impactResourceUseMineralsMetalsDescription: "Potentiële uitputting van mineralen en metalen, uitgedrukt als antimoon-equivalenten.",
-      impactCoefficientDynamic: "Impactcoëfficiënt, {unit}/referentie-eenheid",
-      impactCoefficientAria: "Impactcoëfficiënt {category} voor {block}",
-      categoryFactorGap: "Er is geen geverifieerde coëfficiënt voor {category} gekoppeld. Voer alleen een waarde in na koppeling van voorgrond-LCI en EF v3.1 no LT.",
-      categoryDummyFactorGap: "Synthetische demonstratiecoëfficiënt voor {category} met een aanname van +/- {uncertainty}%. Vervang deze door gedocumenteerde voorgrond-LCI- en LCIA-koppeling.",
-      categoryUserFactorGap: "Door gebruiker ingevoerde coëfficiënt voor {category}. Controleer dataset en karakterisatiefactorkoppeling van EF v3.1 no LT vóór gebruik.",
-      climateDataWarning: "GWP is de standaardweergave. Hoeveelheden en coëfficiënten blijven synthetische demonstratiedata totdat ze zijn vervangen door gevalideerde voorgrond-LCI- en LCIA-koppelingen.",
-      categoryDataWarning: "{category} gebruikt momenteel synthetische demonstratiecoëfficiënten en een coëfficiëntbereik van +/- {uncertainty}%. Dit is geen EF-standaard of gevalideerd resultaat.",
-      noCategoryFactors: "Geen actieve bouwsteen heeft een niet-nulcoëfficiënt voor {category}.",
+      impactCoefficientDynamic: "Eenheidsimpact (demo), {unit}/referentie-eenheid",
+      impactCoefficientAria: "Eenheidsimpact {category} voor {block}",
+      categoryFactorGap: "Er is geen geverifieerde eenheidsimpact voor {category} gekoppeld. Voer alleen een waarde in na koppeling van voorgrond-LCI en EF v3.1 no LT.",
+      categoryDummyFactorGap: "Synthetische eenheidsimpact voor {category} met een aanname van +/- {uncertainty}%. Vervang deze door een Brightway-resultaat uit gedocumenteerde voorgrond-LCI en geverifieerde LCIA-mapping.",
+      categoryUserFactorGap: "Door gebruiker ingevoerde eenheidsimpact voor {category}. Controleer het voorgrondmodel, de EF v3.1 no LT-methode en het rekenrecord vóór gebruik.",
+      climateDataWarning: "GWP is de standaardweergave. Hoeveelheden en eenheidsimpacten blijven synthetische demonstratiedata totdat ze zijn vervangen door gevalideerde voorgrond-LCI- en LCIA-koppelingen.",
+      categoryDataWarning: "{category} gebruikt momenteel synthetische eenheidsimpacten en een bereik van +/- {uncertainty}%. Dit is geen EF-standaard of gevalideerd resultaat.",
+      noCategoryFactors: "Geen actieve bouwsteen heeft een eenheidsimpact die niet nul is voor {category}.",
       impactCategoryConfig: "Impactcategorie",
-      categoryReportNote: "Geselecteerde categorie: {category} ({unit}). De synthetische coëfficiënten en 30%-onzekerheidsaanname zijn interface-placeholders, geen geverifieerde EF-resultaten."
+      categoryReportNote: "Geselecteerde categorie: {category} ({unit}). De synthetische eenheidsimpacten en 30%-onzekerheidsaanname zijn interface-placeholders, geen geverifieerde EF-resultaten."
     });
 
     Object.assign(uiText.zh, {
@@ -6688,19 +6705,19 @@
       domainFilterHelp: "用于临床路径导航，不定义 LCA 清单边界。",
       moduleFilterHelp: "用于查找共用同一清单模型的活动，是可复用的 LCA 建模区，不是第二套临床分类。",
       helpStep2: "Domain 仅用于浏览临床活动。ECO-PATH 模块（EM）是共用清单逻辑活动的可复用 LCA 建模区；高级 EM 筛选仅用于检查这些分配关系。",
-      uncertainty: "影响系数不确定性，+/- %",
-      uncertaintyAria: "{block} 的影响系数不确定性百分比",
-      formulaUncertainty: "影响系数范围",
+      uncertainty: "单位影响结果不确定性（演示），+/- %",
+      uncertaintyAria: "{block} 的单位影响结果不确定性百分比",
+      formulaUncertainty: "单位影响结果范围",
       formulaParameters: "参数含义",
       formulaSymbolS: "纳入计算的 building block 行",
       formulaSymbolQ: "第 i 行的发生次数或资源量",
-      formulaSymbolC: "第 i 行在影响类别 j 下的影响系数",
+      formulaSymbolC: "第 i 行在影响类别 j 下的单位影响结果",
       formulaSymbolJ: "当前选择的 EF 影响类别",
-      formulaSymbolU: "仅分配给影响系数的相对不确定性",
+      formulaSymbolU: "仅分配给单位影响结果的相对不确定性",
       formulaSymbolN: "队列中的患者路径数量",
       formulaExcludedUncertainty: "本字段不包括：数量、路径、情景或模型结构不确定性。",
-      formulaNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为 LCIA 影响系数；j 为影响类别；u_c 仅表示 c 的相对不确定性；N 为队列人数。本字段不表示数量、路径、情景或模型结构不确定性。",
-      formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为影响系数；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
+      formulaNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为单位 LCIA 结果；j 为影响类别；u_c 仅表示 c 的相对不确定性；N 为队列人数。本字段不表示数量、路径、情景或模型结构不确定性。",
+      formulaReportNote: "S 为已勾选模块内的已勾选构建单元；q 为发生次数或资源量；c 为单位 LCIA 结果；u_c 仅表示 c 的相对不确定性；N 为队列人数。",
       helpStep5: "定义 functional unit，并检查所有临时数量、不确定性假设和数据缺口。使用经复核的 mapping 启动本地 Brightway companion 后，可在结果步骤直接计算；JSON 保留为审计与备用流程。随后以当前语言导出报告。",
       impactCategoryLabel: "影响类别",
       impactMethodChip: "EF v3.1 no LT · 演示",
@@ -6708,7 +6725,7 @@
       impactGroupHumanHealth: "人类健康",
       impactGroupEcosystems: "生态系统",
       impactGroupResources: "资源使用",
-      lcaIntro: "所选 activities 会启用对应的 modules 和计算行。计算前请检查数量与影响系数。",
+      lcaIntro: "所选 activities 会启用对应的 modules 和计算行。计算前请检查数量与单位影响结果。",
       impactClimate: "气候变化（GWP100）",
       impactClimateDescription: "ECO-PATH 的首选视图，表示生命周期温室气体排放的 100 年全球变暖潜势。",
       impactOzoneDepletion: "臭氧层消耗",
@@ -6741,16 +6758,16 @@
       impactResourceUseFossilsDescription: "化石能源资源的潜在消耗，以兆焦耳表示。",
       impactResourceUseMineralsMetals: "资源使用，矿物和金属",
       impactResourceUseMineralsMetalsDescription: "矿物和金属资源的潜在消耗，以锑当量表示。",
-      impactCoefficientDynamic: "影响系数，{unit}/参考单位",
-      impactCoefficientAria: "{block} 的 {category} 影响系数",
-      categoryFactorGap: "尚未映射经过验证的 {category} 系数。仅在完成前景 LCI 与 EF v3.1 no LT 映射后输入。",
-      categoryDummyFactorGap: "{category} 的 synthetic 演示系数，采用 +/- {uncertainty}% 假设。需替换为有记录的前景 LCI 与 LCIA 映射。",
-      categoryUserFactorGap: "用户输入的 {category} 系数。使用前需核对 EF v3.1 no LT 数据集和表征因子映射。",
-      climateDataWarning: "GWP 为默认视图。数量和系数仍是 synthetic 演示数据，必须替换为经验证的前景 LCI 和 LCIA 映射。",
-      categoryDataWarning: "{category} 当前使用 synthetic 演示系数及 +/- {uncertainty}% 系数范围。这不是 EF 默认值或经验证的结果。",
-      noCategoryFactors: "当前活动构建单元中没有非零的 {category} 系数。",
+      impactCoefficientDynamic: "单位影响结果（演示），{unit}/参考单位",
+      impactCoefficientAria: "{block} 的 {category} 单位影响结果",
+      categoryFactorGap: "尚未映射经验证的 {category} 单位影响结果。仅在完成前景 LCI 与 EF v3.1 no LT 映射后输入。",
+      categoryDummyFactorGap: "{category} 的合成单位影响结果采用 +/- {uncertainty}% 假设。需替换为由有记录的前景 LCI 和经核对的 LCIA 映射计算出的 Brightway 结果。",
+      categoryUserFactorGap: "用户输入的 {category} 单位影响结果。使用前需核对前景模型、EF v3.1 no LT 方法和计算记录。",
+      climateDataWarning: "GWP 为默认视图。数量和单位影响结果仍是合成演示数据，必须替换为经验证的前景 LCI 和 LCIA 映射。",
+      categoryDataWarning: "{category} 当前使用合成单位影响结果及 +/- {uncertainty}% 范围。这不是 EF 默认值或经验证的结果。",
+      noCategoryFactors: "当前活动构建单元中没有非零的 {category} 单位影响结果。",
       impactCategoryConfig: "影响类别",
-      categoryReportNote: "所选类别：{category}（{unit}）。Synthetic 系数和 30% 不确定性假设只是界面占位值，不是经验证的 EF 结果。"
+      categoryReportNote: "所选类别：{category}（{unit}）。合成单位影响结果和 30% 不确定性假设只是界面占位值，不是经验证的 EF 结果。"
     });
 
     Object.assign(uiText.ja, {
@@ -7205,7 +7222,7 @@
       lcaAnalysisIntro: "Bekijk alle EF-categorieën in één tabel met behoud van eenheden of analyseer de bijdragen voor de geselecteerde categorie.",
       allImpactTab: "Alle EF-categorieën",
       sankeyTab: "Bijdragen-Sankey",
-      allImpactTableNote: "EF-categorieën hebben verschillende eenheden; ruwe waarden mogen daarom niet onderling worden gerangschikt. Selecteer een categorienaam voor de detailkaarten, coëfficiëntentabel en Sankey.",
+      allImpactTableNote: "EF-categorieën hebben verschillende eenheden; ruwe waarden mogen daarom niet onderling worden gerangschikt. Selecteer een categorienaam voor de detailkaarten, tabel met eenheidsimpacten en Sankey.",
       allImpactReportNote: "EF-categorieën hebben verschillende eenheden; rangschik ruwe waarden daarom niet tussen categorieën. De geselecteerde categorie is gemarkeerd en wordt hieronder uitgewerkt.",
       lowPerFu: "Laag / functionele eenheid",
       basePerFu: "Basis / functionele eenheid",
@@ -7217,7 +7234,7 @@
       sankeyCutoffHelp: "Bouwstenen onder de grens worden binnen hun module samengevoegd als Overig; het zorgpadtotaal blijft behouden.",
       sankeyPathwayTotal: "Zorgpadtotaal",
       sankeyOther: "Overige bouwstenen in {module}",
-      sankeyNoData: "Selecteer activiteiten met actieve bouwstenen en niet-nulcoëfficiënten om de bijdragen-Sankey te maken.",
+      sankeyNoData: "Selecteer activiteiten met actieve bouwstenen en een eenheidsimpact groter dan nul om de bijdragen-Sankey te maken.",
       sankeyContribution: "{value} · {share}% van zorgpadtotaal",
       sankeyFlow: "{from} naar {to}"
     });
@@ -7292,28 +7309,28 @@
     Object.assign(uiText.en, {
       methodologyButton: "Methods",
       methodologyTitle: "Methods and references",
-      methodologyIntro: "This prototype links clinical pathway reconstruction to modular process-based LCA. These references document the approach; they do not validate the current clinical content or demonstration coefficients.",
+      methodologyIntro: "This prototype links clinical pathway reconstruction to modular process-based LCA. These references document the approach; they do not validate the current clinical content or demonstration results.",
       methodologyPathwayTitle: "Protocol-to-activity pathway mapping",
       methodologyPathwayText: "Protocol and workflow sources are decomposed into activities and decision points, then represented as a metro-style care pathway. The map is an auditable modeling interface, not proof that a local pathway is complete.",
       methodStructureTitle: "ECO-PATH model structure",
       methodologyLcaTitle: "Life cycle assessment",
       methodologyLcaText: "Goal and scope, functional unit, system boundary, inventory, impact assessment, and interpretation are organized using ISO 14040 and ISO 14044 principles.",
       methodologyEfTitle: "Impact assessment",
-      methodologyEfText: "The interface exposes the 16 EF 3.1 no LT impact categories. Browser coefficients are synthetic; formal results require documented foreground inventories and verified method mappings.",
+      methodologyEfText: "The interface exposes the 16 EF 3.1 no LT impact categories. Browser unit-impact results are synthetic. The current app does not create foreground unit processes; formal results require reviewed unit-process inventories, linked background datasets, and verified method mappings.",
       methodologyCalculationTitle: "Calculation and uncertainty",
-      methodologyCalculationText: "Brightway is the intended calculation engine. The current plus-or-minus field covers impact-coefficient uncertainty only. Parameter distributions, pathway variation, scenarios, and structural model variants require explicit backend models.",
+      methodologyCalculationText: "Brightway is the intended calculation engine and should calculate the LCIA result for one reference unit of each mapped foreground process. The current plus-or-minus field covers uncertainty in the browser's unit-impact result only. Parameter distributions, pathway variation, scenarios, and structural model variants require explicit backend models.",
       helpStep3: "For a complete assessment, choose a valid route preset or select one connected patient route from the fixed hospital-entry start to a valid endpoint. For a partial exploration, select the connected activities directly on the map; the segment boundary is inferred from that selection.",
-      helpStep5: "Define the functional unit, review automatic building blocks, and calculate results. Use contribution analysis to locate hotspots and the sensitivity explorer to test one parameter at a time. Activity-count scenarios use whole numbers and require clinical justification. Use the local Brightway companion for mapped results; browser coefficients remain demonstration data.",
+      helpStep5: "Define the functional unit, review automatic building blocks, and calculate results. Use contribution analysis to locate hotspots and the sensitivity explorer to test one parameter at a time. Activity-count scenarios use whole numbers and require clinical justification. Use the local Brightway companion for mapped results; browser unit-impact results remain demonstration data.",
       sensitivityTitle: "Sensitivity and improvement explorer",
       sensitivityIntro: "Rank the top five contributors, test each one independently, and combine only the checked changes.",
       sensitivityModeLabel: "Scenario lever",
-      sensitivityIntensityMode: "Impact intensity",
+      sensitivityIntensityMode: "Unit impact result",
       sensitivityQuantityMode: "Activity count",
       sensitivityReductionLabel: "Tested reduction",
-      sensitivityCoefficientReductionLabel: "Apply one coefficient reduction to checked contributors",
+      sensitivityCoefficientReductionLabel: "Apply one unit-impact reduction to checked contributors",
       sensitivitySameQuantityReductionLabel: "Set whole-number scenario counts per contributor",
       sensitivityGlobalReductionHelp: "Master control: moving this slider overwrites the individual percentages of checked contributors.",
-      sensitivityMethodBrowser: "Screening only: results use synthetic browser coefficients. Treat the ranking as a data-collection and scenario-testing priority, not an intervention recommendation.",
+      sensitivityMethodBrowser: "Screening only: results use synthetic browser unit-impact results. Treat the ranking as a data-collection and scenario-testing priority, not an intervention recommendation.",
       sensitivityMethodBrightway: "Uses imported Brightway building-block contributions for the selected category. Each row tests one parameter at a time with all other parameters fixed.",
       sensitivityMethodBrightwayFallback: "A Brightway total is available, but matching building-block contributions are unavailable or stale. The screening therefore uses browser demonstration contributions.",
       sensitivityBaseline: "Baseline pathway result",
@@ -7348,13 +7365,14 @@
       sensitivityAdjustContributor: "Set the independent scenario value for {block}",
       sensitivityScenarioCount: "Scenario count: {scenario} {unit}",
       sensitivityBaselineCount: "baseline {quantity}",
+      sensitivitySetMinimum: "Set to 1",
       sensitivityQuantityInterpretation: "Baseline count: {quantity} {unit}; scenario count: {scenario} {unit}; change: -{change}.",
       sensitivityQuantityOne: "The baseline count is 1. It cannot be lowered without excluding the activity.",
       sensitivityQuantityUnavailable: "No positive whole-number baseline count is available for this scenario.",
       sensitivityUnknownReferenceUnit: "Reference unit unavailable",
       sensitivityReportTitle: "Sensitivity and improvement screening",
       sensitivityReportNote: "Individual rows are one-at-a-time tests. The selected combination is an additive deterministic scenario, not a clinical recommendation or a global or probabilistic sensitivity analysis.",
-      sensitivityDataSourceBrowser: "Browser demonstration coefficients",
+      sensitivityDataSourceBrowser: "Browser demonstration unit-impact results",
       sensitivityDataSourceBrightway: "Brightway contributions",
       sensitivityCoverageValue: "{value}% of the selected-category total represented"
     });
@@ -7362,28 +7380,28 @@
     Object.assign(uiText.nl, {
       methodologyButton: "Methoden",
       methodologyTitle: "Methoden en referenties",
-      methodologyIntro: "Dit prototype koppelt reconstructie van zorgpaden aan modulaire proces-LCA. Deze referenties beschrijven de aanpak; zij valideren de huidige klinische inhoud of demonstratiecoëfficiënten niet.",
+      methodologyIntro: "Dit prototype koppelt reconstructie van zorgpaden aan modulaire proces-LCA. Deze referenties beschrijven de aanpak; zij valideren de huidige klinische inhoud of demonstratieresultaten niet.",
       methodologyPathwayTitle: "Protocol-naar-activiteit-zorgpadmapping",
       methodologyPathwayText: "Protocol- en werkstroombronnen worden opgesplitst in activiteiten en beslispunten en vervolgens weergegeven als een metrokaart van het zorgpad. De kaart is een controleerbare modelinterface, geen bewijs dat een lokaal zorgpad volledig is.",
       methodStructureTitle: "Structuur van het ECO-PATH-model",
       methodologyLcaTitle: "Levenscyclusanalyse",
       methodologyLcaText: "Doel en reikwijdte, functionele eenheid, systeemgrens, inventarisatie, impactbeoordeling en interpretatie zijn ingericht volgens de principes van ISO 14040 en ISO 14044.",
       methodologyEfTitle: "Impactbeoordeling",
-      methodologyEfText: "De interface toont de 16 EF 3.1 no LT-impactcategorieën. Browsercoëfficiënten zijn synthetisch; formele resultaten vereisen gedocumenteerde voorgrondinventarissen en geverifieerde methodemappings.",
+      methodologyEfText: "De interface toont de 16 EF 3.1 no LT-impactcategorieën. Eenheidsimpacten in de browser zijn synthetisch. De huidige app maakt geen voorgrond-eenheidsprocessen; formele resultaten vereisen beoordeelde procesinventarissen, gekoppelde achtergronddatasets en geverifieerde methodemappings.",
       methodologyCalculationTitle: "Berekening en onzekerheid",
-      methodologyCalculationText: "Brightway is de beoogde rekenmachine. Het huidige plus-of-minveld betreft alleen onzekerheid in de impactcoëfficiënt. Parameterverdelingen, zorgpadvariatie, scenario's en structurele modelvarianten vereisen expliciete backendmodellen.",
+      methodologyCalculationText: "Brightway is de beoogde rekenmachine en moet het LCIA-resultaat voor één referentie-eenheid van elk gekoppeld voorgrondproces berekenen. Het huidige plus-of-minveld betreft alleen onzekerheid in de eenheidsimpact van de browser. Parameterverdelingen, zorgpadvariatie, scenario's en structurele modelvarianten vereisen expliciete backendmodellen.",
       helpStep3: "Kies voor een volledige beoordeling een geldig zorgpad of selecteer één verbonden patiënttraject vanaf het vaste begin bij ziekenhuisinstroom tot een geldig eindpunt. Selecteer bij een deeltraject de verbonden activiteiten rechtstreeks op de kaart; de segmentgrens wordt uit die selectie afgeleid.",
-      helpStep5: "Definieer de functionele eenheid, controleer automatische bouwstenen en bereken resultaten. Gebruik de bijdrageanalyse voor hotspots en de gevoeligheidsverkenner om één parameter per keer te testen. Activiteitsaantallen zijn gehele getallen en vereisen klinische onderbouwing. Gebruik de lokale Brightway-koppeling voor gekoppelde resultaten; browsercoëfficiënten blijven demonstratiedata.",
+      helpStep5: "Definieer de functionele eenheid, controleer automatische bouwstenen en bereken resultaten. Gebruik de bijdrageanalyse voor hotspots en de gevoeligheidsverkenner om één parameter per keer te testen. Activiteitsaantallen zijn gehele getallen en vereisen klinische onderbouwing. Gebruik de lokale Brightway-koppeling voor gekoppelde resultaten; eenheidsimpacten in de browser blijven demonstratiedata.",
       sensitivityTitle: "Gevoeligheids- en verbeterverkenner",
       sensitivityIntro: "Rangschik de vijf grootste bijdragen, test elke bijdrage afzonderlijk en combineer alleen de aangevinkte wijzigingen.",
       sensitivityModeLabel: "Scenarioparameter",
-      sensitivityIntensityMode: "Impactintensiteit",
+      sensitivityIntensityMode: "Eenheidsimpact",
       sensitivityQuantityMode: "Aantal activiteiten",
       sensitivityReductionLabel: "Geteste reductie",
-      sensitivityCoefficientReductionLabel: "Pas één coëfficiëntreductie toe op aangevinkte bijdragen",
+      sensitivityCoefficientReductionLabel: "Pas één reductie van de eenheidsimpact toe op aangevinkte bijdragen",
       sensitivitySameQuantityReductionLabel: "Stel per bijdrage een geheel scenarioaantal in",
       sensitivityGlobalReductionHelp: "Hoofdregelaar: verplaatsen overschrijft de afzonderlijke percentages van alle aangevinkte bijdragen.",
-      sensitivityMethodBrowser: "Alleen screening: de resultaten gebruiken synthetische browsercoëfficiënten. Gebruik de rangschikking als prioriteit voor dataverzameling en scenariotesten, niet als interventieadvies.",
+      sensitivityMethodBrowser: "Alleen screening: de resultaten gebruiken synthetische eenheidsimpacten uit de browser. Gebruik de rangschikking als prioriteit voor dataverzameling en scenariotesten, niet als interventieadvies.",
       sensitivityMethodBrightway: "Gebruikt geïmporteerde Brightway-bijdragen per bouwsteen voor de geselecteerde categorie. Elke rij test één parameter afzonderlijk en houdt alle andere parameters constant.",
       sensitivityMethodBrightwayFallback: "Er is een Brightway-totaal beschikbaar, maar passende bouwsteenbijdragen ontbreken of zijn verouderd. De screening gebruikt daarom demonstratiebijdragen uit de browser.",
       sensitivityBaseline: "Basisresultaat zorgpad",
@@ -7418,13 +7436,14 @@
       sensitivityAdjustContributor: "Stel de afzonderlijke scenariowaarde in voor {block}",
       sensitivityScenarioCount: "Scenarioaantal: {scenario} {unit}",
       sensitivityBaselineCount: "basis {quantity}",
+      sensitivitySetMinimum: "Stel in op 1",
       sensitivityQuantityInterpretation: "Basisaantal: {quantity} {unit}; scenarioaantal: {scenario} {unit}; wijziging: -{change}.",
       sensitivityQuantityOne: "Het basisaantal is 1. Dit kan niet worden verlaagd zonder de activiteit uit te sluiten.",
       sensitivityQuantityUnavailable: "Er is geen positief geheel basisaantal voor dit scenario beschikbaar.",
       sensitivityUnknownReferenceUnit: "Referentie-eenheid niet beschikbaar",
       sensitivityReportTitle: "Screening van gevoeligheid en verbetering",
       sensitivityReportNote: "Afzonderlijke rijen zijn één-voor-één-tests. De geselecteerde combinatie is een additief deterministisch scenario, geen klinisch advies en geen globale of probabilistische gevoeligheidsanalyse.",
-      sensitivityDataSourceBrowser: "Demonstratiecoëfficiënten uit de browser",
+      sensitivityDataSourceBrowser: "Demonstratie-eenheidsimpacten uit de browser",
       sensitivityDataSourceBrightway: "Brightway-bijdragen",
       sensitivityCoverageValue: "{value}% van het totaal van de geselecteerde categorie weergegeven"
     });
@@ -7432,28 +7451,28 @@
     Object.assign(uiText.zh, {
       methodologyButton: "方法",
       methodologyTitle: "方法与参考文献",
-      methodologyIntro: "本原型把临床路径重建与模块化过程 LCA 相连接。以下资料用于说明方法，不代表当前临床内容或演示系数已经得到验证。",
+      methodologyIntro: "本原型把临床路径重建与模块化过程 LCA 相连接。以下资料用于说明方法，不代表当前临床内容或演示结果已经得到验证。",
       methodologyPathwayTitle: "从 protocol 到 activity 的路径绘制",
       methodologyPathwayText: "将 protocol 和工作流程资料拆解为 activities 与决策点，再用地铁式路径图表示。该图是可追溯的建模界面，并不能单独证明本地路径已经完整。",
       methodStructureTitle: "ECO-PATH 模型结构",
       methodologyLcaTitle: "生命周期评价",
       methodologyLcaText: "目标与范围、功能单位、系统边界、清单、影响评价和解释按照 ISO 14040 与 ISO 14044 的原则组织。",
       methodologyEfTitle: "影响评价",
-      methodologyEfText: "界面展示 EF 3.1 no LT 的 16 个影响类别。浏览器中的系数为合成演示数据；正式结果需要有记录的前景清单和经核对的方法映射。",
+      methodologyEfText: "界面展示 EF 3.1 no LT 的 16 个影响类别。浏览器中的单位影响结果为合成演示数据。当前工具不会创建前景单位过程；正式结果需要经复核的单位过程清单、已连接的背景数据库以及经核对的方法映射。",
       methodologyCalculationTitle: "计算与不确定性",
-      methodologyCalculationText: "Brightway 是预定的计算引擎。当前正负百分比只表示影响系数不确定性；参数分布、路径变异、情景和模型结构变体需要在后端建立明确模型。",
+      methodologyCalculationText: "Brightway 是预定的计算引擎，应计算每个已映射前景过程在一个参考单位下的 LCIA 结果。当前正负百分比只表示浏览器单位影响结果的不确定性；参数分布、路径变异、情景和模型结构变体需要在后端建立明确模型。",
       helpStep3: "完整评估应选择合法路径预设，或从固定入院起点到合法终点手动选择一条连续患者路径。局部探索则直接在线路图中选择连续 activities，工具会根据所选内容自动推断片段边界。",
-      helpStep5: "定义功能单位，检查自动启用的 building blocks 并计算结果。使用贡献分析定位热点，再用敏感性探索器逐一测试参数。活动次数情景使用整数，并需要临床依据。正式映射结果应使用本地 Brightway 连接；浏览器系数仍是演示数据。",
+      helpStep5: "定义功能单位，检查自动启用的 building blocks 并计算结果。使用贡献分析定位热点，再用敏感性探索器逐一测试参数。活动次数情景使用整数，并需要临床依据。正式映射结果应使用本地 Brightway 连接；浏览器单位影响结果仍是演示数据。",
       sensitivityTitle: "敏感性与改进探索器",
       sensitivityIntro: "列出前五项贡献者，逐项独立测试，并只组合已勾选的变化。",
       sensitivityModeLabel: "情景参数",
-      sensitivityIntensityMode: "单位影响强度",
+      sensitivityIntensityMode: "单位影响结果",
       sensitivityQuantityMode: "活动次数",
       sensitivityReductionLabel: "测试降幅",
-      sensitivityCoefficientReductionLabel: "对已勾选贡献者统一设置影响系数降幅",
+      sensitivityCoefficientReductionLabel: "对已勾选贡献者统一设置单位影响结果降幅",
       sensitivitySameQuantityReductionLabel: "为每项贡献者设置整数情景次数",
       sensitivityGlobalReductionHelp: "总滑块：移动后会覆盖所有已勾选贡献者各自的百分比。",
-      sensitivityMethodBrowser: "仅用于筛查：结果使用浏览器中的合成演示系数。该排序用于确定数据收集和情景测试优先级，不是干预建议。",
+      sensitivityMethodBrowser: "仅用于筛查：结果使用浏览器中的合成单位影响结果。该排序用于确定数据收集和情景测试优先级，不是干预建议。",
       sensitivityMethodBrightway: "使用所选影响类别的 Brightway building-block 贡献。每次只测试一个参数，其余参数保持不变。",
       sensitivityMethodBrightwayFallback: "已有 Brightway 总结果，但缺少匹配的 building-block 贡献或贡献已过期，因此本次筛查使用浏览器演示贡献。",
       sensitivityBaseline: "路径基准结果",
@@ -7488,13 +7507,14 @@
       sensitivityAdjustContributor: "设置 {block} 的独立情景值",
       sensitivityScenarioCount: "情景次数：{scenario} {unit}",
       sensitivityBaselineCount: "基准 {quantity}",
+      sensitivitySetMinimum: "设为 1",
       sensitivityQuantityInterpretation: "基准次数：{quantity} {unit}；情景次数：{scenario} {unit}；变化：-{change}。",
       sensitivityQuantityOne: "基准次数为 1；如果不排除该活动，就不能再降低。",
       sensitivityQuantityUnavailable: "该情景没有可用的正整数基准次数。",
       sensitivityUnknownReferenceUnit: "参考单位不可用",
       sensitivityReportTitle: "敏感性与改进筛查",
       sensitivityReportNote: "每一行是单因素测试；所选组合是确定性的可加情景，不是临床建议，也不代表全局或概率敏感性分析。",
-      sensitivityDataSourceBrowser: "浏览器演示系数",
+      sensitivityDataSourceBrowser: "浏览器演示单位影响结果",
       sensitivityDataSourceBrightway: "Brightway 贡献",
       sensitivityCoverageValue: "已覆盖所选类别总结果的 {value}%"
     });
@@ -7623,7 +7643,7 @@
       workflowLcaGuide1Title: "Define goal and functional unit",
       workflowLcaGuide1Text: "Set the modeled service, population, boundary, time horizon, geography, and reference unit.",
       workflowLcaGuide2Title: "Review model inputs",
-      workflowLcaGuide2Text: "Check auto-selected building blocks, quantities, impact coefficients, and uncertainty.",
+      workflowLcaGuide2Text: "Check auto-selected building blocks, quantities, unit impact results, and uncertainty.",
       workflowLcaGuide3Title: "Choose an impact category",
       workflowLcaGuide3Text: "Select an EF category, then continue to Results.",
       workflowResultsGuide1Title: "Compare categories",
@@ -7689,7 +7709,7 @@
       workflowLcaGuide1Title: "Bepaal doel en functionele eenheid",
       workflowLcaGuide1Text: "Leg zorgfunctie, populatie, grens, tijdshorizon, geografie en referentie-eenheid vast.",
       workflowLcaGuide2Title: "Controleer modelinvoer",
-      workflowLcaGuide2Text: "Controleer automatisch geselecteerde bouwstenen, hoeveelheden, impactcoëfficiënten en onzekerheid.",
+      workflowLcaGuide2Text: "Controleer automatisch geselecteerde bouwstenen, hoeveelheden, eenheidsimpacten en onzekerheid.",
       workflowLcaGuide3Title: "Kies een impactcategorie",
       workflowLcaGuide3Text: "Selecteer een EF-categorie en ga daarna naar Resultaten.",
       workflowResultsGuide1Title: "Vergelijk categorieën",
@@ -7755,7 +7775,7 @@
       workflowLcaGuide1Title: "定义目标和功能单位",
       workflowLcaGuide1Text: "设置医疗服务、患者人群、边界、时间范围、地域和参考单位。",
       workflowLcaGuide2Title: "检查模型输入",
-      workflowLcaGuide2Text: "检查自动选中的构件、数量、影响系数和不确定性。",
+      workflowLcaGuide2Text: "检查自动选中的构件、数量、单位影响结果和不确定性。",
       workflowLcaGuide3Title: "选择影响类别",
       workflowLcaGuide3Text: "选择 EF 类别，然后进入“结果”。",
       workflowResultsGuide1Title: "比较影响类别",
@@ -8121,7 +8141,7 @@
         EM07: { name: "Chirurgie", definition: "Endoscopische of operatieve behandeling, waaronder TURBT, orgaanresectie, lymfeklierdissectie en urinedeviatie, plus anesthesie, perioperatieve zorg, opname en afval." },
         EM08: { name: "Radiotherapie", definition: "Radiotherapiebesluit, planning, uitwendige fracties, chemoradiatie, brachytherapie en immobilisatie. Bijbehorende patiëntenreizen vallen onder EM10." },
         EM09: { name: "Follow-up", definition: "Behandelingsspecifieke surveillance, poliklinische controle, beeldvorming of endoscopie, recidiefmonitoring, follow-up van deviatie of stoma en retourcontacten." },
-        EM10: { name: "Patientenreis en ondersteuning", definition: "Enige transversale eigenaar van patienten- en mantelzorgerreizen, plus optionele voeding, overnachting, thuismonsters en digitale ondersteuning. Klinische bouwsteencoëfficiënten mogen deze stromen niet bevatten." },
+        EM10: { name: "Patientenreis en ondersteuning", definition: "Enige transversale eigenaar van patienten- en mantelzorgerreizen, plus optionele voeding, overnachting, thuismonsters en digitale ondersteuning. Klinische procesinventarissen mogen deze stromen niet bevatten." },
         EM11: { name: "Gedeelde ziekenhuisondersteuning", definition: "Gedeelde diensten en overheadprocessen die meerdere pathwayactiviteiten ondersteunen en allocatieregels vereisen." }
       },
       zh: {
@@ -15080,6 +15100,7 @@
             <div class="sensitivity-row-control">
               <label class="sr-only" for="sensitivity-row-${escapeHtml(item.mappingKey)}">${escapeHtml(t("sensitivityAdjustContributor", { block: `${item.module} ${item.block}` }))}</label>
               <input id="sensitivity-row-${escapeHtml(item.mappingKey)}" type="number" min="1" max="${escapeHtml(item.quantity ?? 1)}" step="1" inputmode="numeric" value="${escapeHtml(item.scenarioQuantity ?? 1)}" data-sensitivity-row-quantity="${escapeHtml(item.mappingKey)}" ${(item.selected && item.quantity > 1) ? "" : "disabled"}>
+              <button type="button" class="sensitivity-set-minimum" data-sensitivity-set-minimum="${escapeHtml(item.mappingKey)}" title="${escapeHtml(t("sensitivitySetMinimum"))}" ${(item.selected && item.quantity > 1) ? "" : "disabled"}>${escapeHtml(t("sensitivitySetMinimum"))}</button>
               <output>${escapeHtml(t("sensitivityBaselineCount", { quantity: item.quantity == null ? "-" : formatDecimal(item.quantity, 0) }))}</output>
             </div>
           `
@@ -15192,6 +15213,17 @@
         state.sensitivityRowReductions[slider.dataset.sensitivityRowReduction] = value;
         const output = slider.parentElement?.querySelector("[data-sensitivity-row-output]");
         if (output) output.textContent = `${value}%`;
+      });
+      document.getElementById("sensitivityResults").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-sensitivity-set-minimum]");
+        if (!button || button.disabled) return;
+        const mappingKey = button.dataset.sensitivitySetMinimum;
+        const row = lcaRows.find((candidate) => candidate.id === mappingKey);
+        const baselineQuantity = Number(row?.quantity);
+        if (Number.isInteger(baselineQuantity) && baselineQuantity > 1) {
+          state.sensitivityRowQuantities[mappingKey] = 1;
+          renderSensitivityExplorer();
+        }
       });
       document.getElementById("sensitivityResults").addEventListener("change", (event) => {
         const quantityInput = event.target.closest("[data-sensitivity-row-quantity]");

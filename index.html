@@ -1245,6 +1245,21 @@
       min-height: 36px;
     }
 
+    .assessment-boundary-field select:disabled {
+      color: var(--ink);
+      background: var(--panel-soft);
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    .assessment-route-preset-field {
+      flex-basis: 100%;
+    }
+
+    .assessment-route-preset-field[hidden] {
+      display: none;
+    }
+
     .assessment-boundary-rule {
       flex: 1 1 100%;
       margin: 0;
@@ -3462,6 +3477,10 @@
               <button type="button" id="partialAssessmentMode" data-assessment-mode="partial" aria-pressed="false">Partial segment exploration</button>
             </div>
             <div class="assessment-boundary-controls" id="assessmentBoundaryControls">
+              <label class="assessment-boundary-field assessment-route-preset-field" for="assessmentRoutePreset" id="assessmentRoutePresetField">
+                <span id="assessmentRoutePresetLabel">Complete pathway preset</span>
+                <select id="assessmentRoutePreset"></select>
+              </label>
               <label class="assessment-boundary-field" for="assessmentStartNode">
                 <span id="assessmentStartLabel">Declared start</span>
                 <select id="assessmentStartNode"></select>
@@ -4456,7 +4475,7 @@
           edge("EAUFULL-TX03", "EAUFULL-TX04", "treatment"),
           edge("EAUFULL-TX04", "EAUFULL-TX05", "treatment"),
           edge("EAUFULL-TX05", "EAUFULL-TX06", "treatment"),
-          edge("EAUFULL-TX03", "EAUFULL-TX06", "treatment", { excludedBy: ["EAUFULL-TX04", "EAUFULL-TX05"] }),
+          edge("EAUFULL-TX03", "EAUFULL-TX06", "treatment", { excludedBy: ["EAUFULL-TX04", "EAUFULL-TX05", "EAUFULL-TX11"] }),
           edge("EAUFULL-TX06", "EAUFULL-TX07", "treatment"),
           edge("EAUFULL-TX07", "EAUFULL-TX08", "treatment"),
           edge("EAUFULL-TX08", "EAUFULL-TX09", "treatment"),
@@ -4475,7 +4494,7 @@
         ]
       },
       emc: {
-        label: "Urology: Dutch / EAU MIBC comparison",
+        label: "Urology: Dutch MIBC pathway",
         title: "Dutch MIBC Pathway: Regional Diagnosis to Erasmus MC Treatment",
         status: "",
         scope: "Hospital pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up. The map represents possible routes, and not every activity occurs for every patient.",
@@ -4963,6 +4982,321 @@
       emc: { start: "EMC-FC01", end: "EMC-FU02" },
       eauFull: { start: "EAUFULL-AC01", end: "EAUFULL-FU03" },
       crcDutch: { start: "CRCDUTCH-FC01", end: "CRCDUTCH-FU05" }
+    };
+
+    const pathwayCompleteRoutePresets = {
+      emc: [
+        {
+          id: "non-mibc-local",
+          label: {
+            en: "Non-MIBC local pathway",
+            nl: "Lokale route voor niet-MIBC",
+            zh: "非 MIBC 本地路径"
+          },
+          end: "EMC-FU01",
+          nodes: [
+            "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
+            "EMC-DX05", "EMC-FU01"
+          ]
+        },
+        {
+          id: "surgery-direct",
+          label: {
+            en: "MIBC surgery without neoadjuvant therapy",
+            nl: "MIBC-operatie zonder neoadjuvante therapie",
+            zh: "MIBC 直接手术路径"
+          },
+          end: "EMC-FU02",
+          nodes: [
+            "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
+            "EMC-DX05", "EMC-DX06", "EMC-FC02", "EMC-DX08", "EMC-JM01",
+            "EMC-JM02", "EMC-TX01", "EMC-TX02", "EMC-TX03", "EMC-TX06",
+            "EMC-TX07", "EMC-TX08", "EMC-TX09", "EMC-TX10", "EMC-FU03",
+            "EMC-FU02"
+          ]
+        },
+        {
+          id: "neoadjuvant-surgery",
+          label: {
+            en: "Neoadjuvant therapy and radical surgery",
+            nl: "Neoadjuvante therapie en radicale chirurgie",
+            zh: "新辅助治疗加根治性手术"
+          },
+          end: "EMC-FU02",
+          nodes: [
+            "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
+            "EMC-DX05", "EMC-DX06", "EMC-FC02", "EMC-DX08", "EMC-JM01",
+            "EMC-JM02", "EMC-TX01", "EMC-TX02", "EMC-TX03", "EMC-TX04",
+            "EMC-TX05", "EMC-TX06", "EMC-TX07", "EMC-TX08", "EMC-TX09",
+            "EMC-TX10", "EMC-FU03", "EMC-FU02"
+          ]
+        },
+        {
+          id: "bladder-preservation",
+          label: {
+            en: "Bladder-preserving trimodality pathway",
+            nl: "Blaassparend trimodaliteitstraject",
+            zh: "膀胱保留三联治疗路径"
+          },
+          end: "EMC-FU02",
+          nodes: [
+            "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
+            "EMC-DX05", "EMC-DX06", "EMC-FC02", "EMC-DX08", "EMC-JM01",
+            "EMC-JM02", "EMC-TX01", "EMC-TX02", "EMC-TX11", "EMC-TX12",
+            "EMC-TX13", "EMC-TX14", "EMC-TX15", "EMC-FU02"
+          ]
+        },
+        {
+          id: "bladder-preservation-salvage",
+          label: {
+            en: "Bladder preservation followed by salvage surgery",
+            nl: "Blaassparing gevolgd door salvagechirurgie",
+            zh: "膀胱保留后挽救性手术"
+          },
+          end: "EMC-FU02",
+          nodes: [
+            "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
+            "EMC-DX05", "EMC-DX06", "EMC-FC02", "EMC-DX08", "EMC-JM01",
+            "EMC-JM02", "EMC-TX01", "EMC-TX02", "EMC-TX11", "EMC-TX12",
+            "EMC-TX13", "EMC-TX14", "EMC-TX15", "EMC-TX06", "EMC-TX07",
+            "EMC-TX08", "EMC-TX09", "EMC-TX10", "EMC-FU03", "EMC-FU02"
+          ]
+        },
+        {
+          id: "advanced-systemic",
+          label: {
+            en: "Advanced systemic therapy pathway",
+            nl: "Traject voor gevorderde systemische therapie",
+            zh: "晚期系统治疗路径"
+          },
+          end: "EMC-FU02",
+          nodes: [
+            "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
+            "EMC-DX05", "EMC-DX06", "EMC-FC02", "EMC-DX08", "EMC-JM01",
+            "EMC-JM02", "EMC-TX01", "EMC-TX02", "EMC-TX16", "EMC-FU02"
+          ]
+        },
+        {
+          id: "palliative-radiotherapy",
+          label: {
+            en: "Palliative radiotherapy or symptom-control pathway",
+            nl: "Palliatieve radiotherapie of symptoomgerichte route",
+            zh: "姑息放疗或症状控制路径"
+          },
+          end: "EMC-FU02",
+          nodes: [
+            "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
+            "EMC-DX05", "EMC-DX06", "EMC-FC02", "EMC-DX08", "EMC-JM01",
+            "EMC-JM02", "EMC-TX01", "EMC-TX02", "EMC-TX17", "EMC-FU02"
+          ]
+        }
+      ],
+      eauFull: [
+        {
+          id: "surgery-direct",
+          label: {
+            en: "Radical surgery without perioperative systemic therapy",
+            nl: "Radicale chirurgie zonder perioperatieve systemische therapie",
+            zh: "不含围手术期系统治疗的根治性手术"
+          },
+          end: "EAUFULL-FU03",
+          nodes: [
+            "EAUFULL-AC01", "EAUFULL-DX01", "EAUFULL-DX02", "EAUFULL-DX03",
+            "EAUFULL-DX04", "EAUFULL-DX05", "EAUFULL-DX06", "EAUFULL-JM01",
+            "EAUFULL-TX01", "EAUFULL-TX02", "EAUFULL-TX03", "EAUFULL-TX06",
+            "EAUFULL-TX07", "EAUFULL-TX08", "EAUFULL-TX09", "EAUFULL-TX10",
+            "EAUFULL-FU01", "EAUFULL-FU03"
+          ]
+        },
+        {
+          id: "perioperative-surgery",
+          label: {
+            en: "Perioperative systemic therapy and radical surgery",
+            nl: "Perioperatieve systemische therapie en radicale chirurgie",
+            zh: "围手术期系统治疗加根治性手术"
+          },
+          end: "EAUFULL-FU03",
+          nodes: [
+            "EAUFULL-AC01", "EAUFULL-DX01", "EAUFULL-DX02", "EAUFULL-DX03",
+            "EAUFULL-DX04", "EAUFULL-DX05", "EAUFULL-DX06", "EAUFULL-JM01",
+            "EAUFULL-TX01", "EAUFULL-TX02", "EAUFULL-TX03", "EAUFULL-TX04",
+            "EAUFULL-TX05", "EAUFULL-TX06", "EAUFULL-TX07", "EAUFULL-TX08",
+            "EAUFULL-TX09", "EAUFULL-TX10", "EAUFULL-FU01", "EAUFULL-FU03"
+          ]
+        },
+        {
+          id: "bladder-preservation",
+          label: {
+            en: "Bladder-preserving trimodality pathway",
+            nl: "Blaassparend trimodaliteitstraject",
+            zh: "膀胱保留三联治疗路径"
+          },
+          end: "EAUFULL-FU02",
+          nodes: [
+            "EAUFULL-AC01", "EAUFULL-DX01", "EAUFULL-DX02", "EAUFULL-DX03",
+            "EAUFULL-DX04", "EAUFULL-DX05", "EAUFULL-DX06", "EAUFULL-JM01",
+            "EAUFULL-TX01", "EAUFULL-TX02", "EAUFULL-TX03", "EAUFULL-TX11",
+            "EAUFULL-TX12", "EAUFULL-TX13", "EAUFULL-TX14", "EAUFULL-TX15",
+            "EAUFULL-FU02"
+          ]
+        },
+        {
+          id: "bladder-preservation-salvage",
+          label: {
+            en: "Bladder preservation followed by salvage surgery",
+            nl: "Blaassparing gevolgd door salvagechirurgie",
+            zh: "膀胱保留后挽救性手术"
+          },
+          end: "EAUFULL-FU03",
+          nodes: [
+            "EAUFULL-AC01", "EAUFULL-DX01", "EAUFULL-DX02", "EAUFULL-DX03",
+            "EAUFULL-DX04", "EAUFULL-DX05", "EAUFULL-DX06", "EAUFULL-JM01",
+            "EAUFULL-TX01", "EAUFULL-TX02", "EAUFULL-TX03", "EAUFULL-TX11",
+            "EAUFULL-TX12", "EAUFULL-TX13", "EAUFULL-TX14", "EAUFULL-TX15",
+            "EAUFULL-TX06", "EAUFULL-TX07", "EAUFULL-TX08", "EAUFULL-TX09",
+            "EAUFULL-TX10", "EAUFULL-FU01", "EAUFULL-FU03"
+          ]
+        },
+        {
+          id: "palliative-radiotherapy",
+          label: {
+            en: "Palliative radiotherapy or symptom-control pathway",
+            nl: "Palliatieve radiotherapie of symptoomgerichte route",
+            zh: "姑息放疗或症状控制路径"
+          },
+          end: "EAUFULL-TX16",
+          nodes: [
+            "EAUFULL-AC01", "EAUFULL-DX01", "EAUFULL-DX02", "EAUFULL-DX03",
+            "EAUFULL-DX04", "EAUFULL-DX05", "EAUFULL-DX06", "EAUFULL-JM01",
+            "EAUFULL-TX01", "EAUFULL-TX02", "EAUFULL-TX03", "EAUFULL-TX16"
+          ]
+        },
+        {
+          id: "advanced-systemic",
+          label: {
+            en: "Advanced systemic therapy pathway",
+            nl: "Traject voor gevorderde systemische therapie",
+            zh: "晚期系统治疗路径"
+          },
+          end: "EAUFULL-TX17",
+          nodes: [
+            "EAUFULL-AC01", "EAUFULL-DX01", "EAUFULL-DX02", "EAUFULL-DX03",
+            "EAUFULL-DX04", "EAUFULL-DX05", "EAUFULL-DX06", "EAUFULL-JM01",
+            "EAUFULL-TX01", "EAUFULL-TX02", "EAUFULL-TX03", "EAUFULL-TX17"
+          ]
+        }
+      ],
+      crcDutch: [
+        {
+          id: "low-risk-polyp",
+          label: {
+            en: "Low-risk polyp: routine follow-up",
+            nl: "Laagrisicopoliep: reguliere follow-up",
+            zh: "低风险息肉常规随访"
+          },
+          end: "CRCDUTCH-FU01",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX05", "CRCDUTCH-DX02",
+            "CRCDUTCH-DX06", "CRCDUTCH-FU01"
+          ]
+        },
+        {
+          id: "high-risk-polyp",
+          label: {
+            en: "High-risk polyp: surveillance pathway",
+            nl: "Hoogrisicopoliep: surveillancetraject",
+            zh: "高风险息肉监测路径"
+          },
+          end: "CRCDUTCH-FU03",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX05", "CRCDUTCH-DX02",
+            "CRCDUTCH-DX06", "CRCDUTCH-TX01", "CRCDUTCH-FU03"
+          ]
+        },
+        {
+          id: "colon-surgery",
+          label: {
+            en: "Localized colon cancer: surgery and surveillance",
+            nl: "Gelokaliseerd coloncarcinoom: chirurgie en surveillance",
+            zh: "局限期结肠癌手术和监测"
+          },
+          end: "CRCDUTCH-FU05",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX02", "CRCDUTCH-DX06",
+            "CRCDUTCH-DX03", "CRCDUTCH-JM01", "CRCDUTCH-TX02", "CRCDUTCH-TX03",
+            "CRCDUTCH-TX08", "CRCDUTCH-FU05"
+          ]
+        },
+        {
+          id: "colon-surgery-adjuvant",
+          label: {
+            en: "Localized colon cancer: surgery and adjuvant therapy",
+            nl: "Gelokaliseerd coloncarcinoom: chirurgie en adjuvante therapie",
+            zh: "局限期结肠癌手术加辅助治疗"
+          },
+          end: "CRCDUTCH-FU05",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX02", "CRCDUTCH-DX06",
+            "CRCDUTCH-DX03", "CRCDUTCH-JM01", "CRCDUTCH-TX02", "CRCDUTCH-TX03",
+            "CRCDUTCH-TX08", "CRCDUTCH-TX04", "CRCDUTCH-FU05"
+          ]
+        },
+        {
+          id: "rectal-watch-wait",
+          label: {
+            en: "Rectal cancer: radiotherapy and watch-and-wait",
+            nl: "Rectumcarcinoom: radiotherapie en watch-and-wait",
+            zh: "直肠癌放疗和观察等待"
+          },
+          end: "CRCDUTCH-FU04",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX02", "CRCDUTCH-DX06",
+            "CRCDUTCH-DX03", "CRCDUTCH-JM01", "CRCDUTCH-TX02", "CRCDUTCH-TX05",
+            "CRCDUTCH-TX09", "CRCDUTCH-FU04"
+          ]
+        },
+        {
+          id: "rectal-surgery",
+          label: {
+            en: "Rectal cancer: radiotherapy and surgery",
+            nl: "Rectumcarcinoom: radiotherapie en chirurgie",
+            zh: "直肠癌放疗和手术"
+          },
+          end: "CRCDUTCH-FU05",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX02", "CRCDUTCH-DX06",
+            "CRCDUTCH-DX03", "CRCDUTCH-JM01", "CRCDUTCH-TX02", "CRCDUTCH-TX05",
+            "CRCDUTCH-TX09", "CRCDUTCH-TX06", "CRCDUTCH-FU05"
+          ]
+        },
+        {
+          id: "rectal-watch-wait-salvage",
+          label: {
+            en: "Rectal watch-and-wait followed by salvage surgery",
+            nl: "Watch-and-wait gevolgd door salvagechirurgie",
+            zh: "直肠癌观察等待后挽救性手术"
+          },
+          end: "CRCDUTCH-FU05",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX02", "CRCDUTCH-DX06",
+            "CRCDUTCH-DX03", "CRCDUTCH-JM01", "CRCDUTCH-TX02", "CRCDUTCH-TX05",
+            "CRCDUTCH-TX09", "CRCDUTCH-FU04", "CRCDUTCH-TX06", "CRCDUTCH-FU05"
+          ]
+        },
+        {
+          id: "advanced-palliative",
+          label: {
+            en: "Advanced or palliative CRC pathway",
+            nl: "Traject voor gevorderd of palliatief CRC",
+            zh: "晚期或姑息性 CRC 路径"
+          },
+          end: "CRCDUTCH-TX07",
+          nodes: [
+            "CRCDUTCH-FC01", "CRCDUTCH-DX01", "CRCDUTCH-DX02", "CRCDUTCH-DX06",
+            "CRCDUTCH-DX03", "CRCDUTCH-JM01", "CRCDUTCH-TX02", "CRCDUTCH-TX07"
+          ]
+        }
+      ]
     };
 
     const pathwayEvidenceProfiles = {
@@ -7197,11 +7531,11 @@
       helpStep3: "Choose Complete pathway assessment when the selected activities must form one connected directed route between the declared start and endpoint. Use Partial segment exploration for a single activity or connected subset; those results are labeled as partial and are not a full patient-pathway result.",
       pathwayStepGuideLabel: "Pathway setup order",
       pathwaySetupSourceTitle: "Choose pathway source",
-      pathwaySetupSourceText: "Select the specialty and Dutch or European reference view.",
+      pathwaySetupSourceText: "Use Specialties in the upper-right page header to choose Urology or Gastroenterology and, for Urology, the Dutch pathway or EAU reference.",
       pathwaySetupBoundaryTitle: "Declare the boundary",
-      pathwaySetupBoundaryText: "Choose complete or partial assessment; set start and endpoint for a complete pathway.",
+      pathwaySetupBoundaryText: "Choose Complete for a fixed hospital-entry start and a valid clinical endpoint. Choose Partial to set any segment start and endpoint.",
       pathwaySetupRouteTitle: "Build the route",
-      pathwaySetupRouteText: "Select connected activities on the map, then continue to Activities.",
+      pathwaySetupRouteText: "Choose a complete-route preset or select a connected route manually, then continue to Activities.",
       workflowActivitiesGuide1Title: "Narrow the list",
       workflowActivitiesGuide1Text: "Use the domain filter or search only when needed.",
       workflowActivitiesGuide2Title: "Inspect an activity",
@@ -7225,6 +7559,12 @@
       partialAssessmentMode: "Partial segment exploration",
       assessmentStart: "Declared start",
       assessmentEnd: "Declared endpoint",
+      completeAssessmentStart: "Pathway start (fixed)",
+      completeAssessmentEnd: "Clinically valid endpoint",
+      partialAssessmentStart: "Segment start",
+      partialAssessmentEnd: "Segment endpoint",
+      assessmentRoutePreset: "Complete pathway preset",
+      assessmentRoutePresetPlaceholder: "Choose a complete pathway",
       assessmentNoSelection: "Select activities to build an assessment route.",
       assessmentStartMissing: "The declared start is not selected.",
       assessmentEndMissing: "The declared endpoint is not selected.",
@@ -7233,7 +7573,8 @@
       assessmentEndUnreachable: "The declared endpoint cannot be reached through the selected activities.",
       assessmentBeyondEndpoint: "One or more selected activities do not lead to the declared endpoint.",
       assessmentBoundaryNoPath: "No directed pathway connects the declared start and endpoint.",
-      assessmentBoundaryRule: "In Complete mode, the declared start and endpoint stay included once route selection begins. Activities outside this start-to-end corridor are unavailable and are not included in LCA results.",
+      assessmentBoundaryRule: "Complete mode fixes the hospital-entry start. Choose a clinical route preset to select all included activities automatically, or build a route manually to one of the valid endpoints. Optional conditional activities are not added by default.",
+      assessmentPartialBoundaryRule: "Partial mode allows any activity to be the segment start or endpoint. Select one connected directed segment between them; activities outside that corridor are excluded from the result.",
       assessmentNodeOutsideBoundary: "Outside the declared start-to-end corridor",
       assessmentBranchConflict: "A decision point contains more than one competing outgoing route.",
       assessmentValidComplete: "Complete connected pathway: {start} to {end}. LCA calculation is enabled.",
@@ -7255,11 +7596,11 @@
       helpStep3: "Kies Volledige zorgpadbeoordeling als de geselecteerde activiteiten één verbonden, gerichte route tussen het opgegeven begin- en eindpunt moeten vormen. Gebruik Verkenning van een deeltraject voor één activiteit of een verbonden deel; deze resultaten worden als gedeeltelijk aangeduid en zijn geen volledig patiënttraject.",
       pathwayStepGuideLabel: "Volgorde voor het instellen van het zorgpad",
       pathwaySetupSourceTitle: "Kies de zorgpadbron",
-      pathwaySetupSourceText: "Selecteer het specialisme en de Nederlandse of Europese referentieweergave.",
+      pathwaySetupSourceText: "Gebruik rechtsboven in de paginakop het menu Specialismen om Urologie of Gastro-enterologie te kiezen en, bij Urologie, het Nederlandse zorgpad of de EAU-referentie.",
       pathwaySetupBoundaryTitle: "Leg de grens vast",
-      pathwaySetupBoundaryText: "Kies een volledige of gedeeltelijke beoordeling; stel voor een volledig zorgpad het begin- en eindpunt in.",
+      pathwaySetupBoundaryText: "Kies Volledig voor een vast begin bij ziekenhuisinstroom en een geldig klinisch eindpunt. Kies Deeltraject om zelf begin en eind te bepalen.",
       pathwaySetupRouteTitle: "Bouw de route",
-      pathwaySetupRouteText: "Selecteer verbonden activiteiten op de kaart en ga daarna door naar Activiteiten.",
+      pathwaySetupRouteText: "Kies een vooraf ingesteld volledig zorgpad of selecteer handmatig een verbonden route en ga daarna naar Activiteiten.",
       workflowActivitiesGuide1Title: "Beperk de lijst",
       workflowActivitiesGuide1Text: "Gebruik het domeinfilter of zoeken alleen wanneer nodig.",
       workflowActivitiesGuide2Title: "Bekijk een activiteit",
@@ -7283,6 +7624,12 @@
       partialAssessmentMode: "Verkenning van een deeltraject",
       assessmentStart: "Opgegeven beginpunt",
       assessmentEnd: "Opgegeven eindpunt",
+      completeAssessmentStart: "Begin van zorgpad (vast)",
+      completeAssessmentEnd: "Geldig klinisch eindpunt",
+      partialAssessmentStart: "Begin van deeltraject",
+      partialAssessmentEnd: "Eind van deeltraject",
+      assessmentRoutePreset: "Vooraf ingesteld volledig zorgpad",
+      assessmentRoutePresetPlaceholder: "Kies een volledig zorgpad",
       assessmentNoSelection: "Selecteer activiteiten om een beoordelingsroute op te bouwen.",
       assessmentStartMissing: "Het opgegeven beginpunt is niet geselecteerd.",
       assessmentEndMissing: "Het opgegeven eindpunt is niet geselecteerd.",
@@ -7291,7 +7638,8 @@
       assessmentEndUnreachable: "Het opgegeven eindpunt is niet bereikbaar via de geselecteerde activiteiten.",
       assessmentBeyondEndpoint: "Een of meer geselecteerde activiteiten leiden niet naar het opgegeven eindpunt.",
       assessmentBoundaryNoPath: "Er bestaat geen gerichte route tussen het opgegeven begin- en eindpunt.",
-      assessmentBoundaryRule: "In de volledige modus blijven het opgegeven begin- en eindpunt opgenomen zodra de routeselectie begint. Activiteiten buiten dit traject zijn niet beschikbaar en worden niet in de LCA-resultaten opgenomen.",
+      assessmentBoundaryRule: "De volledige modus gebruikt een vast begin bij ziekenhuisinstroom. Kies een vooraf ingesteld klinisch zorgpad om alle activiteiten automatisch te selecteren, of bouw handmatig een route naar een geldig eindpunt. Optionele activiteiten worden niet standaard toegevoegd.",
+      assessmentPartialBoundaryRule: "In de deelmodus kan elke activiteit het begin- of eindpunt zijn. Selecteer daartussen één verbonden, gerichte route; activiteiten buiten dit traject tellen niet mee.",
       assessmentNodeOutsideBoundary: "Buiten het opgegeven traject van begin tot eind",
       assessmentBranchConflict: "Een beslispunt bevat meer dan één concurrerende uitgaande route.",
       assessmentValidComplete: "Volledig verbonden zorgpad: {start} tot {end}. LCA-berekening is ingeschakeld.",
@@ -7313,11 +7661,11 @@
       helpStep3: "如需评估完整患者路径，请选择“完整路径评估”，并确保所选活动在指定起点和终点之间构成一条连续的有向路径。如只想查看单个活动或连续片段，请使用“局部片段探索”；其结果会明确标记为局部结果，不代表完整患者路径。",
       pathwayStepGuideLabel: "路径设置顺序",
       pathwaySetupSourceTitle: "选择路径来源",
-      pathwaySetupSourceText: "选择专科以及荷兰或欧洲参考路径。",
+      pathwaySetupSourceText: "使用页面右上角的“专科”菜单选择泌尿科或胃肠病学；在泌尿科下可继续选择荷兰路径或 EAU 参考路径。",
       pathwaySetupBoundaryTitle: "指定评估边界",
-      pathwaySetupBoundaryText: "选择完整或局部评估；完整路径需设置起点和终点。",
+      pathwaySetupBoundaryText: "完整评估使用固定的入院起点和合法临床终点；局部探索可自由指定片段起点和终点。",
       pathwaySetupRouteTitle: "构建路径",
-      pathwaySetupRouteText: "在图中选择连续活动，然后进入“活动”步骤。",
+      pathwaySetupRouteText: "选择一个完整路径预设，或手动选择连续路径，然后进入“活动”步骤。",
       workflowActivitiesGuide1Title: "缩小活动范围",
       workflowActivitiesGuide1Text: "仅在需要时使用领域筛选或搜索。",
       workflowActivitiesGuide2Title: "查看活动",
@@ -7341,6 +7689,12 @@
       partialAssessmentMode: "局部片段探索",
       assessmentStart: "指定起点",
       assessmentEnd: "指定终点",
+      completeAssessmentStart: "路径起点（固定）",
+      completeAssessmentEnd: "合法临床终点",
+      partialAssessmentStart: "片段起点",
+      partialAssessmentEnd: "片段终点",
+      assessmentRoutePreset: "完整路径预设",
+      assessmentRoutePresetPlaceholder: "选择一条完整路径",
       assessmentNoSelection: "请选择活动以构建评估路径。",
       assessmentStartMissing: "尚未选择指定起点。",
       assessmentEndMissing: "尚未选择指定终点。",
@@ -7349,7 +7703,8 @@
       assessmentEndUnreachable: "无法通过所选活动到达指定终点。",
       assessmentBeyondEndpoint: "部分所选活动不能通向指定终点。",
       assessmentBoundaryNoPath: "指定起点与终点之间不存在有向路径。",
-      assessmentBoundaryRule: "在完整路径模式下，开始选择路线后，指定起点和终点会保持选中。该区间之外的活动不可选择，也不会计入 LCA 结果。",
+      assessmentBoundaryRule: "完整模式固定从入院节点开始。选择临床路径预设可自动勾选其中全部活动，也可以手动构建通向合法终点的路径。可选的条件活动不会默认加入。",
+      assessmentPartialBoundaryRule: "局部模式允许任意活动作为片段起点或终点。请选择两者之间的一条连续有向路径；区间外活动不会计入结果。",
       assessmentNodeOutsideBoundary: "位于指定起点至终点区间之外",
       assessmentBranchConflict: "同一决策点选择了多个互斥的后续路径。",
       assessmentValidComplete: "完整连续路径：{start} 至 {end}。已启用 LCA 计算。",
@@ -7555,7 +7910,7 @@
           scope: "Activity-level extraction from the EAU 2026 MIBC guideline for ECO-PATH scoping. It separates guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. Use the Dutch source view to inspect the ASZ or regional hospital to Erasmus MC operational boundary."
         },
         emc: {
-          label: "Dutch / EAU MIBC comparison",
+          label: "Dutch MIBC pathway",
           title: "Dutch MIBC Pathway: Regional Diagnosis to Erasmus MC Treatment",
           status: "",
           scope: "Operational pathway beginning with urology assessment at Albert Schweitzer Hospital or another regional hospital. Cystoscopy, TURBT, pathology, and initial staging precede referral; patients with confirmed MIBC then enter Erasmus MC review, multidisciplinary treatment planning, treatment, and shared follow-up."
@@ -7581,7 +7936,7 @@
           scope: "Activiteitsextractie uit de EAU 2026 MIBC-richtlijn voor ECO-PATH-scoping. De weergave splitst activiteiten en beslissingen die zorgpadstructuur, resourcegebruik, LCA-modules of onzekerheidsanalyse kunnen beinvloeden. Gebruik de Nederlandse bronweergave voor de operationele grens van ASZ of regionaal ziekenhuis naar Erasmus MC."
         },
         emc: {
-          label: "Nederlandse / EAU MIBC-vergelijking",
+          label: "Nederlandse MIBC-route",
           title: "Nederlandse MIBC-route: regionale diagnose tot behandeling in Erasmus MC",
           status: "",
           scope: "Operationele route vanaf urologische beoordeling in Albert Schweitzer ziekenhuis of een ander regionaal ziekenhuis. Cystoscopie, TURBT, pathologie en eerste stadiering gaan vooraf aan verwijzing; patiënten met bevestigde MIBC gaan daarna naar Erasmus MC voor beoordeling, multidisciplinaire behandelplanning, behandeling en gedeelde follow-up."
@@ -7607,7 +7962,7 @@
           scope: "从 EAU 2026 MIBC 指南中提取活动层级内容用于 ECO-PATH 范围界定，并拆分可能影响路径结构、资源使用、LCA 模块或不确定性分析的活动和决策。若要查看 ASZ 或区域医院至 Erasmus MC 的运营边界，请切换到荷兰来源视图。"
         },
         emc: {
-          label: "荷兰 / EAU MIBC 对照",
+          label: "荷兰 MIBC 路径",
           title: "荷兰 MIBC 路径：从区域医院诊断到 Erasmus MC 治疗",
           status: "",
           scope: "完整运营路径从 Albert Schweitzer 医院或其他区域医院的泌尿科评估开始。膀胱镜、TURBT、病理和初始分期在转诊前完成；确认 MIBC 后进入 Erasmus MC 复核、多学科治疗规划、治疗和共享随访。"
@@ -11667,6 +12022,37 @@
       return pathwayData[state.pathway];
     }
 
+    function completeRoutePresetsForPathway(pathwayId = state.pathway) {
+      return pathwayCompleteRoutePresets[pathwayId] || [];
+    }
+
+    function completeRoutePresetById(presetId, pathwayId = state.pathway) {
+      return completeRoutePresetsForPathway(pathwayId)
+        .find((preset) => preset.id === presetId);
+    }
+
+    function localizedCompleteRoutePresetLabel(preset) {
+      return preset?.label?.[state.language] || preset?.label?.en || preset?.id || "";
+    }
+
+    function validCompleteEndpointIds(pathwayId = state.pathway) {
+      return Array.from(new Set(
+        completeRoutePresetsForPathway(pathwayId).map((preset) => preset.end)
+      ));
+    }
+
+    function matchingCompleteRoutePresetId(pathwayId = state.pathway) {
+      const selectedIds = scenarioSetForPathway(pathwayId);
+      if (!selectedIds.size) return "";
+      const boundary = assessmentBoundaryForPathway(pathwayId);
+      const match = completeRoutePresetsForPathway(pathwayId).find((preset) => (
+        preset.end === boundary.end
+        && preset.nodes.length === selectedIds.size
+        && preset.nodes.every((nodeId) => selectedIds.has(nodeId))
+      ));
+      return match?.id || "";
+    }
+
     function assessmentBoundaryForPathway(pathwayId = state.pathway) {
       const pathway = pathwayData[pathwayId];
       const defaults = pathwayAssessmentDefaults[pathwayId] || {
@@ -11680,6 +12066,13 @@
       const nodeIds = new Set(pathway.nodes.map((node) => node.id));
       if (!nodeIds.has(boundary.start)) boundary.start = defaults.start;
       if (!nodeIds.has(boundary.end)) boundary.end = defaults.end;
+      if (state.assessmentMode === "complete") {
+        boundary.start = defaults.start;
+        const validEndpoints = validCompleteEndpointIds(pathwayId);
+        if (!validEndpoints.includes(boundary.end)) {
+          boundary.end = validEndpoints.includes(defaults.end) ? defaults.end : validEndpoints[0];
+        }
+      }
       return boundary;
     }
 
@@ -11725,7 +12118,6 @@
     }
 
     function isAssessmentNodeSelectable(nodeId) {
-      if (state.assessmentMode !== "complete") return true;
       return assessmentBoundaryCorridor().has(nodeId);
     }
 
@@ -11745,10 +12137,7 @@
         undirected.get(edgeItem.to)?.push(edgeItem.from);
       });
 
-      if (
-        state.assessmentMode === "complete"
-        && !assessmentBoundaryCorridor(pathway, boundary).has(boundary.end)
-      ) {
+      if (!assessmentBoundaryCorridor(pathway, boundary).has(boundary.end)) {
         issues.push(t("assessmentBoundaryNoPath"));
       }
 
@@ -11768,7 +12157,7 @@
       );
       if (hasCompetingBranchSelection) issues.push(t("assessmentBranchConflict"));
 
-      if (state.assessmentMode === "complete" && selectedIds.size > 0) {
+      if (selectedIds.size > 0) {
         if (!selectedIds.has(boundary.start)) issues.push(t("assessmentStartMissing"));
         if (!selectedIds.has(boundary.end)) issues.push(t("assessmentEndMissing"));
         if (selectedIds.has(boundary.start)) {
@@ -11920,6 +12309,54 @@
       return true;
     }
 
+    function validateCompleteRoutePresets() {
+      Object.entries(pathwayCompleteRoutePresets).forEach(([pathwayId, presets]) => {
+        const pathway = pathwayData[pathwayId];
+        const defaults = pathwayAssessmentDefaults[pathwayId];
+        const nodeIds = new Set(pathway.nodes.map((node) => node.id));
+        const presetIds = new Set();
+        presets.forEach((preset) => {
+          if (presetIds.has(preset.id)) {
+            throw new Error(`Duplicate complete route preset in ${pathwayId}: ${preset.id}`);
+          }
+          presetIds.add(preset.id);
+          const selectedIds = new Set(preset.nodes);
+          const unknownIds = preset.nodes.filter((nodeId) => !nodeIds.has(nodeId));
+          if (unknownIds.length) {
+            throw new Error(`Unknown activities in ${pathwayId}/${preset.id}: ${unknownIds.join(", ")}`);
+          }
+          if (selectedIds.size !== preset.nodes.length) {
+            throw new Error(`Duplicate activities in ${pathwayId}/${preset.id}`);
+          }
+          if (!selectedIds.has(defaults.start) || !selectedIds.has(preset.end)) {
+            throw new Error(`Incomplete boundary in ${pathwayId}/${preset.id}`);
+          }
+          const activeEdges = pathway.edges.filter((edgeItem) => isScenarioEdgeActive(edgeItem, selectedIds));
+          const directed = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
+          const reverse = new Map(Array.from(selectedIds, (nodeId) => [nodeId, []]));
+          activeEdges.forEach((edgeItem) => {
+            directed.get(edgeItem.from)?.push(edgeItem.to);
+            reverse.get(edgeItem.to)?.push(edgeItem.from);
+          });
+          const reachable = traverseScenarioGraph(defaults.start, directed);
+          const reachesEnd = traverseScenarioGraph(preset.end, reverse);
+          if (reachable.size !== selectedIds.size || reachesEnd.size !== selectedIds.size) {
+            throw new Error(`Disconnected complete route preset in ${pathwayId}/${preset.id}`);
+          }
+          const competingDecision = pathway.nodes.find((node) => (
+            selectedIds.has(node.id)
+            && node.type === "decision"
+            && (directed.get(node.id) || []).length > 1
+          ));
+          if (competingDecision) {
+            throw new Error(`Competing branches at ${competingDecision.id} in complete route preset ${pathwayId}/${preset.id}`);
+          }
+        });
+      });
+    }
+
+    validateCompleteRoutePresets();
+
     function scenarioSequenceMap(pathway = currentPathway()) {
       const selectedIds = scenarioSetForPathway();
       const selectedNodes = pathway.nodes.filter((node) => selectedIds.has(node.id));
@@ -12021,7 +12458,6 @@
     }
 
     function reconcileScenarioSelectionToBoundary(pathwayId = state.pathway) {
-      if (state.assessmentMode !== "complete") return false;
       const pathway = pathwayData[pathwayId];
       const boundary = assessmentBoundaryForPathway(pathwayId);
       const corridor = assessmentBoundaryCorridor(pathway, boundary);
@@ -12050,8 +12486,7 @@
       const boundary = assessmentBoundaryForPathway();
       if (!isAssessmentNodeSelectable(nodeId)) return false;
       if (
-        state.assessmentMode === "complete"
-        && selectedIds.has(nodeId)
+        selectedIds.has(nodeId)
         && [boundary.start, boundary.end].includes(nodeId)
       ) {
         return false;
@@ -12065,6 +12500,22 @@
       reconcileScenarioSelectionToBoundary();
       clearAssessmentDependentResults();
       syncPathwayModulesFromScenario();
+      return true;
+    }
+
+    function applyCompleteRoutePreset(presetId) {
+      const preset = completeRoutePresetById(presetId);
+      if (!preset) return false;
+      state.assessmentMode = "complete";
+      const boundary = assessmentBoundaryForPathway();
+      boundary.start = pathwayAssessmentDefaults[state.pathway].start;
+      boundary.end = preset.end;
+      const selectedIds = scenarioSetForPathway();
+      selectedIds.clear();
+      preset.nodes.forEach((nodeId) => selectedIds.add(nodeId));
+      clearAssessmentDependentResults();
+      syncPathwayModulesFromScenario();
+      render();
       return true;
     }
 
@@ -12268,6 +12719,7 @@
       setText("partialAssessmentMode", "partialAssessmentMode");
       setText("assessmentStartLabel", "assessmentStart");
       setText("assessmentEndLabel", "assessmentEnd");
+      setText("assessmentRoutePresetLabel", "assessmentRoutePreset");
       setText("assessmentBoundaryRule", "assessmentBoundaryRule");
       const pathwayStepGuide = document.getElementById("pathwayStepGuide");
       if (pathwayStepGuide) pathwayStepGuide.setAttribute("aria-label", t("pathwayStepGuideLabel"));
@@ -12560,7 +13012,8 @@
           id: "urology",
           label: t("specialtyUrology"),
           items: [
-            { id: "emc", aliases: ["eauFull"], sourceKey: "sourceComparison" }
+            { id: "emc", sourceKey: "dutchUrologyView" },
+            { id: "eauFull", sourceKey: "sourceReference" }
           ]
         },
         {
@@ -12774,16 +13227,32 @@
       });
     }
 
-    function renderAssessmentBoundarySelect(select, selectedId) {
+    function renderAssessmentBoundarySelect(select, selectedId, nodes = currentPathway().nodes) {
       if (!select) return;
       clear(select);
-      currentPathway().nodes.forEach((node) => {
+      nodes.forEach((node) => {
         const option = document.createElement("option");
         option.value = node.id;
         option.textContent = `${displayCode(node)} · ${localizedNodeLabel(node)}`;
         select.appendChild(option);
       });
       select.value = selectedId;
+    }
+
+    function renderCompleteRoutePresetSelect(select) {
+      if (!select) return;
+      clear(select);
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = t("assessmentRoutePresetPlaceholder");
+      select.appendChild(placeholder);
+      completeRoutePresetsForPathway().forEach((preset) => {
+        const option = document.createElement("option");
+        option.value = preset.id;
+        option.textContent = localizedCompleteRoutePresetLabel(preset);
+        select.appendChild(option);
+      });
+      select.value = matchingCompleteRoutePresetId();
     }
 
     function renderPathwayScenarioControls() {
@@ -12799,9 +13268,12 @@
       const completeButton = document.getElementById("completeAssessmentMode");
       const partialButton = document.getElementById("partialAssessmentMode");
       const boundaryControls = document.getElementById("assessmentBoundaryControls");
+      const routePresetField = document.getElementById("assessmentRoutePresetField");
+      const routePresetSelect = document.getElementById("assessmentRoutePreset");
       const validationStatus = document.getElementById("assessmentValidationStatus");
       const startSelect = document.getElementById("assessmentStartNode");
       const endSelect = document.getElementById("assessmentEndNode");
+      const completeMode = state.assessmentMode === "complete";
       if (modeToggle) modeToggle.checked = state.scenarioBuildMode;
       if (statusChip) statusChip.textContent = countStatus;
       if (fullscreenStatusChip) {
@@ -12814,11 +13286,26 @@
       }
       if (clearButton) clearButton.disabled = selectedCount === 0;
       if (clearFullscreenButton) clearFullscreenButton.disabled = selectedCount === 0;
-      if (completeButton) completeButton.setAttribute("aria-pressed", String(state.assessmentMode === "complete"));
-      if (partialButton) partialButton.setAttribute("aria-pressed", String(state.assessmentMode === "partial"));
-      if (boundaryControls) boundaryControls.hidden = state.assessmentMode !== "complete";
-      renderAssessmentBoundarySelect(startSelect, assessment.startId);
-      renderAssessmentBoundarySelect(endSelect, assessment.endId);
+      if (completeButton) completeButton.setAttribute("aria-pressed", String(completeMode));
+      if (partialButton) partialButton.setAttribute("aria-pressed", String(!completeMode));
+      if (boundaryControls) boundaryControls.hidden = false;
+      if (routePresetField) routePresetField.hidden = !completeMode;
+      setText("assessmentStartLabel", completeMode ? "completeAssessmentStart" : "partialAssessmentStart");
+      setText("assessmentEndLabel", completeMode ? "completeAssessmentEnd" : "partialAssessmentEnd");
+      setText("assessmentBoundaryRule", completeMode ? "assessmentBoundaryRule" : "assessmentPartialBoundaryRule");
+
+      const pathway = currentPathway();
+      const allNodes = pathway.nodes;
+      const fixedStartNode = nodeById(pathway, pathwayAssessmentDefaults[state.pathway].start);
+      const validEndpointIds = new Set(validCompleteEndpointIds());
+      const endNodes = completeMode
+        ? allNodes.filter((node) => validEndpointIds.has(node.id))
+        : allNodes;
+      renderAssessmentBoundarySelect(startSelect, assessment.startId, completeMode && fixedStartNode ? [fixedStartNode] : allNodes);
+      renderAssessmentBoundarySelect(endSelect, assessment.endId, endNodes);
+      if (startSelect) startSelect.disabled = completeMode;
+      if (endSelect) endSelect.disabled = false;
+      if (completeMode) renderCompleteRoutePresetSelect(routePresetSelect);
       if (validationStatus) {
         validationStatus.textContent = assessment.message;
         validationStatus.classList.toggle("valid", assessment.valid);
@@ -15869,6 +16356,10 @@
         clearAssessmentDependentResults();
         syncPathwayModulesFromScenario();
         render();
+      });
+      document.getElementById("assessmentRoutePreset").addEventListener("change", (event) => {
+        if (!event.target.value) return;
+        applyCompleteRoutePreset(event.target.value);
       });
       document.getElementById("clearPathwayScenario").addEventListener("click", clearScenarioSelection);
       document.getElementById("clearPathwayScenarioFullscreen").addEventListener("click", clearScenarioSelection);

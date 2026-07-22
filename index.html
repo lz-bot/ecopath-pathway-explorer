@@ -1815,6 +1815,7 @@
 
     .results-export-control {
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
 
     .specialty-selector .pathway-guide-marker {
@@ -4683,6 +4684,7 @@
           <span class="results-export-control" data-workspace-panel="results">
             <span class="pathway-guide-marker" aria-hidden="true">3</span>
             <button type="button" id="lcaExportReport">Export LCA report</button>
+            <button type="button" id="lcaExportImpactResults">Export impact results</button>
           </span>
           <span class="export-status" id="lcaExportStatus" aria-live="polite"></span>
         </div>
@@ -7370,6 +7372,19 @@
         lcaIntro: "Selected activities automatically activate their mapped modules, building blocks, and provisional quantities. Review the automatic selection and edit route-dependent quantities before calculation.",
         automaticFromActivities: "Auto from selected activities",
         exportReport: "Export LCA report",
+        exportImpactResults: "Export impact results (.xlsx)",
+        impactResultsExported: "Impact results exported: {filename}",
+        excelImpactSheet: "Impact results",
+        excelMetadataSheet: "Metadata",
+        excelField: "Field",
+        excelValue: "Value",
+        excelImpactGroup: "EF group",
+        excelPathway: "Pathway",
+        excelAssessment: "Assessment",
+        excelFunctionalUnit: "Functional unit",
+        excelGeneratedAt: "Generated at",
+        excelResultStatus: "Result status",
+        excelDemoStatus: "Browser demonstration results based on synthetic unit impact coefficients; not verified LCA results.",
         buildingBlockMapHeading: "Candidate building blocks by LCA module",
         buildingBlockMapIntro: "Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 is the single owner of patient and caregiver travel, so clinical module coefficients exclude travel. EM11 remains optional shared hospital support.",
         moduleZone: "Module zone",
@@ -7565,6 +7580,19 @@
         lcaIntro: "Geselecteerde activiteiten activeren automatisch hun gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer de automatische selectie en pas routeafhankelijke hoeveelheden aan voor de berekening.",
         automaticFromActivities: "Automatisch uit geselecteerde activiteiten",
         exportReport: "LCA-rapport exporteren",
+        exportImpactResults: "Impactresultaten exporteren (.xlsx)",
+        impactResultsExported: "Impactresultaten geëxporteerd: {filename}",
+        excelImpactSheet: "Impactresultaten",
+        excelMetadataSheet: "Metadata",
+        excelField: "Veld",
+        excelValue: "Waarde",
+        excelImpactGroup: "EF-groep",
+        excelPathway: "Zorgpad",
+        excelAssessment: "Beoordeling",
+        excelFunctionalUnit: "Functionele eenheid",
+        excelGeneratedAt: "Gegenereerd op",
+        excelResultStatus: "Resultaatstatus",
+        excelDemoStatus: "Browserdemonstratieresultaten op basis van synthetische eenheidsimpactcoëfficiënten; geen geverifieerde LCA-resultaten.",
         buildingBlockMapHeading: "Kandidaatbouwstenen per LCA-module",
         buildingBlockMapIntro: "Kandidaat ECO-PATH-bouwstenen gegroepeerd per module. Een geselecteerd zorgpad kan slechts een deel van een module gebruiken. EM10 is de enige eigenaar van patiënten- en mantelzorgerreizen; klinische procesinventarissen sluiten reizen uit. EM11 blijft optionele gedeelde ziekenhuisondersteuning.",
         moduleZone: "Modulezone",
@@ -7765,6 +7793,19 @@
           lcaIntro: "所选 activities 会自动启用其映射的 modules、building blocks 和临时数量。计算前请检查自动选择并调整与具体路线有关的数量。",
           automaticFromActivities: "由所选 activities 自动启用",
           exportReport: "导出 LCA 报告",
+          exportImpactResults: "导出影响结果 (.xlsx)",
+          impactResultsExported: "影响结果已导出：{filename}",
+          excelImpactSheet: "影响结果",
+          excelMetadataSheet: "元数据",
+          excelField: "字段",
+          excelValue: "值",
+          excelImpactGroup: "EF 分组",
+          excelPathway: "路径",
+          excelAssessment: "评估",
+          excelFunctionalUnit: "功能单位",
+          excelGeneratedAt: "生成时间",
+          excelResultStatus: "结果状态",
+          excelDemoStatus: "基于示例单位影响系数的浏览器演示结果；不是经核实的正式 LCA 结果。",
           buildingBlockMapHeading: "按 LCA 模块分组的候选构建块",
           buildingBlockMapIntro: "按模块分组显示候选 ECO-PATH 构建块。一个已选路径可能只使用某个模块的一部分。EM10 是患者及照护者出行的唯一核算归属，临床模块系数不包含出行；EM11 仍是可选的医院共享支持模块。",
           moduleZone: "模块区域",
@@ -15702,6 +15743,8 @@
       if (clearFullscreenButton) clearFullscreenButton.textContent = t("clearPathway");
       const exportButton = document.getElementById("lcaExportReport");
       if (exportButton) exportButton.textContent = t("exportReport");
+      const exportImpactResultsButton = document.getElementById("lcaExportImpactResults");
+      if (exportImpactResultsButton) exportImpactResultsButton.textContent = t("exportImpactResults");
 
       const typeFilter = document.getElementById("typeFilter");
       if (typeFilter) {
@@ -19061,6 +19104,331 @@
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
+    function xlsxXmlEscape(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
+    }
+
+    function xlsxColumnName(index) {
+      let column = "";
+      let remaining = index + 1;
+      while (remaining > 0) {
+        const remainder = (remaining - 1) % 26;
+        column = String.fromCharCode(65 + remainder) + column;
+        remaining = Math.floor((remaining - 1) / 26);
+      }
+      return column;
+    }
+
+    function xlsxCellXml(value, columnIndex, rowIndex, styleIndex) {
+      const reference = `${xlsxColumnName(columnIndex)}${rowIndex + 1}`;
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return `<c r="${reference}" s="${styleIndex}"><v>${value}</v></c>`;
+      }
+      const text = String(value ?? "");
+      const preserve = /^\s|\s$|[\r\n]/.test(text) ? ' xml:space="preserve"' : "";
+      return `<c r="${reference}" t="inlineStr" s="${styleIndex}"><is><t${preserve}>${xlsxXmlEscape(text)}</t></is></c>`;
+    }
+
+    function xlsxWorksheetXml(rows, columnWidths) {
+      const rowCount = Math.max(1, rows.length);
+      const columnCount = Math.max(1, ...rows.map((row) => row.length));
+      const lastCell = `${xlsxColumnName(columnCount - 1)}${rowCount}`;
+      const columns = columnWidths.map((width, index) => (
+        `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`
+      )).join("");
+      const sheetRows = rows.map((row, rowIndex) => {
+        const cells = row.map((value, columnIndex) => {
+          const styleIndex = rowIndex === 0 ? 1 : (typeof value === "number" ? 3 : 2);
+          return xlsxCellXml(value, columnIndex, rowIndex, styleIndex);
+        }).join("");
+        return `<row r="${rowIndex + 1}">${cells}</row>`;
+      }).join("");
+      const autoFilter = rows.length > 1
+        ? `<autoFilter ref="A1:${xlsxColumnName(columnCount - 1)}${rows.length}"/>`
+        : "";
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <dimension ref="A1:${lastCell}"/>
+  <sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>
+  <sheetFormatPr defaultRowHeight="15"/>
+  <cols>${columns}</cols>
+  <sheetData>${sheetRows}</sheetData>
+  ${autoFilter}
+</worksheet>`;
+    }
+
+    function xlsxConcatBytes(parts) {
+      const length = parts.reduce((sum, part) => sum + part.length, 0);
+      const output = new Uint8Array(length);
+      let offset = 0;
+      parts.forEach((part) => {
+        output.set(part, offset);
+        offset += part.length;
+      });
+      return output;
+    }
+
+    const xlsxCrcTable = (() => {
+      const table = new Uint32Array(256);
+      for (let index = 0; index < 256; index += 1) {
+        let value = index;
+        for (let bit = 0; bit < 8; bit += 1) {
+          value = (value >>> 1) ^ ((value & 1) ? 0xEDB88320 : 0);
+        }
+        table[index] = value >>> 0;
+      }
+      return table;
+    })();
+
+    function xlsxCrc32(bytes) {
+      let crc = 0xFFFFFFFF;
+      bytes.forEach((byte) => {
+        crc = (crc >>> 8) ^ xlsxCrcTable[(crc ^ byte) & 0xFF];
+      });
+      return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    function xlsxStoredZip(entries) {
+      const encoder = new TextEncoder();
+      const now = new Date();
+      const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+      const dosYear = Math.min(127, Math.max(0, now.getFullYear() - 1980));
+      const dosDate = (dosYear << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+      const localParts = [];
+      const centralParts = [];
+      let localOffset = 0;
+
+      entries.forEach((entry) => {
+        const nameBytes = encoder.encode(entry.name);
+        const dataBytes = typeof entry.data === "string" ? encoder.encode(entry.data) : entry.data;
+        const checksum = xlsxCrc32(dataBytes);
+        const localHeader = new Uint8Array(30 + nameBytes.length);
+        const localView = new DataView(localHeader.buffer);
+        localView.setUint32(0, 0x04034B50, true);
+        localView.setUint16(4, 20, true);
+        localView.setUint16(6, 0x0800, true);
+        localView.setUint16(8, 0, true);
+        localView.setUint16(10, dosTime, true);
+        localView.setUint16(12, dosDate, true);
+        localView.setUint32(14, checksum, true);
+        localView.setUint32(18, dataBytes.length, true);
+        localView.setUint32(22, dataBytes.length, true);
+        localView.setUint16(26, nameBytes.length, true);
+        localView.setUint16(28, 0, true);
+        localHeader.set(nameBytes, 30);
+        localParts.push(localHeader, dataBytes);
+
+        const centralHeader = new Uint8Array(46 + nameBytes.length);
+        const centralView = new DataView(centralHeader.buffer);
+        centralView.setUint32(0, 0x02014B50, true);
+        centralView.setUint16(4, 20, true);
+        centralView.setUint16(6, 20, true);
+        centralView.setUint16(8, 0x0800, true);
+        centralView.setUint16(10, 0, true);
+        centralView.setUint16(12, dosTime, true);
+        centralView.setUint16(14, dosDate, true);
+        centralView.setUint32(16, checksum, true);
+        centralView.setUint32(20, dataBytes.length, true);
+        centralView.setUint32(24, dataBytes.length, true);
+        centralView.setUint16(28, nameBytes.length, true);
+        centralView.setUint16(30, 0, true);
+        centralView.setUint16(32, 0, true);
+        centralView.setUint16(34, 0, true);
+        centralView.setUint16(36, 0, true);
+        centralView.setUint32(38, 0, true);
+        centralView.setUint32(42, localOffset, true);
+        centralHeader.set(nameBytes, 46);
+        centralParts.push(centralHeader);
+        localOffset += localHeader.length + dataBytes.length;
+      });
+
+      const centralDirectory = xlsxConcatBytes(centralParts);
+      const endRecord = new Uint8Array(22);
+      const endView = new DataView(endRecord.buffer);
+      endView.setUint32(0, 0x06054B50, true);
+      endView.setUint16(4, 0, true);
+      endView.setUint16(6, 0, true);
+      endView.setUint16(8, entries.length, true);
+      endView.setUint16(10, entries.length, true);
+      endView.setUint32(12, centralDirectory.length, true);
+      endView.setUint32(16, localOffset, true);
+      endView.setUint16(20, 0, true);
+      return xlsxConcatBytes([...localParts, centralDirectory, endRecord]);
+    }
+
+    function xlsxSheetName(name, fallback) {
+      const cleaned = String(name || fallback).replace(/[\\/:*?\[\]]/g, " ").trim();
+      return (cleaned || fallback).slice(0, 31);
+    }
+
+    function buildXlsxWorkbook(sheets) {
+      const safeSheets = sheets.map((sheet, index) => ({
+        ...sheet,
+        name: xlsxSheetName(sheet.name, `Sheet ${index + 1}`)
+      }));
+      const sheetOverrides = safeSheets.map((sheet, index) => (
+        `<Override PartName="/xl/worksheets/sheet${index + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`
+      )).join("");
+      const workbookSheets = safeSheets.map((sheet, index) => (
+        `<sheet name="${xlsxXmlEscape(sheet.name)}" sheetId="${index + 1}" r:id="rId${index + 1}"/>`
+      )).join("");
+      const worksheetRelations = safeSheets.map((sheet, index) => (
+        `<Relationship Id="rId${index + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${index + 1}.xml"/>`
+      )).join("");
+      const stylesRelationshipId = safeSheets.length + 1;
+      const createdAt = new Date().toISOString();
+      const entries = [
+        {
+          name: "[Content_Types].xml",
+          data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  ${sheetOverrides}
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
+</Types>`
+        },
+        {
+          name: "_rels/.rels",
+          data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+</Relationships>`
+        },
+        {
+          name: "docProps/core.xml",
+          data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dc:creator>ECO-PATH Pathway Activity Explorer</dc:creator>
+  <cp:lastModifiedBy>ECO-PATH Pathway Activity Explorer</cp:lastModifiedBy>
+  <dcterms:created xsi:type="dcterms:W3CDTF">${createdAt}</dcterms:created>
+  <dcterms:modified xsi:type="dcterms:W3CDTF">${createdAt}</dcterms:modified>
+</cp:coreProperties>`
+        },
+        {
+          name: "docProps/app.xml",
+          data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Application>ECO-PATH Pathway Activity Explorer</Application>
+</Properties>`
+        },
+        {
+          name: "xl/workbook.xml",
+          data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>${workbookSheets}</sheets>
+</workbook>`
+        },
+        {
+          name: "xl/_rels/workbook.xml.rels",
+          data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  ${worksheetRelations}
+  <Relationship Id="rId${stylesRelationshipId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`
+        },
+        {
+          name: "xl/styles.xml",
+          data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="2">
+    <font><sz val="11"/><name val="Aptos"/></font>
+    <font><b/><color rgb="FFFFFFFF"/><sz val="11"/><name val="Aptos"/></font>
+  </fonts>
+  <fills count="3">
+    <fill><patternFill patternType="none"/></fill>
+    <fill><patternFill patternType="gray125"/></fill>
+    <fill><patternFill patternType="solid"><fgColor rgb="FF005AA0"/><bgColor indexed="64"/></patternFill></fill>
+  </fills>
+  <borders count="2">
+    <border><left/><right/><top/><bottom/><diagonal/></border>
+    <border><left style="thin"><color rgb="FFD4E2E6"/></left><right style="thin"><color rgb="FFD4E2E6"/></right><top style="thin"><color rgb="FFD4E2E6"/></top><bottom style="thin"><color rgb="FFD4E2E6"/></bottom><diagonal/></border>
+  </borders>
+  <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+  <cellXfs count="4">
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+    <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"><alignment vertical="center" wrapText="1"/></xf>
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment vertical="top" wrapText="1"/></xf>
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1"><alignment horizontal="right" vertical="top"/></xf>
+  </cellXfs>
+  <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
+</styleSheet>`
+        },
+        ...safeSheets.map((sheet, index) => ({
+          name: `xl/worksheets/sheet${index + 1}.xml`,
+          data: xlsxWorksheetXml(sheet.rows, sheet.columnWidths)
+        }))
+      ];
+      return xlsxStoredZip(entries);
+    }
+
+    function buildImpactResultsWorkbook() {
+      const data = collectLcaReportData();
+      const impactRows = [
+        [
+          t("impactCategoryLabel"),
+          t("excelImpactGroup"),
+          t("unit"),
+          t("lowPerFu"),
+          t("basePerFu"),
+          t("highPerFu"),
+          t("baseCohortHeader", { count: formatNumber(data.caseCount) })
+        ],
+        ...data.impactCategories.map((category) => [
+          category.name,
+          category.group,
+          category.unit,
+          category.low.perPathway,
+          category.base.perPathway,
+          category.high.perPathway,
+          category.base.cohortExpected
+        ])
+      ];
+      const metadataRows = [
+        [t("excelField"), t("excelValue")],
+        [t("excelPathway"), data.pathwayLabel],
+        [t("excelAssessment"), data.assessment.resultLabel],
+        [t("excelFunctionalUnit"), data.functionalUnit.statement],
+        [t("cohortSize"), data.caseCount],
+        [t("excelGeneratedAt"), data.generatedAt],
+        [t("excelResultStatus"), t("excelDemoStatus")]
+      ];
+      return buildXlsxWorkbook([
+        {
+          name: t("excelImpactSheet"),
+          rows: impactRows,
+          columnWidths: [34, 24, 26, 22, 22, 22, 26]
+        },
+        {
+          name: t("excelMetadataSheet"),
+          rows: metadataRows,
+          columnWidths: [28, 110]
+        }
+      ]);
+    }
+
+    function downloadBinary(data, filename, type) {
+      const blob = new Blob([data], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     function collectBrightwayScenario() {
       const assessment = currentAssessmentStatus();
       if (!assessment.valid) throw new Error(t("assessmentExportBlocked"));
@@ -19922,6 +20290,22 @@
       if (status) status.textContent = t("reportExported", { filename });
     }
 
+    function exportLcaImpactResults() {
+      if (!currentAssessmentStatus().valid) {
+        const status = document.getElementById("lcaExportStatus");
+        if (status) status.textContent = t("assessmentExportBlocked");
+        return;
+      }
+      const filename = `ecopath-lca-impact-results-${slugify(currentPathway().label)}-all-ef-categories-${reportDateStamp()}.xlsx`;
+      downloadBinary(
+        buildImpactResultsWorkbook(),
+        filename,
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      const status = document.getElementById("lcaExportStatus");
+      if (status) status.textContent = t("impactResultsExported", { filename });
+    }
+
     function prepareFeedbackEmail() {
       const name = document.getElementById("contactName").value.trim();
       const replyEmail = document.getElementById("contactEmail").value.trim();
@@ -20106,6 +20490,7 @@
       document.getElementById("clearPathwayScenario").addEventListener("click", clearScenarioSelection);
       document.getElementById("clearPathwayScenarioFullscreen").addEventListener("click", clearScenarioSelection);
       document.getElementById("lcaExportReport").addEventListener("click", exportLcaReport);
+      document.getElementById("lcaExportImpactResults").addEventListener("click", exportLcaImpactResults);
       document.querySelectorAll("[data-fu-field]").forEach((input) => {
         input.addEventListener("input", (event) => {
           const functionalUnit = functionalUnitForPathway();

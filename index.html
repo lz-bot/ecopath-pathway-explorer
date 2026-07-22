@@ -185,6 +185,108 @@
       margin-bottom: 14px;
     }
 
+    .help-tour-action {
+      margin: 0 0 16px;
+    }
+
+    .help-tour-action button {
+      min-height: 40px;
+      padding: 9px 14px;
+      border-color: var(--accent-dark);
+      background: var(--accent-dark);
+      color: var(--panel);
+      font-weight: 800;
+    }
+
+    .guided-tour {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      pointer-events: none;
+    }
+
+    .guided-tour-backdrop {
+      position: absolute;
+      inset: 0;
+      pointer-events: auto;
+    }
+
+    .guided-tour-focus {
+      position: fixed;
+      z-index: 5001;
+      border: 3px solid var(--accent);
+      border-radius: var(--radius);
+      box-shadow:
+        0 0 0 5px rgba(111, 205, 240, 0.24),
+        0 0 0 9999px rgba(31, 42, 46, 0.56);
+      pointer-events: none;
+      transition: top 160ms ease, left 160ms ease, width 160ms ease, height 160ms ease;
+    }
+
+    .guided-tour-bubble {
+      position: fixed;
+      z-index: 5002;
+      width: min(360px, calc(100vw - 24px));
+      padding: 16px;
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: 0 18px 48px rgba(28, 48, 45, 0.28);
+      pointer-events: auto;
+    }
+
+    .guided-tour-progress {
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .guided-tour-bubble h2 {
+      margin: 5px 0 7px;
+      font-size: 18px;
+    }
+
+    .guided-tour-bubble p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .guided-tour-actions,
+    .guided-tour-step-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .guided-tour-actions {
+      justify-content: space-between;
+      margin-top: 14px;
+    }
+
+    .guided-tour-actions button {
+      min-height: 38px;
+      padding: 8px 12px;
+      font-weight: 800;
+    }
+
+    .guided-tour-actions .primary {
+      border-color: var(--accent-dark);
+      background: var(--accent-dark);
+      color: var(--panel);
+    }
+
+    @media (max-width: 620px) {
+      .guided-tour-bubble {
+        right: 12px;
+        left: 12px;
+        width: auto;
+      }
+    }
+
     .contact-details {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4119,6 +4221,9 @@
     </div>
     <div class="help-dialog-body">
       <p id="helpIntro"></p>
+      <div class="help-tour-action">
+        <button type="button" id="startGuidedTourButton">Start guided tour</button>
+      </div>
       <ol class="help-steps">
         <li id="helpStep1"></li>
         <li id="helpStep2"></li>
@@ -4276,6 +4381,23 @@
       <div class="protocol-comparison-table" id="protocolComparisonTable" role="table"></div>
     </div>
   </dialog>
+
+  <div class="guided-tour" id="guidedTour" hidden>
+    <div class="guided-tour-backdrop" id="guidedTourBackdrop"></div>
+    <div class="guided-tour-focus" id="guidedTourFocus" aria-hidden="true"></div>
+    <section class="guided-tour-bubble" id="guidedTourBubble" role="dialog" aria-modal="true" aria-labelledby="guidedTourTitle" aria-describedby="guidedTourText" tabindex="-1">
+      <div class="guided-tour-progress" id="guidedTourProgress"></div>
+      <h2 id="guidedTourTitle"></h2>
+      <p id="guidedTourText"></p>
+      <div class="guided-tour-actions">
+        <button type="button" id="guidedTourSkip">Close tour</button>
+        <span class="guided-tour-step-actions">
+          <button type="button" id="guidedTourBack">Back</button>
+          <button type="button" class="primary" id="guidedTourNext">Next</button>
+        </span>
+      </div>
+    </section>
+  </div>
 
   <main class="workspace-shell">
     <aside class="workflow-sidebar">
@@ -8301,6 +8423,23 @@
       workflowNextPage: "Next",
       workflowStartOfWorkflow: "Start of workflow",
       workflowEndOfWorkflow: "End of workflow",
+      guidedTourStart: "Start guided tour",
+      guidedTourLabel: "Guided tour",
+      guidedTourProgress: "Step {current} of {total}",
+      guidedTourSkip: "Close tour",
+      guidedTourBack: "Back",
+      guidedTourNext: "Next",
+      guidedTourFinish: "Finish",
+      guidedTourSourceTitle: "Choose a pathway source",
+      guidedTourSourceText: "Open Specialties to choose Urology or Gastroenterology and the Dutch or European reference view.",
+      guidedTourWorkflowTitle: "Follow the four workflow pages",
+      guidedTourWorkflowText: "Move from Pathway and scope to Activities, LCA model, and Results. The highlighted page shows where you are.",
+      guidedTourBoundaryTitle: "Set the assessment boundary",
+      guidedTourBoundaryText: "Choose a complete pathway or a partial segment before selecting the clinical route.",
+      guidedTourMapTitle: "Build the clinical route",
+      guidedTourMapText: "Choose a complete-route preset or select connected activities directly on the metro map.",
+      guidedTourContinueTitle: "Continue through the workflow",
+      guidedTourContinueText: "Use Previous and Next at the bottom of each page. Open Help (?) and choose Start guided tour to replay this introduction.",
       moduleFilterSummary: "LCA module filter (advanced)",
       domainFilterHelp: "Clinical navigation category. It does not define the LCA inventory boundary.",
       moduleFilterHelp: "Reusable LCA modeling zone used to inspect activities that share an inventory model. It is not a second clinical category.",
@@ -8391,6 +8530,23 @@
       workflowNextPage: "Volgende",
       workflowStartOfWorkflow: "Begin van de workflow",
       workflowEndOfWorkflow: "Einde van de workflow",
+      guidedTourStart: "Rondleiding starten",
+      guidedTourLabel: "Rondleiding",
+      guidedTourProgress: "Stap {current} van {total}",
+      guidedTourSkip: "Rondleiding sluiten",
+      guidedTourBack: "Vorige",
+      guidedTourNext: "Volgende",
+      guidedTourFinish: "Voltooien",
+      guidedTourSourceTitle: "Kies een zorgpadbron",
+      guidedTourSourceText: "Open Specialismen om Urologie of Gastro-enterologie en de Nederlandse of Europese referentieweergave te kiezen.",
+      guidedTourWorkflowTitle: "Volg de vier werkpagina's",
+      guidedTourWorkflowText: "Ga van Zorgpad en afbakening naar Activiteiten, LCA-model en Resultaten. De gemarkeerde pagina toont waar u bent.",
+      guidedTourBoundaryTitle: "Leg de beoordelingsgrens vast",
+      guidedTourBoundaryText: "Kies een volledig zorgpad of een deeltraject voordat u de klinische route selecteert.",
+      guidedTourMapTitle: "Bouw de klinische route",
+      guidedTourMapText: "Kies een vooraf ingesteld volledig zorgpad of selecteer verbonden activiteiten rechtstreeks op de metrokaart.",
+      guidedTourContinueTitle: "Ga verder door de workflow",
+      guidedTourContinueText: "Gebruik Vorige en Volgende onderaan elke pagina. Open Help (?) en kies Rondleiding starten om deze introductie opnieuw te bekijken.",
       moduleFilterSummary: "LCA-modulefilter (geavanceerd)",
       domainFilterHelp: "Klinische navigatiecategorie. Dit bepaalt niet de LCA-inventarisgrens.",
       moduleFilterHelp: "Herbruikbare LCA-modelzone voor activiteiten met hetzelfde inventarismodel. Dit is geen tweede klinische categorie.",
@@ -8481,6 +8637,23 @@
       workflowNextPage: "下一页",
       workflowStartOfWorkflow: "工作流起点",
       workflowEndOfWorkflow: "工作流终点",
+      guidedTourStart: "开始导航介绍",
+      guidedTourLabel: "导航介绍",
+      guidedTourProgress: "第 {current} 步，共 {total} 步",
+      guidedTourSkip: "关闭导航",
+      guidedTourBack: "上一步",
+      guidedTourNext: "下一步",
+      guidedTourFinish: "完成",
+      guidedTourSourceTitle: "选择路径来源",
+      guidedTourSourceText: "打开“专科”菜单，选择泌尿科或胃肠病学，以及荷兰或欧洲参考路径。",
+      guidedTourWorkflowTitle: "按照四个工作页面操作",
+      guidedTourWorkflowText: "依次使用“路径与边界”“活动”“LCA 模型”和“结果”。高亮项表示当前页面。",
+      guidedTourBoundaryTitle: "设置评估边界",
+      guidedTourBoundaryText: "选择完整路径评估或局部片段探索，然后再确定临床路径。",
+      guidedTourMapTitle: "构建临床路径",
+      guidedTourMapText: "选择一个完整路径预设，或直接在线路图中选择相互连接的活动。",
+      guidedTourContinueTitle: "继续后续步骤",
+      guidedTourContinueText: "使用每页底部的“上一页”和“下一页”。需要重看时，打开帮助（?）并选择“开始导航介绍”。",
       moduleFilterSummary: "LCA 模块筛选（高级）",
       domainFilterHelp: "用于临床路径导航，不定义 LCA 清单边界。",
       moduleFilterHelp: "用于查找共用同一清单模型的活动，是可复用的 LCA 建模区，不是第二套临床分类。",
@@ -13859,6 +14032,197 @@
       if (element) element.textContent = t(key, values);
     }
 
+    const guidedTourStorageKey = "ecopath-guided-tour-seen-v1";
+    const guidedTourSteps = [
+      {
+        target: "#specialtySelector",
+        titleKey: "guidedTourSourceTitle",
+        textKey: "guidedTourSourceText"
+      },
+      {
+        target: ".workflow-nav",
+        titleKey: "guidedTourWorkflowTitle",
+        textKey: "guidedTourWorkflowText"
+      },
+      {
+        target: "#assessmentModeControl",
+        titleKey: "guidedTourBoundaryTitle",
+        textKey: "guidedTourBoundaryText"
+      },
+      {
+        target: ".map-wrap",
+        titleKey: "guidedTourMapTitle",
+        textKey: "guidedTourMapText"
+      },
+      {
+        target: "#workflowPageNavigation",
+        titleKey: "guidedTourContinueTitle",
+        textKey: "guidedTourContinueText"
+      }
+    ];
+    let guidedTourActive = false;
+    let guidedTourIndex = 0;
+    let guidedTourPositionFrame = 0;
+
+    function hasSeenGuidedTour() {
+      try {
+        return window.localStorage.getItem(guidedTourStorageKey) === "1";
+      } catch {
+        return false;
+      }
+    }
+
+    function markGuidedTourSeen() {
+      try {
+        window.localStorage.setItem(guidedTourStorageKey, "1");
+      } catch {
+        // Local storage can be unavailable in strict browser modes.
+      }
+    }
+
+    function scheduleGuidedTourPosition() {
+      if (!guidedTourActive || guidedTourPositionFrame) return;
+      guidedTourPositionFrame = window.requestAnimationFrame(() => {
+        guidedTourPositionFrame = 0;
+        positionGuidedTour();
+      });
+    }
+
+    function positionGuidedTour() {
+      if (!guidedTourActive) return;
+      const step = guidedTourSteps[guidedTourIndex];
+      const target = document.querySelector(step?.target || "");
+      const focus = document.getElementById("guidedTourFocus");
+      const bubble = document.getElementById("guidedTourBubble");
+      if (!target || !focus || !bubble) return;
+
+      const rect = target.getBoundingClientRect();
+      const padding = 7;
+      const focusLeft = Math.max(6, rect.left - padding);
+      const focusTop = Math.max(6, rect.top - padding);
+      const focusRight = Math.min(window.innerWidth - 6, rect.right + padding);
+      const focusBottom = Math.min(window.innerHeight - 6, rect.bottom + padding);
+      focus.style.left = `${focusLeft}px`;
+      focus.style.top = `${focusTop}px`;
+      focus.style.width = `${Math.max(0, focusRight - focusLeft)}px`;
+      focus.style.height = `${Math.max(0, focusBottom - focusTop)}px`;
+
+      if (window.innerWidth <= 620) {
+        bubble.style.left = "12px";
+        bubble.style.right = "12px";
+        if (rect.top + rect.height / 2 > window.innerHeight / 2) {
+          bubble.style.top = "12px";
+          bubble.style.bottom = "auto";
+        } else {
+          bubble.style.top = "auto";
+          bubble.style.bottom = "12px";
+        }
+        return;
+      }
+
+      bubble.style.right = "auto";
+      bubble.style.bottom = "auto";
+      const gap = 14;
+      const margin = 12;
+      const bubbleWidth = bubble.offsetWidth;
+      const bubbleHeight = bubble.offsetHeight;
+      const centeredLeft = Math.max(
+        margin,
+        Math.min(window.innerWidth - bubbleWidth - margin, rect.left + rect.width / 2 - bubbleWidth / 2)
+      );
+      const centeredTop = Math.max(
+        margin,
+        Math.min(window.innerHeight - bubbleHeight - margin, rect.top + rect.height / 2 - bubbleHeight / 2)
+      );
+      const placements = [
+        { left: centeredLeft, top: focusBottom + gap },
+        { left: centeredLeft, top: focusTop - bubbleHeight - gap },
+        { left: focusRight + gap, top: centeredTop },
+        { left: focusLeft - bubbleWidth - gap, top: centeredTop }
+      ];
+      const placement = placements.find(({ left, top }) => (
+        left >= margin
+        && top >= margin
+        && left + bubbleWidth <= window.innerWidth - margin
+        && top + bubbleHeight <= window.innerHeight - margin
+      )) || {
+        left: window.innerWidth - bubbleWidth - margin,
+        top: margin
+      };
+      bubble.style.left = `${placement.left}px`;
+      bubble.style.top = `${placement.top}px`;
+    }
+
+    function renderGuidedTourStep() {
+      if (!guidedTourActive) return;
+      const step = guidedTourSteps[guidedTourIndex];
+      const target = document.querySelector(step?.target || "");
+      if (!step || !target) {
+        closeGuidedTour();
+        return;
+      }
+
+      target.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" });
+      setText("guidedTourTitle", step.titleKey);
+      setText("guidedTourText", step.textKey);
+      setText("guidedTourSkip", "guidedTourSkip");
+      setText("guidedTourBack", "guidedTourBack");
+      setText(
+        "guidedTourNext",
+        guidedTourIndex === guidedTourSteps.length - 1 ? "guidedTourFinish" : "guidedTourNext"
+      );
+      const progress = document.getElementById("guidedTourProgress");
+      if (progress) {
+        progress.textContent = `${t("guidedTourLabel")} · ${t("guidedTourProgress", {
+          current: guidedTourIndex + 1,
+          total: guidedTourSteps.length
+        })}`;
+      }
+      const backButton = document.getElementById("guidedTourBack");
+      if (backButton) backButton.disabled = guidedTourIndex === 0;
+      scheduleGuidedTourPosition();
+      window.setTimeout(scheduleGuidedTourPosition, 80);
+      document.getElementById("guidedTourBubble")?.focus({ preventScroll: true });
+    }
+
+    function startGuidedTour() {
+      ["helpDialog", "methodologyDialog", "contactDialog", "protocolComparisonDialog"].forEach((id) => {
+        const dialog = document.getElementById(id);
+        if (dialog?.open) dialog.close();
+      });
+      document.getElementById("languageSelector")?.removeAttribute("open");
+      document.getElementById("specialtySelector")?.removeAttribute("open");
+      if (state.mapFullscreenOpen) closeMapFullscreen();
+      if (state.workspaceStep !== "pathway") switchWorkspaceStep("pathway");
+
+      guidedTourActive = true;
+      guidedTourIndex = 0;
+      markGuidedTourSeen();
+      const tour = document.getElementById("guidedTour");
+      if (tour) tour.hidden = false;
+      renderGuidedTourStep();
+    }
+
+    function closeGuidedTour() {
+      if (!guidedTourActive) return;
+      guidedTourActive = false;
+      if (guidedTourPositionFrame) {
+        window.cancelAnimationFrame(guidedTourPositionFrame);
+        guidedTourPositionFrame = 0;
+      }
+      const tour = document.getElementById("guidedTour");
+      if (tour) tour.hidden = true;
+      document.getElementById("openHelpDialog")?.focus({ preventScroll: true });
+    }
+
+    function maybeStartGuidedTour() {
+      if (hasSeenGuidedTour()) return;
+      markGuidedTourSeen();
+      window.setTimeout(() => {
+        if (!guidedTourActive) startGuidedTour();
+      }, 450);
+    }
+
     function currentLanguageOption() {
       return languageOptions.find((item) => item.id === state.language) || languageOptions[0];
     }
@@ -15145,6 +15509,7 @@
       if (helpButton) helpButton.setAttribute("aria-label", t("helpButton"));
       setText("helpDialogTitle", "helpTitle");
       setText("closeHelpDialog", "closeHelp");
+      setText("startGuidedTourButton", "guidedTourStart");
       setText("footerContactText", "contactTitle");
       setText("contactDialogTitle", "contactTitle");
       setText("closeContactDialog", "closeHelp");
@@ -19584,6 +19949,22 @@
       helpDialog.addEventListener("click", (event) => {
         if (event.target === helpDialog) helpDialog.close();
       });
+      document.getElementById("startGuidedTourButton").addEventListener("click", startGuidedTour);
+      document.getElementById("guidedTourBackdrop").addEventListener("click", closeGuidedTour);
+      document.getElementById("guidedTourSkip").addEventListener("click", closeGuidedTour);
+      document.getElementById("guidedTourBack").addEventListener("click", () => {
+        if (guidedTourIndex === 0) return;
+        guidedTourIndex -= 1;
+        renderGuidedTourStep();
+      });
+      document.getElementById("guidedTourNext").addEventListener("click", () => {
+        if (guidedTourIndex >= guidedTourSteps.length - 1) {
+          closeGuidedTour();
+          return;
+        }
+        guidedTourIndex += 1;
+        renderGuidedTourStep();
+      });
       document.getElementById("openContactDialog").addEventListener("click", () => {
         document.getElementById("languageSelector").removeAttribute("open");
         document.getElementById("specialtySelector").removeAttribute("open");
@@ -19756,6 +20137,10 @@
         scheduleDetailPanelSync();
       });
       document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && guidedTourActive) {
+          closeGuidedTour();
+          return;
+        }
         if (event.key === "Escape" && state.mapFullscreenOpen) closeMapFullscreen();
       });
     }
@@ -19789,15 +20174,20 @@
     }
 
     bindControls();
-    window.addEventListener("scroll", scheduleDetailPanelSync, { passive: true });
+    window.addEventListener("scroll", () => {
+      scheduleDetailPanelSync();
+      scheduleGuidedTourPosition();
+    }, { passive: true });
     window.addEventListener("resize", () => {
       updateStickyWorkspaceOffset();
       scheduleDetailPanelSync();
+      scheduleGuidedTourPosition();
     });
     bindLcaControls();
     bindForegroundBuilderControls();
     state.selected = currentPathway().defaultSelected;
     render();
+    maybeStartGuidedTour();
     checkBrightwayService();
   </script>
 </body>

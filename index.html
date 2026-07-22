@@ -15357,6 +15357,18 @@
       render();
     }
 
+    function switchAssessmentMode(mode) {
+      if (mode === state.assessmentMode) return false;
+      state.assessmentMode = mode;
+      scenarioSetForPathway().clear();
+      const defaults = pathwayAssessmentDefaults[state.pathway];
+      if (defaults) state.assessmentBoundaries[state.pathway] = { ...defaults };
+      clearAssessmentDependentResults();
+      syncPathwayModulesFromScenario();
+      render();
+      return true;
+    }
+
     function lcaPathwayModuleIds() {
       const eligibleModules = new Set(
         currentPathway().nodes
@@ -20068,12 +20080,7 @@
       document.querySelectorAll("[data-assessment-mode]").forEach((button) => {
         button.addEventListener("click", () => {
           const mode = button.dataset.assessmentMode === "partial" ? "partial" : "complete";
-          if (mode === state.assessmentMode) return;
-          state.assessmentMode = mode;
-          reconcileScenarioSelectionToBoundary();
-          clearAssessmentDependentResults();
-          syncPathwayModulesFromScenario();
-          render();
+          switchAssessmentMode(mode);
         });
       });
       document.getElementById("assessmentStartNode").addEventListener("change", (event) => {

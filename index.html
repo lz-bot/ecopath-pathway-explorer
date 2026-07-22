@@ -339,6 +339,7 @@
     .contact-actions svg {
       width: 17px;
       height: 17px;
+      min-height: 0;
       fill: none;
       stroke: currentColor;
       stroke-width: 1.8;
@@ -974,11 +975,33 @@
       min-width: 0;
     }
 
+    .filters-panel {
+      margin-bottom: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .filters-panel > .collapse-panel-summary {
+      align-items: center;
+      padding: 10px 12px;
+    }
+
+    .filters-panel > .collapse-panel-summary strong {
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .filters-panel > .filters {
+      padding: 12px;
+      border-top: 1px solid var(--line);
+    }
+
     .filters {
       display: grid;
       grid-template-columns: repeat(5, minmax(150px, 1fr));
       gap: 10px;
-      margin-bottom: 14px;
       align-items: end;
     }
 
@@ -1593,11 +1616,50 @@
       width: 24px;
       height: 24px;
       place-items: center;
+      border: 1px solid rgba(21, 74, 139, 0.28);
       border-radius: 50%;
-      color: #ffffff;
-      background: var(--accent-dark);
+      color: var(--accent-dark);
+      background: var(--accent);
       font-size: 12px;
       font-weight: 800;
+    }
+
+    .pathway-guide-marker {
+      display: inline-grid;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      place-items: center;
+      border: 1px solid rgba(21, 74, 139, 0.28);
+      border-radius: 50%;
+      color: var(--accent-dark);
+      background: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .specialty-selector .pathway-guide-marker {
+      width: 20px;
+      height: 20px;
+      flex-basis: 20px;
+      font-size: 11px;
+    }
+
+    .pathway-control-step,
+    .route-builder-controls {
+      display: flex;
+      flex: 1 1 100%;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .route-builder-controls .assessment-route-preset-field {
+      flex: 1 1 300px;
+    }
+
+    .route-builder-controls .toggle-field {
+      flex: 1 1 280px;
     }
 
     .pathway-step-guide strong,
@@ -1689,10 +1751,6 @@
       background: var(--panel-soft);
       cursor: not-allowed;
       opacity: 1;
-    }
-
-    .assessment-route-preset-field {
-      flex-basis: 100%;
     }
 
     .assessment-route-preset-field[hidden] {
@@ -4184,43 +4242,48 @@
 
     <div class="workspace-content">
     <div id="clinicalWorkspace">
-    <section class="filters" aria-label="Activity filters" data-workspace-panel="pathway activities">
-      <div class="field">
+    <details class="filters-panel" id="filtersPanel" data-workspace-panel="pathway activities" open>
+      <summary class="collapse-panel-summary">
+        <strong id="filtersPanelTitle">Activity filters</strong>
+      </summary>
+      <section class="filters" aria-label="Activity filters">
+        <div class="field">
         <label for="domainFilter" id="domainFilterLabel">Domain</label>
         <select id="domainFilter"></select>
         <small id="domainFilterHelp">Clinical navigation category.</small>
-      </div>
-      <details class="advanced-module-filter">
-        <summary id="moduleFilterSummary">LCA module filter (advanced)</summary>
-        <div class="field">
-          <label for="moduleFilter" id="moduleFilterLabel">ECO-PATH module</label>
-          <select id="moduleFilter"></select>
-          <small id="moduleFilterHelp">Reusable LCA modeling zone, not a second clinical category.</small>
         </div>
-      </details>
-      <div class="field">
-        <label for="typeFilter" id="typeFilterLabel">Element type</label>
-        <select id="typeFilter">
-          <option value="all">All elements</option>
-          <option value="activity">Activities</option>
-          <option value="decision">Decision points</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="searchBox" id="searchBoxLabel">Search</label>
-        <input id="searchBox" type="search" placeholder="activity, module, oncology, imaging">
-      </div>
-      <div class="field">
-        <label for="oncologyLens" id="oncologyLensLabel">Oncology lens</label>
-        <label class="toggle-field" for="oncologyLens">
-          <input id="oncologyLens" type="checkbox">
-          <span>
-            <strong id="oncologyLensTitle">Highlight oncology</strong>
-            <small id="oncologyLensSubtitle">Activities and LCA blocks</small>
-          </span>
-        </label>
-      </div>
-    </section>
+        <details class="advanced-module-filter">
+          <summary id="moduleFilterSummary">LCA module filter (advanced)</summary>
+          <div class="field">
+            <label for="moduleFilter" id="moduleFilterLabel">ECO-PATH module</label>
+            <select id="moduleFilter"></select>
+            <small id="moduleFilterHelp">Reusable LCA modeling zone, not a second clinical category.</small>
+          </div>
+        </details>
+        <div class="field">
+          <label for="typeFilter" id="typeFilterLabel">Element type</label>
+          <select id="typeFilter">
+            <option value="all">All elements</option>
+            <option value="activity">Activities</option>
+            <option value="decision">Decision points</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="searchBox" id="searchBoxLabel">Search</label>
+          <input id="searchBox" type="search" placeholder="activity, module, oncology, imaging">
+        </div>
+        <div class="field">
+          <label for="oncologyLens" id="oncologyLensLabel">Oncology lens</label>
+          <label class="toggle-field" for="oncologyLens">
+            <input id="oncologyLens" type="checkbox">
+            <span>
+              <strong id="oncologyLensTitle">Highlight oncology</strong>
+              <small id="oncologyLensSubtitle">Activities and LCA blocks</small>
+            </span>
+          </label>
+        </div>
+      </section>
+    </details>
 
     <section class="layout">
       <div>
@@ -4264,15 +4327,14 @@
             </div>
           </details>
           <div class="pathway-scenario-bar" aria-label="Selected pathway scenario">
-            <div class="assessment-mode-control" role="group" aria-label="Assessment mode" id="assessmentModeControl">
-              <button type="button" id="completeAssessmentMode" data-assessment-mode="complete" aria-pressed="true">Complete pathway assessment</button>
-              <button type="button" id="partialAssessmentMode" data-assessment-mode="partial" aria-pressed="false">Partial segment exploration</button>
+            <div class="pathway-control-step">
+              <span class="pathway-guide-marker" aria-hidden="true">2</span>
+              <div class="assessment-mode-control" role="group" aria-label="Assessment mode" id="assessmentModeControl">
+                <button type="button" id="completeAssessmentMode" data-assessment-mode="complete" aria-pressed="true">Complete pathway assessment</button>
+                <button type="button" id="partialAssessmentMode" data-assessment-mode="partial" aria-pressed="false">Partial segment exploration</button>
+              </div>
             </div>
             <div class="assessment-boundary-controls" id="assessmentBoundaryControls">
-              <label class="assessment-boundary-field assessment-route-preset-field" for="assessmentRoutePreset" id="assessmentRoutePresetField">
-                <span id="assessmentRoutePresetLabel">Complete pathway preset</span>
-                <select id="assessmentRoutePreset"></select>
-              </label>
               <label class="assessment-boundary-field" for="assessmentStartNode">
                 <span id="assessmentStartLabel">Declared start</span>
                 <select id="assessmentStartNode"></select>
@@ -4283,15 +4345,22 @@
               </label>
               <p class="assessment-boundary-rule" id="assessmentBoundaryRule"></p>
             </div>
-            <label class="toggle-field" for="pathwayScenarioMode">
-              <input id="pathwayScenarioMode" type="checkbox" checked>
-              <span>
-                <strong id="pathwayScenarioTitle">Pathway scenario</strong>
-                <small id="pathwayScenarioSubtitle">Selected activities control pathway-linked LCA modules</small>
-              </span>
-            </label>
-            <span class="status-chip" id="pathwayScenarioStatus"></span>
-            <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
+            <div class="route-builder-controls">
+              <span class="pathway-guide-marker" aria-hidden="true">3</span>
+              <label class="assessment-boundary-field assessment-route-preset-field" for="assessmentRoutePreset" id="assessmentRoutePresetField">
+                <span id="assessmentRoutePresetLabel">Complete pathway preset</span>
+                <select id="assessmentRoutePreset"></select>
+              </label>
+              <label class="toggle-field" for="pathwayScenarioMode">
+                <input id="pathwayScenarioMode" type="checkbox" checked>
+                <span>
+                  <strong id="pathwayScenarioTitle">Pathway scenario</strong>
+                  <small id="pathwayScenarioSubtitle">Selected activities control pathway-linked LCA modules</small>
+                </span>
+              </label>
+              <span class="status-chip" id="pathwayScenarioStatus"></span>
+              <button type="button" id="clearPathwayScenario">Clear selected pathway</button>
+            </div>
             <p class="assessment-validation" id="assessmentValidationStatus" aria-live="polite"></p>
           </div>
           <div class="map-wrap">
@@ -9218,6 +9287,7 @@
     });
 
     Object.assign(uiText.en, {
+      filtersPanelTitle: "Activity filters",
       helpStep3: "Choose Complete pathway assessment when the selected activities must form one connected directed route between the declared start and endpoint. Use Partial segment exploration for a single activity or connected subset; those results are labeled as partial and are not a full patient-pathway result.",
       pathwayStepGuideLabel: "Pathway setup order",
       pathwaySetupSourceTitle: "Choose pathway source",
@@ -9284,6 +9354,7 @@
     });
 
     Object.assign(uiText.nl, {
+      filtersPanelTitle: "Activiteitenfilters",
       helpStep3: "Kies Volledige zorgpadbeoordeling als de geselecteerde activiteiten één verbonden, gerichte route tussen het opgegeven begin- en eindpunt moeten vormen. Gebruik Verkenning van een deeltraject voor één activiteit of een verbonden deel; deze resultaten worden als gedeeltelijk aangeduid en zijn geen volledig patiënttraject.",
       pathwayStepGuideLabel: "Volgorde voor het instellen van het zorgpad",
       pathwaySetupSourceTitle: "Kies de zorgpadbron",
@@ -9350,6 +9421,7 @@
     });
 
     Object.assign(uiText.zh, {
+      filtersPanelTitle: "活动筛选",
       helpStep3: "如需评估完整患者路径，请选择“完整路径评估”，并确保所选活动在指定起点和终点之间构成一条连续的有向路径。如只想查看单个活动或连续片段，请使用“局部片段探索”；其结果会明确标记为局部结果，不代表完整患者路径。",
       pathwayStepGuideLabel: "路径设置顺序",
       pathwaySetupSourceTitle: "选择路径来源",
@@ -14996,6 +15068,7 @@
       setText("workflowLcaHint", "workflowLcaHint");
       setText("workflowResultsTitle", "workflowResultsTitle");
       setText("workflowResultsHint", "workflowResultsHint");
+      setText("filtersPanelTitle", "filtersPanelTitle");
       setText("domainFilterLabel", "domain");
       setText("domainFilterHelp", "domainFilterHelp");
       setText("moduleFilterSummary", "moduleFilterSummary");
@@ -15347,7 +15420,15 @@
       const container = document.getElementById("specialtyOptions");
       if (!summary || !container) return;
       const selected = selectedPathwaySource();
-      summary.textContent = `${t("specialtySummary")} · ${selected.group.label} / ${localizedPathwayLabel(selected.item.id)}`;
+      const pathwayGuideMarker = state.workspaceStep === "pathway"
+        ? '<span class="pathway-guide-marker" aria-hidden="true">1</span>'
+        : "";
+      summary.innerHTML = `
+        <span class="summary-content">
+          ${pathwayGuideMarker}
+          <span>${escapeHtml(`${t("specialtySummary")} · ${selected.group.label} / ${localizedPathwayLabel(selected.item.id)}`)}</span>
+        </span>
+      `;
       clear(container);
 
       pathwaySourceGroups().forEach((group) => {

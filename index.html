@@ -4268,7 +4268,6 @@
         <img class="brand-logo" src="assets/erasmusmc_logo.png" alt="Erasmus MC logo">
         <div>
           <h1 id="appTitle">ECO-PATH Pathway Activity Explorer</h1>
-          <p class="subtitle" id="appSubtitle">MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.</p>
         </div>
       </div>
       <div class="topbar-actions">
@@ -7344,7 +7343,6 @@
     const uiText = {
       en: {
         appTitle: "ECO-PATH Pathway Activity Explorer",
-        appSubtitle: "MIBC and colorectal cancer protocol-to-activity views for guideline logic and local workflow scoping.",
         helpButton: "How to use",
         helpTitle: "How to use ECO-PATH",
         closeHelp: "Close",
@@ -7540,7 +7538,6 @@
       },
       nl: {
         appTitle: "ECO-PATH Verkenner voor zorgpadactiviteiten",
-        appSubtitle: "Protocol-naar-activiteit weergaven voor MIBC en colorectale kanker voor richtlijnlogica en lokale workflowafbakening.",
         helpButton: "Gebruiksaanwijzing",
         helpTitle: "ECO-PATH gebruiken",
         closeHelp: "Sluiten",
@@ -7742,7 +7739,6 @@
         ...baseUiText,
         ...(languageId === "zh" ? {
           appTitle: "ECO-PATH 医疗路径活动探索器",
-          appSubtitle: "用于指南逻辑和本地工作流界定的 MIBC 与结直肠癌 protocol-to-activity 视图。",
           helpButton: "使用说明",
           helpTitle: "如何使用 ECO-PATH",
           closeHelp: "关闭",
@@ -7936,7 +7932,6 @@
           reportExported: "报告已导出：{filename}"
         } : languageId === "ja" ? {
           appTitle: "ECO-PATH パスウェイ活動エクスプローラー",
-          appSubtitle: "MIBC と大腸がんの protocol-to-activity ビュー。ガイドラインロジックとローカルワークフローのスコーピング用。",
           helpButton: "使用方法",
           helpTitle: "ECO-PATH の使い方",
           closeHelp: "閉じる",
@@ -8067,7 +8062,6 @@
           reportExported: "レポートを出力しました：{filename}"
         } : {
           appTitle: "Explorador de actividades ECO-PATH",
-          appSubtitle: "Vistas protocol-to-activity para MIBC y cáncer colorrectal para lógica de guías y delimitación de flujos locales.",
           helpButton: "Cómo usar",
           helpTitle: "Cómo usar ECO-PATH",
           closeHelp: "Cerrar",
@@ -15587,7 +15581,6 @@
 
     function renderStaticLanguageText() {
       setText("appTitle", "appTitle");
-      setText("appSubtitle", "appSubtitle");
       setText("helpButtonText", "helpButton");
       const helpButton = document.getElementById("openHelpDialog");
       if (helpButton) helpButton.setAttribute("aria-label", t("helpButton"));

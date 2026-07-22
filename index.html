@@ -975,6 +975,60 @@
       min-width: 0;
     }
 
+    .workflow-page-nav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .workflow-page-nav-button {
+      min-height: 62px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 11px 14px;
+      border-color: var(--line-strong);
+      background: var(--panel);
+    }
+
+    .workflow-page-nav-button.next {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .workflow-page-nav-copy {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+      text-align: left;
+    }
+
+    .workflow-page-nav-button.next .workflow-page-nav-copy {
+      text-align: right;
+    }
+
+    .workflow-page-nav-copy small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .workflow-page-nav-copy strong {
+      overflow-wrap: anywhere;
+      font-size: 13px;
+    }
+
+    .workflow-page-nav-arrow {
+      color: var(--accent-dark);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .workflow-page-nav-button:disabled .workflow-page-nav-arrow {
+      color: var(--muted);
+    }
+
     .filters-panel {
       margin-bottom: 14px;
       overflow: hidden;
@@ -4697,6 +4751,23 @@
 
       <div class="lca-module-calculations" id="lcaModuleCalculations" data-workspace-panel="lca"></div>
     </section>
+
+    <nav class="workflow-page-nav" id="workflowPageNavigation" aria-label="Workflow page navigation">
+      <button class="workflow-page-nav-button previous" type="button" id="workflowPreviousPage" disabled>
+        <span class="workflow-page-nav-arrow" aria-hidden="true">&larr;</span>
+        <span class="workflow-page-nav-copy">
+          <small id="workflowPreviousPageLabel">Previous</small>
+          <strong id="workflowPreviousDestination">Start of workflow</strong>
+        </span>
+      </button>
+      <button class="workflow-page-nav-button next" type="button" id="workflowNextPage">
+        <span class="workflow-page-nav-copy">
+          <small id="workflowNextPageLabel">Next</small>
+          <strong id="workflowNextDestination">Activities</strong>
+        </span>
+        <span class="workflow-page-nav-arrow" aria-hidden="true">&rarr;</span>
+      </button>
+    </nav>
     </div>
   </main>
 
@@ -8225,6 +8296,11 @@
       workflowLcaHint: "Review automatic blocks",
       workflowResultsTitle: "Results",
       workflowResultsHint: "Review and export",
+      workflowPageNavigationLabel: "Workflow page navigation",
+      workflowPreviousPage: "Previous",
+      workflowNextPage: "Next",
+      workflowStartOfWorkflow: "Start of workflow",
+      workflowEndOfWorkflow: "End of workflow",
       moduleFilterSummary: "LCA module filter (advanced)",
       domainFilterHelp: "Clinical navigation category. It does not define the LCA inventory boundary.",
       moduleFilterHelp: "Reusable LCA modeling zone used to inspect activities that share an inventory model. It is not a second clinical category.",
@@ -8310,6 +8386,11 @@
       workflowLcaHint: "Controleer automatische bouwstenen",
       workflowResultsTitle: "Resultaten",
       workflowResultsHint: "Beoordeel en exporteer",
+      workflowPageNavigationLabel: "Navigatie tussen werkstappen",
+      workflowPreviousPage: "Vorige",
+      workflowNextPage: "Volgende",
+      workflowStartOfWorkflow: "Begin van de workflow",
+      workflowEndOfWorkflow: "Einde van de workflow",
       moduleFilterSummary: "LCA-modulefilter (geavanceerd)",
       domainFilterHelp: "Klinische navigatiecategorie. Dit bepaalt niet de LCA-inventarisgrens.",
       moduleFilterHelp: "Herbruikbare LCA-modelzone voor activiteiten met hetzelfde inventarismodel. Dit is geen tweede klinische categorie.",
@@ -8395,6 +8476,11 @@
       workflowLcaHint: "复核自动选择的构建单元",
       workflowResultsTitle: "结果",
       workflowResultsHint: "检查并导出",
+      workflowPageNavigationLabel: "工作页面导航",
+      workflowPreviousPage: "上一页",
+      workflowNextPage: "下一页",
+      workflowStartOfWorkflow: "工作流起点",
+      workflowEndOfWorkflow: "工作流终点",
       moduleFilterSummary: "LCA 模块筛选（高级）",
       domainFilterHelp: "用于临床路径导航，不定义 LCA 清单边界。",
       moduleFilterHelp: "用于查找共用同一清单模型的活动，是可复用的 LCA 建模区，不是第二套临床分类。",
@@ -15298,6 +15384,8 @@
       }
     };
 
+    const workflowStepOrder = ["pathway", "activities", "lca", "results"];
+
     function renderWorkflowGuide() {
       const config = workflowGuideConfig[state.workspaceStep] || workflowGuideConfig.pathway;
       const panel = document.getElementById("workflowGuidePanel");
@@ -15311,9 +15399,50 @@
       if (guide) guide.setAttribute("aria-label", t(config.titleKey));
     }
 
+    function renderWorkflowPageNavigation() {
+      const currentIndex = workflowStepOrder.indexOf(state.workspaceStep);
+      const previousStep = currentIndex > 0 ? workflowStepOrder[currentIndex - 1] : "";
+      const nextStep = currentIndex >= 0 && currentIndex < workflowStepOrder.length - 1
+        ? workflowStepOrder[currentIndex + 1]
+        : "";
+      const navigation = document.getElementById("workflowPageNavigation");
+      const previousButton = document.getElementById("workflowPreviousPage");
+      const nextButton = document.getElementById("workflowNextPage");
+      const previousDestination = previousStep
+        ? t(workflowGuideConfig[previousStep].titleKey)
+        : t("workflowStartOfWorkflow");
+      const nextDestination = nextStep
+        ? t(workflowGuideConfig[nextStep].titleKey)
+        : t("workflowEndOfWorkflow");
+
+      if (navigation) navigation.setAttribute("aria-label", t("workflowPageNavigationLabel"));
+      setText("workflowPreviousPageLabel", "workflowPreviousPage");
+      setText("workflowNextPageLabel", "workflowNextPage");
+      const previousDestinationElement = document.getElementById("workflowPreviousDestination");
+      const nextDestinationElement = document.getElementById("workflowNextDestination");
+      if (previousDestinationElement) previousDestinationElement.textContent = previousDestination;
+      if (nextDestinationElement) nextDestinationElement.textContent = nextDestination;
+
+      if (previousButton) {
+        previousButton.disabled = !previousStep;
+        previousButton.dataset.targetStep = previousStep;
+        previousButton.setAttribute(
+          "aria-label",
+          previousStep ? `${t("workflowPreviousPage")}: ${previousDestination}` : previousDestination
+        );
+      }
+      if (nextButton) {
+        nextButton.disabled = !nextStep;
+        nextButton.dataset.targetStep = nextStep;
+        nextButton.setAttribute(
+          "aria-label",
+          nextStep ? `${t("workflowNextPage")}: ${nextDestination}` : nextDestination
+        );
+      }
+    }
+
     function renderWorkspaceStep() {
-      const validSteps = ["pathway", "activities", "lca", "results"];
-      if (!validSteps.includes(state.workspaceStep)) state.workspaceStep = "pathway";
+      if (!workflowStepOrder.includes(state.workspaceStep)) state.workspaceStep = "pathway";
       const clinicalWorkspace = document.getElementById("clinicalWorkspace");
       const lcaCalculator = document.getElementById("lcaCalculator");
       const clinicalStep = ["pathway", "activities"].includes(state.workspaceStep);
@@ -15333,10 +15462,11 @@
       });
       document.body.dataset.workspaceStep = state.workspaceStep;
       renderWorkflowGuide();
+      renderWorkflowPageNavigation();
     }
 
     function switchWorkspaceStep(step) {
-      if (!["pathway", "activities", "lca", "results"].includes(step)) return;
+      if (!workflowStepOrder.includes(step)) return;
       state.workspaceStep = step;
       renderWorkspaceStep();
       updateStickyWorkspaceOffset();
@@ -19509,6 +19639,12 @@
       });
       document.querySelectorAll(".workflow-step[data-workspace-step]").forEach((button) => {
         button.addEventListener("click", () => switchWorkspaceStep(button.dataset.workspaceStep));
+      });
+      ["workflowPreviousPage", "workflowNextPage"].forEach((id) => {
+        document.getElementById(id).addEventListener("click", (event) => {
+          const targetStep = event.currentTarget.dataset.targetStep;
+          if (targetStep) switchWorkspaceStep(targetStep);
+        });
       });
       document.querySelectorAll("[data-urology-pathway]").forEach((button) => {
         button.addEventListener("click", () => {

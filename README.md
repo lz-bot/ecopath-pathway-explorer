@@ -2,6 +2,13 @@
 
 This repository hosts a public prototype of the ECO-PATH Pathway Activity Explorer.
 
+## Live Site
+
+- Primary site: [ecopath-pathway-explorer.pages.dev](https://ecopath-pathway-explorer.pages.dev/)
+- Fallback mirror: [GitHub Pages](https://lz-bot.github.io/ecopath-pathway-explorer/)
+
+Cloudflare Pages deploys the primary site automatically after each push to the GitHub `main` branch. GitHub remains the source repository and the GitHub Pages site remains available as a fallback.
+
 ## Purpose
 
 ECO-PATH is a pathway-level framework for environmental assessment of healthcare. The explorer shows how clinical pathway documents can be decomposed into coded activities, decision points, route structures, and candidate life cycle assessment modules.
@@ -79,7 +86,7 @@ Each row remains a one-at-a-time test. The combined selected scenario adds the r
 
 ## One-click Brightway calculation
 
-GitHub Pages is a static website and cannot run Brightway or distribute licensed background databases. For direct calculation, run the explorer through the local companion service in the Python environment that has access to the intended Brightway project:
+The public Cloudflare Pages deployment is a static website and cannot run Brightway or distribute licensed background databases. For direct calculation, run the explorer through the local companion service in the Python environment that has access to the intended Brightway project:
 
 See the official [Brightway installation guide](https://docs.brightway.dev/en/latest/content/installation/) and [project activation reference](https://docs.brightway.dev/en/latest/content/cheatsheet/projects.html) for the current environment requirements and project commands.
 

@@ -14687,7 +14687,9 @@
     }
 
     function displayUnit(unit) {
-      return String(unit ?? "").replaceAll("CO2", "CO₂");
+      return String(unit ?? "")
+        .replaceAll("CO2", "CO₂")
+        .replace(/\bm3\b/g, "m³");
     }
 
     function localizedUnit(unit) {
@@ -18056,7 +18058,7 @@
       const moduleScale = (plotHeight - moduleGap * Math.max(0, data.modules.length - 1)) / data.total;
       const blockScale = (plotHeight - blockGap * Math.max(0, blocks.length - 1)) / data.total;
       const scale = Math.max(0.000001, Math.min(moduleScale, blockScale));
-      const sourceX = 70;
+      const sourceX = 180;
       const moduleX = 455;
       const blockX = 830;
       const nodeWidth = 18;

@@ -279,14 +279,15 @@
 
     .site-footer {
       margin-top: 8px;
-      border-top: 1px solid var(--line);
-      background: var(--panel);
+      border-top: 3px solid var(--accent);
+      background: #102b70;
     }
 
     .site-footer-inner {
       max-width: 1480px;
       margin: 0 auto;
-      padding: 18px;
+      min-height: 72px;
+      padding: 14px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -294,25 +295,44 @@
     }
 
     .site-footer address {
-      display: grid;
-      gap: 2px;
-      color: var(--muted);
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 4px 14px;
+      color: var(--panel);
       font-size: 13px;
       font-style: normal;
     }
 
     .site-footer address strong {
-      color: var(--ink);
+      color: var(--panel);
       font-size: 14px;
+    }
+
+    .site-footer a {
+      color: var(--panel);
+      text-decoration-color: rgba(255, 255, 255, 0.7);
+      text-underline-offset: 2px;
     }
 
     .footer-contact-button {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       flex: 0 0 auto;
-      color: var(--accent-dark);
+      min-height: 40px;
+      height: 40px;
+      padding: 0 12px;
+      border-color: rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--panel);
       font-weight: 700;
+    }
+
+    .footer-contact-button:hover {
+      border-color: var(--panel);
+      background: rgba(255, 255, 255, 0.16);
     }
 
     .footer-contact-button svg,

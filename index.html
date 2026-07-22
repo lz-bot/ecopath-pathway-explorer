@@ -1638,6 +1638,29 @@
       font-weight: 800;
     }
 
+    .guided-summary-copy,
+    .guided-impact-field,
+    .results-export-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .guided-summary-copy > :last-child,
+    .guided-impact-field .field {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .guided-impact-field {
+      align-items: flex-start;
+    }
+
+    .results-export-control {
+      justify-content: flex-end;
+    }
+
     .specialty-selector .pathway-guide-marker {
       width: 20px;
       height: 20px;
@@ -4221,7 +4244,7 @@
           <span><strong id="workflowResultsTitle">Results</strong><small id="workflowResultsHint">Review and export</small></span>
         </button>
       </nav>
-      <section class="workflow-guide" aria-live="polite">
+      <section class="workflow-guide" id="workflowGuidePanel" aria-live="polite">
         <h3 id="workflowGuideTitle">Pathway and scope</h3>
         <ol class="pathway-step-guide" id="pathwayStepGuide" aria-label="Pathway setup order">
           <li>
@@ -4420,9 +4443,12 @@
 
     <details class="goal-scope-panel" id="goalScopePanel" data-workspace-panel="lca">
       <summary>
-        <span class="goal-scope-summary-copy">
-          <strong id="goalScopeTitle">Goal, scope and functional unit</strong>
-          <span id="functionalUnitSummary"></span>
+        <span class="guided-summary-copy">
+          <span class="pathway-guide-marker" aria-hidden="true">1</span>
+          <span class="goal-scope-summary-copy">
+            <strong id="goalScopeTitle">Goal, scope and functional unit</strong>
+            <span id="functionalUnitSummary"></span>
+          </span>
         </span>
       </summary>
       <div class="goal-scope-content">
@@ -4478,15 +4504,22 @@
         </div>
         <div class="lca-header-actions">
           <span class="status-chip" id="lcaPathwayStatus"></span>
-          <button type="button" id="lcaExportReport" data-workspace-panel="results">Export LCA report</button>
+          <span class="results-export-control" data-workspace-panel="results">
+            <span class="pathway-guide-marker" aria-hidden="true">3</span>
+            <button type="button" id="lcaExportReport">Export LCA report</button>
+          </span>
           <span class="export-status" id="lcaExportStatus" aria-live="polite"></span>
         </div>
       </div>
 
       <div class="impact-category-bar" data-workspace-panel="lca results">
-        <div class="field">
-          <label for="lcaImpactCategory" id="lcaImpactCategoryLabel">Impact category</label>
-          <select id="lcaImpactCategory"></select>
+        <div class="guided-impact-field">
+          <span class="pathway-guide-marker" data-workspace-panel="lca" aria-hidden="true">2</span>
+          <span class="pathway-guide-marker" data-workspace-panel="results" aria-hidden="true">1</span>
+          <div class="field">
+            <label for="lcaImpactCategory" id="lcaImpactCategoryLabel">Impact category</label>
+            <select id="lcaImpactCategory"></select>
+          </div>
         </div>
         <div class="impact-category-context">
           <span class="impact-method-chip" id="impactMethodChip">EF v3.1 no LT · demo</span>
@@ -4497,9 +4530,12 @@
 
       <details class="lca-module-map" id="buildingBlockMapSection" aria-label="LCA building block map" data-workspace-panel="lca">
         <summary class="building-block-summary">
-          <div>
-            <h3 id="buildingBlockMapHeading">Candidate building blocks by LCA module</h3>
-            <p class="scope-note" id="buildingBlockMapIntro">Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
+          <div class="guided-summary-copy">
+            <span class="pathway-guide-marker" aria-hidden="true">3</span>
+            <div>
+              <h3 id="buildingBlockMapHeading">Candidate building blocks by LCA module</h3>
+              <p class="scope-note" id="buildingBlockMapIntro">Candidate ECO-PATH building blocks grouped by module. A selected pathway may use only part of a module, for example only the consultation and monitoring parts of EM06. EM10 and EM11 are optional cross-cutting support modules, not station modules shown on the pathway map.</p>
+            </div>
           </div>
           <span class="status-chip" id="buildingBlockCount"></span>
         </summary>
@@ -4563,9 +4599,12 @@
 
       <details class="lca-analysis-panel" data-workspace-panel="results" aria-labelledby="lcaAnalysisTitle">
         <summary class="collapse-panel-summary">
-          <span>
-            <strong id="lcaAnalysisTitle">Impact result analysis</strong>
-            <small id="lcaAnalysisIntro"></small>
+          <span class="guided-summary-copy">
+            <span class="pathway-guide-marker" aria-hidden="true">2</span>
+            <span>
+              <strong id="lcaAnalysisTitle">Impact result analysis</strong>
+              <small id="lcaAnalysisIntro"></small>
+            </span>
           </span>
         </summary>
         <div class="lca-analysis-toolbar">
@@ -4599,9 +4638,12 @@
 
       <details class="sensitivity-panel" data-workspace-panel="results" aria-labelledby="sensitivityTitle">
         <summary class="collapse-panel-summary">
-          <span>
-            <strong id="sensitivityTitle">Sensitivity and improvement explorer</strong>
-            <small id="sensitivityIntro"></small>
+          <span class="guided-summary-copy">
+            <span class="pathway-guide-marker" aria-hidden="true">2</span>
+            <span>
+              <strong id="sensitivityTitle">Sensitivity and improvement explorer</strong>
+              <small id="sensitivityIntro"></small>
+            </span>
           </span>
         </summary>
         <div class="sensitivity-content">
@@ -4627,9 +4669,12 @@
 
       <details class="brightway-bridge" data-workspace-panel="results" aria-labelledby="brightwayBridgeTitle">
         <summary class="collapse-panel-summary">
-          <span>
-            <strong id="brightwayBridgeTitle">Brightway calculation bridge</strong>
-            <small id="brightwayBridgeIntro"></small>
+          <span class="guided-summary-copy">
+            <span class="pathway-guide-marker" aria-hidden="true">3</span>
+            <span>
+              <strong id="brightwayBridgeTitle">Brightway calculation bridge</strong>
+              <small id="brightwayBridgeIntro"></small>
+            </span>
           </span>
         </summary>
         <div class="brightway-bridge-content">
@@ -9304,14 +9349,14 @@
       workflowActivitiesGuide3Text: "Selected activities activate their mapped LCA building blocks.",
       workflowLcaGuide1Title: "Define goal and functional unit",
       workflowLcaGuide1Text: "Set the modeled service, population, boundary, time horizon, geography, and reference unit.",
-      workflowLcaGuide2Title: "Review model inputs",
-      workflowLcaGuide2Text: "Check auto-selected building blocks, quantities, unit impact results, and uncertainty.",
-      workflowLcaGuide3Title: "Choose an impact category",
-      workflowLcaGuide3Text: "Select an EF category, then continue to Results.",
-      workflowResultsGuide1Title: "Compare categories",
-      workflowResultsGuide1Text: "Review the complete EF impact result table.",
-      workflowResultsGuide2Title: "Inspect contributors",
-      workflowResultsGuide2Text: "Use contribution, Sankey, and sensitivity views.",
+      workflowLcaGuide2Title: "Choose an impact category",
+      workflowLcaGuide2Text: "Select the EF category that controls the units and impact results shown below.",
+      workflowLcaGuide3Title: "Review model inputs",
+      workflowLcaGuide3Text: "Check activated building blocks, quantities, foreground drafts, unit impact results, and uncertainty, then continue to Results.",
+      workflowResultsGuide1Title: "Review the result overview",
+      workflowResultsGuide1Text: "Choose an impact category and check the pathway result and cohort scaling.",
+      workflowResultsGuide2Title: "Analyze contributions and scenarios",
+      workflowResultsGuide2Text: "Compare all categories and use Sankey and sensitivity views.",
       workflowResultsGuide3Title: "Export or calculate",
       workflowResultsGuide3Text: "Create a report or send the scenario to Brightway.",
       assessmentModeLabel: "Assessment purpose",
@@ -9371,14 +9416,14 @@
       workflowActivitiesGuide3Text: "Geselecteerde activiteiten activeren gekoppelde LCA-bouwstenen.",
       workflowLcaGuide1Title: "Bepaal doel en functionele eenheid",
       workflowLcaGuide1Text: "Leg zorgfunctie, populatie, grens, tijdshorizon, geografie en referentie-eenheid vast.",
-      workflowLcaGuide2Title: "Controleer modelinvoer",
-      workflowLcaGuide2Text: "Controleer automatisch geselecteerde bouwstenen, hoeveelheden, eenheidsimpacten en onzekerheid.",
-      workflowLcaGuide3Title: "Kies een impactcategorie",
-      workflowLcaGuide3Text: "Selecteer een EF-categorie en ga daarna naar Resultaten.",
-      workflowResultsGuide1Title: "Vergelijk categorieën",
-      workflowResultsGuide1Text: "Bekijk de volledige EF-resultatentabel.",
-      workflowResultsGuide2Title: "Bekijk bijdragen",
-      workflowResultsGuide2Text: "Gebruik bijdrage-, Sankey- en gevoeligheidsweergaven.",
+      workflowLcaGuide2Title: "Kies een impactcategorie",
+      workflowLcaGuide2Text: "Selecteer de EF-categorie die de onderstaande eenheden en impactresultaten bepaalt.",
+      workflowLcaGuide3Title: "Controleer modelinvoer",
+      workflowLcaGuide3Text: "Controleer geactiveerde bouwstenen, hoeveelheden, voorgrondconcepten, eenheidsimpacten en onzekerheid en ga daarna naar Resultaten.",
+      workflowResultsGuide1Title: "Bekijk het resultaatoverzicht",
+      workflowResultsGuide1Text: "Kies een impactcategorie en controleer het zorgpadresultaat en de opschaling naar het cohort.",
+      workflowResultsGuide2Title: "Analyseer bijdragen en scenario's",
+      workflowResultsGuide2Text: "Vergelijk alle categorieën en gebruik de Sankey- en gevoeligheidsweergaven.",
       workflowResultsGuide3Title: "Exporteer of bereken",
       workflowResultsGuide3Text: "Maak een rapport of stuur het scenario naar Brightway.",
       assessmentModeLabel: "Doel van de beoordeling",
@@ -9438,14 +9483,14 @@
       workflowActivitiesGuide3Text: "所选活动会自动激活对应的 LCA 构件。",
       workflowLcaGuide1Title: "定义目标和功能单位",
       workflowLcaGuide1Text: "设置医疗服务、患者人群、边界、时间范围、地域和参考单位。",
-      workflowLcaGuide2Title: "检查模型输入",
-      workflowLcaGuide2Text: "检查自动选中的构件、数量、单位影响结果和不确定性。",
-      workflowLcaGuide3Title: "选择影响类别",
-      workflowLcaGuide3Text: "选择 EF 类别，然后进入“结果”。",
-      workflowResultsGuide1Title: "比较影响类别",
-      workflowResultsGuide1Text: "查看完整的 EF 结果表。",
-      workflowResultsGuide2Title: "查看主要贡献",
-      workflowResultsGuide2Text: "使用贡献、桑基图和敏感性分析。",
+      workflowLcaGuide2Title: "选择影响类别",
+      workflowLcaGuide2Text: "选择决定下方单位和影响结果的 EF 类别。",
+      workflowLcaGuide3Title: "检查模型输入",
+      workflowLcaGuide3Text: "检查已启用的构建块、数量、前景清单草稿、单位影响结果和不确定性，然后进入“结果”。",
+      workflowResultsGuide1Title: "查看结果概览",
+      workflowResultsGuide1Text: "选择影响类别，并检查路径结果和患者人数缩放。",
+      workflowResultsGuide2Title: "分析贡献和情景",
+      workflowResultsGuide2Text: "比较全部类别，并使用桑基图和敏感性分析。",
       workflowResultsGuide3Title: "导出或计算",
       workflowResultsGuide3Text: "生成报告，或将情景发送至 Brightway。",
       assessmentModeLabel: "评估目的",
@@ -15255,7 +15300,9 @@
 
     function renderWorkflowGuide() {
       const config = workflowGuideConfig[state.workspaceStep] || workflowGuideConfig.pathway;
+      const panel = document.getElementById("workflowGuidePanel");
       const guide = document.getElementById("pathwayStepGuide");
+      if (panel) panel.hidden = state.workspaceStep === "activities";
       setText("workflowGuideTitle", config.titleKey);
       config.steps.forEach(([titleKey, textKey], index) => {
         setText(`workflowGuideStep${index + 1}Title`, titleKey);
@@ -15420,12 +15467,9 @@
       const container = document.getElementById("specialtyOptions");
       if (!summary || !container) return;
       const selected = selectedPathwaySource();
-      const pathwayGuideMarker = state.workspaceStep === "pathway"
-        ? '<span class="pathway-guide-marker" aria-hidden="true">1</span>'
-        : "";
       summary.innerHTML = `
         <span class="summary-content">
-          ${pathwayGuideMarker}
+          <span class="pathway-guide-marker" data-workspace-panel="pathway" aria-hidden="true">1</span>
           <span>${escapeHtml(`${t("specialtySummary")} · ${selected.group.label} / ${localizedPathwayLabel(selected.item.id)}`)}</span>
         </span>
       `;

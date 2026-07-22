@@ -8,7 +8,7 @@ ECO-PATH is a pathway-level framework for environmental assessment of healthcare
 
 The current prototype includes urology and gastroenterology examples:
 
-- Urology: one MIBC map with selectable Dutch operational and EAU 2026 clinical-reference views
+- Urology: selectable Dutch operational, NVU 2016 national-guideline, and EAU 2026 clinical-reference views in one MIBC workspace
 - Gastroenterology: Dutch guideline-based colorectal polyp and CRC hospital pathway
 
 These views are intended to support protocol-to-activity mapping, clinical expert review, and early life cycle inventory planning.
@@ -127,17 +127,21 @@ The local service and file workflow support an auditable ISO 14040/14044 process
 
 ## Urology Source Views
 
-The urology entry uses one interactive map container with two selectable source views.
+The urology entry uses one interactive map container with three selectable source views.
 
 The **Dutch pathway** starts at the hospital boundary in Albert Schweitzer Hospital or another regional hospital. It includes regional urology assessment, cystoscopy, TURBT, pathology, MIBC confirmation, staging, and transfer of the referral package. Confirmed MIBC then enters Erasmus MC pathology and imaging review, joint clinic and MDO, treatment planning, surgery, bladder-preserving treatment, systemic therapy, advanced care, and shared follow-up. The non-MIBC branch exits the current MIBC scope and remains visible so the map does not imply that all detected bladder tumors proceed to tertiary MIBC care.
 
+The **NVU 2016 national guideline** view extracts diagnosis, staging, fitness assessment, curative and palliative treatment, the Dutch brachytherapy route, and follow-up-boundary activities from the Dutch bladder-cancer guideline. The NVU register states that this guideline is based on EAU 2016. The explorer therefore presents it as a historical Dutch national reference and keeps it separate from both the operational pathway and the current EAU 2026 reference.
+
 The **EAU 2026 reference** view is institution-neutral. It separates guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. It does not identify whether an activity occurs at Albert Schweitzer Hospital, Erasmus MC, or another provider.
 
-The **Compare protocols** view aligns the Dutch/EMC and EAU sources by harmonized clinical function instead of comparing raw station counts. It separates functions that are explicit in both sources, Dutch operational details, and EAU-specific guideline details. A function that is not separately explicit in one source may be embedded in another activity or outside that source's scope; it is not automatically interpreted as missing care. The comparison is informational and does not change the selected pathway or LCA scenario.
+The **Compare protocols** view aligns the Dutch operational, NVU 2016, and EAU 2026 sources by harmonized clinical function instead of comparing raw station counts. It identifies functions that are explicit in all three sources, explicit in two sources, or specific to one source. A function that is not separately explicit in one source may be embedded in another activity or outside that source's scope; it is not automatically interpreted as missing care. The comparison is informational and does not change the selected pathway or LCA scenario.
 
 Public reference sources:
 
 - [NVU current guideline register](https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/)
+- [NVU bladder-cancer guideline, 2016 (PDF)](https://portal.nvu.nl/WebserviceWordpress/qgws.asmx/nvu_get_document?id=553B5F89-5DF7-E611-9438-005056B31E13)
+- [Dutch bladder-cancer brachytherapy module](https://richtlijnendatabase.nl/richtlijn/blaascarcinoom_-_brachytherapie/startpagina_-_brachytherapie.html)
 - [EAU muscle-invasive and metastatic bladder cancer guideline](https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer)
 
 ## Shared Modules And Pathway-Specific Building Blocks

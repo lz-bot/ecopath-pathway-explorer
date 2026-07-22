@@ -205,7 +205,7 @@
 
     .protocol-comparison-summary {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
       margin-bottom: 14px;
     }
@@ -261,7 +261,7 @@
     .protocol-comparison-header,
     .protocol-comparison-row {
       display: grid;
-      grid-template-columns: minmax(190px, 0.8fr) repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(190px, 0.8fr) repeat(3, minmax(0, 1fr));
     }
 
     .protocol-comparison-header {
@@ -332,10 +332,12 @@
       line-height: 1.2;
     }
 
-    .protocol-comparison-row[data-status="dutch"] .protocol-comparison-status {
+    .protocol-comparison-row[data-status="operational"] .protocol-comparison-status,
+    .protocol-comparison-row[data-status="nvu"] .protocol-comparison-status {
       background: rgba(111, 207, 241, 0.12);
     }
 
+    .protocol-comparison-row[data-status="mixed"] .protocol-comparison-status,
     .protocol-comparison-row[data-status="eau"] .protocol-comparison-status {
       border-color: var(--line);
       background: var(--panel-soft);
@@ -653,7 +655,7 @@
 
     .source-lens-actions {
       display: inline-grid;
-      grid-template-columns: repeat(3, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, minmax(170px, 1fr));
       flex: 0 0 auto;
       border: 1px solid var(--accent);
       background: var(--panel);
@@ -670,6 +672,15 @@
 
     .source-lens-button + .source-lens-button {
       border-left: 1px solid var(--accent);
+    }
+
+    .source-lens-button:nth-child(3) {
+      border-top: 1px solid var(--accent);
+      border-left: 0;
+    }
+
+    .source-lens-button:nth-child(4) {
+      border-top: 1px solid var(--accent);
     }
 
     .source-lens-button.active {
@@ -3559,6 +3570,9 @@
       .protocol-comparison-source[data-source="dutch"]::before {
         content: attr(data-label);
       }
+      .protocol-comparison-source[data-source="nvu"]::before {
+        content: attr(data-label);
+      }
       .protocol-comparison-source[data-source="eau"]::before {
         content: attr(data-label);
       }
@@ -3841,11 +3855,14 @@
                   <p class="source-lens-difference" id="urologySourceDifference"></p>
                   <div class="source-lens-links">
                     <a href="https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/" target="_blank" rel="noreferrer">NVU Dutch guidance</a>
+                    <a href="https://portal.nvu.nl/WebserviceWordpress/qgws.asmx/nvu_get_document?id=553B5F89-5DF7-E611-9438-005056B31E13" target="_blank" rel="noreferrer">NVU bladder cancer guideline 2016</a>
+                    <a href="https://richtlijnendatabase.nl/richtlijn/blaascarcinoom_-_brachytherapie/startpagina_-_brachytherapie.html" target="_blank" rel="noreferrer">Dutch brachytherapy module</a>
                     <a href="https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" target="_blank" rel="noreferrer">EAU MIBC 2026</a>
                   </div>
                 </div>
                 <div class="source-lens-actions" role="group" aria-label="Urology pathway source view">
                   <button class="source-lens-button" type="button" data-urology-pathway="emc" id="showDutchUrology">Dutch pathway</button>
+                  <button class="source-lens-button" type="button" data-urology-pathway="nvu" id="showNvuUrology">NVU 2016 guideline</button>
                   <button class="source-lens-button" type="button" data-urology-pathway="eauFull" id="showEauUrology">EAU 2026 reference</button>
                   <button class="source-lens-button" type="button" id="openProtocolComparisonDialog" aria-haspopup="dialog" aria-controls="protocolComparisonDialog">Compare protocols</button>
                 </div>
@@ -4461,19 +4478,19 @@
       [automaticBlock("Inter-hospital clinical transfer")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-DX02", "EAUFULL-DX02"],
+      ["EAU-DX02", "EAUFULL-DX02", "NVU-DX01"],
       [automaticBlock("Diagnostic laboratory set")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-DX03", "EAUFULL-DX03", "EMC-DX02"],
+      ["EAU-DX03", "EAUFULL-DX03", "NVU-DX02", "EMC-DX02"],
       [automaticBlock("Cystoscopy")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-DX04", "EAUFULL-DX04", "EAUFULL-TX12", "EMC-DX03", "EMC-TX12"],
+      ["EAU-DX04", "EAUFULL-DX04", "EAUFULL-TX12", "NVU-DX03", "NVU-TX15", "EMC-DX03", "EMC-TX12"],
       [automaticBlock("TURBT procedure episode")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-DX05", "EAUFULL-DX05", "EMC-DX04"],
+      ["EAU-DX05", "EAUFULL-DX05", "NVU-DX04", "EMC-DX04"],
       [automaticBlock("Pathology slide review"), automaticBlock("Specimen processing")]
     );
     registerActivityBuildingBlocks(
@@ -4489,11 +4506,11 @@
       [automaticBlock("IHC or molecular pathology add-on")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-DX06", "EAUFULL-DX06", "EAUFULL-DX07", "EAUFULL-TX05", "EMC-DX06", "EMC-TX05", "CRCDUTCH-DX03"],
+      ["EAU-DX06", "EAUFULL-DX06", "EAUFULL-DX07", "EAUFULL-TX05", "NVU-DX05", "EMC-DX06", "EMC-TX05", "CRCDUTCH-DX03"],
       [automaticBlock("CT scan")]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-DX08", "EMC-DX07"],
+      ["EAUFULL-DX08", "NVU-DX06", "EMC-DX07"],
       [automaticBlock("MRI scan")]
     );
     registerActivityBuildingBlocks(
@@ -4513,7 +4530,7 @@
       [automaticBlock("Medical oncology consultation")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-TX03", "EAUFULL-TX04", "EMC-TX04", "CRCDUTCH-TX04"],
+      ["EAU-TX03", "EAUFULL-TX04", "NVU-TX04", "EMC-TX04", "CRCDUTCH-TX04"],
       [
         automaticBlock("Medical oncology consultation"),
         automaticBlock("Chemotherapy infusion cycle", 4),
@@ -4522,7 +4539,7 @@
       ]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-TX17", "EMC-TX16"],
+      ["EAUFULL-TX17", "NVU-TX17", "EMC-TX16"],
       [
         automaticBlock("Medical oncology consultation"),
         automaticBlock("Immunotherapy or targeted infusion cycle", 4),
@@ -4540,19 +4557,19 @@
       ]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-TX06", "EMC-TX06"],
+      ["EAUFULL-TX06", "NVU-TX06", "NVU-TX18", "EMC-TX06"],
       [automaticBlock("Radical cystectomy procedure episode"), automaticBlock("Complex surgical specimen pathology")]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-TX07", "EMC-TX07"],
+      ["EAUFULL-TX07", "NVU-TX07", "EMC-TX07"],
       [automaticBlock("Operating-room energy allocation")]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-TX08", "EMC-TX08"],
+      ["EAUFULL-TX08", "NVU-TX08", "EMC-TX08"],
       [automaticBlock("Urinary diversion procedure add-on")]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-TX09", "EMC-TX09"],
+      ["EAUFULL-TX09", "NVU-TX09", "EMC-TX09"],
       [automaticBlock("Ward admission day", 7)]
     );
     registerActivityBuildingBlocks(
@@ -4582,7 +4599,24 @@
       [automaticBlock("Radiotherapy fraction", 20), automaticBlock("Chemoradiation co-treatment add-on")]
     );
     registerActivityBuildingBlocks(
-      ["EAUFULL-TX16", "EMC-TX17"],
+      ["NVU-TX12"],
+      [
+        automaticBlock("Radiotherapy planning"),
+        automaticBlock("Immobilization device"),
+        automaticBlock("Radiotherapy fraction", 20),
+        automaticBlock("Chemoradiation co-treatment add-on")
+      ]
+    );
+    registerActivityBuildingBlocks(
+      ["NVU-TX14"],
+      [automaticBlock("Radiotherapy planning"), automaticBlock("Radiotherapy fraction", 10)]
+    );
+    registerActivityBuildingBlocks(
+      ["NVU-TX16"],
+      [automaticBlock("Brachytherapy treatment episode")]
+    );
+    registerActivityBuildingBlocks(
+      ["EAUFULL-TX16", "NVU-TX19", "EMC-TX17"],
       [automaticBlock("Radiotherapy planning"), automaticBlock("Radiotherapy fraction", 5)]
     );
     registerActivityBuildingBlocks(
@@ -4969,6 +5003,86 @@
           edge("EAUFULL-TX15", "EAUFULL-TX06", "return"),
           edge("EAUFULL-TX03", "EAUFULL-TX16", "return"),
           edge("EAUFULL-TX03", "EAUFULL-TX17", "return")
+        ]
+      },
+      nvu: {
+        label: "Urology: Dutch national guidance (NVU 2016)",
+        title: "Dutch National MIBC Guideline Pathway (NVU 2016)",
+        status: "National guideline extraction based on EAU 2016; not a local execution map",
+        scope: "Activity-level extraction from the NVU bladder cancer guideline published in 2016, supplemented by the Dutch bladder-cancer brachytherapy module and NVU uro-oncology quality norms. This historical national reference is shown separately from the Dutch operational pathway and the current EAU 2026 reference.",
+        defaultSelected: "NVU-JM01",
+        lanes: [
+          { y: 90, label: "Diagnosis and staging" },
+          { y: 220, label: "MDT and eligibility" },
+          { y: 350, label: "Surgery and perioperative treatment" },
+          { y: 500, label: "Bladder-sparing and radiotherapy" },
+          { y: 620, label: "Follow-up and advanced care" }
+        ],
+        nodes: [
+          activity("NVU-AC01", "Guideline entry for invasive bladder cancer", "First contact / intake", "activity", "EM01", "diagnostic", 60, 90, "Entry into the national guideline after suspected or confirmed invasive bladder cancer.", "This is a modeling boundary, not a separately counted consultation.", ["Boundary definition"], []),
+          activity("NVU-DX01", "Urine cytology if indicated", "Diagnostics", "activity", "EM02", "diagnostic", 170, 90, "Urine cytology used when clinically indicated during diagnostic assessment.", "The NVU guideline lists cytology as part of the pre-TURBT diagnostic workup.", ["Urine cytology service"], []),
+          activity("NVU-DX02", "Cystoscopy", "Diagnostics", "activity", "EM03", "diagnostic", 280, 90, "Endoscopic visualization and documentation of the bladder tumor.", "Cystoscopy is explicit in the national diagnostic pathway.", ["Cystoscopy service", "Endoscope reprocessing service"], []),
+          activity("NVU-DX03", "TURBT and urethral assessment if indicated", "Diagnostics", "activity", "EM07", "diagnostic", 400, 90, "Transurethral resection for diagnosis and staging, with urethral assessment or biopsy when indicated.", "This resource-bearing procedure establishes histology and local stage.", ["Operating-room service", "Anesthetic medicines", "Sterile instruments", "Surgical waste"], []),
+          activity("NVU-DX04", "Histopathology report and confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 520, 90, "Histopathological confirmation, grade, invasion depth, and specimen reporting.", "The national guideline specifies pathology reporting requirements before route selection.", ["Pathology slide review", "Specimen processing"], []),
+          activity("NVU-DX05", "CT chest abdomen and upper-tract staging", "Diagnostics", "activity", "EM03", "diagnostic", 660, 90, "CT of the chest and abdomen with an excretory phase for staging and upper-tract assessment.", "The excretory phase is part of the staging protocol and should not be double counted as a second scan when acquired together.", ["CT scan service", "Contrast media"], []),
+          activity("NVU-DX06", "MRI local staging if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 800, 90, "MRI used for local staging when clinically indicated or when CT is unsuitable.", "This optional examination is counted only in routes that include it.", ["MRI scan service"], []),
+          activity("NVU-JM01", "Structured MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1090, 220, "Structured multidisciplinary discussion before definitive treatment selection.", "NVU quality norms require multidisciplinary review, but meeting-only impacts remain under the provisional LCA cut-off.", [], []),
+          activity("NVU-TX01", "Comorbidity and fitness assessment", "Treatment planning", "decision", "EM05", "diagnostic", 950, 220, "Assessment of comorbidity, health status, and fitness for cystectomy or bladder-preserving treatment.", "The guideline recommends a validated comorbidity assessment for treatment choice.", [], []),
+          activity("NVU-TX02", "Treatment intent and informed choice", "Treatment planning", "decision", "EM05", "treatment", 810, 220, "Definition of treatment intent and informed choice between clinically appropriate options.", "This node controls pathway selection and is not a separate resource-bearing procedure.", [], []),
+          activity("NVU-TX03", "Cisplatin eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 670, 220, "Assessment of eligibility for cisplatin-based perioperative systemic therapy.", "The 2016 recommendation supports neoadjuvant cisplatin-based combination chemotherapy for eligible cT2-T4a cN0M0 patients.", [], []),
+          activity("NVU-TX04", "Neoadjuvant cisplatin-based chemotherapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 500, 350, "Neoadjuvant cisplatin-based combination chemotherapy before radical local treatment.", "Regimen, cycles, dose, and monitoring remain scenario parameters.", ["Antineoplastic medicines", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring"], []),
+          activity("NVU-TX05", "Surgical approach and diversion planning", "Surgery", "decision", "EM07", "treatment", 610, 350, "Planning of radical cystectomy, lymph-node dissection, urinary diversion, and perioperative approach.", "The decision is retained for route structure but does not create a standalone calculation row.", [], []),
+          activity("NVU-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 720, 350, "Radical cystectomy for eligible patients with non-metastatic MIBC.", "This is the main surgical treatment episode.", ["Operating-room service", "Anesthetic medicines", "Surgical consumables", "Ward care"], []),
+          activity("NVU-TX07", "Extended pelvic lymph-node dissection", "Surgery", "activity", "EM07", "treatment", 830, 350, "Extended pelvic lymph-node dissection as part of radical surgery.", "The activity can be parameterized within the cystectomy episode or as an operating-room time add-on.", ["Operating-room energy allocation", "Sterile instruments", "Pathology specimens"], []),
+          activity("NVU-TX08", "Urinary diversion", "Surgery", "activity", "EM07", "treatment", 940, 350, "Construction of the selected urinary diversion during the surgical episode.", "Diversion choice changes consumables, operation time, and functional follow-up.", ["Urinary diversion materials", "Surgical consumables"], []),
+          activity("NVU-TX09", "Perioperative fast-track care", "Surgery", "activity", "EM07", "treatment", 1040, 350, "Perioperative and enhanced-recovery care after radical cystectomy.", "Ward duration, medicines, meals, laundry, and clinical waste are scenario inputs.", ["Ward care", "Medicines", "Meals", "Laundry service", "Clinical waste treatment"], []),
+          activity("NVU-TX10", "Adjuvant chemotherapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 1130, 350, "Postoperative assessment of the indication for adjuvant chemotherapy.", "The 2016 guideline decision is visible, but treatment is counted only when a delivery activity is selected.", [], []),
+          activity("NVU-TX11", "Bladder-preserving multimodality eligibility", "Radiotherapy", "decision", "EM08", "treatment", 500, 500, "Eligibility assessment for a bladder-preserving multimodality route.", "This route requires its own TURBT, radiotherapy, systemic treatment, and follow-up assumptions.", [], []),
+          activity("NVU-TX12", "Chemoradiation", "Radiotherapy", "activity", "EM08", "treatment", 650, 455, "Bladder-preserving external-beam radiotherapy with concurrent systemic treatment when indicated.", "Fractionation and concurrent regimen are scenario parameters.", ["Radiotherapy planning service", "Radiotherapy fractions", "Systemic therapy products"], []),
+          activity("NVU-TX13", "Brachytherapy eligibility", "Radiotherapy", "decision", "EM08", "treatment", 650, 535, "Selection for the Dutch bladder-cancer brachytherapy route according to tumor size, location, stage, and contraindications.", "The dedicated Dutch module makes this national option explicit.", [], []),
+          activity("NVU-TX14", "External-beam radiotherapy before brachytherapy", "Radiotherapy", "activity", "EM08", "treatment", 800, 535, "External-beam radiotherapy delivered as part of the combined brachytherapy pathway.", "Dose and fractionation must be obtained from the selected local protocol.", ["Radiotherapy planning service", "Radiotherapy fractions"], []),
+          activity("NVU-TX15", "Limited TURBT or surgical preparation if indicated", "Surgery", "activity", "EM07", "treatment", 950, 535, "Limited resection or surgical preparation before brachytherapy when indicated.", "This optional procedure is included only in the brachytherapy route when clinically required.", ["Operating-room service", "Anesthetic medicines", "Sterile instruments"], []),
+          activity("NVU-TX16", "Brachytherapy treatment episode", "Radiotherapy", "activity", "EM08", "treatment", 1090, 535, "Brachytherapy treatment episode for selected invasive bladder tumors.", "Applicators, imaging, anesthesia, and treatment delivery form one parameterized episode.", ["Brachytherapy applicator set", "Imaging service", "Anesthetic medicines"], []),
+          activity("NVU-TX17", "Advanced systemic therapy (2016 reference)", "Systemic therapy and oncology", "activity", "EM06", "return", 650, 620, "Systemic treatment route for advanced disease as represented in the 2016 national guideline.", "This is a historical reference route and must not be read as a current regimen recommendation.", ["Antineoplastic medicines", "Infusion materials", "Pharmacy preparation", "Laboratory monitoring"], []),
+          activity("NVU-TX18", "Palliative cystectomy for local symptoms", "Surgery", "activity", "EM07", "return", 820, 620, "Palliative cystectomy for selected patients with uncontrolled local symptoms.", "Curative and palliative routes require separate LCA scenarios and functional-unit interpretation.", ["Operating-room service", "Anesthetic medicines", "Surgical consumables", "Ward care"], []),
+          activity("NVU-TX19", "Palliative radiotherapy or symptom control", "Radiotherapy", "activity", "EM08", "return", 970, 620, "Palliative radiotherapy or symptom-oriented local treatment.", "Fraction count and treatment intent must be specified separately from curative radiotherapy.", ["Radiotherapy planning service", "Radiotherapy fractions"], []),
+          activity("NVU-FU01", "Post-treatment follow-up boundary", "Follow-up", "activity", "EM09", "followup", 1130, 620, "Boundary after the selected primary treatment route.", "The 2016 MIBC chapter does not provide a sufficiently detailed modern follow-up schedule for activity-level extraction, so no frequency is invented here.", [], [])
+        ],
+        edges: [
+          edge("NVU-AC01", "NVU-DX01", "diagnostic"),
+          edge("NVU-DX01", "NVU-DX02", "diagnostic"),
+          edge("NVU-DX02", "NVU-DX03", "diagnostic"),
+          edge("NVU-DX03", "NVU-DX04", "diagnostic"),
+          edge("NVU-DX04", "NVU-DX05", "diagnostic"),
+          edge("NVU-DX05", "NVU-DX06", "diagnostic"),
+          edge("NVU-DX05", "NVU-JM01", "diagnostic", { excludedBy: ["NVU-DX06"] }),
+          edge("NVU-DX06", "NVU-JM01", "diagnostic"),
+          edge("NVU-JM01", "NVU-TX01", "diagnostic"),
+          edge("NVU-TX01", "NVU-TX02", "treatment"),
+          edge("NVU-TX02", "NVU-TX03", "treatment"),
+          edge("NVU-TX03", "NVU-TX04", "treatment"),
+          edge("NVU-TX04", "NVU-TX05", "treatment"),
+          edge("NVU-TX03", "NVU-TX05", "treatment", { excludedBy: ["NVU-TX04"] }),
+          edge("NVU-TX05", "NVU-TX06", "treatment"),
+          edge("NVU-TX06", "NVU-TX07", "treatment"),
+          edge("NVU-TX07", "NVU-TX08", "treatment"),
+          edge("NVU-TX08", "NVU-TX09", "treatment"),
+          edge("NVU-TX09", "NVU-TX10", "treatment"),
+          edge("NVU-TX10", "NVU-FU01", "followup"),
+          edge("NVU-TX03", "NVU-TX11", "treatment"),
+          edge("NVU-TX11", "NVU-TX12", "treatment"),
+          edge("NVU-TX12", "NVU-FU01", "followup"),
+          edge("NVU-TX11", "NVU-TX13", "treatment"),
+          edge("NVU-TX13", "NVU-TX14", "treatment"),
+          edge("NVU-TX14", "NVU-TX15", "treatment"),
+          edge("NVU-TX15", "NVU-TX16", "treatment"),
+          edge("NVU-TX16", "NVU-FU01", "followup"),
+          edge("NVU-TX03", "NVU-TX17", "return"),
+          edge("NVU-TX17", "NVU-FU01", "followup"),
+          edge("NVU-TX03", "NVU-TX18", "return"),
+          edge("NVU-TX18", "NVU-FU01", "followup"),
+          edge("NVU-TX03", "NVU-TX19", "return"),
+          edge("NVU-TX19", "NVU-FU01", "followup")
         ]
       },
       emc: {
@@ -5583,8 +5697,61 @@
       }
     ];
 
+    const nvuComparisonByConcept = {
+      protocolConceptEntryAssessment: ["NVU-AC01"],
+      protocolConceptUrineLaboratory: ["NVU-DX01"],
+      protocolConceptCystoscopy: ["NVU-DX02"],
+      protocolConceptDiagnosticTurbt: ["NVU-DX03"],
+      protocolConceptPathology: ["NVU-DX04"],
+      protocolConceptNonMibcExit: [],
+      protocolConceptCtStaging: ["NVU-DX05"],
+      protocolConceptUpperTract: ["NVU-DX05"],
+      protocolConceptAdditionalImaging: ["NVU-DX06"],
+      protocolConceptTransfer: [],
+      protocolConceptRepeatImaging: [],
+      protocolConceptMdt: ["NVU-JM01"],
+      protocolConceptFrailty: ["NVU-TX01"],
+      protocolConceptIntentEligibility: ["NVU-TX02", "NVU-TX03"],
+      protocolConceptPerioperativeSystemic: ["NVU-TX04"],
+      protocolConceptSurgery: ["NVU-TX05", "NVU-TX06", "NVU-TX07", "NVU-TX08", "NVU-TX09"],
+      protocolConceptAdjuvant: ["NVU-TX10"],
+      protocolConceptBladderPreservation: ["NVU-TX11", "NVU-TX13", "NVU-TX15"],
+      protocolConceptRadiotherapyDelivery: ["NVU-TX12", "NVU-TX14", "NVU-TX16"],
+      protocolConceptResponseSalvage: [],
+      protocolConceptAdvancedPalliative: ["NVU-TX17", "NVU-TX18", "NVU-TX19"],
+      protocolConceptTreatmentFollowup: ["NVU-FU01"],
+      protocolConceptReturnHospital: []
+    };
+
+    urologyProtocolComparison.push({
+      group: "treatment",
+      conceptKey: "protocolConceptBrachytherapy",
+      operational: ["EMC-TX14"],
+      dutch: ["EMC-TX14"],
+      nvu: ["NVU-TX13", "NVU-TX14", "NVU-TX15", "NVU-TX16"],
+      eau: [],
+      noteKey: "protocolNoteBrachytherapy"
+    });
+
+    urologyProtocolComparison.forEach((item) => {
+      item.operational = item.operational || item.dutch || [];
+      item.nvu = item.nvu || nvuComparisonByConcept[item.conceptKey] || [];
+      const explicitSources = [item.operational, item.nvu, item.eau]
+        .filter((nodeIds) => nodeIds.length).length;
+      item.status = explicitSources === 3
+        ? "shared"
+        : explicitSources === 2
+          ? "mixed"
+          : item.operational.length
+            ? "operational"
+            : item.nvu.length
+              ? "nvu"
+              : "eau";
+    });
+
     [
-      ["emc", "dutch"],
+      ["emc", "operational"],
+      ["nvu", "nvu"],
       ["eauFull", "eau"]
     ].forEach(([pathwayId, field]) => {
       const knownIds = new Set(pathwayData[pathwayId].nodes.map((node) => node.id));
@@ -5611,6 +5778,19 @@
         },
         { id: "advanced-systemic", nodes: ["EMC-TX16"] },
         { id: "palliative-radiotherapy", nodes: ["EMC-TX17"] }
+      ],
+      nvu: [
+        {
+          id: "curative-surgery",
+          nodes: ["NVU-TX04", "NVU-TX05", "NVU-TX06", "NVU-TX07", "NVU-TX08", "NVU-TX09", "NVU-TX10"]
+        },
+        {
+          id: "bladder-preservation",
+          nodes: ["NVU-TX11", "NVU-TX12", "NVU-TX13", "NVU-TX14", "NVU-TX15", "NVU-TX16"]
+        },
+        { id: "advanced-systemic", nodes: ["NVU-TX17"] },
+        { id: "palliative-surgery", nodes: ["NVU-TX18"] },
+        { id: "palliative-radiotherapy", nodes: ["NVU-TX19"] }
       ],
       eauFull: [
         {
@@ -5645,6 +5825,7 @@
 
     const pathwayAssessmentDefaults = {
       emc: { start: "EMC-FC01", end: "EMC-FU02" },
+      nvu: { start: "NVU-AC01", end: "NVU-FU01" },
       eauFull: { start: "EAUFULL-AC01", end: "EAUFULL-FU03" },
       crcDutch: { start: "CRCDUTCH-FC01", end: "CRCDUTCH-FU05" }
     };
@@ -5753,6 +5934,109 @@
             "EMC-FC01", "EMC-DX01", "EMC-DX02", "EMC-DX03", "EMC-DX04",
             "EMC-DX05", "EMC-DX06", "EMC-FC02", "EMC-DX08", "EMC-JM01",
             "EMC-JM02", "EMC-TX01", "EMC-TX02", "EMC-TX17", "EMC-FU02"
+          ]
+        }
+      ],
+      nvu: [
+        {
+          id: "surgery-direct",
+          label: {
+            en: "Radical surgery without neoadjuvant chemotherapy",
+            nl: "Radicale chirurgie zonder neoadjuvante chemotherapie",
+            zh: "不含新辅助化疗的根治性手术"
+          },
+          end: "NVU-FU01",
+          nodes: [
+            "NVU-AC01", "NVU-DX01", "NVU-DX02", "NVU-DX03", "NVU-DX04",
+            "NVU-DX05", "NVU-JM01", "NVU-TX01", "NVU-TX02", "NVU-TX03",
+            "NVU-TX05", "NVU-TX06", "NVU-TX07", "NVU-TX08", "NVU-TX09",
+            "NVU-TX10", "NVU-FU01"
+          ]
+        },
+        {
+          id: "neoadjuvant-surgery",
+          label: {
+            en: "Neoadjuvant chemotherapy and radical surgery",
+            nl: "Neoadjuvante chemotherapie en radicale chirurgie",
+            zh: "新辅助化疗加根治性手术"
+          },
+          end: "NVU-FU01",
+          nodes: [
+            "NVU-AC01", "NVU-DX01", "NVU-DX02", "NVU-DX03", "NVU-DX04",
+            "NVU-DX05", "NVU-JM01", "NVU-TX01", "NVU-TX02", "NVU-TX03",
+            "NVU-TX04", "NVU-TX05", "NVU-TX06", "NVU-TX07", "NVU-TX08",
+            "NVU-TX09", "NVU-TX10", "NVU-FU01"
+          ]
+        },
+        {
+          id: "chemoradiation",
+          label: {
+            en: "Bladder-preserving chemoradiation",
+            nl: "Blaassparende chemoradiotherapie",
+            zh: "保膀胱同步放化疗"
+          },
+          end: "NVU-FU01",
+          nodes: [
+            "NVU-AC01", "NVU-DX01", "NVU-DX02", "NVU-DX03", "NVU-DX04",
+            "NVU-DX05", "NVU-JM01", "NVU-TX01", "NVU-TX02", "NVU-TX03",
+            "NVU-TX11", "NVU-TX12", "NVU-FU01"
+          ]
+        },
+        {
+          id: "brachytherapy",
+          label: {
+            en: "Dutch bladder-cancer brachytherapy pathway",
+            nl: "Nederlands brachytherapietraject voor blaaskanker",
+            zh: "荷兰膀胱癌近距离放疗路径"
+          },
+          end: "NVU-FU01",
+          nodes: [
+            "NVU-AC01", "NVU-DX01", "NVU-DX02", "NVU-DX03", "NVU-DX04",
+            "NVU-DX05", "NVU-JM01", "NVU-TX01", "NVU-TX02", "NVU-TX03",
+            "NVU-TX11", "NVU-TX13", "NVU-TX14", "NVU-TX15", "NVU-TX16",
+            "NVU-FU01"
+          ]
+        },
+        {
+          id: "advanced-systemic",
+          label: {
+            en: "Advanced systemic therapy (2016 reference)",
+            nl: "Systemische therapie voor gevorderde ziekte (referentie 2016)",
+            zh: "晚期系统治疗（2016 参考）"
+          },
+          end: "NVU-FU01",
+          nodes: [
+            "NVU-AC01", "NVU-DX01", "NVU-DX02", "NVU-DX03", "NVU-DX04",
+            "NVU-DX05", "NVU-JM01", "NVU-TX01", "NVU-TX02", "NVU-TX03",
+            "NVU-TX17", "NVU-FU01"
+          ]
+        },
+        {
+          id: "palliative-cystectomy",
+          label: {
+            en: "Palliative cystectomy for local symptoms",
+            nl: "Palliatieve cystectomie bij lokale klachten",
+            zh: "针对局部症状的姑息性膀胱切除"
+          },
+          end: "NVU-FU01",
+          nodes: [
+            "NVU-AC01", "NVU-DX01", "NVU-DX02", "NVU-DX03", "NVU-DX04",
+            "NVU-DX05", "NVU-JM01", "NVU-TX01", "NVU-TX02", "NVU-TX03",
+            "NVU-TX18", "NVU-FU01"
+          ]
+        },
+        {
+          id: "palliative-radiotherapy",
+          label: {
+            en: "Palliative radiotherapy or symptom control",
+            nl: "Palliatieve radiotherapie of symptoomcontrole",
+            zh: "姑息放疗或症状控制"
+          },
+          end: "NVU-FU01",
+          nodes: [
+            "NVU-AC01", "NVU-DX01", "NVU-DX02", "NVU-DX03", "NVU-DX04",
+            "NVU-DX05", "NVU-JM01", "NVU-TX01", "NVU-TX02", "NVU-TX03",
+            "NVU-TX19", "NVU-FU01"
           ]
         }
       ],
@@ -5969,6 +6253,10 @@
         source: "Erasmus MC 2022 MIBC workflow and EAU/NVU guidance",
         status: "Dutch operational pathway representation"
       },
+      nvu: {
+        source: "NVU Richtlijn Blaascarcinoom 2016, Dutch bladder-cancer brachytherapy module, and NVU uro-oncology quality norms",
+        status: "Dutch national guideline extraction based on EAU 2016; not a local execution map or a current-regimen recommendation"
+      },
       eauFull: {
         source: "EAU 2026 MIBC diagnostic evaluation, disease management, and follow-up chapters",
         status: "Guideline-supported institution-neutral reference; local execution is not assumed"
@@ -5985,6 +6273,10 @@
           source: "Erasmus MC MIBC-zorgpad 2022 en EAU/NVU-richtlijnen",
           status: "Nederlandse operationele zorgpadweergave"
         },
+        nvu: {
+          source: "NVU Richtlijn Blaascarcinoom 2016, Nederlandse brachytherapiemodule en NVU-kwaliteitsnormen uro-oncologie",
+          status: "Extractie uit de Nederlandse landelijke richtlijn op basis van EAU 2016; geen lokale uitvoeringskaart of actueel behandeladvies"
+        },
         eauFull: {
           source: "EAU MIBC 2026: diagnostische evaluatie, ziektebehandeling en follow-up",
           status: "Onderbouwd door de richtlijn en instellingsneutraal; lokale uitvoering wordt niet verondersteld"
@@ -5998,6 +6290,10 @@
         emc: {
           source: "Erasmus MC 2022 MIBC 本地路径及 EAU/NVU 指南",
           status: "荷兰运营路径展示"
+        },
+        nvu: {
+          source: "NVU 2016 膀胱癌指南、荷兰膀胱癌近距离放疗模块及 NVU 泌尿肿瘤质量规范",
+          status: "基于 EAU 2016 的荷兰国家指南活动提取；不是本地执行图，也不是当前治疗方案建议"
         },
         eauFull: {
           source: "EAU 2026 MIBC 诊断评估、疾病管理和随访章节",
@@ -6039,21 +6335,21 @@
     };
 
     function annotateAndValidateActivityEvidence() {
-      ["emc", "eauFull", "crcDutch"].forEach((pathwayId) => {
+      ["emc", "nvu", "eauFull", "crcDutch"].forEach((pathwayId) => {
         const profile = pathwayEvidenceProfiles[pathwayId];
         pathwayData[pathwayId].nodes.forEach((node) => {
           node.evidence = { pathwayId, ...profile };
           node.resourceFlows = directLciInputs(node.resourceFlows);
         });
       });
-      const missing = ["emc", "eauFull", "crcDutch"].flatMap((pathwayId) =>
+      const missing = ["emc", "nvu", "eauFull", "crcDutch"].flatMap((pathwayId) =>
         pathwayData[pathwayId].nodes
           .filter((node) => !node.evidence?.source || !node.evidence?.status)
           .map((node) => node.id)
       );
       if (missing.length) throw new Error(`Activities without evidence status: ${missing.join(", ")}`);
 
-      const incomplete = ["emc", "eauFull", "crcDutch"].flatMap((pathwayId) =>
+      const incomplete = ["emc", "nvu", "eauFull", "crcDutch"].flatMap((pathwayId) =>
         pathwayData[pathwayId].nodes
           .filter((node) => (
             !node.label
@@ -6074,7 +6370,7 @@
     annotateAndValidateActivityEvidence();
 
     function validateVisiblePathwayGraphs() {
-      ["emc", "eauFull", "crcDutch"].forEach((pathwayId) => {
+      ["emc", "nvu", "eauFull", "crcDutch"].forEach((pathwayId) => {
         const pathway = pathwayData[pathwayId];
         const nodeIds = pathway.nodes.map((node) => node.id);
         const nodeIdSet = new Set(nodeIds);
@@ -6109,6 +6405,12 @@
         { label: "EAU MIBC 2026", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" },
         { label: "ASZ: urologische oncologie", url: "https://www.asz.nl/specialismen/urologie/behandelingen/oncologie/" }
       ],
+      nvu: [
+        { label: "NVU: actuele richtlijnen", url: "https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/" },
+        { label: "NVU: Richtlijn Blaascarcinoom 2016 (PDF)", url: "https://portal.nvu.nl/WebserviceWordpress/qgws.asmx/nvu_get_document?id=553B5F89-5DF7-E611-9438-005056B31E13" },
+        { label: "Richtlijnendatabase: blaaskanker-brachytherapie", url: "https://richtlijnendatabase.nl/richtlijn/blaascarcinoom_-_brachytherapie/startpagina_-_brachytherapie.html" },
+        { label: "NVU: kwaliteitsnormen uro-oncologische zorg", url: "https://portal.nvu.nl/WebserviceWordpress/qgws.asmx/nvu_get_document?id=939FDFE0-8BDB-E811-BEFA-005056B31E13" }
+      ],
       eau: [
         { label: "EAU MIBC 2026", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer" },
         { label: "EAU diagnostic evaluation", url: "https://uroweb.org/guidelines/muscle-invasive-and-metastatic-bladder-cancer/chapter/diagnostic-evaluation" },
@@ -6139,6 +6441,16 @@
       "EAUFULL-TX03",
       "EAUFULL-TX10",
       "EAUFULL-TX11",
+      "NVU-AC01",
+      "NVU-JM01",
+      "NVU-TX01",
+      "NVU-TX02",
+      "NVU-TX03",
+      "NVU-TX05",
+      "NVU-TX10",
+      "NVU-TX11",
+      "NVU-TX13",
+      "NVU-FU01",
       "EMC-FC01",
       "EMC-JM02",
       "EMC-JM01",
@@ -6185,7 +6497,7 @@
       );
     }
 
-    const mibcMappedBuildingBlocks = mappedBuildingBlockNames(["emc", "eauFull"]);
+    const mibcMappedBuildingBlocks = mappedBuildingBlockNames(["emc", "nvu", "eauFull"]);
     const crcMappedBuildingBlocks = mappedBuildingBlockNames(["crcDutch"]);
     const crossPathwayReusableBuildingBlocks = new Set(
       Array.from(mibcMappedBuildingBlocks).filter((blockName) => crcMappedBuildingBlocks.has(blockName))
@@ -7015,14 +7327,17 @@
     });
 
     Object.assign(uiText.en, {
-      sourceComparison: "One map, two source views",
-      helpStep1: "Choose a specialty. In urology, use the source view above the map to switch between the Dutch operational pathway and the EAU 2026 clinical reference.",
+      sourceComparison: "One map, three source views",
+      helpStep1: "Choose a specialty. In urology, switch among the Dutch operational pathway, the NVU 2016 national guideline, and the EAU 2026 clinical reference.",
       urologySourceLensTitle: "Pathway source view",
       dutchUrologyView: "Dutch pathway",
+      nvuUrologyView: "NVU 2016 guideline",
       eauUrologyView: "EAU 2026 reference",
       dutchUrologyNote: "Operational lens: regional or ASZ diagnosis and staging, transfer after confirmed MIBC, then Erasmus MC multidisciplinary treatment and shared follow-up.",
+      nvuUrologyNote: "National-guideline lens: activity extraction from the NVU bladder cancer guideline published in 2016, with the Dutch brachytherapy module shown separately where relevant.",
       eauUrologyNote: "Guideline lens: institution-neutral EAU 2026 activity extraction. Use it to identify clinical-reference activities and differences, not to infer where Dutch care is delivered.",
       dutchUrologyDifference: "Dutch emphasis: cross-hospital handover, central review, shared follow-up, and the selected-patient brachytherapy option.",
+      nvuUrologyDifference: "NVU 2016 emphasis: Dutch national recommendations based on EAU 2016, including perioperative care, extended lymph-node dissection, diversion, and a national brachytherapy pathway. It is not contemporaneous with EAU 2026.",
       eauUrologyDifference: "EAU emphasis: upper-tract assessment, formal health-status evaluation, current perioperative options, and treatment-specific follow-up.",
       references: "References",
       sharedBuildingBlock: "Shared building block",
@@ -7032,22 +7347,27 @@
       gastroBuildingBlock: "Gastroenterology-specific candidate",
       buildingBlockMapIntro: "Modules group candidate building blocks. Selected activities activate the relevant calculation rows.",
       compareProtocols: "Compare protocols",
-      protocolComparisonMenuHint: "Dutch/EMC ↔ EAU 2026",
-      protocolComparisonTitle: "Dutch/EMC and EAU MIBC comparison",
-      protocolComparisonIntro: "This view aligns the two sources by clinical function. The Dutch/EMC pathway describes operational delivery across regional hospitals and Erasmus MC; EAU 2026 describes institution-neutral clinical guidance. The comparison does not change the selected pathway or LCA calculation.",
-      protocolComparisonNote: "A function that is not separately explicit in one source should not be interpreted as care that is not delivered. It may be embedded in another activity, outside that source's scope, or dependent on local implementation.",
+      protocolComparisonMenuHint: "Operational ↔ NVU 2016 ↔ EAU 2026",
+      protocolComparisonTitle: "Three-source MIBC pathway comparison",
+      protocolComparisonIntro: "This view aligns the Dutch operational pathway, the NVU 2016 national guideline, and the EAU 2026 clinical reference by clinical function. The comparison does not change the selected pathway or LCA calculation.",
+      protocolComparisonNote: "The NVU guideline currently listed by the NVU was published in 2016 and is based on EAU 2016. It is therefore a historical Dutch national reference, not an independent current counterpart to EAU 2026. A function that is not separately explicit in one source may be embedded in another activity or outside that source's scope.",
       protocolComparisonAll: "All ({count})",
-      protocolComparisonShared: "Both sources ({count})",
-      protocolComparisonDutch: "Dutch detail ({count})",
+      protocolComparisonShared: "All three sources ({count})",
+      protocolComparisonOperational: "Dutch operational ({count})",
+      protocolComparisonNvu: "NVU 2016 ({count})",
       protocolComparisonEau: "EAU detail ({count})",
-      protocolComparisonSharedStat: "Explicit in both sources",
-      protocolComparisonDutchStat: "Dutch operational details",
+      protocolComparisonSharedStat: "Explicit in all three sources",
+      protocolComparisonOperationalStat: "Dutch operational functions",
+      protocolComparisonNvuStat: "NVU 2016 functions",
       protocolComparisonEauStat: "EAU guideline details",
       protocolComparisonFunctionHeader: "Harmonized clinical function",
-      protocolComparisonDutchHeader: "Dutch/EMC operational pathway",
+      protocolComparisonOperationalHeader: "Dutch operational pathway",
+      protocolComparisonNvuHeader: "Dutch national guidance (NVU 2016)",
       protocolComparisonEauHeader: "EAU 2026 guideline",
-      protocolComparisonStatusShared: "Explicit in both",
-      protocolComparisonStatusDutch: "Dutch operational detail",
+      protocolComparisonStatusShared: "Explicit in all three",
+      protocolComparisonStatusMixed: "Explicit in two sources",
+      protocolComparisonStatusOperational: "Operational detail only",
+      protocolComparisonStatusNvu: "NVU 2016 detail only",
       protocolComparisonStatusEau: "EAU guideline detail",
       protocolComparisonNotExplicit: "Not separately explicit in this source",
       protocolComparisonGroupDiagnosis: "Diagnosis and confirmation",
@@ -7078,6 +7398,7 @@
       protocolConceptAdvancedPalliative: "Advanced or palliative treatment",
       protocolConceptTreatmentFollowup: "Treatment-specific follow-up",
       protocolConceptReturnHospital: "Return to the referring hospital",
+      protocolConceptBrachytherapy: "Dutch brachytherapy pathway",
       protocolNoteUrineLaboratory: "EAU lists this separately. The Dutch operational map does not create a separate node and requires local confirmation of where it occurs.",
       protocolNotePathology: "The Dutch pathway separates regional confirmation from Erasmus MC review; EAU represents the clinical requirement as one guideline function.",
       protocolNoteNonMibcExit: "The Dutch map preserves the local exit branch because the operational boundary begins before MIBC is confirmed.",
@@ -7087,18 +7408,22 @@
       protocolNoteMdt: "The Dutch pathway separates the patient-facing joint clinic and tumor MDT; EAU specifies MDT discussion without prescribing the local organization.",
       protocolNoteRadiotherapy: "The Dutch pathway explicitly includes brachytherapy for selected patients; EAU represents EBRT or chemoradiation delivery at guideline level.",
       protocolNoteTreatmentFollowup: "EAU separates cystectomy, trimodality, and diversion-related follow-up; the Dutch map uses one shared follow-up node.",
-      protocolNoteReturnHospital: "Shared follow-up and return to a regional hospital are local organizational details outside EAU's institution-neutral scope."
+      protocolNoteReturnHospital: "Shared follow-up and return to a regional hospital are local organizational details outside EAU's institution-neutral scope.",
+      protocolNoteBrachytherapy: "The NVU source set includes a dedicated Dutch brachytherapy module. The operational pathway also preserves this selected-patient option; EAU 2026 does not represent it as a separate standard pathway."
     });
 
     Object.assign(uiText.nl, {
-      sourceComparison: "Een kaart, twee bronweergaven",
-      helpStep1: "Kies een specialisme. Gebruik bij urologie de bronweergave boven de kaart om te wisselen tussen de Nederlandse operationele route en de klinische EAU 2026-referentie.",
+      sourceComparison: "Een kaart, drie bronweergaven",
+      helpStep1: "Kies een specialisme. Wissel bij urologie tussen de Nederlandse operationele route, de landelijke NVU-richtlijn uit 2016 en de klinische EAU 2026-referentie.",
       urologySourceLensTitle: "Bronweergave van het zorgpad",
       dutchUrologyView: "Nederlandse route",
+      nvuUrologyView: "NVU-richtlijn 2016",
       eauUrologyView: "EAU 2026-referentie",
       dutchUrologyNote: "Operationele weergave: diagnostiek en stadiering in ASZ of een regionaal ziekenhuis, overdracht na bevestigde MIBC en daarna multidisciplinaire behandeling en gedeelde follow-up via Erasmus MC.",
+      nvuUrologyNote: "Landelijke richtlijnweergave: activiteitsextractie uit de NVU-richtlijn Blaascarcinoom uit 2016, met waar relevant de afzonderlijke Nederlandse brachytherapiemodule.",
       eauUrologyNote: "Richtlijnweergave: instelling-onafhankelijke activiteitsextractie uit EAU 2026. Gebruik deze om klinische referentieactiviteiten en verschillen te bepalen, niet om de Nederlandse uitvoeringslocatie af te leiden.",
       dutchUrologyDifference: "Nederlandse nadruk: overdracht tussen ziekenhuizen, centrale review, gedeelde follow-up en brachytherapie voor geselecteerde patiënten.",
+      nvuUrologyDifference: "NVU 2016 legt de nadruk op landelijke aanbevelingen op basis van EAU 2016, waaronder perioperatieve zorg, uitgebreide lymfeklierdissectie, urinedeviatie en de Nederlandse brachytherapieroute. Deze bron is niet gelijktijdig met EAU 2026.",
       eauUrologyDifference: "EAU-nadruk: beoordeling van de bovenste urinewegen, formele gezondheidsbeoordeling, actuele perioperatieve opties en behandelspecifieke follow-up.",
       references: "Referenties",
       sharedBuildingBlock: "Gedeelde bouwsteen",
@@ -7108,22 +7433,27 @@
       gastroBuildingBlock: "Gastro-enterologiespecifieke kandidaat",
       buildingBlockMapIntro: "Modules groeperen kandidaatbouwstenen. Geselecteerde activiteiten activeren de relevante rekenregels.",
       compareProtocols: "Protocollen vergelijken",
-      protocolComparisonMenuHint: "Nederlands/EMC ↔ EAU 2026",
-      protocolComparisonTitle: "Vergelijking Nederlands/EMC-zorgpad en EAU MIBC",
-      protocolComparisonIntro: "Deze weergave stemt beide bronnen af op klinische functies. Het Nederlands/EMC-zorgpad beschrijft de uitvoering tussen regionale ziekenhuizen en Erasmus MC; EAU 2026 beschrijft instelling-onafhankelijke klinische richtlijnzorg. De vergelijking verandert het geselecteerde zorgpad of de LCA-berekening niet.",
-      protocolComparisonNote: "Een functie die in één bron niet afzonderlijk wordt genoemd, mag niet worden geïnterpreteerd als zorg die niet wordt geleverd. De functie kan onderdeel zijn van een andere activiteit, buiten de bronscope vallen of afhangen van lokale uitvoering.",
+      protocolComparisonMenuHint: "Operationeel ↔ NVU 2016 ↔ EAU 2026",
+      protocolComparisonTitle: "Driebronnenvergelijking van MIBC-zorgpaden",
+      protocolComparisonIntro: "Deze weergave stemt de Nederlandse operationele route, de landelijke NVU-richtlijn uit 2016 en de klinische EAU 2026-referentie af op klinische functies. De vergelijking verandert het geselecteerde zorgpad of de LCA-berekening niet.",
+      protocolComparisonNote: "De richtlijn die de NVU momenteel vermeldt, is gepubliceerd in 2016 en gebaseerd op EAU 2016. Het is daarom een historische Nederlandse landelijke referentie en geen onafhankelijke actuele tegenhanger van EAU 2026. Een niet-afzonderlijk genoemde functie kan onderdeel zijn van een andere activiteit of buiten de bronscope vallen.",
       protocolComparisonAll: "Alles ({count})",
-      protocolComparisonShared: "Beide bronnen ({count})",
-      protocolComparisonDutch: "Nederlands detail ({count})",
+      protocolComparisonShared: "Alle drie bronnen ({count})",
+      protocolComparisonOperational: "Nederlandse uitvoering ({count})",
+      protocolComparisonNvu: "NVU 2016 ({count})",
       protocolComparisonEau: "EAU-detail ({count})",
-      protocolComparisonSharedStat: "Expliciet in beide bronnen",
-      protocolComparisonDutchStat: "Nederlandse operationele details",
+      protocolComparisonSharedStat: "Expliciet in alle drie bronnen",
+      protocolComparisonOperationalStat: "Nederlandse operationele functies",
+      protocolComparisonNvuStat: "NVU 2016-functies",
       protocolComparisonEauStat: "EAU-richtlijndetails",
       protocolComparisonFunctionHeader: "Afgestemde klinische functie",
-      protocolComparisonDutchHeader: "Nederlands/EMC-zorgpad",
+      protocolComparisonOperationalHeader: "Nederlandse operationele route",
+      protocolComparisonNvuHeader: "Nederlandse landelijke richtlijn (NVU 2016)",
       protocolComparisonEauHeader: "EAU 2026-richtlijn",
-      protocolComparisonStatusShared: "Expliciet in beide",
-      protocolComparisonStatusDutch: "Nederlands operationeel detail",
+      protocolComparisonStatusShared: "Expliciet in alle drie",
+      protocolComparisonStatusMixed: "Expliciet in twee bronnen",
+      protocolComparisonStatusOperational: "Alleen operationeel detail",
+      protocolComparisonStatusNvu: "Alleen NVU 2016-detail",
       protocolComparisonStatusEau: "EAU-richtlijndetail",
       protocolComparisonNotExplicit: "Niet afzonderlijk expliciet in deze bron",
       protocolComparisonGroupDiagnosis: "Diagnose en bevestiging",
@@ -7154,6 +7484,7 @@
       protocolConceptAdvancedPalliative: "Gevorderde of palliatieve behandeling",
       protocolConceptTreatmentFollowup: "Behandelingsspecifieke follow-up",
       protocolConceptReturnHospital: "Terugverwijzing naar het verwijzende ziekenhuis",
+      protocolConceptBrachytherapy: "Nederlandse brachytherapieroute",
       protocolNoteUrineLaboratory: "EAU benoemt dit afzonderlijk. De Nederlandse operationele kaart bevat geen apart knooppunt; de uitvoeringslocatie moet lokaal worden bevestigd.",
       protocolNotePathology: "Het Nederlandse zorgpad scheidt regionale bevestiging en Erasmus MC-revisie; EAU beschrijft dit als één klinische richtlijnfunctie.",
       protocolNoteNonMibcExit: "De Nederlandse kaart bewaart deze lokale uitstroom omdat de operationele grens vóór bevestiging van MIBC begint.",
@@ -7163,18 +7494,22 @@
       protocolNoteMdt: "Het Nederlandse zorgpad scheidt gezamenlijke polikliniek en tumor-MDO; EAU schrijft MDO voor zonder de lokale organisatie vast te leggen.",
       protocolNoteRadiotherapy: "Het Nederlandse zorgpad benoemt brachytherapie voor geselecteerde patiënten; EAU beschrijft EBRT of chemoradiotherapie op richtlijnniveau.",
       protocolNoteTreatmentFollowup: "EAU scheidt follow-up na cystectomie, trimodaliteit en urinedeviatie; de Nederlandse kaart gebruikt één gedeeld follow-upknooppunt.",
-      protocolNoteReturnHospital: "Gedeelde follow-up en terugverwijzing zijn lokale organisatiedetails buiten de instelling-onafhankelijke EAU-scope."
+      protocolNoteReturnHospital: "Gedeelde follow-up en terugverwijzing zijn lokale organisatiedetails buiten de instelling-onafhankelijke EAU-scope.",
+      protocolNoteBrachytherapy: "De NVU-bronnenset bevat een afzonderlijke Nederlandse brachytherapiemodule. Ook de operationele route bewaart deze optie voor geselecteerde patiënten; EAU 2026 geeft haar niet als afzonderlijk standaardzorgpad weer."
     });
 
     Object.assign(uiText.zh, {
-      sourceComparison: "同一地图，两种来源视图",
-      helpStep1: "选择专科。泌尿科页面可使用地图上方的来源视图，在荷兰运营路径与 EAU 2026 临床参考之间切换。",
+      sourceComparison: "同一地图，三种来源视图",
+      helpStep1: "选择专科。泌尿科可在荷兰实际执行路径、NVU 2016 国家指南和 EAU 2026 临床参考之间切换。",
       urologySourceLensTitle: "路径来源视图",
       dutchUrologyView: "荷兰实际路径",
+      nvuUrologyView: "NVU 2016 国家指南",
       eauUrologyView: "EAU 2026 参考",
       dutchUrologyNote: "运营视图：ASZ 或区域医院完成诊断和分期，确认 MIBC 后转诊，再由 Erasmus MC 开展多学科治疗和共享随访。",
+      nvuUrologyNote: "国家指南视图：从 NVU 2016 膀胱癌指南提取活动，并在相关位置单独显示荷兰近距离放疗模块。",
       eauUrologyNote: "指南视图：不指定医疗机构的 EAU 2026 活动提取，用于识别临床参考活动和差异，不用于推断荷兰实际执行地点。",
       dutchUrologyDifference: "荷兰侧重点：跨医院交接、中心复核、共享随访，以及适用于特定患者的近距离放疗选项。",
+      nvuUrologyDifference: "NVU 2016 以 EAU 2016 为基础，强调围手术期照护、扩大淋巴结清扫、尿流改道和荷兰近距离放疗路径。它与 EAU 2026 不是同期来源。",
       eauUrologyDifference: "EAU 侧重点：上尿路评估、正式健康状态评估、当前围手术期方案和按治疗方式区分的随访。",
       references: "参考资料",
       sharedBuildingBlock: "跨专科共享 building block",
@@ -7184,22 +7519,27 @@
       gastroBuildingBlock: "胃肠科特异候选项",
       buildingBlockMapIntro: "Modules 用于归组候选 building blocks；所选 activities 会启用相应计算行。",
       compareProtocols: "比较两种方案",
-      protocolComparisonMenuHint: "荷兰/EMC ↔ EAU 2026",
-      protocolComparisonTitle: "荷兰/EMC 与 EAU MIBC 路径比较",
-      protocolComparisonIntro: "该视图按统一临床功能对齐两个来源。荷兰/EMC 路径描述区域医院与 Erasmus MC 之间的实际执行过程；EAU 2026 描述不指定机构的临床指南要求。此比较不会改变已选路径或 LCA 计算。",
-      protocolComparisonNote: "某项功能未在一个来源中单独列出，不等于实际未开展。它可能并入其他活动、超出该来源的范围，或由本地实施方式决定。",
+      protocolComparisonMenuHint: "实际执行 ↔ NVU 2016 ↔ EAU 2026",
+      protocolComparisonTitle: "MIBC 三来源路径比较",
+      protocolComparisonIntro: "该视图按统一临床功能对齐荷兰实际执行路径、NVU 2016 国家指南和 EAU 2026 临床参考。比较不会改变已选路径或 LCA 计算。",
+      protocolComparisonNote: "NVU 当前目录列出的膀胱癌指南发布于 2016 年，并以 EAU 2016 为基础，因此它是历史性的荷兰国家参考，不是与 EAU 2026 同期且独立的指南。某项功能未被单列时，可能已并入其他活动或超出该来源范围。",
       protocolComparisonAll: "全部（{count}）",
-      protocolComparisonShared: "两个来源均明确（{count}）",
-      protocolComparisonDutch: "荷兰运营细节（{count}）",
+      protocolComparisonShared: "三个来源均明确（{count}）",
+      protocolComparisonOperational: "荷兰实际执行（{count}）",
+      protocolComparisonNvu: "NVU 2016（{count}）",
       protocolComparisonEau: "EAU 指南细节（{count}）",
-      protocolComparisonSharedStat: "两个来源均明确",
-      protocolComparisonDutchStat: "荷兰运营细节",
+      protocolComparisonSharedStat: "三个来源均明确",
+      protocolComparisonOperationalStat: "荷兰实际执行功能",
+      protocolComparisonNvuStat: "NVU 2016 功能",
       protocolComparisonEauStat: "EAU 指南细节",
       protocolComparisonFunctionHeader: "统一临床功能",
-      protocolComparisonDutchHeader: "荷兰/EMC 实际路径",
+      protocolComparisonOperationalHeader: "荷兰实际执行路径",
+      protocolComparisonNvuHeader: "荷兰国家指南（NVU 2016）",
       protocolComparisonEauHeader: "EAU 2026 指南",
-      protocolComparisonStatusShared: "两个来源均明确",
-      protocolComparisonStatusDutch: "荷兰运营细节",
+      protocolComparisonStatusShared: "三个来源均明确",
+      protocolComparisonStatusMixed: "两个来源明确",
+      protocolComparisonStatusOperational: "仅实际执行路径明确",
+      protocolComparisonStatusNvu: "仅 NVU 2016 明确",
       protocolComparisonStatusEau: "EAU 指南细节",
       protocolComparisonNotExplicit: "该来源未单独列出",
       protocolComparisonGroupDiagnosis: "诊断与确认",
@@ -7230,6 +7570,7 @@
       protocolConceptAdvancedPalliative: "晚期或姑息治疗",
       protocolConceptTreatmentFollowup: "按治疗方式区分的随访",
       protocolConceptReturnHospital: "返回转诊医院",
+      protocolConceptBrachytherapy: "荷兰近距离放疗路径",
       protocolNoteUrineLaboratory: "EAU 将其单独列出；荷兰运营图未设置独立节点，实际开展地点仍需本地确认。",
       protocolNotePathology: "荷兰路径区分区域医院的病理确认与 Erasmus MC 复核；EAU 将其作为一个指南层面的临床功能。",
       protocolNoteNonMibcExit: "荷兰图从 MIBC 确认前开始，因此保留了转入非 MIBC 本地路径的出口。",
@@ -7239,7 +7580,8 @@
       protocolNoteMdt: "荷兰路径将患者参与的联合门诊与肿瘤 MDO 分开；EAU 要求 MDT 讨论，但不规定本地组织形式。",
       protocolNoteRadiotherapy: "荷兰路径明确包含适用于特定患者的近距离放疗；EAU 在指南层面表示 EBRT 或同步放化疗。",
       protocolNoteTreatmentFollowup: "EAU 分别列出膀胱切除、三联治疗及尿流改道相关随访；荷兰图使用一个共享随访节点。",
-      protocolNoteReturnHospital: "共享随访及返回区域医院属于本地组织细节，不在机构中立的 EAU 范围内。"
+      protocolNoteReturnHospital: "共享随访及返回区域医院属于本地组织细节，不在机构中立的 EAU 范围内。",
+      protocolNoteBrachytherapy: "NVU 来源包含单独的荷兰近距离放疗模块，实际执行路径也保留了适用于特定患者的这一选项；EAU 2026 未将其表示为独立标准路径。"
     });
 
     Object.assign(uiText.ja, {
@@ -8396,7 +8738,7 @@
       helpStep3: "Choose Complete pathway assessment when the selected activities must form one connected directed route between the declared start and endpoint. Use Partial segment exploration for a single activity or connected subset; those results are labeled as partial and are not a full patient-pathway result.",
       pathwayStepGuideLabel: "Pathway setup order",
       pathwaySetupSourceTitle: "Choose pathway source",
-      pathwaySetupSourceText: "Use Specialties in the upper-right page header to choose Urology or Gastroenterology and, for Urology, the Dutch pathway or EAU reference.",
+      pathwaySetupSourceText: "Use Specialties in the upper-right page header to choose Urology or Gastroenterology. Urology provides the Dutch operational pathway, the NVU 2016 national guideline, and the EAU 2026 reference.",
       pathwaySetupBoundaryTitle: "Declare the boundary",
       pathwaySetupBoundaryText: "Choose Complete for a fixed hospital-entry start and a valid clinical endpoint. In Partial mode, select the segment directly on the map.",
       pathwaySetupRouteTitle: "Build the route",
@@ -8462,7 +8804,7 @@
       helpStep3: "Kies Volledige zorgpadbeoordeling als de geselecteerde activiteiten één verbonden, gerichte route tussen het opgegeven begin- en eindpunt moeten vormen. Gebruik Verkenning van een deeltraject voor één activiteit of een verbonden deel; deze resultaten worden als gedeeltelijk aangeduid en zijn geen volledig patiënttraject.",
       pathwayStepGuideLabel: "Volgorde voor het instellen van het zorgpad",
       pathwaySetupSourceTitle: "Kies de zorgpadbron",
-      pathwaySetupSourceText: "Gebruik rechtsboven in de paginakop het menu Specialismen om Urologie of Gastro-enterologie te kiezen en, bij Urologie, het Nederlandse zorgpad of de EAU-referentie.",
+      pathwaySetupSourceText: "Gebruik rechtsboven in de paginakop het menu Specialismen om Urologie of Gastro-enterologie te kiezen. Urologie bevat het Nederlandse operationele zorgpad, de landelijke NVU-richtlijn uit 2016 en de EAU-referentie uit 2026.",
       pathwaySetupBoundaryTitle: "Leg de grens vast",
       pathwaySetupBoundaryText: "Kies Volledig voor een vast begin bij ziekenhuisinstroom en een geldig klinisch eindpunt. Selecteer in Deeltraject het segment rechtstreeks op de kaart.",
       pathwaySetupRouteTitle: "Bouw de route",
@@ -8528,7 +8870,7 @@
       helpStep3: "如需评估完整患者路径，请选择“完整路径评估”，并确保所选活动在指定起点和终点之间构成一条连续的有向路径。如只想查看单个活动或连续片段，请使用“局部片段探索”；其结果会明确标记为局部结果，不代表完整患者路径。",
       pathwayStepGuideLabel: "路径设置顺序",
       pathwaySetupSourceTitle: "选择路径来源",
-      pathwaySetupSourceText: "使用页面右上角的“专科”菜单选择泌尿科或胃肠病学；在泌尿科下可继续选择荷兰路径或 EAU 参考路径。",
+      pathwaySetupSourceText: "使用页面右上角的“专科”菜单选择泌尿科或胃肠病学。泌尿科提供荷兰本地运行路径、NVU 2016 荷兰国家指南和 EAU 2026 参考指南。",
       pathwaySetupBoundaryTitle: "指定评估边界",
       pathwaySetupBoundaryText: "完整评估使用固定的入院起点和合法临床终点；局部探索直接在线路图中选择片段。",
       pathwaySetupRouteTitle: "构建路径",
@@ -8777,6 +9119,12 @@
           status: "Institution-neutral guideline extraction; Dutch execution not assumed",
           scope: "Activity-level extraction from the EAU 2026 MIBC guideline for ECO-PATH scoping. It separates guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. Use the Dutch source view to inspect the ASZ or regional hospital to Erasmus MC operational boundary."
         },
+        nvu: {
+          label: "Dutch national guidance (NVU 2016)",
+          title: "Dutch National MIBC Guideline Pathway (NVU 2016)",
+          status: "National guideline extraction based on EAU 2016; not a local execution map",
+          scope: "Activity-level extraction from the NVU bladder cancer guideline published in 2016, supplemented by the Dutch bladder-cancer brachytherapy module and NVU uro-oncology quality norms. It is a historical national reference and is shown separately from the Dutch operational pathway and the current EAU 2026 reference."
+        },
         emc: {
           label: "Dutch MIBC pathway",
           title: "Dutch MIBC Pathway: Regional Diagnosis to Erasmus MC Treatment",
@@ -8803,6 +9151,12 @@
           status: "Instelling-onafhankelijke richtlijnextractie; Nederlandse uitvoering niet verondersteld",
           scope: "Activiteitsextractie uit de EAU 2026 MIBC-richtlijn voor ECO-PATH-scoping. De weergave splitst activiteiten en beslissingen die zorgpadstructuur, resourcegebruik, LCA-modules of onzekerheidsanalyse kunnen beinvloeden. Gebruik de Nederlandse bronweergave voor de operationele grens van ASZ of regionaal ziekenhuis naar Erasmus MC."
         },
+        nvu: {
+          label: "Nederlandse landelijke richtlijn (NVU 2016)",
+          title: "Nederlandse landelijke MIBC-richtlijnroute (NVU 2016)",
+          status: "Landelijke richtlijnextractie op basis van EAU 2016; geen lokale uitvoeringskaart",
+          scope: "Activiteitsextractie uit de NVU-richtlijn Blaascarcinoom uit 2016, aangevuld met de Nederlandse brachytherapiemodule en NVU-kwaliteitsnormen uro-oncologie. Dit is een historische landelijke referentie, afzonderlijk van de Nederlandse operationele route en de actuele EAU 2026-referentie."
+        },
         emc: {
           label: "Nederlandse MIBC-route",
           title: "Nederlandse MIBC-route: regionale diagnose tot behandeling in Erasmus MC",
@@ -8828,6 +9182,12 @@
           title: "EAU 2026 MIBC 临床参考路径",
           status: "不指定医疗机构的指南提取，未假定荷兰实际执行",
           scope: "从 EAU 2026 MIBC 指南中提取活动层级内容用于 ECO-PATH 范围界定，并拆分可能影响路径结构、资源使用、LCA 模块或不确定性分析的活动和决策。若要查看 ASZ 或区域医院至 Erasmus MC 的运营边界，请切换到荷兰来源视图。"
+        },
+        nvu: {
+          label: "荷兰国家指南（NVU 2016）",
+          title: "荷兰国家 MIBC 指南路径（NVU 2016）",
+          status: "基于 EAU 2016 的国家指南活动提取；不是本地执行图",
+          scope: "从 NVU 2016 膀胱癌指南提取活动，并补充荷兰膀胱癌近距离放疗模块及 NVU 泌尿肿瘤质量规范。这是一份历史国家参考路径，与荷兰实际执行路径和当前 EAU 2026 参考路径分开显示。"
         },
         emc: {
           label: "荷兰 MIBC 路径",
@@ -9671,6 +10031,62 @@
       "Colon resection and perioperative care": "Resección de colon y atención perioperatoria",
       "Rectal resection and perioperative care": "Resección rectal y atención perioperatoria",
       "Watch-and-wait surveillance": "Vigilancia sin cirugía"
+    });
+
+    Object.assign(nodeLabelText.nl, {
+      "Guideline entry for invasive bladder cancer": "Instroom in de richtlijn voor invasief blaascarcinoom",
+      "Urine cytology if indicated": "Urinecytologie indien geïndiceerd",
+      "TURBT and urethral assessment if indicated": "TURBT en urethrale beoordeling indien geïndiceerd",
+      "Histopathology report and confirmation": "Histopathologisch verslag en bevestiging",
+      "CT chest abdomen and upper-tract staging": "CT thorax en abdomen met stadiëring van de hogere urinewegen",
+      "MRI local staging if indicated": "Lokale MRI-stadiëring indien geïndiceerd",
+      "Structured MDT discussion": "Gestructureerde MDO-bespreking",
+      "Comorbidity and fitness assessment": "Beoordeling van comorbiditeit en fitheid",
+      "Treatment intent and informed choice": "Behandelintentie en geïnformeerde keuze",
+      "Cisplatin eligibility": "Geschiktheid voor cisplatine",
+      "Neoadjuvant cisplatin-based chemotherapy": "Neo-adjuvante cisplatinecombinatiechemotherapie",
+      "Surgical approach and diversion planning": "Planning van operatieve benadering en urinedeviatie",
+      "Extended pelvic lymph-node dissection": "Uitgebreide pelviene lymfeklierdissectie",
+      "Urinary diversion": "Urinedeviatie",
+      "Perioperative fast-track care": "Perioperatieve fast-trackzorg",
+      "Adjuvant chemotherapy assessment": "Beoordeling adjuvante chemotherapie",
+      "Bladder-preserving multimodality eligibility": "Geschiktheid voor blaassparende multimodale behandeling",
+      "Brachytherapy eligibility": "Geschiktheid voor brachytherapie",
+      "External-beam radiotherapy before brachytherapy": "Uitwendige radiotherapie voorafgaand aan brachytherapie",
+      "Limited TURBT or surgical preparation if indicated": "Beperkte TURBT of operatieve voorbereiding indien geïndiceerd",
+      "Brachytherapy treatment episode": "Brachytherapiebehandeling",
+      "Advanced systemic therapy (2016 reference)": "Systemische therapie bij gevorderde ziekte (referentie 2016)",
+      "Palliative cystectomy for local symptoms": "Palliatieve cystectomie bij lokale symptomen",
+      "Palliative radiotherapy or symptom control": "Palliatieve radiotherapie of symptoomcontrole",
+      "Post-treatment follow-up boundary": "Grens voor follow-up na behandeling"
+    });
+
+    Object.assign(nodeLabelText.zh, {
+      "Guideline entry for invasive bladder cancer": "进入浸润性膀胱癌指南路径",
+      "Urine cytology if indicated": "必要时尿细胞学检查",
+      "TURBT and urethral assessment if indicated": "TURBT 及必要时尿道评估",
+      "Histopathology report and confirmation": "组织病理报告与确认",
+      "CT chest abdomen and upper-tract staging": "胸腹 CT 及上尿路分期",
+      "MRI local staging if indicated": "必要时 MRI 局部分期",
+      "Structured MDT discussion": "规范化 MDT 讨论",
+      "Comorbidity and fitness assessment": "合并症与适应性评估",
+      "Treatment intent and informed choice": "治疗意图与知情选择",
+      "Cisplatin eligibility": "顺铂适用性评估",
+      "Neoadjuvant cisplatin-based chemotherapy": "顺铂联合新辅助化疗",
+      "Surgical approach and diversion planning": "手术方式与尿流改道规划",
+      "Extended pelvic lymph-node dissection": "扩大盆腔淋巴结清扫",
+      "Urinary diversion": "尿流改道",
+      "Perioperative fast-track care": "围手术期快速康复照护",
+      "Adjuvant chemotherapy assessment": "辅助化疗评估",
+      "Bladder-preserving multimodality eligibility": "保膀胱多模式治疗适用性",
+      "Brachytherapy eligibility": "近距离放疗适用性",
+      "External-beam radiotherapy before brachytherapy": "近距离放疗前外照射放疗",
+      "Limited TURBT or surgical preparation if indicated": "必要时有限 TURBT 或手术准备",
+      "Brachytherapy treatment episode": "近距离放疗治疗单元",
+      "Advanced systemic therapy (2016 reference)": "晚期系统治疗（2016 参考）",
+      "Palliative cystectomy for local symptoms": "针对局部症状的姑息性膀胱切除",
+      "Palliative radiotherapy or symptom control": "姑息放疗或症状控制",
+      "Post-treatment follow-up boundary": "治疗后随访边界"
     });
 
     const laneLabelText = {
@@ -12619,6 +13035,17 @@
         referenceUnit: "patient pathway",
         comparability: "Only alternatives that are clinically appropriate for the same decision context may be compared; curative and palliative routes require separate scenarios."
       },
+      nvu: {
+        clinicalFunction: "Diagnosis, treatment planning, and primary management of muscle-invasive bladder cancer",
+        population: "One adult with cT2-T4a cN0M0 urothelial bladder cancer within the NVU 2016 guideline scope",
+        startPoint: "Entry into national guideline diagnosis and staging",
+        endPoint: "Completion of the selected primary treatment route",
+        timeHorizon: "One selected care episode; detailed follow-up frequency is not specified in the extracted 2016 MIBC chapter",
+        geography: "Netherlands, national guideline reference",
+        referenceAmount: 1,
+        referenceUnit: "patient pathway",
+        comparability: "This is a 2016 national-guideline snapshot based on EAU 2016. Treatment routes require separate clinically appropriate scenarios and must not be interpreted as current regimen recommendations."
+      },
       eau: {
         clinicalFunction: "Diagnosis, treatment planning, and primary management of muscle-invasive bladder cancer",
         population: "One adult with confirmed non-metastatic MIBC eligible for disease-directed treatment",
@@ -14025,6 +14452,7 @@
           label: t("specialtyUrology"),
           items: [
             { id: "emc", sourceKey: "dutchUrologyView" },
+            { id: "nvu", sourceKey: "nvuUrologyView" },
             { id: "eauFull", sourceKey: "sourceReference" }
           ]
         },
@@ -14116,21 +14544,28 @@
     function renderUrologySourceLens() {
       const panel = document.getElementById("urologySourceLens");
       if (!panel) return;
-      const isUrologyComparison = ["emc", "eauFull"].includes(state.pathway);
+      const isUrologyComparison = ["emc", "nvu", "eauFull"].includes(state.pathway);
       panel.hidden = !isUrologyComparison;
       if (!isUrologyComparison) return;
 
       setText("urologySourceLensTitle", "urologySourceLensTitle");
       setText("showDutchUrology", "dutchUrologyView");
+      setText("showNvuUrology", "nvuUrologyView");
       setText("showEauUrology", "eauUrologyView");
       setText("openProtocolComparisonDialog", "compareProtocols");
+      const sourceTextKeys = {
+        emc: ["dutchUrologyNote", "dutchUrologyDifference"],
+        nvu: ["nvuUrologyNote", "nvuUrologyDifference"],
+        eauFull: ["eauUrologyNote", "eauUrologyDifference"]
+      };
+      const [noteKey, differenceKey] = sourceTextKeys[state.pathway];
       setText(
         "urologySourceLensNote",
-        state.pathway === "emc" ? "dutchUrologyNote" : "eauUrologyNote"
+        noteKey
       );
       setText(
         "urologySourceDifference",
-        state.pathway === "emc" ? "dutchUrologyDifference" : "eauUrologyDifference"
+        differenceKey
       );
 
       panel.querySelectorAll("[data-urology-pathway]").forEach((button) => {
@@ -14176,13 +14611,16 @@
       setText("protocolComparisonIntro", "protocolComparisonIntro");
       setText("protocolComparisonNote", "protocolComparisonNote");
 
-      const counts = urologyProtocolComparison.reduce(
-        (result, item) => ({ ...result, [item.status]: result[item.status] + 1 }),
-        { shared: 0, dutch: 0, eau: 0 }
-      );
+      const counts = {
+        shared: urologyProtocolComparison.filter((item) => item.status === "shared").length,
+        operational: urologyProtocolComparison.filter((item) => item.operational.length).length,
+        nvu: urologyProtocolComparison.filter((item) => item.nvu.length).length,
+        eau: urologyProtocolComparison.filter((item) => item.eau.length).length
+      };
       summary.innerHTML = [
         [counts.shared, "protocolComparisonSharedStat"],
-        [counts.dutch, "protocolComparisonDutchStat"],
+        [counts.operational, "protocolComparisonOperationalStat"],
+        [counts.nvu, "protocolComparisonNvuStat"],
         [counts.eau, "protocolComparisonEauStat"]
       ].map(([count, labelKey]) => `
         <div class="protocol-comparison-stat">
@@ -14194,7 +14632,8 @@
       const filterOptions = [
         ["all", "protocolComparisonAll", urologyProtocolComparison.length],
         ["shared", "protocolComparisonShared", counts.shared],
-        ["dutch", "protocolComparisonDutch", counts.dutch],
+        ["operational", "protocolComparisonOperational", counts.operational],
+        ["nvu", "protocolComparisonNvu", counts.nvu],
         ["eau", "protocolComparisonEau", counts.eau]
       ];
       filters.innerHTML = filterOptions.map(([value, labelKey, count]) => `
@@ -14212,9 +14651,11 @@
         });
       });
 
-      const visibleRows = urologyProtocolComparison.filter((item) => (
-        state.protocolComparisonFilter === "all" || item.status === state.protocolComparisonFilter
-      ));
+      const visibleRows = urologyProtocolComparison.filter((item) => {
+        if (state.protocolComparisonFilter === "all") return true;
+        if (state.protocolComparisonFilter === "shared") return item.status === "shared";
+        return Boolean(item[state.protocolComparisonFilter]?.length);
+      });
       const groupLabels = {
         diagnosis: "protocolComparisonGroupDiagnosis",
         staging: "protocolComparisonGroupStaging",
@@ -14224,7 +14665,9 @@
       };
       const statusLabels = {
         shared: "protocolComparisonStatusShared",
-        dutch: "protocolComparisonStatusDutch",
+        mixed: "protocolComparisonStatusMixed",
+        operational: "protocolComparisonStatusOperational",
+        nvu: "protocolComparisonStatusNvu",
         eau: "protocolComparisonStatusEau"
       };
 
@@ -14243,8 +14686,11 @@
               <span class="protocol-comparison-status">${escapeHtml(t(statusLabels[item.status]))}</span>
               ${note}
             </div>
-            <div class="protocol-comparison-source" data-source="dutch" data-label="${escapeHtml(t("protocolComparisonDutchHeader"))}" role="cell">
-              ${protocolComparisonNodeHtml("emc", item.dutch)}
+            <div class="protocol-comparison-source" data-source="dutch" data-label="${escapeHtml(t("protocolComparisonOperationalHeader"))}" role="cell">
+              ${protocolComparisonNodeHtml("emc", item.operational)}
+            </div>
+            <div class="protocol-comparison-source" data-source="nvu" data-label="${escapeHtml(t("protocolComparisonNvuHeader"))}" role="cell">
+              ${protocolComparisonNodeHtml("nvu", item.nvu)}
             </div>
             <div class="protocol-comparison-source" data-source="eau" data-label="${escapeHtml(t("protocolComparisonEauHeader"))}" role="cell">
               ${protocolComparisonNodeHtml("eauFull", item.eau)}
@@ -14256,7 +14702,8 @@
       table.innerHTML = `
         <div class="protocol-comparison-header" role="row">
           <div role="columnheader">${escapeHtml(t("protocolComparisonFunctionHeader"))}</div>
-          <div role="columnheader">${escapeHtml(t("protocolComparisonDutchHeader"))}</div>
+          <div role="columnheader">${escapeHtml(t("protocolComparisonOperationalHeader"))}</div>
+          <div role="columnheader">${escapeHtml(t("protocolComparisonNvuHeader"))}</div>
           <div role="columnheader">${escapeHtml(t("protocolComparisonEauHeader"))}</div>
         </div>
         ${rowHtml}
@@ -14837,6 +15284,62 @@
       return { x: node.x - 24, y: node.y - 24, width: 48, height: 48 };
     }
 
+    Object.assign(shortNodeLabelText.nl, {
+      "Guideline entry for invasive bladder cancer": "Richtlijninstroom",
+      "Urine cytology if indicated": "Urinecytologie",
+      "TURBT and urethral assessment if indicated": "TURBT + urethra",
+      "Histopathology report and confirmation": "Pathologiebevestiging",
+      "CT chest abdomen and upper-tract staging": "CT-stadiëring",
+      "MRI local staging if indicated": "MRI-stadiëring",
+      "Structured MDT discussion": "MDO",
+      "Comorbidity and fitness assessment": "Comorbiditeit + fitheid",
+      "Treatment intent and informed choice": "Behandelintentie",
+      "Cisplatin eligibility": "Cisplatinegeschiktheid",
+      "Neoadjuvant cisplatin-based chemotherapy": "Neo-adjuvante chemo",
+      "Surgical approach and diversion planning": "Operatieplanning",
+      "Extended pelvic lymph-node dissection": "Uitgebreide PLND",
+      "Urinary diversion": "Urinedeviatie",
+      "Perioperative fast-track care": "Fast-trackzorg",
+      "Adjuvant chemotherapy assessment": "Adjuvante chemo?",
+      "Bladder-preserving multimodality eligibility": "Blaassparing?",
+      "Brachytherapy eligibility": "Brachytherapie?",
+      "External-beam radiotherapy before brachytherapy": "EBRT voor brachy",
+      "Limited TURBT or surgical preparation if indicated": "TURBT / voorbereiding",
+      "Brachytherapy treatment episode": "Brachytherapie",
+      "Advanced systemic therapy (2016 reference)": "Gevorderde systeemtherapie",
+      "Palliative cystectomy for local symptoms": "Palliatieve cystectomie",
+      "Palliative radiotherapy or symptom control": "Palliatieve RT",
+      "Post-treatment follow-up boundary": "Follow-upgrens"
+    });
+
+    Object.assign(shortNodeLabelText.zh, {
+      "Guideline entry for invasive bladder cancer": "指南入口",
+      "Urine cytology if indicated": "尿细胞学",
+      "TURBT and urethral assessment if indicated": "TURBT + 尿道评估",
+      "Histopathology report and confirmation": "病理确认",
+      "CT chest abdomen and upper-tract staging": "CT 分期",
+      "MRI local staging if indicated": "MRI 分期",
+      "Structured MDT discussion": "MDT 讨论",
+      "Comorbidity and fitness assessment": "合并症与适应性",
+      "Treatment intent and informed choice": "治疗意图",
+      "Cisplatin eligibility": "顺铂适用性",
+      "Neoadjuvant cisplatin-based chemotherapy": "顺铂新辅助化疗",
+      "Surgical approach and diversion planning": "手术规划",
+      "Extended pelvic lymph-node dissection": "扩大 PLND",
+      "Urinary diversion": "尿流改道",
+      "Perioperative fast-track care": "快速康复照护",
+      "Adjuvant chemotherapy assessment": "辅助化疗？",
+      "Bladder-preserving multimodality eligibility": "保膀胱适用性",
+      "Brachytherapy eligibility": "近距离放疗？",
+      "External-beam radiotherapy before brachytherapy": "近距离放疗前 EBRT",
+      "Limited TURBT or surgical preparation if indicated": "TURBT / 手术准备",
+      "Brachytherapy treatment episode": "近距离放疗",
+      "Advanced systemic therapy (2016 reference)": "晚期系统治疗",
+      "Palliative cystectomy for local symptoms": "姑息性膀胱切除",
+      "Palliative radiotherapy or symptom control": "姑息放疗",
+      "Post-treatment follow-up boundary": "随访边界"
+    });
+
     function shortStationLabel(node) {
       const replacements = {
         "Referral or presentation": "Referral",
@@ -14884,6 +15387,30 @@
         "Functional follow-up after diversion": "Functional follow-up",
         "Postoperative pathology and adjuvant assessment": "Postoperative assessment",
         "Diversion-related functional follow-up": "Diversion follow-up",
+        "Guideline entry for invasive bladder cancer": "Guideline entry",
+        "Urine cytology if indicated": "Urine cytology",
+        "TURBT and urethral assessment if indicated": "TURBT + urethra",
+        "Histopathology report and confirmation": "Pathology confirmation",
+        "CT chest abdomen and upper-tract staging": "CT staging",
+        "MRI local staging if indicated": "MRI staging",
+        "Structured MDT discussion": "MDT",
+        "Comorbidity and fitness assessment": "Comorbidity + fitness",
+        "Treatment intent and informed choice": "Treatment intent",
+        "Cisplatin eligibility": "Cisplatin eligibility",
+        "Neoadjuvant cisplatin-based chemotherapy": "Neoadjuvant chemo",
+        "Surgical approach and diversion planning": "Surgical planning",
+        "Extended pelvic lymph-node dissection": "Extended PLND",
+        "Urinary diversion": "Urinary diversion",
+        "Perioperative fast-track care": "Fast-track care",
+        "Adjuvant chemotherapy assessment": "Adjuvant chemo?",
+        "Bladder-preserving multimodality eligibility": "Bladder preservation?",
+        "Brachytherapy eligibility": "Brachytherapy?",
+        "External-beam radiotherapy before brachytherapy": "EBRT before brachy",
+        "Limited TURBT or surgical preparation if indicated": "TURBT / preparation",
+        "Brachytherapy treatment episode": "Brachytherapy",
+        "Advanced systemic therapy (2016 reference)": "Advanced systemic",
+        "Palliative cystectomy for local symptoms": "Palliative cystectomy",
+        "Post-treatment follow-up boundary": "Follow-up boundary",
         "Perioperative systemic therapy": "Perioperative therapy",
         "MIBC confirmation and referral decision": "MIBC referral",
         "Non-MIBC local pathway": "Local non-MIBC route",

@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "export_type": "ecopath_foreground_draft",
+  "exported_at": "2026-07-22T12:00:00.000Z",
+  "app": {
+    "name": "ECO-PATH Pathway Activity Explorer",
+    "version": "0.3.0-dev",
+    "url": "https://lz-bot.github.io/ecopath-pathway-explorer/"
+  },
+  "language": "en",
+  "pathway": {
+    "id": "emc",
+    "label": "Dutch MIBC pathway",
+    "localized_label": "Dutch MIBC pathway"
+  },
+  "functional_unit": {
+    "clinicalFunction": "Diagnosis, treatment planning, and primary management of muscle-invasive bladder cancer",
+    "population": "One adult with confirmed non-metastatic MIBC",
+    "startPoint": "First specialist urology assessment",
+    "endPoint": "Declared pathway endpoint",
+    "timeHorizon": "One selected care episode",
+    "geography": "Netherlands",
+    "referenceAmount": 1,
+    "referenceUnit": "patient pathway",
+    "comparability": "Only clinically appropriate alternatives for the same decision context may be compared."
+  },
+  "processes": [
+    {
+      "process_id": "em03-ct-scan",
+      "mapping_key": "em03-ct-scan",
+      "module_id": "EM03",
+      "building_block": "CT scan",
+      "draft_status": "draft",
+      "reference_output": {
+        "name": "CT scan",
+        "amount": 1,
+        "unit": "scan"
+      },
+      "metadata": {
+        "location": "NL",
+        "reference_year": 2026,
+        "technology_description": "Illustrative foreground draft. Replace with the reviewed clinical and technical scope.",
+        "data_source": "Illustrative example only",
+        "allocation_method": "Department electricity allocated by annual CT examination count; replace with a documented local rule.",
+        "cut_off_note": "Scanner manufacture and room infrastructure are not yet assessed."
+      },
+      "exchanges": [
+        {
+          "exchange_id": "example-electricity",
+          "name": "Allocated electricity",
+          "flow_type": "technosphere",
+          "direction": "input",
+          "amount": 8,
+          "unit": "kWh",
+          "provider_database": "replace-with-installed-background-database",
+          "provider_code": "replace-with-exact-electricity-provider-code",
+          "data_source": "Illustrative department allocation, not measured CT data",
+          "uncertainty": {
+            "type": "none",
+            "parameter": ""
+          }
+        },
+        {
+          "exchange_id": "example-contrast",
+          "name": "Contrast medium",
+          "flow_type": "technosphere",
+          "direction": "input",
+          "amount": null,
+          "unit": "",
+          "provider_database": "",
+          "provider_code": "",
+          "data_source": "",
+          "uncertainty": {
+            "type": "none",
+            "parameter": ""
+          }
+        }
+      ],
+      "review": {
+        "ready": false,
+        "exchange_count": 2,
+        "quantified_exchange_count": 1,
+        "mapped_exchange_count": 1
+      }
+    }
+  ],
+  "disclaimer": "Foreground inventory drafts for technical review. This export does not create Brightway processes and does not establish ISO 14040/14044 conformance."
+}

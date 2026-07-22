@@ -41,7 +41,35 @@ ECO-PATH keeps three data roles separate. Physical LCI inputs are quantified pro
 
 Administrative and digital events such as EHR use, report generation, app use, and portal messages are not direct LCI inputs. They are excluded by default when their physical burden is immaterial or cannot be supported by data. If a study includes them, the foreground model must express the associated physical exchanges, such as allocated device electricity, server electricity, network service, or device manufacture. A conditional home-monitoring device is scenario logic; an included device must be represented through a quantified product and lifetime allocation.
 
-EF characterization factors are method data that map elementary flows to impact categories. They must come from a reviewed, versioned EF method package and are not authored from clinical activity records in the browser. The appropriate future in-tool builder is therefore a foreground LCI editor. For one reference unit of a building block, it should collect physical exchanges, quantities, units, provenance, allocation parameters, and uncertainty; map exchanges to exact Brightway datasets; and request Brightway to calculate all 16 unit impact results. The current local service reads existing foreground processes and methods but does not yet create foreground processes or edit Brightway databases.
+EF characterization factors are method data that map elementary flows to impact categories. They must come from a reviewed, versioned EF method package and are not authored from clinical activity records in the browser. The foreground LCI draft builder collects physical exchanges, quantities, units, provenance, allocation parameters, uncertainty, and exact Brightway provider identifiers for one reference unit of an active building block. The current local service still reads existing foreground processes and methods only. Neither the browser nor the validator creates foreground processes or edits Brightway databases.
+
+## Foreground LCI draft builder
+
+The collapsible **Foreground LCI drafts** editor appears in the LCA step. It uses the active calculation rows from the selected pathway, so the browser does not maintain a second module or building-block registry. For each active building block, the editor records:
+
+- a reference output name, amount, and unit;
+- process location, reference year, technology description, inventory source, allocation method, and cut-off note;
+- physical technosphere, biosphere, or waste-treatment exchanges;
+- exchange amount, unit, direction, source, uncertainty note, and exact provider database/code.
+
+Drafts are stored in browser local storage. **Export active drafts** writes only the building blocks active in the current scenario. **Import drafts** restores a previous export without changing a Brightway project. The contract is documented in [`schemas/ecopath-foreground.schema.json`](schemas/ecopath-foreground.schema.json), and an intentionally incomplete data-collection example is available at [`examples/foreground/foreground-draft.example.json`](examples/foreground/foreground-draft.example.json).
+
+Validate an export without importing Brightway:
+
+```bash
+python scripts/validate_foreground.py \
+  --input /path/to/ecopath-foreground-drafts.json
+```
+
+Require every draft to contain a reference output, minimum process metadata, quantified physical exchanges, exchange-level data sources, and exact provider mappings:
+
+```bash
+python scripts/validate_foreground.py \
+  --input /path/to/ecopath-foreground-drafts.json \
+  --require-ready
+```
+
+The `review-ready` label is a technical completeness check, not an ISO-conformance claim. A reusable ECO-PATH building block may ultimately require more than one Brightway process when separate unit operations, coproduct allocation, waste treatment, or site-specific foreground detail must remain explicit. A future controlled importer should therefore require human review, resolve every provider against the selected Brightway project, export a change plan, and request explicit confirmation before any database write.
 
 The Results step presents all 16 EF 3.1 categories in one table. Each row retains its own LCIA unit, low/base/high result per functional unit, and base cohort result. Raw values across different units are not ranked or combined. Selecting a category row updates the detailed result cards, coefficient table, and contribution view. The interactive Sankey shows the base-result flow from the pathway total to ECO-PATH modules and active building blocks for that selected category. Its `0.1%` to `1%` cut-off control aggregates smaller building-block contributions within their module as `Other`; it changes visual detail only and preserves the pathway total.
 
@@ -121,7 +149,7 @@ The file workflow remains available for audit, reproducibility, and environments
 
 Add `--with-contributions` to calculate building-block contributions. Exported scenarios request contributions for the impact category that was selected in the browser; scenarios without that option calculate contributions for every configured method. Add `--allow-missing` only for an explicitly documented partial model; missing active mappings and missing requested method mappings fail by default. The runner only reads existing projects and databases. It does not create, import, delete, relink, or modify Brightway data.
 
-The example mapping deliberately contains placeholders. Exact EF method tuples depend on the methods installed in the local Brightway project and must not be guessed. Scenario and result contracts are documented in [`schemas/ecopath-scenario.schema.json`](schemas/ecopath-scenario.schema.json) and [`schemas/ecopath-results.schema.json`](schemas/ecopath-results.schema.json).
+The example mapping deliberately contains placeholders. Exact EF method tuples depend on the methods installed in the local Brightway project and must not be guessed. Scenario, result, and foreground-draft contracts are documented in [`schemas/ecopath-scenario.schema.json`](schemas/ecopath-scenario.schema.json), [`schemas/ecopath-results.schema.json`](schemas/ecopath-results.schema.json), and [`schemas/ecopath-foreground.schema.json`](schemas/ecopath-foreground.schema.json).
 
 The local service and file workflow support an auditable ISO 14040/14044 process, but use of either interface does not establish ISO conformance. A formal study still needs documented goal and scope, functional unit, system boundary, allocation and cut-off rules, inventory provenance, LCIA method version, interpretation, sensitivity and uncertainty analyses, critical review where applicable, and reproducible model records.
 

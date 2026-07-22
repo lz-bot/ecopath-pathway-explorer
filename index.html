@@ -19,6 +19,7 @@
       --soft: rgba(111, 207, 241, 0.16);
       --warn-bg: #fff7df;
       --warn-line: #f0d98c;
+      --danger: #9f3f35;
       --diagnostic: #87c7df;
       --treatment: #db7f67;
       --followup: #e4bc4e;
@@ -2390,6 +2391,158 @@
       font-weight: 700;
     }
 
+    .foreground-builder {
+      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-soft);
+      overflow: hidden;
+    }
+
+    .foreground-builder .collapse-panel-summary {
+      align-items: center;
+    }
+
+    .foreground-builder .collapse-panel-summary .status-chip {
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .foreground-builder-content {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .foreground-toolbar {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .foreground-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .foreground-note,
+    .foreground-status {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .foreground-status.error {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .foreground-empty {
+      margin-top: 12px;
+      border-left: 4px solid var(--line-strong);
+      padding: 10px 12px;
+      color: var(--muted);
+      background: var(--panel);
+    }
+
+    .foreground-editor-section {
+      margin-top: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+
+    .foreground-editor-section:first-child {
+      border-top: 0;
+    }
+
+    .foreground-editor-section h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .foreground-reference-grid,
+    .foreground-metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .foreground-metadata-grid .field-wide {
+      grid-column: span 2;
+    }
+
+    .foreground-exchange-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+    }
+
+    .foreground-exchange-table {
+      width: 100%;
+      min-width: 1540px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .foreground-exchange-table th,
+    .foreground-exchange-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .foreground-exchange-table th {
+      color: var(--muted);
+      background: var(--panel-soft);
+      font-weight: 700;
+    }
+
+    .foreground-exchange-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .foreground-exchange-table input,
+    .foreground-exchange-table select {
+      min-width: 105px;
+      width: 100%;
+    }
+
+    .foreground-exchange-table .exchange-name-input,
+    .foreground-exchange-table .exchange-source-input {
+      min-width: 190px;
+    }
+
+    .foreground-exchange-table .exchange-mapping-input {
+      min-width: 155px;
+    }
+
+    .foreground-remove-exchange {
+      min-width: 36px;
+      padding: 7px 10px;
+      color: var(--danger);
+    }
+
+    .foreground-review {
+      margin: 10px 0 0;
+      border-left: 4px solid var(--accent);
+      padding: 9px 11px;
+      color: var(--ink);
+      background: var(--accent-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .foreground-review.incomplete {
+      border-left-color: var(--line-strong);
+      background: var(--panel);
+    }
+
     .brightway-primary-action:hover {
       color: var(--accent-dark);
       background: var(--accent-soft-strong);
@@ -3454,6 +3607,20 @@
         justify-content: flex-start;
       }
 
+      .foreground-toolbar,
+      .foreground-reference-grid,
+      .foreground-metadata-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .foreground-actions {
+        justify-content: flex-start;
+      }
+
+      .foreground-metadata-grid .field-wide {
+        grid-column: auto;
+      }
+
       .building-block-summary {
         grid-template-columns: minmax(0, 1fr);
       }
@@ -4047,6 +4214,34 @@
           </div>
           <p class="cutoff-summary" id="lcaCutoffSummary"></p>
           <div class="module-map-grid" id="buildingBlockMap"></div>
+        </div>
+      </details>
+
+      <details class="foreground-builder" id="foregroundBuilder" data-workspace-panel="lca" aria-labelledby="foregroundBuilderTitle">
+        <summary class="collapse-panel-summary">
+          <span>
+            <strong id="foregroundBuilderTitle">Foreground LCI drafts</strong>
+            <small id="foregroundBuilderIntro">Define auditable unit-process drafts for active building blocks.</small>
+          </span>
+          <span class="status-chip" id="foregroundDraftSummary"></span>
+        </summary>
+        <div class="foreground-builder-content">
+          <div class="foreground-toolbar">
+            <div class="field">
+              <label for="foregroundBlockSelect" id="foregroundBlockSelectLabel">Active building block</label>
+              <select id="foregroundBlockSelect"></select>
+            </div>
+            <div class="foreground-actions">
+              <button type="button" id="foregroundAddExchange">Add exchange</button>
+              <button type="button" id="foregroundExportDrafts">Export active drafts</button>
+              <button type="button" id="foregroundImportDrafts">Import drafts</button>
+              <button type="button" id="foregroundResetDraft">Reset current draft</button>
+              <input id="foregroundDraftFile" type="file" accept="application/json,.json" hidden>
+            </div>
+          </div>
+          <p class="foreground-note" id="foregroundBuilderNote"></p>
+          <div id="foregroundEditor"></div>
+          <p class="foreground-status" id="foregroundDraftStatus" aria-live="polite"></p>
         </div>
       </details>
 
@@ -9012,6 +9207,177 @@
       assessmentExportBlocked: "Complete una vía conectada o cambie a Exploración de segmento parcial antes de calcular o exportar."
     });
 
+    Object.assign(uiText.en, {
+      foregroundBuilderTitle: "Foreground LCI drafts",
+      foregroundBuilderIntro: "Define reviewable process drafts for active building blocks",
+      foregroundBuilderNote: "Drafts are stored in this browser. They document foreground physical exchanges and exact provider mappings, but do not create or modify Brightway databases.",
+      foregroundActiveBlock: "Active building block",
+      foregroundNoActiveBlocks: "Select a valid pathway and activate at least one calculation row to create a foreground draft.",
+      foregroundAddExchange: "Add exchange",
+      foregroundExportDrafts: "Export active drafts",
+      foregroundImportDrafts: "Import drafts",
+      foregroundResetDraft: "Reset current draft",
+      foregroundReferenceOutput: "Reference output",
+      foregroundReferenceName: "Output name",
+      foregroundReferenceAmount: "Amount",
+      foregroundReferenceUnit: "Unit",
+      foregroundProcessMetadata: "Process metadata",
+      foregroundLocation: "Location",
+      foregroundReferenceYear: "Reference year",
+      foregroundTechnology: "Technology description",
+      foregroundDataSource: "Inventory data source",
+      foregroundAllocation: "Allocation method",
+      foregroundCutoff: "Cut-off and exclusions",
+      foregroundExchanges: "Physical exchanges",
+      foregroundExchangeName: "Exchange name",
+      foregroundFlowType: "Flow type",
+      foregroundDirection: "Direction",
+      foregroundAmount: "Amount",
+      foregroundUnit: "Unit",
+      foregroundProviderDatabase: "Provider database",
+      foregroundProviderCode: "Provider code",
+      foregroundExchangeSource: "Exchange data source",
+      foregroundUncertaintyType: "Uncertainty",
+      foregroundUncertaintyParameter: "Parameter / note",
+      foregroundRemove: "Remove",
+      foregroundTechnosphere: "Technosphere",
+      foregroundBiosphere: "Biosphere",
+      foregroundWaste: "Waste treatment",
+      foregroundInput: "Input",
+      foregroundOutput: "Output",
+      foregroundUncertaintyNone: "None documented",
+      foregroundUncertaintyLognormal: "Lognormal",
+      foregroundUncertaintyNormal: "Normal",
+      foregroundUncertaintyTriangular: "Triangular",
+      foregroundUncertaintyUniform: "Uniform",
+      foregroundUncertaintyPedigree: "Pedigree-derived",
+      foregroundNoExchanges: "No exchanges are defined. Add at least one quantified physical exchange.",
+      foregroundDraftProgress: "{ready}/{total} drafts review-ready",
+      foregroundDraftReviewReady: "Draft complete for technical LCA review. This is not an ISO-conformance claim.",
+      foregroundDraftReviewIncomplete: "{quantified}/{total} exchanges quantified; {mapped}/{total} mapped. Missing: {issues}",
+      foregroundDraftExported: "Exported {count} active foreground drafts.",
+      foregroundDraftImported: "Imported {count} foreground drafts.",
+      foregroundImportInvalid: "The selected file is not a valid ECO-PATH foreground draft export.",
+      foregroundDraftReset: "The current foreground draft was reset.",
+      foregroundMissingReference: "reference output",
+      foregroundMissingMetadata: "process metadata",
+      foregroundMissingExchange: "exchange quantity, unit, source, or exact mapping"
+    });
+
+    Object.assign(uiText.nl, {
+      foregroundBuilderTitle: "Concepten voor foreground-LCI",
+      foregroundBuilderIntro: "Definieer controleerbare procesconcepten voor actieve bouwstenen",
+      foregroundBuilderNote: "Concepten worden in deze browser opgeslagen. Ze documenteren fysieke foreground-uitwisselingen en exacte providerkoppelingen, maar maken of wijzigen geen Brightway-databases.",
+      foregroundActiveBlock: "Actieve bouwsteen",
+      foregroundNoActiveBlocks: "Selecteer een geldig zorgpad en activeer minimaal één rekenregel om een foreground-concept te maken.",
+      foregroundAddExchange: "Uitwisseling toevoegen",
+      foregroundExportDrafts: "Actieve concepten exporteren",
+      foregroundImportDrafts: "Concepten importeren",
+      foregroundResetDraft: "Huidig concept resetten",
+      foregroundReferenceOutput: "Referentie-output",
+      foregroundReferenceName: "Naam output",
+      foregroundReferenceAmount: "Hoeveelheid",
+      foregroundReferenceUnit: "Eenheid",
+      foregroundProcessMetadata: "Procesmetadata",
+      foregroundLocation: "Locatie",
+      foregroundReferenceYear: "Referentiejaar",
+      foregroundTechnology: "Technologiebeschrijving",
+      foregroundDataSource: "Bron inventarisdata",
+      foregroundAllocation: "Allocatiemethode",
+      foregroundCutoff: "Cut-off en uitsluitingen",
+      foregroundExchanges: "Fysieke uitwisselingen",
+      foregroundExchangeName: "Naam uitwisseling",
+      foregroundFlowType: "Type stroom",
+      foregroundDirection: "Richting",
+      foregroundAmount: "Hoeveelheid",
+      foregroundUnit: "Eenheid",
+      foregroundProviderDatabase: "Providerdatabase",
+      foregroundProviderCode: "Providercode",
+      foregroundExchangeSource: "Databron uitwisseling",
+      foregroundUncertaintyType: "Onzekerheid",
+      foregroundUncertaintyParameter: "Parameter / notitie",
+      foregroundRemove: "Verwijderen",
+      foregroundTechnosphere: "Technosfeer",
+      foregroundBiosphere: "Biosfeer",
+      foregroundWaste: "Afvalverwerking",
+      foregroundInput: "Input",
+      foregroundOutput: "Output",
+      foregroundUncertaintyNone: "Niet gedocumenteerd",
+      foregroundUncertaintyLognormal: "Lognormaal",
+      foregroundUncertaintyNormal: "Normaal",
+      foregroundUncertaintyTriangular: "Driehoekig",
+      foregroundUncertaintyUniform: "Uniform",
+      foregroundUncertaintyPedigree: "Afgeleid van pedigree",
+      foregroundNoExchanges: "Er zijn geen uitwisselingen gedefinieerd. Voeg minimaal één gekwantificeerde fysieke uitwisseling toe.",
+      foregroundDraftProgress: "{ready}/{total} concepten gereed voor review",
+      foregroundDraftReviewReady: "Concept compleet voor technische LCA-review. Dit is geen claim van ISO-conformiteit.",
+      foregroundDraftReviewIncomplete: "{quantified}/{total} uitwisselingen gekwantificeerd; {mapped}/{total} gekoppeld. Ontbreekt: {issues}",
+      foregroundDraftExported: "{count} actieve foreground-concepten geëxporteerd.",
+      foregroundDraftImported: "{count} foreground-concepten geïmporteerd.",
+      foregroundImportInvalid: "Het gekozen bestand is geen geldige ECO-PATH-export met foreground-concepten.",
+      foregroundDraftReset: "Het huidige foreground-concept is gereset.",
+      foregroundMissingReference: "referentie-output",
+      foregroundMissingMetadata: "procesmetadata",
+      foregroundMissingExchange: "hoeveelheid, eenheid, bron of exacte koppeling van uitwisseling"
+    });
+
+    Object.assign(uiText.zh, {
+      foregroundBuilderTitle: "前景 LCI 草稿",
+      foregroundBuilderIntro: "为已启用的 building block 定义可审核的过程草稿",
+      foregroundBuilderNote: "草稿保存在本浏览器中，用于记录前景物理交换和精确 provider 映射，但不会创建或修改 Brightway 数据库。",
+      foregroundActiveBlock: "已启用的 building block",
+      foregroundNoActiveBlocks: "请选择有效路径并启用至少一个计算行，然后再创建前景草稿。",
+      foregroundAddExchange: "添加交换",
+      foregroundExportDrafts: "导出已启用草稿",
+      foregroundImportDrafts: "导入草稿",
+      foregroundResetDraft: "重置当前草稿",
+      foregroundReferenceOutput: "参考产出",
+      foregroundReferenceName: "产出名称",
+      foregroundReferenceAmount: "数量",
+      foregroundReferenceUnit: "单位",
+      foregroundProcessMetadata: "过程元数据",
+      foregroundLocation: "地点",
+      foregroundReferenceYear: "参考年份",
+      foregroundTechnology: "技术描述",
+      foregroundDataSource: "清单数据来源",
+      foregroundAllocation: "分配方法",
+      foregroundCutoff: "截断与排除",
+      foregroundExchanges: "物理交换",
+      foregroundExchangeName: "交换名称",
+      foregroundFlowType: "流类型",
+      foregroundDirection: "方向",
+      foregroundAmount: "数量",
+      foregroundUnit: "单位",
+      foregroundProviderDatabase: "Provider 数据库",
+      foregroundProviderCode: "Provider code",
+      foregroundExchangeSource: "交换数据来源",
+      foregroundUncertaintyType: "不确定性",
+      foregroundUncertaintyParameter: "参数或说明",
+      foregroundRemove: "删除",
+      foregroundTechnosphere: "技术圈",
+      foregroundBiosphere: "生物圈",
+      foregroundWaste: "废物处理",
+      foregroundInput: "输入",
+      foregroundOutput: "输出",
+      foregroundUncertaintyNone: "未记录",
+      foregroundUncertaintyLognormal: "对数正态",
+      foregroundUncertaintyNormal: "正态",
+      foregroundUncertaintyTriangular: "三角分布",
+      foregroundUncertaintyUniform: "均匀分布",
+      foregroundUncertaintyPedigree: "由 pedigree 推导",
+      foregroundNoExchanges: "尚未定义交换。请至少添加一个已量化的物理交换。",
+      foregroundDraftProgress: "{ready}/{total} 份草稿可供审核",
+      foregroundDraftReviewReady: "草稿已具备技术 LCA 审核条件，但不代表已符合 ISO。",
+      foregroundDraftReviewIncomplete: "已量化 {quantified}/{total} 个交换，已映射 {mapped}/{total} 个。缺少：{issues}",
+      foregroundDraftExported: "已导出 {count} 份启用的前景草稿。",
+      foregroundDraftImported: "已导入 {count} 份前景草稿。",
+      foregroundImportInvalid: "所选文件不是有效的 ECO-PATH 前景草稿导出文件。",
+      foregroundDraftReset: "当前前景草稿已重置。",
+      foregroundMissingReference: "参考产出",
+      foregroundMissingMetadata: "过程元数据",
+      foregroundMissingExchange: "交换数量、单位、来源或精确映射"
+    });
+
     const sensitivityPromptText = {
       en: {
         travel: {
@@ -13094,6 +13460,199 @@
 
     validateAutomaticActivityIds();
 
+    const foregroundDraftStorageKey = "ecopath-foreground-drafts-v1";
+
+    function readStoredForegroundDrafts() {
+      try {
+        const stored = JSON.parse(window.localStorage.getItem(foregroundDraftStorageKey) || "{}");
+        if (!stored || typeof stored !== "object" || Array.isArray(stored)) return {};
+        return Object.values(stored).reduce((drafts, rawDraft) => {
+          const draft = normalizeImportedForegroundDraft(rawDraft);
+          if (draft) drafts[draft.mapping_key] = draft;
+          return drafts;
+        }, {});
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveForegroundDrafts() {
+      try {
+        window.localStorage.setItem(foregroundDraftStorageKey, JSON.stringify(state.foregroundDrafts));
+      } catch (error) {
+        // The in-memory draft remains usable if browser storage is unavailable.
+      }
+    }
+
+    function normalizeReferenceUnit(unit) {
+      return String(unit || "").replace(/^per\s+/i, "").trim();
+    }
+
+    function createForegroundExchange(name = "") {
+      return {
+        exchange_id: createScenarioId(),
+        name,
+        flow_type: "technosphere",
+        direction: "input",
+        amount: null,
+        unit: "",
+        provider_database: "",
+        provider_code: "",
+        data_source: "",
+        uncertainty: {
+          type: "none",
+          parameter: ""
+        }
+      };
+    }
+
+    function foregroundResourceFlowsForRow(row) {
+      const item = currentBuildingBlocks().find((candidate) => (
+        candidate.module === row.module && candidate.name === row.block
+      ));
+      return item ? item.resourceFlows : directLciInputs(row.flow || []);
+    }
+
+    function createForegroundDraft(row) {
+      return {
+        process_id: row.id,
+        mapping_key: row.id,
+        module_id: row.module,
+        building_block: row.block,
+        draft_status: "draft",
+        reference_output: {
+          name: row.block,
+          amount: 1,
+          unit: normalizeReferenceUnit(row.unit)
+        },
+        metadata: {
+          location: "NL",
+          reference_year: new Date().getFullYear(),
+          technology_description: "",
+          data_source: "",
+          allocation_method: "",
+          cut_off_note: ""
+        },
+        exchanges: foregroundResourceFlowsForRow(row).map((flow) => createForegroundExchange(flow))
+      };
+    }
+
+    function normalizeImportedForegroundDraft(raw) {
+      const reference = raw?.reference_output || {};
+      const metadata = raw?.metadata || {};
+      const mappingKey = String(raw?.mapping_key || raw?.process_id || "").trim();
+      if (!mappingKey) return null;
+      return {
+        process_id: String(raw?.process_id || mappingKey),
+        mapping_key: mappingKey,
+        module_id: String(raw?.module_id || ""),
+        building_block: String(raw?.building_block || ""),
+        draft_status: "draft",
+        reference_output: {
+          name: String(reference.name || raw?.building_block || ""),
+          amount: reference.amount === null || reference.amount === ""
+            ? null
+            : (Number.isFinite(Number(reference.amount)) ? Number(reference.amount) : 1),
+          unit: String(reference.unit || "")
+        },
+        metadata: {
+          location: String(metadata.location || ""),
+          reference_year: metadata.reference_year === null || metadata.reference_year === ""
+            ? null
+            : (Number.isFinite(Number(metadata.reference_year)) ? Number(metadata.reference_year) : null),
+          technology_description: String(metadata.technology_description || ""),
+          data_source: String(metadata.data_source || ""),
+          allocation_method: String(metadata.allocation_method || ""),
+          cut_off_note: String(metadata.cut_off_note || "")
+        },
+        exchanges: Array.isArray(raw?.exchanges) ? raw.exchanges.map((exchange) => ({
+          exchange_id: String(exchange?.exchange_id || createScenarioId()),
+          name: String(exchange?.name || ""),
+          flow_type: ["technosphere", "biosphere", "waste"].includes(exchange?.flow_type)
+            ? exchange.flow_type
+            : "technosphere",
+          direction: ["input", "output"].includes(exchange?.direction) ? exchange.direction : "input",
+          amount: exchange?.amount === null || exchange?.amount === ""
+            ? null
+            : (Number.isFinite(Number(exchange?.amount)) ? Number(exchange.amount) : null),
+          unit: String(exchange?.unit || ""),
+          provider_database: String(exchange?.provider_database || ""),
+          provider_code: String(exchange?.provider_code || ""),
+          data_source: String(exchange?.data_source || ""),
+          uncertainty: {
+            type: ["none", "lognormal", "normal", "triangular", "uniform", "pedigree"].includes(exchange?.uncertainty?.type)
+              ? exchange.uncertainty.type
+              : "none",
+            parameter: String(exchange?.uncertainty?.parameter || "")
+          }
+        })) : []
+      };
+    }
+
+    function activeForegroundRows() {
+      return lcaVisibleRows().filter((row) => isLcaRowActive(row));
+    }
+
+    function ensureForegroundDraft(row) {
+      const existing = state.foregroundDrafts[row.id];
+      if (!existing) {
+        state.foregroundDrafts[row.id] = createForegroundDraft(row);
+      } else {
+        existing.process_id = row.id;
+        existing.mapping_key = row.id;
+        existing.module_id = row.module;
+        existing.building_block = row.block;
+      }
+      return state.foregroundDrafts[row.id];
+    }
+
+    function reviewForegroundDraft(draft) {
+      const referenceReady = Boolean(
+        draft?.reference_output?.name?.trim()
+        && Number(draft?.reference_output?.amount) > 0
+        && draft?.reference_output?.unit?.trim()
+      );
+      const metadataReady = Boolean(
+        draft?.metadata?.location?.trim()
+        && Number(draft?.metadata?.reference_year) > 1900
+        && draft?.metadata?.data_source?.trim()
+      );
+      const exchanges = Array.isArray(draft?.exchanges) ? draft.exchanges : [];
+      const quantified = exchanges.filter((exchange) => (
+        exchange?.name?.trim()
+        && Number(exchange?.amount) > 0
+        && exchange?.unit?.trim()
+      )).length;
+      const mapped = exchanges.filter((exchange) => (
+        exchange?.provider_database?.trim() && exchange?.provider_code?.trim()
+      )).length;
+      const completeExchanges = exchanges.filter((exchange) => (
+        exchange?.name?.trim()
+        && Number(exchange?.amount) > 0
+        && exchange?.unit?.trim()
+        && exchange?.provider_database?.trim()
+        && exchange?.provider_code?.trim()
+        && exchange?.data_source?.trim()
+        && ["technosphere", "biosphere", "waste"].includes(exchange?.flow_type)
+        && ["input", "output"].includes(exchange?.direction)
+        && (
+          exchange?.uncertainty?.type === "none"
+          || exchange?.uncertainty?.parameter?.trim()
+        )
+      )).length;
+      const issues = [];
+      if (!referenceReady) issues.push(t("foregroundMissingReference"));
+      if (!metadataReady) issues.push(t("foregroundMissingMetadata"));
+      if (!exchanges.length || completeExchanges !== exchanges.length) issues.push(t("foregroundMissingExchange"));
+      return {
+        ready: referenceReady && metadataReady && exchanges.length > 0 && completeExchanges === exchanges.length,
+        total: exchanges.length,
+        quantified,
+        mapped,
+        issues
+      };
+    }
+
     const state = {
       pathway: "emc",
       selected: null,
@@ -13121,6 +13680,8 @@
       sensitivitySelectedKeys: [],
       lcaExpandedModules: {},
       functionalUnits: {},
+      foregroundDrafts: readStoredForegroundDrafts(),
+      foregroundSelectedId: null,
       brightwayResult: null,
       lastExportedScenarioId: null,
       brightwayCalculating: false,
@@ -15855,6 +16416,361 @@
       toggle.setAttribute("aria-expanded", state.activitiesCollapsed ? "false" : "true");
     }
 
+    function foregroundDraftReviewText(review) {
+      if (review.ready) return t("foregroundDraftReviewReady");
+      return t("foregroundDraftReviewIncomplete", {
+        quantified: review.quantified,
+        total: review.total,
+        mapped: review.mapped,
+        issues: review.issues.join(", ")
+      });
+    }
+
+    function foregroundSelectOptions(value, options) {
+      return options.map(([id, label]) => (
+        `<option value="${escapeHtml(id)}" ${value === id ? "selected" : ""}>${escapeHtml(label)}</option>`
+      )).join("");
+    }
+
+    function foregroundValue(value) {
+      return value === null || value === undefined ? "" : String(value);
+    }
+
+    function updateForegroundBuilderSummary() {
+      const rows = activeForegroundRows();
+      const ready = rows.filter((row) => {
+        const draft = state.foregroundDrafts[row.id] || createForegroundDraft(row);
+        return reviewForegroundDraft(draft).ready;
+      }).length;
+      const summary = document.getElementById("foregroundDraftSummary");
+      if (summary) summary.textContent = t("foregroundDraftProgress", { ready, total: rows.length });
+      const reviewElement = document.querySelector("[data-foreground-review]");
+      const selectedDraft = state.foregroundDrafts[state.foregroundSelectedId];
+      if (reviewElement && selectedDraft) {
+        const review = reviewForegroundDraft(selectedDraft);
+        reviewElement.textContent = foregroundDraftReviewText(review);
+        reviewElement.classList.toggle("incomplete", !review.ready);
+      }
+    }
+
+    function setForegroundStatus(message = "", isError = false) {
+      const element = document.getElementById("foregroundDraftStatus");
+      if (!element) return;
+      element.textContent = message;
+      element.classList.toggle("error", isError);
+    }
+
+    function renderForegroundBuilder() {
+      const select = document.getElementById("foregroundBlockSelect");
+      const editor = document.getElementById("foregroundEditor");
+      if (!select || !editor) return;
+
+      document.getElementById("foregroundBuilderTitle").textContent = t("foregroundBuilderTitle");
+      document.getElementById("foregroundBuilderIntro").textContent = t("foregroundBuilderIntro");
+      document.getElementById("foregroundBuilderNote").textContent = t("foregroundBuilderNote");
+      document.getElementById("foregroundBlockSelectLabel").textContent = t("foregroundActiveBlock");
+      document.getElementById("foregroundAddExchange").textContent = t("foregroundAddExchange");
+      document.getElementById("foregroundExportDrafts").textContent = t("foregroundExportDrafts");
+      document.getElementById("foregroundImportDrafts").textContent = t("foregroundImportDrafts");
+      document.getElementById("foregroundResetDraft").textContent = t("foregroundResetDraft");
+
+      const rows = activeForegroundRows();
+      if (!rows.some((row) => row.id === state.foregroundSelectedId)) {
+        state.foregroundSelectedId = rows[0]?.id || null;
+      }
+      clear(select);
+      rows.forEach((row) => {
+        const option = document.createElement("option");
+        option.value = row.id;
+        option.textContent = `${row.module} ${localizedBlockName(row.block)} · ${localizedUnit(row.unit)}`;
+        select.appendChild(option);
+      });
+      select.value = state.foregroundSelectedId || "";
+      select.disabled = rows.length === 0;
+      document.getElementById("foregroundAddExchange").disabled = rows.length === 0;
+      document.getElementById("foregroundExportDrafts").disabled = rows.length === 0;
+      document.getElementById("foregroundResetDraft").disabled = rows.length === 0;
+      updateForegroundBuilderSummary();
+
+      if (!rows.length) {
+        editor.innerHTML = `<div class="foreground-empty">${escapeHtml(t("foregroundNoActiveBlocks"))}</div>`;
+        return;
+      }
+
+      const row = rows.find((candidate) => candidate.id === state.foregroundSelectedId) || rows[0];
+      const draft = ensureForegroundDraft(row);
+      saveForegroundDrafts();
+      const review = reviewForegroundDraft(draft);
+      const exchangeRows = draft.exchanges.map((exchange, index) => `
+        <tr>
+          <td><input class="exchange-name-input" type="text" value="${escapeHtml(foregroundValue(exchange.name))}" data-foreground-exchange-index="${index}" data-foreground-exchange-field="name"></td>
+          <td>
+            <select data-foreground-exchange-index="${index}" data-foreground-exchange-field="flow_type">
+              ${foregroundSelectOptions(exchange.flow_type, [
+                ["technosphere", t("foregroundTechnosphere")],
+                ["biosphere", t("foregroundBiosphere")],
+                ["waste", t("foregroundWaste")]
+              ])}
+            </select>
+          </td>
+          <td>
+            <select data-foreground-exchange-index="${index}" data-foreground-exchange-field="direction">
+              ${foregroundSelectOptions(exchange.direction, [
+                ["input", t("foregroundInput")],
+                ["output", t("foregroundOutput")]
+              ])}
+            </select>
+          </td>
+          <td><input type="number" min="0" step="any" value="${escapeHtml(foregroundValue(exchange.amount))}" data-foreground-exchange-index="${index}" data-foreground-exchange-field="amount"></td>
+          <td><input type="text" value="${escapeHtml(foregroundValue(exchange.unit))}" data-foreground-exchange-index="${index}" data-foreground-exchange-field="unit"></td>
+          <td><input class="exchange-mapping-input" type="text" value="${escapeHtml(foregroundValue(exchange.provider_database))}" data-foreground-exchange-index="${index}" data-foreground-exchange-field="provider_database"></td>
+          <td><input class="exchange-mapping-input" type="text" value="${escapeHtml(foregroundValue(exchange.provider_code))}" data-foreground-exchange-index="${index}" data-foreground-exchange-field="provider_code"></td>
+          <td><input class="exchange-source-input" type="text" value="${escapeHtml(foregroundValue(exchange.data_source))}" data-foreground-exchange-index="${index}" data-foreground-exchange-field="data_source"></td>
+          <td>
+            <select data-foreground-exchange-index="${index}" data-foreground-exchange-field="uncertainty.type">
+              ${foregroundSelectOptions(exchange.uncertainty.type, [
+                ["none", t("foregroundUncertaintyNone")],
+                ["lognormal", t("foregroundUncertaintyLognormal")],
+                ["normal", t("foregroundUncertaintyNormal")],
+                ["triangular", t("foregroundUncertaintyTriangular")],
+                ["uniform", t("foregroundUncertaintyUniform")],
+                ["pedigree", t("foregroundUncertaintyPedigree")]
+              ])}
+            </select>
+          </td>
+          <td><input type="text" value="${escapeHtml(foregroundValue(exchange.uncertainty.parameter))}" data-foreground-exchange-index="${index}" data-foreground-exchange-field="uncertainty.parameter"></td>
+          <td><button class="foreground-remove-exchange" type="button" data-remove-foreground-exchange="${index}" aria-label="${escapeHtml(t("foregroundRemove"))}" title="${escapeHtml(t("foregroundRemove"))}">×</button></td>
+        </tr>
+      `).join("");
+
+      editor.innerHTML = `
+        <section class="foreground-editor-section">
+          <h4>${escapeHtml(`${draft.module_id} ${localizedBlockName(draft.building_block)}`)}</h4>
+          <div class="foreground-reference-grid">
+            <div class="field">
+              <label>${escapeHtml(t("foregroundReferenceName"))}</label>
+              <input type="text" value="${escapeHtml(foregroundValue(draft.reference_output.name))}" data-foreground-field="reference_output.name">
+            </div>
+            <div class="field">
+              <label>${escapeHtml(t("foregroundReferenceAmount"))}</label>
+              <input type="number" min="0.000001" step="any" value="${escapeHtml(foregroundValue(draft.reference_output.amount))}" data-foreground-field="reference_output.amount">
+            </div>
+            <div class="field">
+              <label>${escapeHtml(t("foregroundReferenceUnit"))}</label>
+              <input type="text" value="${escapeHtml(foregroundValue(draft.reference_output.unit))}" data-foreground-field="reference_output.unit">
+            </div>
+          </div>
+        </section>
+        <section class="foreground-editor-section">
+          <h4>${escapeHtml(t("foregroundProcessMetadata"))}</h4>
+          <div class="foreground-metadata-grid">
+            <div class="field">
+              <label>${escapeHtml(t("foregroundLocation"))}</label>
+              <input type="text" value="${escapeHtml(foregroundValue(draft.metadata.location))}" data-foreground-field="metadata.location">
+            </div>
+            <div class="field">
+              <label>${escapeHtml(t("foregroundReferenceYear"))}</label>
+              <input type="number" min="1900" max="2200" step="1" value="${escapeHtml(foregroundValue(draft.metadata.reference_year))}" data-foreground-field="metadata.reference_year">
+            </div>
+            <div class="field">
+              <label>${escapeHtml(t("foregroundDataSource"))}</label>
+              <input type="text" value="${escapeHtml(foregroundValue(draft.metadata.data_source))}" data-foreground-field="metadata.data_source">
+            </div>
+            <div class="field field-wide">
+              <label>${escapeHtml(t("foregroundTechnology"))}</label>
+              <textarea data-foreground-field="metadata.technology_description">${escapeHtml(foregroundValue(draft.metadata.technology_description))}</textarea>
+            </div>
+            <div class="field">
+              <label>${escapeHtml(t("foregroundAllocation"))}</label>
+              <textarea data-foreground-field="metadata.allocation_method">${escapeHtml(foregroundValue(draft.metadata.allocation_method))}</textarea>
+            </div>
+            <div class="field field-wide">
+              <label>${escapeHtml(t("foregroundCutoff"))}</label>
+              <textarea data-foreground-field="metadata.cut_off_note">${escapeHtml(foregroundValue(draft.metadata.cut_off_note))}</textarea>
+            </div>
+          </div>
+        </section>
+        <section class="foreground-editor-section">
+          <h4>${escapeHtml(t("foregroundExchanges"))}</h4>
+          ${draft.exchanges.length ? `
+            <div class="foreground-exchange-table-wrap">
+              <table class="foreground-exchange-table">
+                <thead>
+                  <tr>
+                    <th>${escapeHtml(t("foregroundExchangeName"))}</th>
+                    <th>${escapeHtml(t("foregroundFlowType"))}</th>
+                    <th>${escapeHtml(t("foregroundDirection"))}</th>
+                    <th>${escapeHtml(t("foregroundAmount"))}</th>
+                    <th>${escapeHtml(t("foregroundUnit"))}</th>
+                    <th>${escapeHtml(t("foregroundProviderDatabase"))}</th>
+                    <th>${escapeHtml(t("foregroundProviderCode"))}</th>
+                    <th>${escapeHtml(t("foregroundExchangeSource"))}</th>
+                    <th>${escapeHtml(t("foregroundUncertaintyType"))}</th>
+                    <th>${escapeHtml(t("foregroundUncertaintyParameter"))}</th>
+                    <th>${escapeHtml(t("foregroundRemove"))}</th>
+                  </tr>
+                </thead>
+                <tbody>${exchangeRows}</tbody>
+              </table>
+            </div>
+          ` : `<div class="foreground-empty">${escapeHtml(t("foregroundNoExchanges"))}</div>`}
+          <p class="foreground-review ${review.ready ? "" : "incomplete"}" data-foreground-review>${escapeHtml(foregroundDraftReviewText(review))}</p>
+        </section>
+      `;
+      updateForegroundBuilderSummary();
+    }
+
+    function setForegroundDraftField(draft, path, rawValue) {
+      const [group, field] = path.split(".");
+      if (!draft[group] || !field) return;
+      if (path === "reference_output.amount" || path === "metadata.reference_year") {
+        draft[group][field] = rawValue === "" ? null : Number(rawValue);
+      } else {
+        draft[group][field] = rawValue;
+      }
+    }
+
+    function setForegroundExchangeField(exchange, path, rawValue) {
+      if (path === "amount") {
+        exchange.amount = rawValue === "" ? null : Number(rawValue);
+        return;
+      }
+      if (path.startsWith("uncertainty.")) {
+        exchange.uncertainty[path.split(".")[1]] = rawValue;
+        return;
+      }
+      exchange[path] = rawValue;
+    }
+
+    function collectForegroundDraftExport() {
+      const rows = activeForegroundRows();
+      const processes = rows.map((row) => {
+        const draft = ensureForegroundDraft(row);
+        const review = reviewForegroundDraft(draft);
+        return {
+          ...draft,
+          draft_status: review.ready ? "review-ready" : "draft",
+          review: {
+            ready: review.ready,
+            exchange_count: review.total,
+            quantified_exchange_count: review.quantified,
+            mapped_exchange_count: review.mapped
+          }
+        };
+      });
+      const functionalUnit = functionalUnitForPathway();
+      return {
+        schema_version: "1.0",
+        export_type: "ecopath_foreground_draft",
+        exported_at: new Date().toISOString(),
+        app: {
+          name: "ECO-PATH Pathway Activity Explorer",
+          version: "0.3.0-dev",
+          url: window.location.href.split("#")[0]
+        },
+        language: state.language,
+        pathway: {
+          id: state.pathway,
+          label: currentPathway().label,
+          localized_label: localizedPathwayLabel()
+        },
+        functional_unit: { ...functionalUnit },
+        processes,
+        disclaimer: "Foreground inventory drafts for technical review. This export does not create Brightway processes and does not establish ISO 14040/14044 conformance."
+      };
+    }
+
+    function bindForegroundBuilderControls() {
+      const select = document.getElementById("foregroundBlockSelect");
+      const editor = document.getElementById("foregroundEditor");
+      select.addEventListener("change", (event) => {
+        state.foregroundSelectedId = event.target.value || null;
+        setForegroundStatus();
+        renderForegroundBuilder();
+      });
+      document.getElementById("foregroundAddExchange").addEventListener("click", () => {
+        const row = activeForegroundRows().find((candidate) => candidate.id === state.foregroundSelectedId);
+        if (!row) return;
+        ensureForegroundDraft(row).exchanges.push(createForegroundExchange());
+        saveForegroundDrafts();
+        renderForegroundBuilder();
+      });
+      document.getElementById("foregroundResetDraft").addEventListener("click", () => {
+        const row = activeForegroundRows().find((candidate) => candidate.id === state.foregroundSelectedId);
+        if (!row) return;
+        state.foregroundDrafts[row.id] = createForegroundDraft(row);
+        saveForegroundDrafts();
+        renderForegroundBuilder();
+        setForegroundStatus(t("foregroundDraftReset"));
+      });
+      document.getElementById("foregroundExportDrafts").addEventListener("click", () => {
+        const rows = activeForegroundRows();
+        if (!rows.length) {
+          setForegroundStatus(t("foregroundNoActiveBlocks"), true);
+          return;
+        }
+        const payload = collectForegroundDraftExport();
+        saveForegroundDrafts();
+        downloadJson(payload, `ecopath-foreground-drafts-${state.pathway}-${reportDateStamp()}.json`);
+        setForegroundStatus(t("foregroundDraftExported", { count: payload.processes.length }));
+        updateForegroundBuilderSummary();
+      });
+      document.getElementById("foregroundImportDrafts").addEventListener("click", () => {
+        document.getElementById("foregroundDraftFile").click();
+      });
+      document.getElementById("foregroundDraftFile").addEventListener("change", async (event) => {
+        const [file] = event.target.files || [];
+        event.target.value = "";
+        if (!file) return;
+        try {
+          const payload = JSON.parse(await file.text());
+          if (payload?.export_type !== "ecopath_foreground_draft" || !Array.isArray(payload?.processes)) {
+            throw new Error("Invalid foreground export");
+          }
+          const drafts = payload.processes.map(normalizeImportedForegroundDraft).filter(Boolean);
+          if (!drafts.length) throw new Error("No foreground drafts");
+          drafts.forEach((draft) => {
+            state.foregroundDrafts[draft.mapping_key] = draft;
+          });
+          saveForegroundDrafts();
+          const firstActive = activeForegroundRows().find((row) => state.foregroundDrafts[row.id]);
+          if (firstActive) state.foregroundSelectedId = firstActive.id;
+          renderForegroundBuilder();
+          setForegroundStatus(t("foregroundDraftImported", { count: drafts.length }));
+        } catch (error) {
+          setForegroundStatus(t("foregroundImportInvalid"), true);
+        }
+      });
+      const handleFieldChange = (event) => {
+        const draft = state.foregroundDrafts[state.foregroundSelectedId];
+        if (!draft) return;
+        if (event.target.dataset.foregroundField) {
+          setForegroundDraftField(draft, event.target.dataset.foregroundField, event.target.value);
+        } else if (event.target.dataset.foregroundExchangeField) {
+          const index = Number(event.target.dataset.foregroundExchangeIndex);
+          if (!Number.isInteger(index) || !draft.exchanges[index]) return;
+          setForegroundExchangeField(draft.exchanges[index], event.target.dataset.foregroundExchangeField, event.target.value);
+        } else {
+          return;
+        }
+        saveForegroundDrafts();
+        setForegroundStatus();
+        updateForegroundBuilderSummary();
+      };
+      editor.addEventListener("input", handleFieldChange);
+      editor.addEventListener("change", handleFieldChange);
+      editor.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-remove-foreground-exchange]");
+        if (!button) return;
+        const draft = state.foregroundDrafts[state.foregroundSelectedId];
+        const index = Number(button.dataset.removeForegroundExchange);
+        if (!draft || !Number.isInteger(index) || !draft.exchanges[index]) return;
+        draft.exchanges.splice(index, 1);
+        saveForegroundDrafts();
+        renderForegroundBuilder();
+      });
+    }
+
     function renderBuildingBlockMap() {
       const container = document.getElementById("buildingBlockMap");
       const count = document.getElementById("buildingBlockCount");
@@ -16865,6 +17781,7 @@
           if (moduleId) state.lcaExpandedModules[moduleId] = true;
           lcaRows[rowIndex].included = checkbox.checked;
           renderLcaTable();
+          renderForegroundBuilder();
           renderLcaOutputs();
           restoreLcaControlViewport(`[data-lca-row-toggle="${rowIndex}"]`, viewportTop);
           return;
@@ -16876,6 +17793,7 @@
         state.lcaExpandedModules[moduleId] = checkbox.checked;
         renderBuildingBlockMap();
         renderLcaTable();
+        renderForegroundBuilder();
         renderLcaOutputs();
         restoreLcaControlViewport(`[data-lca-module-toggle="${moduleId}"]`, viewportTop);
       });
@@ -18251,6 +19169,7 @@
       renderActivityList();
       renderActivityPanelState();
       renderLcaTable();
+      renderForegroundBuilder();
       renderLcaOutputs();
       renderBrightwayResults();
       renderBrightwayServiceStatus();
@@ -18267,6 +19186,7 @@
       scheduleDetailPanelSync();
     });
     bindLcaControls();
+    bindForegroundBuilderControls();
     state.selected = currentPathway().defaultSelected;
     render();
     checkBrightwayService();

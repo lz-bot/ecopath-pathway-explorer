@@ -133,6 +133,8 @@ The **Dutch pathway** starts at the hospital boundary in Albert Schweitzer Hospi
 
 The **EAU 2026 reference** view is institution-neutral. It separates guideline activities and decisions that may affect pathway structure, resource use, LCA modules, or uncertainty analysis. It does not identify whether an activity occurs at Albert Schweitzer Hospital, Erasmus MC, or another provider.
 
+The **Compare protocols** view aligns the Dutch/EMC and EAU sources by harmonized clinical function instead of comparing raw station counts. It separates functions that are explicit in both sources, Dutch operational details, and EAU-specific guideline details. A function that is not separately explicit in one source may be embedded in another activity or outside that source's scope; it is not automatically interpreted as missing care. The comparison is informational and does not change the selected pathway or LCA scenario.
+
 Public reference sources:
 
 - [NVU current guideline register](https://www.nvu.nl/kwaliteitsbeleid/richtlijnen/actuele-richtlijnen/)

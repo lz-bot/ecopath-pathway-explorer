@@ -184,6 +184,202 @@
       margin-bottom: 14px;
     }
 
+    .protocol-comparison-dialog {
+      width: min(1180px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+    }
+
+    .protocol-comparison-intro {
+      max-width: 920px;
+    }
+
+    .protocol-comparison-note {
+      margin: 0 0 16px;
+      padding: 10px 12px;
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .protocol-comparison-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .protocol-comparison-stat {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .protocol-comparison-stat strong {
+      display: block;
+      color: var(--accent-dark);
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .protocol-comparison-stat span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .protocol-comparison-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .protocol-comparison-filter {
+      padding: 7px 10px;
+      border-color: var(--accent);
+      border-radius: 4px;
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .protocol-comparison-filter.active {
+      color: var(--panel);
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    .protocol-comparison-table {
+      border: 1px solid var(--line);
+    }
+
+    .protocol-comparison-header,
+    .protocol-comparison-row {
+      display: grid;
+      grid-template-columns: minmax(190px, 0.8fr) repeat(2, minmax(0, 1fr));
+    }
+
+    .protocol-comparison-header {
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .protocol-comparison-header > div,
+    .protocol-comparison-row > div {
+      min-width: 0;
+      padding: 10px 12px;
+      border-right: 1px solid var(--line);
+    }
+
+    .protocol-comparison-header > div:last-child,
+    .protocol-comparison-row > div:last-child {
+      border-right: 0;
+    }
+
+    .protocol-comparison-group {
+      margin: 0;
+      padding: 9px 12px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-soft);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .protocol-comparison-group:first-of-type {
+      border-top: 0;
+    }
+
+    .protocol-comparison-row {
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .protocol-comparison-row:last-child {
+      border-bottom: 0;
+    }
+
+    .protocol-comparison-concept strong,
+    .protocol-comparison-source strong {
+      display: block;
+      line-height: 1.35;
+    }
+
+    .protocol-comparison-concept p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .protocol-comparison-status {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 3px 7px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .protocol-comparison-row[data-status="dutch"] .protocol-comparison-status {
+      background: rgba(111, 207, 241, 0.12);
+    }
+
+    .protocol-comparison-row[data-status="eau"] .protocol-comparison-status {
+      border-color: var(--line);
+      background: var(--panel-soft);
+    }
+
+    .protocol-comparison-source {
+      display: grid;
+      align-content: start;
+      gap: 5px;
+    }
+
+    .protocol-comparison-node {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+      gap: 6px;
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .protocol-comparison-code-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .protocol-comparison-code {
+      padding: 2px 5px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--muted);
+      background: var(--panel-soft);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .protocol-comparison-missing {
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
+    }
+
     .methodology-sections {
       display: grid;
       gap: 16px;
@@ -207,6 +403,24 @@
     .methodology-section p {
       margin-bottom: 8px;
       color: var(--muted);
+    }
+
+    .methodology-steps {
+      margin: 10px 0 0;
+      padding-left: 22px;
+      display: grid;
+      gap: 8px;
+      color: var(--text);
+    }
+
+    .methodology-formula {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--text) !important;
+      font-family: var(--mono);
+      font-size: 13px;
     }
 
     .methodology-links {
@@ -378,6 +592,14 @@
       padding: 2px 10px;
     }
 
+    .specialty-comparison-option {
+      margin-top: 2px;
+      border-color: var(--line);
+      color: var(--accent-dark);
+      background: var(--panel-soft);
+      font-weight: 700;
+    }
+
     .source-lens-panel {
       display: flex;
       align-items: center;
@@ -431,7 +653,7 @@
 
     .source-lens-actions {
       display: inline-grid;
-      grid-template-columns: repeat(2, minmax(150px, 1fr));
+      grid-template-columns: repeat(3, minmax(140px, 1fr));
       flex: 0 0 auto;
       border: 1px solid var(--accent);
       background: var(--panel);
@@ -3056,6 +3278,33 @@
       font-weight: 700;
     }
 
+    .table-header-with-help {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .table-help-button {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      background: var(--panel);
+      color: var(--accent-dark);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .table-help-button:hover,
+    .table-help-button:focus-visible {
+      background: var(--accent-soft);
+    }
+
     .lca-table tr:last-child td {
       border-bottom: 0;
     }
@@ -3285,6 +3534,34 @@
         border-left: 0;
         border-top: 1px solid var(--accent);
       }
+      .protocol-comparison-summary {
+        grid-template-columns: 1fr;
+      }
+      .protocol-comparison-header {
+        display: none;
+      }
+      .protocol-comparison-row {
+        grid-template-columns: 1fr;
+      }
+      .protocol-comparison-row > div {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .protocol-comparison-row > div:last-child {
+        border-bottom: 0;
+      }
+      .protocol-comparison-source::before {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .protocol-comparison-source[data-source="dutch"]::before {
+        content: attr(data-label);
+      }
+      .protocol-comparison-source[data-source="eau"]::before {
+        content: attr(data-label);
+      }
       .lca-result-tabs {
         width: 100%;
       }
@@ -3422,8 +3699,15 @@
           </div>
         </section>
         <section class="methodology-section">
-          <h3 id="methodologyForegroundTitle">Building unit impact results</h3>
+          <h3 id="methodologyForegroundTitle" tabindex="-1">Building unit impact results</h3>
           <p id="methodologyForegroundText"></p>
+          <ol class="methodology-steps">
+            <li id="methodologyForegroundStep1"></li>
+            <li id="methodologyForegroundStep2"></li>
+            <li id="methodologyForegroundStep3"></li>
+            <li id="methodologyForegroundStep4"></li>
+          </ol>
+          <p class="methodology-formula" id="methodologyForegroundFormula"></p>
         </section>
         <section class="methodology-section">
           <h3 id="methodologyCalculationTitle">Calculation and uncertainty</h3>
@@ -3433,6 +3717,20 @@
           </div>
         </section>
       </div>
+    </div>
+  </dialog>
+
+  <dialog class="help-dialog protocol-comparison-dialog" id="protocolComparisonDialog" aria-labelledby="protocolComparisonTitle">
+    <div class="help-dialog-header">
+      <h2 id="protocolComparisonTitle">Dutch/EMC and EAU MIBC comparison</h2>
+      <button type="button" id="closeProtocolComparisonDialog">Close</button>
+    </div>
+    <div class="help-dialog-body">
+      <p class="protocol-comparison-intro" id="protocolComparisonIntro"></p>
+      <p class="protocol-comparison-note" id="protocolComparisonNote"></p>
+      <div class="protocol-comparison-summary" id="protocolComparisonSummary" aria-label="Comparison summary"></div>
+      <div class="protocol-comparison-filters" id="protocolComparisonFilters" role="group" aria-label="Comparison filter"></div>
+      <div class="protocol-comparison-table" id="protocolComparisonTable" role="table"></div>
     </div>
   </dialog>
 
@@ -3549,6 +3847,7 @@
                 <div class="source-lens-actions" role="group" aria-label="Urology pathway source view">
                   <button class="source-lens-button" type="button" data-urology-pathway="emc" id="showDutchUrology">Dutch pathway</button>
                   <button class="source-lens-button" type="button" data-urology-pathway="eauFull" id="showEauUrology">EAU 2026 reference</button>
+                  <button class="source-lens-button" type="button" id="openProtocolComparisonDialog" aria-haspopup="dialog" aria-controls="protocolComparisonDialog">Compare protocols</button>
                 </div>
               </div>
             </div>
@@ -5110,6 +5409,193 @@
       }
     };
 
+    const urologyProtocolComparison = [
+      {
+        group: "diagnosis",
+        conceptKey: "protocolConceptEntryAssessment",
+        status: "shared",
+        dutch: ["EMC-FC01", "EMC-DX01"],
+        eau: ["EAUFULL-AC01", "EAUFULL-DX01"]
+      },
+      {
+        group: "diagnosis",
+        conceptKey: "protocolConceptUrineLaboratory",
+        status: "eau",
+        dutch: [],
+        eau: ["EAUFULL-DX02"],
+        noteKey: "protocolNoteUrineLaboratory"
+      },
+      {
+        group: "diagnosis",
+        conceptKey: "protocolConceptCystoscopy",
+        status: "shared",
+        dutch: ["EMC-DX02"],
+        eau: ["EAUFULL-DX03"]
+      },
+      {
+        group: "diagnosis",
+        conceptKey: "protocolConceptDiagnosticTurbt",
+        status: "shared",
+        dutch: ["EMC-DX03"],
+        eau: ["EAUFULL-DX04"]
+      },
+      {
+        group: "diagnosis",
+        conceptKey: "protocolConceptPathology",
+        status: "shared",
+        dutch: ["EMC-DX04", "EMC-DX08"],
+        eau: ["EAUFULL-DX05"],
+        noteKey: "protocolNotePathology"
+      },
+      {
+        group: "diagnosis",
+        conceptKey: "protocolConceptNonMibcExit",
+        status: "dutch",
+        dutch: ["EMC-DX05", "EMC-FU01"],
+        eau: [],
+        noteKey: "protocolNoteNonMibcExit"
+      },
+      {
+        group: "staging",
+        conceptKey: "protocolConceptCtStaging",
+        status: "shared",
+        dutch: ["EMC-DX06"],
+        eau: ["EAUFULL-DX06"]
+      },
+      {
+        group: "staging",
+        conceptKey: "protocolConceptUpperTract",
+        status: "eau",
+        dutch: [],
+        eau: ["EAUFULL-DX07"],
+        noteKey: "protocolNoteUpperTract"
+      },
+      {
+        group: "staging",
+        conceptKey: "protocolConceptAdditionalImaging",
+        status: "shared",
+        dutch: ["EMC-DX07"],
+        eau: ["EAUFULL-DX08"]
+      },
+      {
+        group: "staging",
+        conceptKey: "protocolConceptTransfer",
+        status: "dutch",
+        dutch: ["EMC-FC02"],
+        eau: [],
+        noteKey: "protocolNoteTransfer"
+      },
+      {
+        group: "staging",
+        conceptKey: "protocolConceptRepeatImaging",
+        status: "dutch",
+        dutch: ["EMC-DX09"],
+        eau: [],
+        noteKey: "protocolNoteRepeatImaging"
+      },
+      {
+        group: "planning",
+        conceptKey: "protocolConceptMdt",
+        status: "shared",
+        dutch: ["EMC-JM01", "EMC-JM02"],
+        eau: ["EAUFULL-JM01"],
+        noteKey: "protocolNoteMdt"
+      },
+      {
+        group: "planning",
+        conceptKey: "protocolConceptFrailty",
+        status: "shared",
+        dutch: ["EMC-TX01"],
+        eau: ["EAUFULL-TX01"]
+      },
+      {
+        group: "planning",
+        conceptKey: "protocolConceptIntentEligibility",
+        status: "shared",
+        dutch: ["EMC-TX02", "EMC-TX03"],
+        eau: ["EAUFULL-TX02", "EAUFULL-TX03"]
+      },
+      {
+        group: "treatment",
+        conceptKey: "protocolConceptPerioperativeSystemic",
+        status: "shared",
+        dutch: ["EMC-TX04", "EMC-TX05"],
+        eau: ["EAUFULL-TX04", "EAUFULL-TX05"]
+      },
+      {
+        group: "treatment",
+        conceptKey: "protocolConceptSurgery",
+        status: "shared",
+        dutch: ["EMC-TX06", "EMC-TX07", "EMC-TX08", "EMC-TX09"],
+        eau: ["EAUFULL-TX06", "EAUFULL-TX07", "EAUFULL-TX08", "EAUFULL-TX09"]
+      },
+      {
+        group: "treatment",
+        conceptKey: "protocolConceptAdjuvant",
+        status: "shared",
+        dutch: ["EMC-TX10"],
+        eau: ["EAUFULL-TX10"]
+      },
+      {
+        group: "treatment",
+        conceptKey: "protocolConceptBladderPreservation",
+        status: "shared",
+        dutch: ["EMC-TX11", "EMC-TX12", "EMC-TX13"],
+        eau: ["EAUFULL-TX11", "EAUFULL-TX12", "EAUFULL-TX13"]
+      },
+      {
+        group: "treatment",
+        conceptKey: "protocolConceptRadiotherapyDelivery",
+        status: "shared",
+        dutch: ["EMC-TX14"],
+        eau: ["EAUFULL-TX14"],
+        noteKey: "protocolNoteRadiotherapy"
+      },
+      {
+        group: "followup",
+        conceptKey: "protocolConceptResponseSalvage",
+        status: "shared",
+        dutch: ["EMC-TX15"],
+        eau: ["EAUFULL-TX15"]
+      },
+      {
+        group: "followup",
+        conceptKey: "protocolConceptAdvancedPalliative",
+        status: "shared",
+        dutch: ["EMC-TX16", "EMC-TX17"],
+        eau: ["EAUFULL-TX17", "EAUFULL-TX16"]
+      },
+      {
+        group: "followup",
+        conceptKey: "protocolConceptTreatmentFollowup",
+        status: "shared",
+        dutch: ["EMC-FU02"],
+        eau: ["EAUFULL-FU01", "EAUFULL-FU02", "EAUFULL-FU03"],
+        noteKey: "protocolNoteTreatmentFollowup"
+      },
+      {
+        group: "followup",
+        conceptKey: "protocolConceptReturnHospital",
+        status: "dutch",
+        dutch: ["EMC-FU03"],
+        eau: [],
+        noteKey: "protocolNoteReturnHospital"
+      }
+    ];
+
+    [
+      ["emc", "dutch"],
+      ["eauFull", "eau"]
+    ].forEach(([pathwayId, field]) => {
+      const knownIds = new Set(pathwayData[pathwayId].nodes.map((node) => node.id));
+      const unknownIds = urologyProtocolComparison
+        .flatMap((item) => item[field])
+        .filter((nodeId) => !knownIds.has(nodeId));
+      if (unknownIds.length) {
+        throw new Error(`Unknown ${pathwayId} activities in protocol comparison: ${unknownIds.join(", ")}`);
+      }
+    });
+
     const pathwayScenarioRouteBundles = {
       emc: [
         {
@@ -6544,7 +7030,64 @@
       crossPathwayReuseTooltip: "The same building-block definition is mapped in both current pathway families. Local quantities and LCI data still require validation.",
       urologyBuildingBlock: "Urology-specific candidate",
       gastroBuildingBlock: "Gastroenterology-specific candidate",
-      buildingBlockMapIntro: "Modules group candidate building blocks. Selected activities activate the relevant calculation rows."
+      buildingBlockMapIntro: "Modules group candidate building blocks. Selected activities activate the relevant calculation rows.",
+      compareProtocols: "Compare protocols",
+      protocolComparisonMenuHint: "Dutch/EMC ↔ EAU 2026",
+      protocolComparisonTitle: "Dutch/EMC and EAU MIBC comparison",
+      protocolComparisonIntro: "This view aligns the two sources by clinical function. The Dutch/EMC pathway describes operational delivery across regional hospitals and Erasmus MC; EAU 2026 describes institution-neutral clinical guidance. The comparison does not change the selected pathway or LCA calculation.",
+      protocolComparisonNote: "A function that is not separately explicit in one source should not be interpreted as care that is not delivered. It may be embedded in another activity, outside that source's scope, or dependent on local implementation.",
+      protocolComparisonAll: "All ({count})",
+      protocolComparisonShared: "Both sources ({count})",
+      protocolComparisonDutch: "Dutch detail ({count})",
+      protocolComparisonEau: "EAU detail ({count})",
+      protocolComparisonSharedStat: "Explicit in both sources",
+      protocolComparisonDutchStat: "Dutch operational details",
+      protocolComparisonEauStat: "EAU guideline details",
+      protocolComparisonFunctionHeader: "Harmonized clinical function",
+      protocolComparisonDutchHeader: "Dutch/EMC operational pathway",
+      protocolComparisonEauHeader: "EAU 2026 guideline",
+      protocolComparisonStatusShared: "Explicit in both",
+      protocolComparisonStatusDutch: "Dutch operational detail",
+      protocolComparisonStatusEau: "EAU guideline detail",
+      protocolComparisonNotExplicit: "Not separately explicit in this source",
+      protocolComparisonGroupDiagnosis: "Diagnosis and confirmation",
+      protocolComparisonGroupStaging: "Staging and referral",
+      protocolComparisonGroupPlanning: "Multidisciplinary planning",
+      protocolComparisonGroupTreatment: "Treatment",
+      protocolComparisonGroupFollowup: "Follow-up and advanced care",
+      protocolConceptEntryAssessment: "Entry and first specialist assessment",
+      protocolConceptUrineLaboratory: "Urine cytology and laboratory workup",
+      protocolConceptCystoscopy: "Cystoscopy",
+      protocolConceptDiagnosticTurbt: "Diagnostic and staging TURBT",
+      protocolConceptPathology: "Pathology confirmation and specialist review",
+      protocolConceptNonMibcExit: "Non-MIBC exit from the current scope",
+      protocolConceptCtStaging: "CT staging",
+      protocolConceptUpperTract: "Additional upper-tract assessment",
+      protocolConceptAdditionalImaging: "MRI or PET-CT when indicated",
+      protocolConceptTransfer: "Cross-hospital referral and transfer",
+      protocolConceptRepeatImaging: "Repeat imaging after transfer",
+      protocolConceptMdt: "Multidisciplinary assessment and decision",
+      protocolConceptFrailty: "Health status and frailty assessment",
+      protocolConceptIntentEligibility: "Treatment intent and systemic therapy eligibility",
+      protocolConceptPerioperativeSystemic: "Perioperative systemic therapy and restaging",
+      protocolConceptSurgery: "Radical cystectomy episode",
+      protocolConceptAdjuvant: "Postoperative pathology and adjuvant assessment",
+      protocolConceptBladderPreservation: "Bladder-preserving treatment preparation",
+      protocolConceptRadiotherapyDelivery: "Radiotherapy or chemoradiation delivery",
+      protocolConceptResponseSalvage: "Response assessment and salvage decision",
+      protocolConceptAdvancedPalliative: "Advanced or palliative treatment",
+      protocolConceptTreatmentFollowup: "Treatment-specific follow-up",
+      protocolConceptReturnHospital: "Return to the referring hospital",
+      protocolNoteUrineLaboratory: "EAU lists this separately. The Dutch operational map does not create a separate node and requires local confirmation of where it occurs.",
+      protocolNotePathology: "The Dutch pathway separates regional confirmation from Erasmus MC review; EAU represents the clinical requirement as one guideline function.",
+      protocolNoteNonMibcExit: "The Dutch map preserves the local exit branch because the operational boundary begins before MIBC is confirmed.",
+      protocolNoteUpperTract: "EAU makes the optional assessment explicit. It may be included in the Dutch staging CT or added only on indication.",
+      protocolNoteTransfer: "This is a local delivery and handover function, so an institution-neutral guideline does not describe it as a clinical recommendation.",
+      protocolNoteRepeatImaging: "The Dutch node captures incomplete, outdated, or insufficient transferred imaging; this is local workflow logic.",
+      protocolNoteMdt: "The Dutch pathway separates the patient-facing joint clinic and tumor MDT; EAU specifies MDT discussion without prescribing the local organization.",
+      protocolNoteRadiotherapy: "The Dutch pathway explicitly includes brachytherapy for selected patients; EAU represents EBRT or chemoradiation delivery at guideline level.",
+      protocolNoteTreatmentFollowup: "EAU separates cystectomy, trimodality, and diversion-related follow-up; the Dutch map uses one shared follow-up node.",
+      protocolNoteReturnHospital: "Shared follow-up and return to a regional hospital are local organizational details outside EAU's institution-neutral scope."
     });
 
     Object.assign(uiText.nl, {
@@ -6563,7 +7106,64 @@
       crossPathwayReuseTooltip: "Dezelfde bouwsteendefinitie is aan beide huidige zorgpadfamilies gekoppeld. Lokale hoeveelheden en LCI-data moeten nog worden gevalideerd.",
       urologyBuildingBlock: "Urologiespecifieke kandidaat",
       gastroBuildingBlock: "Gastro-enterologiespecifieke kandidaat",
-      buildingBlockMapIntro: "Modules groeperen kandidaatbouwstenen. Geselecteerde activiteiten activeren de relevante rekenregels."
+      buildingBlockMapIntro: "Modules groeperen kandidaatbouwstenen. Geselecteerde activiteiten activeren de relevante rekenregels.",
+      compareProtocols: "Protocollen vergelijken",
+      protocolComparisonMenuHint: "Nederlands/EMC ↔ EAU 2026",
+      protocolComparisonTitle: "Vergelijking Nederlands/EMC-zorgpad en EAU MIBC",
+      protocolComparisonIntro: "Deze weergave stemt beide bronnen af op klinische functies. Het Nederlands/EMC-zorgpad beschrijft de uitvoering tussen regionale ziekenhuizen en Erasmus MC; EAU 2026 beschrijft instelling-onafhankelijke klinische richtlijnzorg. De vergelijking verandert het geselecteerde zorgpad of de LCA-berekening niet.",
+      protocolComparisonNote: "Een functie die in één bron niet afzonderlijk wordt genoemd, mag niet worden geïnterpreteerd als zorg die niet wordt geleverd. De functie kan onderdeel zijn van een andere activiteit, buiten de bronscope vallen of afhangen van lokale uitvoering.",
+      protocolComparisonAll: "Alles ({count})",
+      protocolComparisonShared: "Beide bronnen ({count})",
+      protocolComparisonDutch: "Nederlands detail ({count})",
+      protocolComparisonEau: "EAU-detail ({count})",
+      protocolComparisonSharedStat: "Expliciet in beide bronnen",
+      protocolComparisonDutchStat: "Nederlandse operationele details",
+      protocolComparisonEauStat: "EAU-richtlijndetails",
+      protocolComparisonFunctionHeader: "Afgestemde klinische functie",
+      protocolComparisonDutchHeader: "Nederlands/EMC-zorgpad",
+      protocolComparisonEauHeader: "EAU 2026-richtlijn",
+      protocolComparisonStatusShared: "Expliciet in beide",
+      protocolComparisonStatusDutch: "Nederlands operationeel detail",
+      protocolComparisonStatusEau: "EAU-richtlijndetail",
+      protocolComparisonNotExplicit: "Niet afzonderlijk expliciet in deze bron",
+      protocolComparisonGroupDiagnosis: "Diagnose en bevestiging",
+      protocolComparisonGroupStaging: "Stadiëring en verwijzing",
+      protocolComparisonGroupPlanning: "Multidisciplinaire planning",
+      protocolComparisonGroupTreatment: "Behandeling",
+      protocolComparisonGroupFollowup: "Follow-up en gevorderde zorg",
+      protocolConceptEntryAssessment: "Instroom en eerste specialistische beoordeling",
+      protocolConceptUrineLaboratory: "Urinecytologie en laboratoriumonderzoek",
+      protocolConceptCystoscopy: "Cystoscopie",
+      protocolConceptDiagnosticTurbt: "Diagnostische en stadiërende TURBT",
+      protocolConceptPathology: "Pathologische bevestiging en specialistische revisie",
+      protocolConceptNonMibcExit: "Uitstroom naar de niet-MIBC-route",
+      protocolConceptCtStaging: "CT-stadiëring",
+      protocolConceptUpperTract: "Aanvullend onderzoek van de hogere urinewegen",
+      protocolConceptAdditionalImaging: "MRI of PET-CT op indicatie",
+      protocolConceptTransfer: "Interklinische verwijzing en overdracht",
+      protocolConceptRepeatImaging: "Herhaalde beeldvorming na overdracht",
+      protocolConceptMdt: "Multidisciplinaire beoordeling en besluitvorming",
+      protocolConceptFrailty: "Gezondheidsstatus en kwetsbaarheidsbeoordeling",
+      protocolConceptIntentEligibility: "Behandelintentie en geschiktheid voor systemische therapie",
+      protocolConceptPerioperativeSystemic: "Perioperatieve systemische therapie en restadiëring",
+      protocolConceptSurgery: "Radicalecystectomie-episode",
+      protocolConceptAdjuvant: "Postoperatieve pathologie en beoordeling adjuvante therapie",
+      protocolConceptBladderPreservation: "Voorbereiding blaassparende behandeling",
+      protocolConceptRadiotherapyDelivery: "Radiotherapie of chemoradiotherapie",
+      protocolConceptResponseSalvage: "Responsevaluatie en salvagestrategie",
+      protocolConceptAdvancedPalliative: "Gevorderde of palliatieve behandeling",
+      protocolConceptTreatmentFollowup: "Behandelingsspecifieke follow-up",
+      protocolConceptReturnHospital: "Terugverwijzing naar het verwijzende ziekenhuis",
+      protocolNoteUrineLaboratory: "EAU benoemt dit afzonderlijk. De Nederlandse operationele kaart bevat geen apart knooppunt; de uitvoeringslocatie moet lokaal worden bevestigd.",
+      protocolNotePathology: "Het Nederlandse zorgpad scheidt regionale bevestiging en Erasmus MC-revisie; EAU beschrijft dit als één klinische richtlijnfunctie.",
+      protocolNoteNonMibcExit: "De Nederlandse kaart bewaart deze lokale uitstroom omdat de operationele grens vóór bevestiging van MIBC begint.",
+      protocolNoteUpperTract: "EAU maakt deze optionele beoordeling expliciet. In Nederland kan zij onderdeel zijn van de stadiërings-CT of alleen op indicatie worden toegevoegd.",
+      protocolNoteTransfer: "Dit is een lokale uitvoerings- en overdrachtsfunctie die een instelling-onafhankelijke richtlijn niet als klinische aanbeveling beschrijft.",
+      protocolNoteRepeatImaging: "Het Nederlandse knooppunt vangt onvolledige, verouderde of kwalitatief onvoldoende overgedragen beeldvorming op.",
+      protocolNoteMdt: "Het Nederlandse zorgpad scheidt gezamenlijke polikliniek en tumor-MDO; EAU schrijft MDO voor zonder de lokale organisatie vast te leggen.",
+      protocolNoteRadiotherapy: "Het Nederlandse zorgpad benoemt brachytherapie voor geselecteerde patiënten; EAU beschrijft EBRT of chemoradiotherapie op richtlijnniveau.",
+      protocolNoteTreatmentFollowup: "EAU scheidt follow-up na cystectomie, trimodaliteit en urinedeviatie; de Nederlandse kaart gebruikt één gedeeld follow-upknooppunt.",
+      protocolNoteReturnHospital: "Gedeelde follow-up en terugverwijzing zijn lokale organisatiedetails buiten de instelling-onafhankelijke EAU-scope."
     });
 
     Object.assign(uiText.zh, {
@@ -6582,7 +7182,64 @@
       crossPathwayReuseTooltip: "同一 building block 定义已映射到当前两类路径，但本地数量与 LCI 数据能否直接移植仍需验证。",
       urologyBuildingBlock: "泌尿科特异候选项",
       gastroBuildingBlock: "胃肠科特异候选项",
-      buildingBlockMapIntro: "Modules 用于归组候选 building blocks；所选 activities 会启用相应计算行。"
+      buildingBlockMapIntro: "Modules 用于归组候选 building blocks；所选 activities 会启用相应计算行。",
+      compareProtocols: "比较两种方案",
+      protocolComparisonMenuHint: "荷兰/EMC ↔ EAU 2026",
+      protocolComparisonTitle: "荷兰/EMC 与 EAU MIBC 路径比较",
+      protocolComparisonIntro: "该视图按统一临床功能对齐两个来源。荷兰/EMC 路径描述区域医院与 Erasmus MC 之间的实际执行过程；EAU 2026 描述不指定机构的临床指南要求。此比较不会改变已选路径或 LCA 计算。",
+      protocolComparisonNote: "某项功能未在一个来源中单独列出，不等于实际未开展。它可能并入其他活动、超出该来源的范围，或由本地实施方式决定。",
+      protocolComparisonAll: "全部（{count}）",
+      protocolComparisonShared: "两个来源均明确（{count}）",
+      protocolComparisonDutch: "荷兰运营细节（{count}）",
+      protocolComparisonEau: "EAU 指南细节（{count}）",
+      protocolComparisonSharedStat: "两个来源均明确",
+      protocolComparisonDutchStat: "荷兰运营细节",
+      protocolComparisonEauStat: "EAU 指南细节",
+      protocolComparisonFunctionHeader: "统一临床功能",
+      protocolComparisonDutchHeader: "荷兰/EMC 实际路径",
+      protocolComparisonEauHeader: "EAU 2026 指南",
+      protocolComparisonStatusShared: "两个来源均明确",
+      protocolComparisonStatusDutch: "荷兰运营细节",
+      protocolComparisonStatusEau: "EAU 指南细节",
+      protocolComparisonNotExplicit: "该来源未单独列出",
+      protocolComparisonGroupDiagnosis: "诊断与确认",
+      protocolComparisonGroupStaging: "分期与转诊",
+      protocolComparisonGroupPlanning: "多学科治疗规划",
+      protocolComparisonGroupTreatment: "治疗",
+      protocolComparisonGroupFollowup: "随访与晚期治疗",
+      protocolConceptEntryAssessment: "进入路径与首次专科评估",
+      protocolConceptUrineLaboratory: "尿细胞学与实验室检查",
+      protocolConceptCystoscopy: "膀胱镜",
+      protocolConceptDiagnosticTurbt: "诊断及分期 TURBT",
+      protocolConceptPathology: "病理确认与专科复核",
+      protocolConceptNonMibcExit: "非 MIBC 患者退出当前边界",
+      protocolConceptCtStaging: "CT 分期",
+      protocolConceptUpperTract: "必要时补充上尿路评估",
+      protocolConceptAdditionalImaging: "必要时 MRI 或 PET-CT",
+      protocolConceptTransfer: "跨院转诊与移交",
+      protocolConceptRepeatImaging: "转诊后必要时重复影像",
+      protocolConceptMdt: "多学科评估与决策",
+      protocolConceptFrailty: "健康状态与衰弱评估",
+      protocolConceptIntentEligibility: "治疗意图与系统治疗适用性",
+      protocolConceptPerioperativeSystemic: "围手术期系统治疗与再分期",
+      protocolConceptSurgery: "根治性膀胱切除完整治疗单元",
+      protocolConceptAdjuvant: "术后病理与辅助治疗评估",
+      protocolConceptBladderPreservation: "保膀胱治疗准备",
+      protocolConceptRadiotherapyDelivery: "放疗或同步放化疗实施",
+      protocolConceptResponseSalvage: "疗效评估与挽救治疗决策",
+      protocolConceptAdvancedPalliative: "晚期或姑息治疗",
+      protocolConceptTreatmentFollowup: "按治疗方式区分的随访",
+      protocolConceptReturnHospital: "返回转诊医院",
+      protocolNoteUrineLaboratory: "EAU 将其单独列出；荷兰运营图未设置独立节点，实际开展地点仍需本地确认。",
+      protocolNotePathology: "荷兰路径区分区域医院的病理确认与 Erasmus MC 复核；EAU 将其作为一个指南层面的临床功能。",
+      protocolNoteNonMibcExit: "荷兰图从 MIBC 确认前开始，因此保留了转入非 MIBC 本地路径的出口。",
+      protocolNoteUpperTract: "EAU 明确列出该可选评估；荷兰路径中可能已并入分期 CT，或仅在有指征时补充。",
+      protocolNoteTransfer: "这是本地医疗交付和跨院衔接功能，不属于机构中立指南需要描述的临床推荐。",
+      protocolNoteRepeatImaging: "该荷兰节点用于处理转入影像不完整、过期或质量不足的情况，属于本地工作流逻辑。",
+      protocolNoteMdt: "荷兰路径将患者参与的联合门诊与肿瘤 MDO 分开；EAU 要求 MDT 讨论，但不规定本地组织形式。",
+      protocolNoteRadiotherapy: "荷兰路径明确包含适用于特定患者的近距离放疗；EAU 在指南层面表示 EBRT 或同步放化疗。",
+      protocolNoteTreatmentFollowup: "EAU 分别列出膀胱切除、三联治疗及尿流改道相关随访；荷兰图使用一个共享随访节点。",
+      protocolNoteReturnHospital: "共享随访及返回区域医院属于本地组织细节，不在机构中立的 EAU 范围内。"
     });
 
     Object.assign(uiText.ja, {
@@ -6688,6 +7345,12 @@
       impactResourceUseMineralsMetalsDescription: "Potential depletion of mineral and metal resources, expressed as antimony equivalents.",
       impactCoefficientDynamic: "Unit impact result (demo), {unit}/reference unit",
       impactCoefficientAria: "{block} {category} unit impact result",
+      unitImpactHelpButton: "How to obtain and calculate the unit impact result",
+      methodologyForegroundStep1: "Define one reference unit for the building block, such as one CT scan, one operation, one bed-day, one treatment fraction, or one medication cycle.",
+      methodologyForegroundStep2: "Collect the physical LCI inputs required for that reference unit: products and materials, medicines, allocated electricity, water, transport services, and waste treatment. When only annual hospital or department totals exist, divide an allocated share by the annual number of reference units and document the allocation driver.",
+      methodologyForegroundStep3: "Map every physical input to an exact foreground or background process in Brightway and record its quantity, unit, source, geography, year, allocation rule, and uncertainty.",
+      methodologyForegroundStep4: "Run Brightway with the selected EF method. The LCIA score returned for one reference unit is the unit impact result entered or imported here. EHR use, report generation, staff time, and equipment time are not characterized directly; time may only allocate documented physical inputs.",
+      methodologyForegroundFormula: "Unit impact result for building block b and category j = LCIA result of the complete foreground inventory for 1 reference unit of b.",
       categoryFactorGap: "No verified {category} unit impact result is mapped. Enter a value only after foreground LCI and EF v3.1 no LT mapping.",
       categoryDummyFactorGap: "Synthetic {category} unit impact result with a +/- {uncertainty}% assumption. Replace it with a Brightway result from documented foreground LCI and verified LCIA mapping.",
       categoryUserFactorGap: "User-entered {category} unit impact result. Verify the foreground model, EF v3.1 no LT method, and calculation record before use.",
@@ -6767,6 +7430,12 @@
       impactResourceUseMineralsMetalsDescription: "Potentiële uitputting van mineralen en metalen, uitgedrukt als antimoon-equivalenten.",
       impactCoefficientDynamic: "Eenheidsimpact (demo), {unit}/referentie-eenheid",
       impactCoefficientAria: "Eenheidsimpact {category} voor {block}",
+      unitImpactHelpButton: "Hoe de eenheidsimpact wordt verzameld en berekend",
+      methodologyForegroundStep1: "Definieer één referentie-eenheid voor de bouwsteen, bijvoorbeeld één CT-scan, één operatie, één ligdag, één bestralingsfractie of één medicatiecyclus.",
+      methodologyForegroundStep2: "Verzamel de fysieke LCI-inputs voor die referentie-eenheid: producten en materialen, geneesmiddelen, gealloceerde elektriciteit, water, transportdiensten en afvalverwerking. Zijn alleen jaargegevens van ziekenhuis of afdeling beschikbaar, deel dan een gedocumenteerd gealloceerd aandeel door het jaarlijkse aantal referentie-eenheden.",
+      methodologyForegroundStep3: "Koppel elke fysieke input aan een exact voorgrond- of achtergrondproces in Brightway en leg hoeveelheid, eenheid, bron, geografie, jaar, allocatieregel en onzekerheid vast.",
+      methodologyForegroundStep4: "Voer Brightway uit met de gekozen EF-methode. De LCIA-score voor één referentie-eenheid is de eenheidsimpact die hier wordt ingevoerd of geïmporteerd. EPD-gebruik, rapportage, arbeidstijd en apparaattijd worden niet rechtstreeks gekarakteriseerd; tijd mag alleen gedocumenteerde fysieke inputs alloceren.",
+      methodologyForegroundFormula: "Eenheidsimpact voor bouwsteen b en categorie j = LCIA-resultaat van de volledige voorgrondinventaris voor 1 referentie-eenheid van b.",
       categoryFactorGap: "Er is geen geverifieerde eenheidsimpact voor {category} gekoppeld. Voer alleen een waarde in na koppeling van voorgrond-LCI en EF v3.1 no LT.",
       categoryDummyFactorGap: "Synthetische eenheidsimpact voor {category} met een aanname van +/- {uncertainty}%. Vervang deze door een Brightway-resultaat uit gedocumenteerde voorgrond-LCI en geverifieerde LCIA-mapping.",
       categoryUserFactorGap: "Door gebruiker ingevoerde eenheidsimpact voor {category}. Controleer het voorgrondmodel, de EF v3.1 no LT-methode en het rekenrecord vóór gebruik.",
@@ -6846,6 +7515,12 @@
       impactResourceUseMineralsMetalsDescription: "矿物和金属资源的潜在消耗，以锑当量表示。",
       impactCoefficientDynamic: "单位影响结果（演示），{unit}/参考单位",
       impactCoefficientAria: "{block} 的 {category} 单位影响结果",
+      unitImpactHelpButton: "如何收集并计算单位影响结果",
+      methodologyForegroundStep1: "为 building block 定义一个参考单位，例如 1 次 CT 扫描、1 台手术、1 个住院床日、1 次放疗分次或 1 个用药周期。",
+      methodologyForegroundStep2: "收集该参考单位所需的物理 LCI 输入，包括产品与材料、药品、分配后的电力、水、运输服务和废物处理。若只能获得医院或科室年度总量，应采用有记录的分配依据分配份额，再除以年度参考单位数量。",
+      methodologyForegroundStep3: "将每项物理输入映射至 Brightway 中准确的前景或背景过程，并记录数量、单位、数据来源、地域、年份、分配规则和不确定性。",
+      methodologyForegroundStep4: "使用所选 EF 方法运行 Brightway。针对一个参考单位返回的 LCIA 结果，就是这里应输入或导入的单位影响结果。EHR 使用、报告生成、人力时间和设备时间不直接进行表征；时间只能用于分配已有记录的物理输入。",
+      methodologyForegroundFormula: "building block b 在影响类别 j 下的单位影响结果 = b 的 1 个参考单位完整前景清单的 LCIA 结果。",
       categoryFactorGap: "尚未映射经验证的 {category} 单位影响结果。仅在完成前景 LCI 与 EF v3.1 no LT 映射后输入。",
       categoryDummyFactorGap: "{category} 的合成单位影响结果采用 +/- {uncertainty}% 假设。需替换为由有记录的前景 LCI 和经核对的 LCIA 映射计算出的 Brightway 结果。",
       categoryUserFactorGap: "用户输入的 {category} 单位影响结果。使用前需核对前景模型、EF v3.1 no LT 方法和计算记录。",
@@ -12022,6 +12697,7 @@
       brightwayResult: null,
       lastExportedScenarioId: null,
       brightwayCalculating: false,
+      protocolComparisonFilter: "all",
       brightwayService: {
         checking: false,
         connected: false,
@@ -13011,6 +13687,11 @@
       setText("methodologyEfText", "methodologyEfText");
       setText("methodologyForegroundTitle", "methodologyForegroundTitle");
       setText("methodologyForegroundText", "methodologyForegroundText");
+      setText("methodologyForegroundStep1", "methodologyForegroundStep1");
+      setText("methodologyForegroundStep2", "methodologyForegroundStep2");
+      setText("methodologyForegroundStep3", "methodologyForegroundStep3");
+      setText("methodologyForegroundStep4", "methodologyForegroundStep4");
+      setText("methodologyForegroundFormula", "methodologyForegroundFormula");
       setText("methodologyCalculationTitle", "methodologyCalculationTitle");
       setText("methodologyCalculationText", "methodologyCalculationText");
       const methodologyButton = document.getElementById("openMethodologyDialog");
@@ -13414,6 +14095,20 @@
           });
           groupElement.appendChild(button);
         });
+        if (group.id === "urology") {
+          const compareButton = document.createElement("button");
+          compareButton.type = "button";
+          compareButton.className = "specialty-option specialty-comparison-option";
+          compareButton.innerHTML = `
+            <span>${escapeHtml(t("compareProtocols"))}</span>
+            <span>${escapeHtml(t("protocolComparisonMenuHint"))}</span>
+          `;
+          compareButton.addEventListener("click", () => {
+            if (selector) selector.removeAttribute("open");
+            showProtocolComparisonDialog();
+          });
+          groupElement.appendChild(compareButton);
+        }
         container.appendChild(groupElement);
       });
     }
@@ -13428,6 +14123,7 @@
       setText("urologySourceLensTitle", "urologySourceLensTitle");
       setText("showDutchUrology", "dutchUrologyView");
       setText("showEauUrology", "eauUrologyView");
+      setText("openProtocolComparisonDialog", "compareProtocols");
       setText(
         "urologySourceLensNote",
         state.pathway === "emc" ? "dutchUrologyNote" : "eauUrologyNote"
@@ -13442,6 +14138,129 @@
         button.classList.toggle("active", active);
         button.setAttribute("aria-pressed", String(active));
       });
+    }
+
+    function protocolComparisonNodeHtml(pathwayId, nodeIds) {
+      if (!nodeIds.length) {
+        return `<span class="protocol-comparison-missing">${escapeHtml(t("protocolComparisonNotExplicit"))}</span>`;
+      }
+      const nodeLookup = new Map(pathwayData[pathwayId].nodes.map((node) => [node.id, node]));
+      return nodeIds.map((nodeId) => {
+        const node = nodeLookup.get(nodeId);
+        if (!node) return "";
+        return `
+          <div class="protocol-comparison-node">
+            <span class="protocol-comparison-code">${escapeHtml(displayCode(node))}</span>
+            <span>${escapeHtml(localizedNodeLabel(node))}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showProtocolComparisonDialog() {
+      const dialog = document.getElementById("protocolComparisonDialog");
+      state.protocolComparisonFilter = "all";
+      renderProtocolComparison();
+      if (dialog && !dialog.open) dialog.showModal();
+    }
+
+    function renderProtocolComparison() {
+      const dialog = document.getElementById("protocolComparisonDialog");
+      const summary = document.getElementById("protocolComparisonSummary");
+      const filters = document.getElementById("protocolComparisonFilters");
+      const table = document.getElementById("protocolComparisonTable");
+      if (!dialog || !summary || !filters || !table) return;
+
+      setText("protocolComparisonTitle", "protocolComparisonTitle");
+      setText("closeProtocolComparisonDialog", "closeHelp");
+      setText("protocolComparisonIntro", "protocolComparisonIntro");
+      setText("protocolComparisonNote", "protocolComparisonNote");
+
+      const counts = urologyProtocolComparison.reduce(
+        (result, item) => ({ ...result, [item.status]: result[item.status] + 1 }),
+        { shared: 0, dutch: 0, eau: 0 }
+      );
+      summary.innerHTML = [
+        [counts.shared, "protocolComparisonSharedStat"],
+        [counts.dutch, "protocolComparisonDutchStat"],
+        [counts.eau, "protocolComparisonEauStat"]
+      ].map(([count, labelKey]) => `
+        <div class="protocol-comparison-stat">
+          <strong>${count}</strong>
+          <span>${escapeHtml(t(labelKey))}</span>
+        </div>
+      `).join("");
+
+      const filterOptions = [
+        ["all", "protocolComparisonAll", urologyProtocolComparison.length],
+        ["shared", "protocolComparisonShared", counts.shared],
+        ["dutch", "protocolComparisonDutch", counts.dutch],
+        ["eau", "protocolComparisonEau", counts.eau]
+      ];
+      filters.innerHTML = filterOptions.map(([value, labelKey, count]) => `
+        <button
+          class="protocol-comparison-filter${state.protocolComparisonFilter === value ? " active" : ""}"
+          type="button"
+          data-protocol-comparison-filter="${value}"
+          aria-pressed="${state.protocolComparisonFilter === value}"
+        >${escapeHtml(t(labelKey, { count }))}</button>
+      `).join("");
+      filters.querySelectorAll("[data-protocol-comparison-filter]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.protocolComparisonFilter = button.dataset.protocolComparisonFilter;
+          renderProtocolComparison();
+        });
+      });
+
+      const visibleRows = urologyProtocolComparison.filter((item) => (
+        state.protocolComparisonFilter === "all" || item.status === state.protocolComparisonFilter
+      ));
+      const groupLabels = {
+        diagnosis: "protocolComparisonGroupDiagnosis",
+        staging: "protocolComparisonGroupStaging",
+        planning: "protocolComparisonGroupPlanning",
+        treatment: "protocolComparisonGroupTreatment",
+        followup: "protocolComparisonGroupFollowup"
+      };
+      const statusLabels = {
+        shared: "protocolComparisonStatusShared",
+        dutch: "protocolComparisonStatusDutch",
+        eau: "protocolComparisonStatusEau"
+      };
+
+      let activeGroup = "";
+      const rowHtml = visibleRows.map((item) => {
+        const groupHeading = item.group === activeGroup
+          ? ""
+          : `<h3 class="protocol-comparison-group">${escapeHtml(t(groupLabels[item.group]))}</h3>`;
+        activeGroup = item.group;
+        const note = item.noteKey ? `<p>${escapeHtml(t(item.noteKey))}</p>` : "";
+        return `
+          ${groupHeading}
+          <div class="protocol-comparison-row" data-status="${item.status}" role="row">
+            <div class="protocol-comparison-concept" role="cell">
+              <strong>${escapeHtml(t(item.conceptKey))}</strong>
+              <span class="protocol-comparison-status">${escapeHtml(t(statusLabels[item.status]))}</span>
+              ${note}
+            </div>
+            <div class="protocol-comparison-source" data-source="dutch" data-label="${escapeHtml(t("protocolComparisonDutchHeader"))}" role="cell">
+              ${protocolComparisonNodeHtml("emc", item.dutch)}
+            </div>
+            <div class="protocol-comparison-source" data-source="eau" data-label="${escapeHtml(t("protocolComparisonEauHeader"))}" role="cell">
+              ${protocolComparisonNodeHtml("eauFull", item.eau)}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      table.innerHTML = `
+        <div class="protocol-comparison-header" role="row">
+          <div role="columnheader">${escapeHtml(t("protocolComparisonFunctionHeader"))}</div>
+          <div role="columnheader">${escapeHtml(t("protocolComparisonDutchHeader"))}</div>
+          <div role="columnheader">${escapeHtml(t("protocolComparisonEauHeader"))}</div>
+        </div>
+        ${rowHtml}
+      `;
     }
 
     function renderFilterOptions() {
@@ -14644,7 +15463,12 @@
                   <th>${escapeHtml(t("resourceFlowsToModel"))}</th>
                   <th>${escapeHtml(t("unit"))}</th>
                   <th>${escapeHtml(t("baseQuantity"))}</th>
-                  <th>${escapeHtml(impactCoefficientLabel())}</th>
+                  <th>
+                    <span class="table-header-with-help">
+                      <span>${escapeHtml(impactCoefficientLabel())}</span>
+                      <button class="table-help-button" type="button" data-unit-impact-help aria-label="${escapeHtml(t("unitImpactHelpButton"))}" title="${escapeHtml(t("unitImpactHelpButton"))}">?</button>
+                    </span>
+                  </th>
                   <th>${escapeHtml(t("uncertainty"))}</th>
                   <th>${escapeHtml(t("baseContribution"))}</th>
                 </tr>
@@ -15376,6 +16200,20 @@
 
     function bindLcaControls() {
       const moduleCalculations = document.getElementById("lcaModuleCalculations");
+      moduleCalculations.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-unit-impact-help]");
+        if (!button) return;
+        event.preventDefault();
+        const dialog = document.getElementById("methodologyDialog");
+        const helpDialog = document.getElementById("helpDialog");
+        if (helpDialog && helpDialog.open) helpDialog.close();
+        if (dialog && !dialog.open) dialog.showModal();
+        requestAnimationFrame(() => {
+          const heading = document.getElementById("methodologyForegroundTitle");
+          heading?.closest(".methodology-section")?.scrollIntoView({ block: "start" });
+          heading?.focus({ preventScroll: true });
+        });
+      });
       document.getElementById("lcaCaseCount").addEventListener("input", renderLcaOutputs);
       document.getElementById("lcaImpactCategory").addEventListener("change", (event) => {
         setImpactCategory(event.target.value);
@@ -16735,6 +17573,16 @@
       methodologyDialog.addEventListener("click", (event) => {
         if (event.target === methodologyDialog) methodologyDialog.close();
       });
+      const protocolComparisonDialog = document.getElementById("protocolComparisonDialog");
+      document.getElementById("openProtocolComparisonDialog").addEventListener("click", () => {
+        showProtocolComparisonDialog();
+      });
+      document.getElementById("closeProtocolComparisonDialog").addEventListener("click", () => {
+        if (protocolComparisonDialog && protocolComparisonDialog.open) protocolComparisonDialog.close();
+      });
+      protocolComparisonDialog.addEventListener("click", (event) => {
+        if (event.target === protocolComparisonDialog) protocolComparisonDialog.close();
+      });
       document.getElementById("languageSelector").addEventListener("toggle", (event) => {
         if (event.target.open) document.getElementById("specialtySelector").removeAttribute("open");
       });
@@ -16866,6 +17714,7 @@
       renderFilterOptions();
       renderHeader();
       renderUrologySourceLens();
+      renderProtocolComparison();
       renderPathwayReferences();
       renderPathwayScenarioControls();
       renderMap();

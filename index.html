@@ -388,8 +388,27 @@
     .site-footer-inner {
       max-width: 1480px;
       margin: 0 auto;
-      min-height: 72px;
+      min-height: 104px;
       padding: 14px 18px;
+      display: grid;
+      grid-template-columns: minmax(180px, 320px) minmax(360px, 1fr) 210px;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .site-footer-pattern {
+      width: 100%;
+      height: 72px;
+      background-image: linear-gradient(var(--accent), var(--accent));
+      background-repeat: space;
+      background-size: 13px 13px;
+      opacity: 0.9;
+      -webkit-mask-image: linear-gradient(to right, #000 0%, #000 68%, transparent 100%);
+      mask-image: linear-gradient(to right, #000 0%, #000 68%, transparent 100%);
+    }
+
+    .site-footer-utility {
+      min-width: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -435,6 +454,29 @@
     .footer-contact-button:hover {
       border-color: var(--panel);
       background: rgba(255, 255, 255, 0.16);
+    }
+
+    .site-footer-wordmark {
+      position: relative;
+      width: 210px;
+      aspect-ratio: 173 / 76;
+      justify-self: end;
+    }
+
+    .site-footer-wordmark img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .site-footer-wordmark .wordmark-white {
+      filter: brightness(0) invert(1);
+    }
+
+    .site-footer-wordmark .wordmark-signature {
+      clip-path: inset(35% 0 0 0);
     }
 
     .footer-contact-button svg,
@@ -4066,8 +4108,22 @@
       }
 
       .site-footer-inner {
-        align-items: flex-start;
-        flex-direction: column;
+        grid-template-columns: minmax(180px, 1fr) 190px;
+      }
+
+      .site-footer-pattern {
+        max-width: 360px;
+      }
+
+      .site-footer-utility {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .site-footer-wordmark {
+        grid-column: 2;
+        grid-row: 1;
+        width: 190px;
       }
 
     }
@@ -4081,6 +4137,27 @@
       }
       .brand-lockup {
         align-items: flex-start;
+      }
+
+      .site-footer-inner {
+        min-height: 0;
+        grid-template-columns: minmax(120px, 1fr) 150px;
+        gap: 14px;
+      }
+
+      .site-footer-pattern {
+        height: 52px;
+        background-size: 10px 10px;
+      }
+
+      .site-footer-wordmark {
+        width: 150px;
+      }
+
+      .site-footer-utility {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
       }
       .brand-logo {
         width: 108px;
@@ -4895,14 +4972,21 @@
 
   <footer class="site-footer">
     <div class="site-footer-inner">
-      <address>
-        <strong>Erasmus MC</strong>
-        <a href="https://www.erasmusmc.nl/en/contact-details-and-directions" target="_blank" rel="noreferrer">Dr. Molewaterplein 40, 3015 GD Rotterdam, The Netherlands</a>
-      </address>
-      <button class="footer-contact-button" type="button" id="openContactDialog" aria-haspopup="dialog" aria-controls="contactDialog">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
-        <span id="footerContactText">Help &amp; contact</span>
-      </button>
+      <div class="site-footer-pattern" aria-hidden="true"></div>
+      <div class="site-footer-utility">
+        <address>
+          <strong>Erasmus MC</strong>
+          <a href="https://www.erasmusmc.nl/en/contact-details-and-directions" target="_blank" rel="noreferrer">Dr. Molewaterplein 40, 3015 GD Rotterdam, The Netherlands</a>
+        </address>
+        <button class="footer-contact-button" type="button" id="openContactDialog" aria-haspopup="dialog" aria-controls="contactDialog">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+          <span id="footerContactText">Help &amp; contact</span>
+        </button>
+      </div>
+      <div class="site-footer-wordmark" role="img" aria-label="Erasmus MC">
+        <img class="wordmark-white" src="assets/erasmusmc_logo.png" alt="">
+        <img class="wordmark-signature" src="assets/erasmusmc_logo.png" alt="" aria-hidden="true">
+      </div>
     </div>
   </footer>
 

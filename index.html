@@ -185,6 +185,147 @@
       margin-bottom: 14px;
     }
 
+    .contact-details {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .contact-detail {
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+    }
+
+    .contact-detail strong,
+    .contact-detail span {
+      display: block;
+    }
+
+    .contact-detail span {
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .contact-detail a,
+    .site-footer a {
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      align-content: flex-start;
+      gap: 8px;
+      height: 40px;
+      margin-bottom: 16px;
+    }
+
+    .contact-actions a,
+    .contact-actions button {
+      min-height: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .contact-actions a:hover,
+    .contact-actions button:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .contact-form {
+      display: grid;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .contact-form-note,
+    .contact-form-status {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .contact-form-status {
+      min-height: 19px;
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .contact-form button[type="submit"] {
+      justify-self: start;
+      color: var(--panel);
+      border-color: var(--accent-dark);
+      background: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .site-footer {
+      margin-top: 8px;
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .site-footer-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .site-footer address {
+      display: grid;
+      gap: 2px;
+      color: var(--muted);
+      font-size: 13px;
+      font-style: normal;
+    }
+
+    .site-footer address strong {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .footer-contact-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    .footer-contact-button svg,
+    .contact-actions svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     .protocol-comparison-dialog {
       width: min(1180px, calc(100vw - 32px));
       max-height: calc(100vh - 32px);
@@ -876,7 +1017,7 @@
       font-weight: 700;
     }
 
-    select, input[type="search"], input[type="number"], input[type="text"], textarea {
+    select, input[type="search"], input[type="number"], input[type="text"], input[type="email"], textarea {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -886,7 +1027,7 @@
       min-height: 40px;
     }
 
-    select:focus, input[type="search"]:focus, input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
+    select:focus, input[type="search"]:focus, input[type="number"]:focus, input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
       outline: 2px solid var(--accent-soft-strong);
       border-color: var(--accent);
     }
@@ -3667,6 +3808,11 @@
         width: 100%;
       }
 
+      .site-footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
     }
 
     @media (max-width: 620px) {
@@ -3751,6 +3897,18 @@
       }
       .help-cutoff-note ul {
         columns: 1;
+      }
+      .contact-details {
+        grid-template-columns: 1fr;
+      }
+      .contact-actions {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        height: 88px;
+      }
+      .contact-actions a,
+      .contact-actions button {
+        width: 100%;
       }
       .workflow-sidebar {
         top: 70px;
@@ -3898,6 +4056,55 @@
           </div>
         </section>
       </div>
+    </div>
+  </dialog>
+
+  <dialog class="help-dialog" id="contactDialog" aria-labelledby="contactDialogTitle">
+    <div class="help-dialog-header">
+      <h2 id="contactDialogTitle">Help &amp; contact</h2>
+      <button type="button" id="closeContactDialog">Close</button>
+    </div>
+    <div class="help-dialog-body">
+      <p id="contactIntro">Contact the ECO-PATH project for questions, feedback, or technical support.</p>
+      <div class="contact-details">
+        <div class="contact-detail">
+          <span id="contactPersonLabel">Project contact</span>
+          <strong>Justin Z. Lian</strong>
+          <a href="mailto:z.lian@erasmusmc.nl">z.lian@erasmusmc.nl</a>
+        </div>
+        <div class="contact-detail">
+          <span id="contactAddressLabel">Erasmus MC address</span>
+          <strong>Erasmus MC</strong>
+          <a href="https://www.erasmusmc.nl/en/contact-details-and-directions" target="_blank" rel="noreferrer">Dr. Molewaterplein 40<br>3015 GD Rotterdam<br>The Netherlands</a>
+        </div>
+      </div>
+      <div class="contact-actions">
+        <a href="mailto:z.lian@erasmusmc.nl" id="emailContactButton">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+          <span id="emailContactText">Email Justin</span>
+        </a>
+        <button type="button" id="showCommentForm" aria-expanded="false" aria-controls="contactCommentForm">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>
+          <span id="leaveCommentText">Leave a comment</span>
+        </button>
+      </div>
+      <form class="contact-form" id="contactCommentForm" hidden>
+        <div class="field">
+          <label for="contactName" id="contactNameLabel">Your name (optional)</label>
+          <input id="contactName" type="text" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="contactEmail" id="contactEmailLabel">Your email (optional)</label>
+          <input id="contactEmail" type="email" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="contactComment" id="contactCommentLabel">Comment</label>
+          <textarea id="contactComment" required></textarea>
+        </div>
+        <p class="contact-form-note" id="contactFormNote">Submitting opens your email application. This website does not store the message.</p>
+        <button type="submit" id="prepareCommentEmail">Prepare email</button>
+        <p class="contact-form-status" id="contactFormStatus" aria-live="polite"></p>
+      </form>
     </div>
   </dialog>
 
@@ -4358,6 +4565,19 @@
     </section>
     </div>
   </main>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <address>
+        <strong>Erasmus MC</strong>
+        <a href="https://www.erasmusmc.nl/en/contact-details-and-directions" target="_blank" rel="noreferrer">Dr. Molewaterplein 40, 3015 GD Rotterdam, The Netherlands</a>
+      </address>
+      <button class="footer-contact-button" type="button" id="openContactDialog" aria-haspopup="dialog" aria-controls="contactDialog">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+        <span id="footerContactText">Help &amp; contact</span>
+      </button>
+    </div>
+  </footer>
 
   <section class="map-fullscreen-overlay" id="mapFullscreenOverlay" aria-hidden="true" aria-label="Fullscreen pathway map">
     <div class="map-fullscreen-header">
@@ -6717,6 +6937,22 @@
         helpButton: "How to use",
         helpTitle: "How to use ECO-PATH",
         closeHelp: "Close",
+        contactTitle: "Help & contact",
+        contactIntro: "Contact the ECO-PATH project for questions, feedback, or technical support.",
+        contactPerson: "Project contact",
+        contactAddress: "Erasmus MC address",
+        emailContact: "Email Justin",
+        leaveComment: "Leave a comment",
+        contactName: "Your name (optional)",
+        contactEmail: "Your email (optional)",
+        contactComment: "Comment",
+        contactFormNote: "Submitting opens your email application. This website does not store the message.",
+        prepareCommentEmail: "Prepare email",
+        feedbackEmailSubject: "ECO-PATH feedback",
+        feedbackEmailName: "Name",
+        feedbackEmailReplyTo: "Reply email",
+        feedbackEmailComment: "Comment",
+        feedbackEmailOpening: "Your email application is opening with the comment included.",
         helpIntro: "Use the pathway map to define a clinically meaningful scenario, then use the LCA section to decide which resource-bearing building blocks enter the environmental model.",
         helpStep1: "Choose a specialty and a guideline or local workflow source from the pathway menu.",
         helpStep2: "Hover over or click an activity to review its clinical interpretation, module assignment, resource flows, and open questions.",
@@ -6897,6 +7133,22 @@
         helpButton: "Gebruiksaanwijzing",
         helpTitle: "ECO-PATH gebruiken",
         closeHelp: "Sluiten",
+        contactTitle: "Hulp & contact",
+        contactIntro: "Neem contact op met het ECO-PATH-project voor vragen, feedback of technische ondersteuning.",
+        contactPerson: "Projectcontact",
+        contactAddress: "Adres Erasmus MC",
+        emailContact: "Justin e-mailen",
+        leaveComment: "Een opmerking achterlaten",
+        contactName: "Uw naam (optioneel)",
+        contactEmail: "Uw e-mailadres (optioneel)",
+        contactComment: "Opmerking",
+        contactFormNote: "Na verzenden wordt uw e-mailprogramma geopend. Deze website bewaart het bericht niet.",
+        prepareCommentEmail: "E-mail voorbereiden",
+        feedbackEmailSubject: "Feedback over ECO-PATH",
+        feedbackEmailName: "Naam",
+        feedbackEmailReplyTo: "E-mailadres voor antwoord",
+        feedbackEmailComment: "Opmerking",
+        feedbackEmailOpening: "Uw e-mailprogramma wordt geopend met de opmerking in het bericht.",
         helpIntro: "Gebruik de zorgpadkaart om een klinisch betekenisvol scenario af te bakenen. Bepaal daarna in het LCA-gedeelte welke bouwstenen met relevante hulpbronnen in het milieumodel worden opgenomen.",
         helpStep1: "Kies in het zorgpadmenu een specialisme en een richtlijn of lokale workflowbron.",
         helpStep2: "Beweeg over of klik op een activiteit om de klinische interpretatie, moduletoewijzing, hulpbronnen en open vragen te bekijken.",
@@ -7083,6 +7335,22 @@
           helpButton: "使用说明",
           helpTitle: "如何使用 ECO-PATH",
           closeHelp: "关闭",
+          contactTitle: "帮助与联系",
+          contactIntro: "如有问题、反馈或需要技术支持，请联系 ECO-PATH 项目。",
+          contactPerson: "项目联系人",
+          contactAddress: "Erasmus MC 地址",
+          emailContact: "给 Justin 发邮件",
+          leaveComment: "留言",
+          contactName: "您的姓名（选填）",
+          contactEmail: "您的邮箱（选填）",
+          contactComment: "留言内容",
+          contactFormNote: "提交后将打开您的邮件客户端；本网页不会保存留言内容。",
+          prepareCommentEmail: "生成邮件",
+          feedbackEmailSubject: "ECO-PATH 反馈",
+          feedbackEmailName: "姓名",
+          feedbackEmailReplyTo: "回复邮箱",
+          feedbackEmailComment: "留言",
+          feedbackEmailOpening: "正在打开邮件客户端，并将留言内容写入邮件。",
           helpIntro: "先用路径图定义具有临床意义的情景，再在 LCA 部分决定哪些包含实质资源消耗的构建块进入环境模型。",
           helpStep1: "从路径菜单中选择专科，以及指南或本地工作流来源。",
           helpStep2: "将鼠标悬停在活动上或点击活动，查看临床解释、模块分配、候选资源流和待确认问题。",
@@ -14654,6 +14922,21 @@
       if (helpButton) helpButton.setAttribute("aria-label", t("helpButton"));
       setText("helpDialogTitle", "helpTitle");
       setText("closeHelpDialog", "closeHelp");
+      setText("footerContactText", "contactTitle");
+      setText("contactDialogTitle", "contactTitle");
+      setText("closeContactDialog", "closeHelp");
+      setText("contactIntro", "contactIntro");
+      setText("contactPersonLabel", "contactPerson");
+      setText("contactAddressLabel", "contactAddress");
+      setText("emailContactText", "emailContact");
+      setText("leaveCommentText", "leaveComment");
+      setText("contactNameLabel", "contactName");
+      setText("contactEmailLabel", "contactEmail");
+      setText("contactCommentLabel", "contactComment");
+      setText("contactFormNote", "contactFormNote");
+      setText("prepareCommentEmail", "prepareCommentEmail");
+      const contactButton = document.getElementById("openContactDialog");
+      if (contactButton) contactButton.setAttribute("aria-label", t("contactTitle"));
       setText("helpIntro", "helpIntro");
       setText("helpStep1", "helpStep1");
       setText("helpStep2", "helpStep2");
@@ -18991,13 +19274,33 @@
       if (status) status.textContent = t("reportExported", { filename });
     }
 
+    function prepareFeedbackEmail() {
+      const name = document.getElementById("contactName").value.trim();
+      const replyEmail = document.getElementById("contactEmail").value.trim();
+      const comment = document.getElementById("contactComment").value.trim();
+      if (!comment) return;
+
+      const bodyLines = [
+        `${t("feedbackEmailName")}: ${name || "-"}`,
+        `${t("feedbackEmailReplyTo")}: ${replyEmail || "-"}`,
+        "",
+        `${t("feedbackEmailComment")}:`,
+        comment
+      ];
+      const mailto = `mailto:z.lian@erasmusmc.nl?subject=${encodeURIComponent(t("feedbackEmailSubject"))}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
+      document.getElementById("contactFormStatus").textContent = t("feedbackEmailOpening");
+      window.location.href = mailto;
+    }
+
     function bindControls() {
       const helpDialog = document.getElementById("helpDialog");
       const methodologyDialog = document.getElementById("methodologyDialog");
+      const contactDialog = document.getElementById("contactDialog");
       document.getElementById("openHelpDialog").addEventListener("click", () => {
         document.getElementById("languageSelector").removeAttribute("open");
         document.getElementById("specialtySelector").removeAttribute("open");
         if (methodologyDialog && methodologyDialog.open) methodologyDialog.close();
+        if (contactDialog && contactDialog.open) contactDialog.close();
         if (helpDialog && !helpDialog.open) helpDialog.showModal();
       });
       document.getElementById("closeHelpDialog").addEventListener("click", () => {
@@ -19006,10 +19309,35 @@
       helpDialog.addEventListener("click", (event) => {
         if (event.target === helpDialog) helpDialog.close();
       });
+      document.getElementById("openContactDialog").addEventListener("click", () => {
+        document.getElementById("languageSelector").removeAttribute("open");
+        document.getElementById("specialtySelector").removeAttribute("open");
+        if (helpDialog && helpDialog.open) helpDialog.close();
+        if (methodologyDialog && methodologyDialog.open) methodologyDialog.close();
+        if (contactDialog && !contactDialog.open) contactDialog.showModal();
+      });
+      document.getElementById("closeContactDialog").addEventListener("click", () => {
+        if (contactDialog && contactDialog.open) contactDialog.close();
+      });
+      contactDialog.addEventListener("click", (event) => {
+        if (event.target === contactDialog) contactDialog.close();
+      });
+      document.getElementById("showCommentForm").addEventListener("click", (event) => {
+        const form = document.getElementById("contactCommentForm");
+        const expanded = event.currentTarget.getAttribute("aria-expanded") === "true";
+        form.hidden = expanded;
+        event.currentTarget.setAttribute("aria-expanded", String(!expanded));
+        if (!expanded) document.getElementById("contactComment").focus();
+      });
+      document.getElementById("contactCommentForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        prepareFeedbackEmail();
+      });
       document.getElementById("openMethodologyDialog").addEventListener("click", () => {
         document.getElementById("languageSelector").removeAttribute("open");
         document.getElementById("specialtySelector").removeAttribute("open");
         if (helpDialog && helpDialog.open) helpDialog.close();
+        if (contactDialog && contactDialog.open) contactDialog.close();
         if (methodologyDialog && !methodologyDialog.open) methodologyDialog.showModal();
       });
       document.getElementById("closeMethodologyDialog").addEventListener("click", () => {

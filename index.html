@@ -1556,6 +1556,57 @@
       pointer-events: none;
     }
 
+    .map-decision-toggle {
+      position: absolute;
+      top: 10px;
+      right: 58px;
+      z-index: 5;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid rgba(111, 207, 241, 0.85);
+      border-radius: 7px;
+      padding: 0 10px;
+      color: var(--accent-dark);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 2px 8px rgba(0, 90, 160, 0.14);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .map-decision-toggle:hover,
+    .map-decision-toggle:focus-visible,
+    .map-decision-toggle.active {
+      color: #ffffff;
+      background: var(--accent-dark);
+    }
+
+    .map-decision-toggle svg {
+      width: 19px;
+      height: 19px;
+      min-height: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    @media (max-width: 760px) {
+      .map-decision-toggle {
+        width: 38px;
+        padding: 0;
+        justify-content: center;
+      }
+
+      .map-decision-toggle span {
+        display: none;
+      }
+    }
+
     svg {
       display: block;
       width: 100%;
@@ -4564,6 +4615,13 @@
             <p class="assessment-validation" id="assessmentValidationStatus" aria-live="polite"></p>
           </div>
           <div class="map-wrap">
+            <button class="map-decision-toggle active" type="button" id="toggleDecisionPoints" aria-pressed="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+                <circle cx="12" cy="12" r="2.5"></circle>
+              </svg>
+              <span id="decisionPointsToggleText">Decision points</span>
+            </button>
             <button class="map-fullscreen-trigger" type="button" id="openMapFullscreen" aria-expanded="false" aria-label="Fullscreen map" title="Fullscreen map">
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path d="M15 3h6v6"></path>
@@ -4923,6 +4981,13 @@
     <div class="map-fullscreen-shell">
       <section class="map-fullscreen-map-panel" aria-label="Fullscreen metro pathway map">
         <div class="map-wrap map-fullscreen-map-wrap">
+          <button class="map-decision-toggle active" type="button" id="toggleDecisionPointsFullscreen" aria-pressed="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
+              <circle cx="12" cy="12" r="2.5"></circle>
+            </svg>
+            <span id="fullscreenDecisionPointsToggleText">Decision points</span>
+          </button>
           <button class="map-fullscreen-trigger" type="button" id="closeMapFullscreen" aria-label="Close full screen" title="Close full screen">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
               <path d="M4 14h6v6"></path>
@@ -4971,23 +5036,13 @@
       },
       EM02: {
         name: "Pathology",
-        definition: "Pathology review, sample-related assessment, paper review, and diagnostic reassessment decisions.",
+        definition: "Pathology review, specimen processing, laboratory testing, and diagnostic reassessment inputs.",
         resourceFlows: ["Pathology materials", "Laboratory electricity", "Pathology waste"]
       },
       EM03: {
         name: "Imaging and endoscopy",
         definition: "Radiology, CT reassessment, MRI, PET-CT, cystoscopy, colonoscopy, or other pathway-specific diagnostic procedures.",
         resourceFlows: ["Electricity", "Contrast media", "Procedure materials", "Water", "Waste treatment"]
-      },
-      EM04: {
-        name: "Multidisciplinary care logic (cut-off)",
-        definition: "Joint clinic, multidisciplinary review, and cross-specialty decisions retained for pathway logic but not calculated as standalone impact-bearing activities.",
-        resourceFlows: []
-      },
-      EM05: {
-        name: "Clinical decision logic (cut-off)",
-        definition: "Treatment intent, eligibility, route choice, and review decisions retained for pathway logic but not calculated as standalone impact-bearing activities.",
-        resourceFlows: []
       },
       EM06: {
         name: "Systemic therapy and oncology",
@@ -5001,7 +5056,7 @@
       },
       EM08: {
         name: "Radiotherapy",
-        definition: "Radiotherapy decision, planning, external-beam fractions, chemoradiation, brachytherapy, and immobilization. Associated patient travel is owned by EM10.",
+        definition: "Radiotherapy planning, external-beam fractions, chemoradiation, brachytherapy, and immobilization. Associated patient travel is owned by EM10.",
         resourceFlows: ["Linear accelerator electricity", "Planning electricity", "Immobilization materials", "Treatment consumables"]
       },
       EM09: {
@@ -5020,6 +5075,11 @@
         resourceFlows: ["Electricity", "Heating", "Cooling", "Cleaning materials", "Laundry service", "Waste treatment", "Sterilization energy and materials"]
       }
     };
+
+    const clinicalLogicClassificationByLegacyModule = Object.freeze({
+      EM04: "multidisciplinary-care-logic",
+      EM05: "clinical-decision-logic"
+    });
 
     const excludedHumanLaborFlowLabels = new Set([
       "Staff time",
@@ -5117,14 +5177,6 @@
       block("EM01", "Triage review", "per triage decision", ["Clinician time", "Record review", "Scheduling"]),
       block("EM01", "Intake scheduling", "per appointment", ["Administrative time", "Patient communication", "ICT"]),
       block("EM01", "Return-to-referrer handover", "per transfer", ["Clinical letter", "Administrative time"]),
-      block("EM04", "MDT case discussion", "per case discussed", ["Clinician time", "Meeting room or digital platform", "Image display"]),
-      block("EM04", "Digital case review", "per review", ["Clinician time", "ICT", "Image access"]),
-      block("EM04", "Joint outpatient clinic", "per visit", ["Multi-specialty staff time", "Room use"]),
-      block("EM05", "Treatment planning consultation", "per consultation", ["Clinician time", "Room use"]),
-      block("EM05", "Shared decision-making session", "per session", ["Clinician time", "Decision aid material", "Patient communication"]),
-      block("EM05", "Fitness or pre-treatment assessment", "per assessment", ["Assessment time", "Laboratory review"]),
-      block("EM05", "Polyp risk stratification", "per case classified", ["Pathology review", "Risk category assignment", "Patient communication"], ["gastro"]),
-      block("EM05", "Response or progression assessment", "per assessment", ["Clinical review", "Imaging review", "Laboratory review"]),
       block("EM09", "Return-route follow-up handover", "per handover", ["Clinical letter", "Administrative time"])
     ];
 
@@ -5270,10 +5322,6 @@
       [automaticBlock("Polypectomy or endoscopic lesion removal")]
     );
     registerActivityBuildingBlocks(
-      ["EAU-TX02", "EAUFULL-TX02", "EMC-TX03"],
-      [automaticBlock("Medical oncology consultation")]
-    );
-    registerActivityBuildingBlocks(
       ["EAU-TX03", "EAUFULL-TX04", "NVU-TX04", "EMC-TX04", "CRCDUTCH-TX04"],
       [
         automaticBlock("Medical oncology consultation"),
@@ -5302,15 +5350,15 @@
     );
     registerActivityBuildingBlocks(
       ["EAUFULL-TX06", "NVU-TX06", "NVU-TX18", "EMC-TX06"],
-      [automaticBlock("Radical cystectomy procedure episode"), automaticBlock("Complex surgical specimen pathology")]
+      [
+        automaticBlock("Radical cystectomy procedure episode"),
+        automaticBlock("Urinary diversion procedure add-on"),
+        automaticBlock("Complex surgical specimen pathology")
+      ]
     );
     registerActivityBuildingBlocks(
       ["EAUFULL-TX07", "NVU-TX07", "EMC-TX07"],
       [automaticBlock("Operating-room energy allocation")]
-    );
-    registerActivityBuildingBlocks(
-      ["EAUFULL-TX08", "NVU-TX08", "EMC-TX08"],
-      [automaticBlock("Urinary diversion procedure add-on")]
     );
     registerActivityBuildingBlocks(
       ["EAUFULL-TX09", "NVU-TX09", "EMC-TX09"],
@@ -5636,7 +5684,7 @@
           activity("EAU-DX05", "Histopathological confirmation", "Diagnostics", "activity", "EM02", "diagnostic", 780, 112, "Pathological confirmation and staging information used for treatment selection.", "This can map to pathology review in the local pathway if Erasmus MC performs revision or reassessment.", ["Pathology staff time", "Slides or digital pathology"], ["Which pathology material is reviewed locally?"]),
           activity("EAU-DX06", "Staging imaging", "Diagnostics", "activity", "EM03", "diagnostic", 920, 112, "Imaging for staging and assessment of treatment options.", "Guideline-level staging imaging can overlap with EMC radiology and CT reassessment nodes.", ["CT or MRI scan", "Contrast media", "Scanner electricity", "Patient travel"], ["Which imaging is new, repeated, or reviewed only?"]),
           activity("EAU-DX07", "Fitness and health status assessment", "Diagnostics", "decision", "EM05", "diagnostic", 1060, 112, "Assessment of whether radical treatment, systemic therapy, bladder-sparing treatment, or palliative care is clinically appropriate.", "Retained as a decision node because it controls downstream resource demand.", ["Clinical staff time", "Assessment tools"], ["Which fitness variables are available from local records?"]),
-          activity("EAU-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1060, 292, "Multidisciplinary review before treatment initiation and treatment route selection.", "This is clinically central and a candidate ECO-PATH module across oncology pathways.", ["Clinician time", "Meeting room use", "Imaging display"], ["Which disciplines attend, and how often are cases re-discussed?"]),
+          activity("EAU-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1060, 292, "Multidisciplinary review before treatment initiation and treatment route selection.", "This clinically central decision remains visible to explain pathway sequence and branching, but it is outside the current foreground LCA calculation boundary.", [], ["Which disciplines attend, and how often are cases re-discussed?"]),
           activity("EAU-TX01", "Treatment intent decision", "Treatment planning", "decision", "EM05", "treatment", 920, 292, "Definition of curative, organ-sparing, systemic, or palliative intent.", "Kept separate from treatment delivery because it determines pathway topology.", ["Consultation time", "Shared decision documentation", "Scheduling"], ["Which alternatives are clinically comparable for environmental comparison?"]),
           activity("EAU-TX02", "Perioperative systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 780, 292, "Eligibility assessment for neoadjuvant, adjuvant, or other systemic therapy.", "Oncology should appear here as systemic therapy decision logic, not only as a professional label.", ["Medical oncology review", "Laboratory monitoring", "Pharmacy planning"], ["Which regimens, cycles, and dose assumptions are in scope?"]),
           activity("EAU-TX03", "Neoadjuvant or adjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 640, 292, "Systemic therapy delivered before or after local treatment when clinically indicated.", "This is the main oncology-related LCA activity because drugs, infusion materials, pharmacy preparation, and waste are concentrated here.", ["Drug dose and regimen", "Infusion materials", "Pharmacy preparation", "Day-care chair time", "Cytotoxic waste"], ["Which drug regimens are used locally for the target population?"]),
@@ -5690,7 +5738,7 @@
           activity("EAUFULL-DX06", "CT chest abdomen pelvis staging with urothelial phase", "Diagnostics", "activity", "EM03", "diagnostic", 750, 92, "CT imaging of the chest, abdomen, and pelvis for confirmed MIBC, including urothelial assessment when it is part of the same staging protocol.", "EAU recommends CT staging before curative treatment. The urothelial phase should not be counted as a second scan when it is performed within the same acquisition.", ["Scanner electricity", "Contrast media", "Patient travel"], ["Which CT phases are included in one local staging protocol and which examinations are genuinely additional?"]),
           activity("EAUFULL-DX07", "Additional upper tract assessment if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 880, 92, "Additional upper-tract urothelial evaluation only when the standard staging CT does not answer the clinical question.", "This optional node prevents routine double counting of CT urography when the urothelial phase is already included in CT staging.", ["Scanner electricity", "Contrast media"], ["Which indication triggers a genuinely separate upper-tract examination?"]),
           activity("EAUFULL-DX08", "MRI or PET-CT if indicated", "Diagnostics", "activity", "EM03", "diagnostic", 1010, 92, "MRI for local staging or response assessment, and PET-CT where clinically indicated.", "These imaging options are guideline-relevant but should be parameterized only if they occur in the selected scenario.", ["MRI scan", "PET-CT scan", "Patient travel"], ["Which additional imaging tests are used for the target population?"]),
-          activity("EAUFULL-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1100, 230, "Multidisciplinary team discussion before treatment initiation and route selection.", "MDT is the clinical bridge between diagnostic findings and treatment intent.", ["Clinician time", "Meeting room use", "Imaging display"], ["Which specialties attend and how often are patients re-discussed?"]),
+          activity("EAUFULL-JM01", "MDT discussion", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 1100, 230, "Multidisciplinary team discussion before treatment initiation and route selection.", "MDT is the clinical bridge between diagnostic findings and treatment intent. It remains visible as pathway logic but is outside the current foreground LCA calculation boundary.", [], ["Which specialties attend and how often are patients re-discussed?"]),
           activity("EAUFULL-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 950, 230, "Assessment of health status, frailty, comorbidity, cognition, and fitness for radical or bladder-sparing treatment.", "EAU includes health status because chronological age alone is insufficient for treatment choice.", ["Assessment time", "Laboratory review"], ["Which fitness scores or geriatric assessments are available locally?"]),
           activity("EAUFULL-TX02", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 800, 230, "Eligibility assessment for cisplatin-based or alternative perioperative systemic therapy.", "This decision controls whether systemic therapy modules are active and which regimen parameters are needed.", ["Medical oncology review", "Laboratory monitoring", "Pharmacy planning"], ["Which eligibility criteria and regimens are used locally?"]),
           activity("EAUFULL-TX03", "Treatment intent and shared decision", "Treatment planning", "decision", "EM05", "treatment", 650, 230, "Decision on curative, bladder-sparing, systemic, or palliative treatment intent after informed discussion.", "This is kept separate because it defines the pathway scenario rather than the resource use of one procedure.", ["Consultation time", "Shared decision documentation", "Scheduling"], ["Which alternatives are clinically comparable for environmental comparison?"]),
@@ -5867,16 +5915,16 @@
           activity("EMC-FC02", "Transfer to Erasmus MC", "Access", "activity", "EM01", "diagnostic", 940, 220, "Transfer of the confirmed MIBC referral package from ASZ or another regional hospital to Erasmus MC.", "The activity marks the institutional handover. Its administrative-only components are subject to cut-off, but travel or repeated clinical work remains in scope.", ["Referral package", "Pathology material transfer", "Imaging transfer", "Patient travel"], ["Which documents, specimens, and images must be complete before transfer?"]),
           activity("EMC-DX08", "Pathology review", "Diagnostics", "activity", "EM02", "diagnostic", 1080, 220, "Erasmus MC review of regional TURBT pathology and diagnostic material.", "Specialist review can confirm muscle invasion, variant histology, grade, and adequacy before route selection.", ["Slide transport", "Microscopy or digital pathology"], ["Is central pathology revision performed for all referred MIBC cases?"]),
           activity("EMC-DX09", "Repeat or supplemental staging imaging if required", "Diagnostics", "activity", "EM03", "diagnostic", 1080, 348, "Conditional repeat or supplemental staging imaging when transferred imaging is too old, incomplete, or of insufficient quality.", "Selecting this optional node means that an additional scan occurs and therefore activates a CT building block. Imaging review alone remains under the provisional cut-off.", ["Scanner electricity", "Contrast media"], ["What age, quality, or staging criteria trigger repeat imaging, and which modality is used?"]),
-          activity("EMC-JM01", "Joint clinic", "Joint clinic and MDT", "activity", "EM04", "diagnostic", 940, 348, "Patient-facing multidisciplinary bladder cancer clinic at Erasmus MC.", "The visit supports shared assessment. Staff labor alone is not characterized, but patient travel, room use, and any additional procedures remain relevant.", ["Patient travel", "Outpatient room use", "Additional tests if ordered"], ["Which specialties are present and can this visit be remote for selected patients?"]),
-          activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 800, 348, "Multidisciplinary review of staging, pathology, fitness, and treatment options.", "The meeting remains visible because it determines the pathway, but its minor office and ICT inputs are provisionally excluded from LCA calculation.", ["Imaging display", "Meeting room electricity"], ["How many MDO discussions occur per patient and which repeat discussions change treatment?"]),
+          activity("EMC-JM01", "Joint clinic", "Joint clinic and MDT", "activity", "EM04", "diagnostic", 940, 348, "Patient-facing multidisciplinary bladder cancer clinic at Erasmus MC.", "The joint clinic remains visible to preserve the clinical handover and pathway sequence. It does not create a standalone LCA row under the current foreground boundary; any separately documented test, imaging examination, or treatment is modeled in its physical module.", [], ["Which specialties are present and can this visit be remote for selected patients?"]),
+          activity("EMC-JM02", "Urological tumor MDT", "Joint clinic and MDT", "decision", "EM04", "diagnostic", 800, 348, "Multidisciplinary review of staging, pathology, fitness, and treatment options.", "The meeting remains visible because it determines the pathway, but it is outside the current foreground LCA calculation boundary.", [], ["How many MDO discussions occur per patient and which repeat discussions change treatment?"]),
           activity("EMC-TX01", "Health status and frailty assessment", "Treatment planning", "decision", "EM05", "diagnostic", 660, 348, "Assessment of health status, comorbidity, frailty, and suitability for curative or bladder-preserving treatment.", "Fitness affects clinical comparability and route selection, so it must remain explicit even if its direct impact is small.", ["Patient travel", "Assessment tools", "Laboratory review"], ["Which fitness or geriatric instruments are used locally?"]),
           activity("EMC-TX02", "Treatment intent and shared decision", "Treatment planning", "decision", "EM05", "treatment", 520, 348, "Selection of curative surgery, bladder-preserving treatment, systemic treatment, or palliative intent after multidisciplinary counseling.", "This is the principal scenario-building node. It does not imply that all displayed alternatives are clinically equivalent.", ["Patient consultation", "Decision aids", "Patient travel"], ["Which treatment alternatives are comparable for the intended ECO-PATH decision question?"]),
-          activity("EMC-TX03", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 390, 390, "Eligibility assessment for perioperative systemic therapy, including regimen-specific contraindications.", "Systemic treatment practice evolves over time, so this activity requires versioned regimen and eligibility assumptions.", ["Laboratory monitoring", "Medical oncology review", "Treatment planning"], ["Which Dutch and Erasmus MC regimens are current for the selected population and year?"]),
+          activity("EMC-TX03", "Cisplatin and systemic therapy eligibility", "Systemic therapy and oncology", "decision", "EM06", "treatment", 390, 390, "Eligibility assessment for perioperative systemic therapy, including regimen-specific contraindications.", "This decision remains visible to explain whether systemic treatment is offered. It does not create a standalone LCA row; laboratory testing or treatment delivery is modeled only when represented by a separate physical activity.", [], ["Which Dutch and Erasmus MC regimens are current for the selected population and year?"]),
           activity("EMC-TX04", "Neoadjuvant systemic therapy", "Systemic therapy and oncology", "activity", "EM06", "treatment", 250, 410, "Systemic treatment before definitive local therapy when selected.", "This node contains medicine, pharmacy, infusion, monitoring, and waste flows and should be parameterized by regimen and cycle.", ["Drug dose and regimen", "Pharmacy preparation", "Infusion materials", "Laboratory monitoring", "Cytotoxic waste"], ["Does the selected scenario use chemotherapy alone or a newer perioperative combination?"]),
           activity("EMC-TX05", "Restaging after neoadjuvant therapy", "Diagnostics", "activity", "EM03", "diagnostic", 100, 410, "Restaging after systemic therapy before definitive treatment.", "Restaging can detect progression and redirect the pathway.", ["CT scan", "MRI if indicated", "Patient travel"], ["Which restaging modality and timing are used locally?"]),
           activity("EMC-TX06", "Radical cystectomy", "Surgery", "activity", "EM07", "treatment", 390, 470, "Radical cystectomy as a definitive curative treatment route.", "This is a high-resource surgical building block that needs procedure, anesthesia, admission, and waste data.", ["Operating room time", "Anesthesia", "Sterile packs", "Ward stay", "Surgical waste"], ["Confirm surgical approach, operation time, and admission boundary."]),
           activity("EMC-TX07", "Pelvic lymph node dissection", "Surgery", "activity", "EM07", "treatment", 530, 470, "Pelvic lymph node dissection performed with radical cystectomy where indicated.", "It can alter operation duration, pathology workload, and resource demand.", ["Operating room time", "Surgical instruments", "Pathology specimens", "Waste"], ["Model as a separate parameter or part of the cystectomy package?"]),
-          activity("EMC-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 670, 470, "Choice and delivery implications of ileal conduit, neobladder, or another urinary diversion.", "Diversion type changes surgery, materials, admission, education, and long-term follow-up.", ["Surgical consumables", "Operating room time", "Stoma materials", "Patient education"], ["Which diversion types and frequencies should be represented?"]),
+          activity("EMC-TX08", "Urinary diversion choice", "Surgery", "decision", "EM07", "treatment", 670, 470, "Choice of ileal conduit, neobladder, or another urinary diversion.", "The choice remains visible as pathway logic but does not create a decision-related LCA row. The physical diversion procedure is modeled as part of the radical cystectomy activity.", [], ["Which diversion types and frequencies should be represented?"]),
           activity("EMC-TX09", "Perioperative care and VTE prophylaxis", "Surgery", "activity", "EM07", "treatment", 810, 470, "Postoperative admission, enhanced recovery elements, and thromboprophylaxis.", "This separates inpatient resource use from the operation itself.", ["Ward bed-days", "Medicines", "Monitoring consumables", "Meals and linen"], ["Which ward and ICU days belong to the reference episode?"]),
           activity("EMC-TX10", "Adjuvant therapy assessment", "Systemic therapy and oncology", "decision", "EM06", "treatment", 900, 470, "Postoperative review for adjuvant systemic treatment or surveillance.", "The node is route logic and is provisionally excluded from the LCA calculation. Treatment, laboratory testing, or imaging should be activated as separate resource-bearing activities when they occur.", ["Clinical review", "Treatment decision"], ["Which adjuvant options are current in Dutch practice, and should a separate treatment-delivery node be added?"]),
           activity("EMC-TX11", "Trimodality therapy eligibility", "Radiotherapy", "decision", "EM08", "treatment", 390, 590, "Eligibility for bladder-preserving trimodality treatment.", "This branch must be modeled as a multi-activity pathway with its own surveillance and salvage assumptions.", ["Clinical review", "Imaging review", "Patient consultation"], ["Which local criteria define trimodality eligibility?"]),
@@ -7082,6 +7130,15 @@
       ["emc", "nvu", "eauFull", "crcDutch"].forEach((pathwayId) => {
         const profile = pathwayEvidenceProfiles[pathwayId];
         pathwayData[pathwayId].nodes.forEach((node) => {
+          const pathwayLogicClassification = clinicalLogicClassificationByLegacyModule[node.module];
+          if (pathwayLogicClassification) {
+            node.pathwayLogicClassification = pathwayLogicClassification;
+            node.module = null;
+          }
+          if (node.type === "decision" && !mappedBuildingBlocksForNode(node).length) {
+            node.pathwayLogicClassification ||= "clinical-decision-logic";
+            node.module = null;
+          }
           node.evidence = { pathwayId, ...profile };
           node.resourceFlows = directLciInputs(node.resourceFlows);
         });
@@ -7099,7 +7156,7 @@
             !node.label
             || !node.domain
             || !["activity", "decision"].includes(node.type)
-            || !moduleRegistry[node.module]
+            || !(node.pathwayLogicClassification || moduleRegistry[node.module])
             || !(node.protocolStep || node.interpretation)
             || !node.rationale
             || !Array.isArray(node.resourceFlows)
@@ -7177,12 +7234,15 @@
       "EAU-JM01",
       "EAU-DX07",
       "EAU-TX01",
+      "EAU-TX02",
       "EAU-TX05",
       "EAU-TX07",
       "EAUFULL-AC01",
       "EAUFULL-JM01",
       "EAUFULL-TX01",
+      "EAUFULL-TX02",
       "EAUFULL-TX03",
+      "EAUFULL-TX08",
       "EAUFULL-TX10",
       "EAUFULL-TX11",
       "NVU-AC01",
@@ -7191,6 +7251,7 @@
       "NVU-TX02",
       "NVU-TX03",
       "NVU-TX05",
+      "NVU-TX08",
       "NVU-TX10",
       "NVU-TX11",
       "NVU-TX13",
@@ -7201,6 +7262,8 @@
       "EMC-DX05",
       "EMC-TX01",
       "EMC-TX02",
+      "EMC-TX03",
+      "EMC-TX08",
       "EMC-TX10",
       "EMC-TX11",
       "EMC-FU01",
@@ -7288,8 +7351,8 @@
         helpStep4: "Selecting an activity automatically activates its mapped modules, building blocks, and provisional quantities. Review route alternatives, occurrence counts, and any manual additions before calculation.",
         helpStep5: "Review uncertainty and data gaps, then export the report in the currently selected language.",
         helpCutoffTitle: "Provisional LCA cut-off",
-        helpCutoffText: "Clinical decision and review nodes remain on the map, but meeting-only, decision-only, review-only, digital-letter, and purely administrative activities are excluded from calculation when they add only staff time and minor office or ICT energy. EM04 multidisciplinary care logic and EM05 clinical decision logic therefore do not produce calculation rows. If a decision triggers a separate visit, laboratory test, imaging examination, treatment, or procedure, that resource-bearing activity must be modeled in its relevant module. Patient and caregiver travel are calculated only in EM10; clinical building-block coefficients exclude travel to prevent double counting. Human labor is not characterized as an environmental resource flow; time may still be used to allocate room or equipment inputs. No numerical cut-off threshold has yet been validated, so this exclusion must be documented and revisited during formal LCA modeling.",
-        lcaCutoffSummary: "Provisional cut-off applied: EM04 multidisciplinary care logic, EM05 clinical decision logic, and other meeting-only, review-only, digital-letter, or purely administrative building blocks are not shown in the calculation rows. Patient and caregiver travel are owned only by EM10.",
+        helpCutoffText: "Decision points, joint-clinic logic, and MDT/MDO review remain in the clinical map because they explain pathway sequence and branching. They are not LCA modules and do not create decision-related building blocks or calculation rows. If a decision causes a separate visit, laboratory test, imaging examination, treatment, or procedure, model that physical activity in its resource-bearing module. Patient and caregiver travel are calculated only in EM10. Human labor is not characterized as an environmental resource flow; documented time may still be used as an allocation key for physical inputs.",
+        lcaCutoffSummary: "Clinical decision, joint-clinic, and MDT/MDO logic remain visible on the pathway map but do not create LCA modules or decision-related calculation rows. Patient and caregiver travel are owned only by EM10.",
         languageSelector: "Language",
         specialtySummary: "Specialties",
         specialtyUrology: "Urology",
@@ -7311,6 +7374,9 @@
         oncologySubtitle: "Activities and LCA blocks",
         fullscreenMap: "Fullscreen map",
         closeFullscreen: "Close full screen",
+        decisionPoints: "Decision points",
+        hideDecisionPoints: "Hide decision points",
+        showDecisionPoints: "Show decision points",
         clearPathway: "Clear selected pathway",
         pathwayScenario: "Pathway scenario",
         pathwayScenarioSubtitle: "One patient route; competing treatment branches replace each other",
@@ -7464,7 +7530,7 @@
         excluded: "Excluded",
         noCheckedTotal: "No checked module and building block row combination is currently included in the LCA total.",
         methodLimitations: "Method note and limitations",
-        methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. The prototype applies a provisional qualitative cut-off to EM04 multidisciplinary care logic, EM05 clinical decision logic, and other meeting-only, digital-letter, and purely administrative activities without a separate resource-bearing procedure. Human labor is not characterized as an environmental resource flow; time may be used as an allocation parameter. Patient and caregiver travel are assigned exclusively to EM10 and excluded from all clinical building-block coefficients to prevent double counting. These rules require documentation and sensitivity review during formal LCA modeling.",
+        methodLimitationsText: "This report is a modular LCA calculation demo for ECO-PATH method development. It is not a finalized ISO 14040 or ISO 14044 compliant LCA report. Clinical decision, joint-clinic, and MDT/MDO logic are retained in the pathway topology but are not modeled as LCA modules or decision-related building blocks. If they trigger a separate physical activity, that activity must be modeled in its resource-bearing module. Human labor is not characterized as an environmental resource flow; documented time may be used as an allocation parameter. Patient and caregiver travel are assigned exclusively to EM10 and excluded from all clinical building-block coefficients to prevent double counting.",
         reportFooter: "ECO-PATH pathway-level environmental assessment demo. Report generated locally in the browser.",
         reportExported: "Report exported: {filename}"
       },
@@ -7496,8 +7562,8 @@
         helpStep4: "Een geselecteerde activiteit activeert automatisch de gekoppelde modules, bouwstenen en voorlopige hoeveelheden. Controleer routealternatieven, aantallen en handmatige aanvullingen voor de berekening.",
         helpStep5: "Controleer onzekerheid en datalacunes en exporteer daarna het rapport in de gekozen taal.",
         helpCutoffTitle: "Voorlopige LCA-cut-off",
-        helpCutoffText: "Klinische beslis- en beoordelingspunten blijven op de kaart staan. Activiteiten die alleen uit overleg, besluitvorming, beoordeling, digitale brieven of administratie bestaan, worden uitgesloten als ze uitsluitend personeeltijd en gering kantoor- of ICT-energiegebruik toevoegen. EM04 multidisciplinaire zorglogica en EM05 klinische beslislogica leveren daarom geen berekeningsrijen op. Als een besluit leidt tot een afzonderlijke laboratoriumtest, beeldvorming, behandeling of procedure, moet die hulpbrondragende activiteit in de betreffende module worden gemodelleerd. Patiënten- en mantelzorgerreizen worden uitsluitend in EM10 berekend; klinische procesinventarissen sluiten reizen uit om dubbeltelling te voorkomen. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan wel als allocatiesleutel voor ruimte- of apparatuurinputs dienen. Er is nog geen numerieke drempel gevalideerd; deze uitsluiting moet bij formele LCA-modellering worden vastgelegd en opnieuw beoordeeld.",
-        lcaCutoffSummary: "Voorlopige cut-off toegepast: EM04 multidisciplinaire zorglogica, EM05 klinische beslislogica en andere bouwstenen voor alleen overleg, beoordeling, digitale brieven of zuivere administratie staan niet in de berekeningsrijen. Patiënten- en mantelzorgerreizen vallen uitsluitend onder EM10.",
+        helpCutoffText: "Beslispunten, joint-cliniclogica en MDT/MDO-beoordeling blijven in de klinische kaart staan omdat ze volgorde en vertakkingen verklaren. Het zijn geen LCA-modules en ze maken geen beslisgerelateerde bouwstenen of berekeningsrijen. Als een besluit leidt tot een afzonderlijk bezoek, laboratoriumonderzoek, beeldvorming, behandeling of procedure, modelleer dan die fysieke activiteit in de hulpbrondragende module. Patiënten- en mantelzorgerreizen worden uitsluitend in EM10 berekend. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; gedocumenteerde tijd kan wel als allocatiesleutel voor fysieke inputs dienen.",
+        lcaCutoffSummary: "Klinische beslis-, joint-clinic- en MDT/MDO-logica blijft zichtbaar op de zorgpadkaart, maar maakt geen LCA-modules of beslisgerelateerde berekeningsrijen. Patiënten- en mantelzorgerreizen vallen uitsluitend onder EM10.",
         languageSelector: "Taal",
         specialtySummary: "Specialismen",
         specialtyUrology: "Urologie",
@@ -7519,6 +7585,9 @@
         oncologySubtitle: "Activiteiten en LCA-blokken",
         fullscreenMap: "Kaart volledig scherm",
         closeFullscreen: "Volledig scherm sluiten",
+        decisionPoints: "Beslispunten",
+        hideDecisionPoints: "Beslispunten verbergen",
+        showDecisionPoints: "Beslispunten tonen",
         clearPathway: "Geselecteerd zorgpad wissen",
         pathwayScenario: "Zorgpadscenario",
         pathwayScenarioSubtitle: "Eén patiënttraject; concurrerende behandelroutes vervangen elkaar",
@@ -7672,7 +7741,7 @@
         excluded: "Uitgesloten",
         noCheckedTotal: "Er is momenteel geen combinatie van aangevinkte module en bouwsteenrij opgenomen in het LCA-totaal.",
         methodLimitations: "Methodenotitie en beperkingen",
-        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport. Het prototype gebruikt een voorlopige kwalitatieve cut-off voor EM04 multidisciplinaire zorglogica, EM05 klinische beslislogica en andere overleg-, digitale brief- en administratieactiviteiten zonder afzonderlijke hulpbrondragende procedure. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; tijd kan als allocatieparameter worden gebruikt. Patiënten- en mantelzorgerreizen worden uitsluitend aan EM10 toegewezen en uit klinische procesinventarissen verwijderd om dubbeltelling te voorkomen. Deze regels vereisen documentatie en gevoeligheidsanalyse bij formele LCA-modellering.",
+        methodLimitationsText: "Dit rapport is een modulaire LCA-berekeningsdemo voor ECO-PATH-methodontwikkeling. Het is geen definitief ISO 14040- of ISO 14044-conform LCA-rapport. Klinische beslis-, joint-clinic- en MDT/MDO-logica blijft in de zorgpadtopologie staan, maar wordt niet als LCA-module of beslisgerelateerde bouwsteen gemodelleerd. Als deze logica een afzonderlijke fysieke activiteit veroorzaakt, moet die activiteit in de hulpbrondragende module worden gemodelleerd. Menselijke arbeid wordt niet als milieurelevante resourceflow gekarakteriseerd; gedocumenteerde tijd kan als allocatieparameter worden gebruikt. Patiënten- en mantelzorgerreizen worden uitsluitend aan EM10 toegewezen en uit klinische procesinventarissen verwijderd om dubbeltelling te voorkomen.",
         reportFooter: "ECO-PATH demo voor zorgpadniveau milieubeoordeling. Rapport lokaal in de browser gegenereerd.",
         reportExported: "Rapport geexporteerd: {filename}"
       }
@@ -7710,8 +7779,8 @@
           helpStep4: "选择 activity 后会自动启用对应 modules、building blocks 和临时数量。计算前请检查治疗路线、发生次数和手动补充项。",
           helpStep5: "检查不确定性和数据缺口，然后以当前所选语言导出报告。",
           helpCutoffTitle: "暂定 LCA cut-off",
-          helpCutoffText: "临床决策与复核节点仍保留在路径图中。如果纯会议、纯决策、纯复核、数字信函或行政活动仅增加人力以及少量办公室或 ICT 用电，则不进入计算。因此 EM04 多学科照护逻辑和 EM05 临床决策逻辑不生成计算行。如果决策触发单独的实验室检查、影像检查、治疗或操作，应在相应的实质资源模块中建模。患者及照护者出行只在 EM10 中计算；其他临床 building block 系数排除出行，以避免重复计算。人力本身不作为环境资源流进行表征；活动时间仍可用于分配房间或设备投入。目前尚未验证数值 cut-off 阈值，因此正式 LCA 建模时必须记录并重新检查这些排除项。",
-          lcaCutoffSummary: "已应用暂定 cut-off：EM04 多学科照护逻辑、EM05 临床决策逻辑及其他纯会议、纯复核、数字信函和行政类构建块不显示在计算行中。患者及照护者出行仅归属 EM10。",
+          helpCutoffText: "决策节点、联合门诊逻辑和 MDT/MDO 复核保留在临床路径图中，用于解释顺序和分支。它们不是 LCA 模块，也不生成决策类 building block 或计算行。如果决策触发单独的就诊、实验室检查、影像检查、治疗或操作，应把该实质活动放入相应的资源承载模块。患者及照护者出行只在 EM10 中计算。人力本身不作为环境资源流；有记录的时间仍可作为实质投入的分配依据。",
+          lcaCutoffSummary: "临床决策、联合门诊和 MDT/MDO 逻辑保留在路径图中，但不生成 LCA 模块或决策类计算行。患者及照护者出行仅归属 EM10。",
           languageSelector: "语言",
           specialtySummary: "专科",
           specialtyUrology: "泌尿外科",
@@ -7732,6 +7801,9 @@
           oncologySubtitle: "活动和 LCA 构建块",
           fullscreenMap: "全屏地图",
           closeFullscreen: "关闭全屏",
+          decisionPoints: "决策节点",
+          hideDecisionPoints: "隐藏决策节点",
+          showDecisionPoints: "显示决策节点",
           clearPathway: "清空已选路径",
           pathwayScenario: "路径情景",
           pathwayScenarioSubtitle: "一次只构建一条患者路径；竞争治疗分支会相互替换",
@@ -7885,7 +7957,7 @@
           excluded: "排除",
           noCheckedTotal: "当前没有任何已勾选模块和构建块行组合计入 LCA 总量。",
           methodLimitations: "方法说明和局限性",
-          methodLimitationsText: "本报告是 ECO-PATH 方法开发阶段的模块化 LCA 计算演示，不是最终的 ISO 14040 或 ISO 14044 合规 LCA 报告。当前原型对 EM04 多学科照护逻辑、EM05 临床决策逻辑，以及不产生独立实质资源程序的纯会议、数字信函和行政活动采用暂定定性 cut-off。人力不作为环境资源流进行表征，活动时间可以作为分配参数。患者及照护者出行只分配给 EM10，并从所有临床 building block 系数中排除，以避免重复计算。正式 LCA 建模时必须记录这些规则并进行敏感性检查。",
+          methodLimitationsText: "本报告是 ECO-PATH 方法开发阶段的模块化 LCA 计算演示，不是最终的 ISO 14040 或 ISO 14044 合规 LCA 报告。临床决策、联合门诊和 MDT/MDO 逻辑保留在路径拓扑中，但不作为 LCA 模块或决策类 building block 建模。如果这些逻辑触发独立的实质活动，应把该活动放入资源承载模块。人力不作为环境资源流；有记录的时间可以作为分配参数。患者及照护者出行只分配给 EM10，并从所有临床 building block 系数中排除，以避免重复计算。",
           reportFooter: "ECO-PATH 路径层级环境评估演示。报告在浏览器本地生成。",
           reportExported: "报告已导出：{filename}"
         } : languageId === "ja" ? {
@@ -7900,8 +7972,8 @@
           helpStep4: "activity を選択すると、対応する modules、building blocks、暫定数量が自動的に有効になります。計算前に治療経路、回数、手動追加を確認してください。",
           helpStep5: "不確実性とデータギャップを確認し、現在選択されている言語でレポートを出力します。",
           helpCutoffTitle: "暫定 LCA cut-off",
-          helpCutoffText: "臨床上の意思決定点とレビュー点は図に残します。会議のみ、意思決定のみ、レビューのみ、デジタル文書、純粋な事務作業が人員時間とわずかなオフィスまたは ICT 電力しか追加しない場合、計算から除外します。そのため EM04 多職種ケアロジックと EM05 臨床意思決定ロジックは計算行を生成しません。意思決定によって別の臨床検査、画像検査、治療、処置が発生する場合、その資源投入を対応するモジュールでモデル化する必要があります。患者・介護者移動は EM10 だけで計算し、二重計上を防ぐため臨床 building block の係数から移動を除外します。人的労働そのものは環境資源フローとして評価せず、時間は部屋や機器投入の配分にのみ使用できます。数値的な cut-off 閾値はまだ検証されていないため、正式な LCA では除外項目を記録し、再評価する必要があります。",
-          lcaCutoffSummary: "暫定 cut-off を適用：EM04 多職種ケアロジック、EM05 臨床意思決定ロジック、および会議のみ、レビューのみ、デジタル文書、純粋な事務作業の構成ブロックは計算行に表示されません。患者・介護者移動は EM10 のみに帰属します。",
+          helpCutoffText: "意思決定点、合同外来のロジック、MDT/MDO レビューは、順序と分岐を説明するため臨床パスウェイ図に残します。これらは LCA モジュールではなく、意思決定関連の building block や計算行を生成しません。意思決定が別の受診、臨床検査、画像検査、治療、処置を引き起こす場合、その物理的活動を資源投入を伴うモジュールでモデル化します。患者・介護者移動は EM10 のみで計算します。人的労働は環境資源フローとして評価しませんが、記録された時間は物理的投入の配分キーとして使用できます。",
+          lcaCutoffSummary: "臨床上の意思決定、合同外来、MDT/MDO のロジックはパスウェイ図に残しますが、LCA モジュールや意思決定関連の計算行は生成しません。患者・介護者移動は EM10 のみに帰属します。",
           languageSelector: "言語",
           specialtySummary: "診療科",
           specialtyUrology: "泌尿器科",
@@ -7915,6 +7987,9 @@
           allElements: "すべての要素",
           activitiesOption: "活動",
           decisionsOption: "意思決定点",
+          decisionPoints: "意思決定点",
+          hideDecisionPoints: "意思決定点を隠す",
+          showDecisionPoints: "意思決定点を表示",
           search: "検索",
           searchPlaceholder: "activity, module, oncology, imaging",
           oncologyLens: "オンコロジー表示",
@@ -8016,7 +8091,7 @@
           moduleOff: "モジュールオフ",
           included: "含む",
           excluded: "除外",
-          methodLimitationsText: "本レポートは ECO-PATH 方法開発のためのモジュール型 LCA 計算デモであり、ISO 14040 または ISO 14044 に準拠した最終 LCA レポートではありません。EM04 多職種ケアロジック、EM05 臨床意思決定ロジック、および独立した資源投入を伴わない会議、デジタル文書、純粋な事務作業には暫定的な定性的 cut-off を適用しています。人的労働は環境資源フローとして評価せず、時間は配分パラメータとして使用できます。患者・介護者移動は EM10 のみに割り当て、臨床 building block 係数から除外して二重計上を防ぎます。正式な LCA では、これらの規則の記録と感度確認が必要です。",
+          methodLimitationsText: "本レポートは ECO-PATH 方法開発のためのモジュール型 LCA 計算デモであり、ISO 14040 または ISO 14044 に準拠した最終 LCA レポートではありません。臨床上の意思決定、合同外来、MDT/MDO のロジックはパスウェイのトポロジーに残しますが、LCA モジュールや意思決定関連の building block としてはモデル化しません。別の物理的活動が発生する場合は、資源投入を伴う対応モジュールでモデル化します。人的労働は環境資源フローとして評価せず、時間は配分パラメータとして使用できます。患者・介護者移動は EM10 のみに割り当てます。",
           reportExported: "レポートを出力しました：{filename}"
         } : {
           appTitle: "Explorador de actividades ECO-PATH",
@@ -8030,8 +8105,8 @@
           helpStep4: "Al seleccionar una actividad se activan automáticamente sus módulos, building blocks y cantidades provisionales. Revise las alternativas, frecuencias y adiciones manuales antes del cálculo.",
           helpStep5: "Revise la incertidumbre y las lagunas de datos y exporte el informe en el idioma seleccionado.",
           helpCutoffTitle: "Cut-off LCA provisional",
-          helpCutoffText: "Los puntos de decisión y revisión clínica permanecen en el mapa. Las actividades que consisten solo en reuniones, decisiones, revisiones, cartas digitales o administración se excluyen cuando únicamente añaden tiempo del personal y un consumo menor de energía de oficina o TIC. Por ello, la lógica de atención multidisciplinaria EM04 y la lógica de decisión clínica EM05 no generan filas de cálculo. Si una decisión causa un análisis, prueba de imagen, tratamiento o procedimiento independiente, esa actividad con consumo de recursos debe modelarse en el módulo correspondiente. Los desplazamientos de pacientes y cuidadores se calculan solo en EM10; los coeficientes de building blocks clínicos excluyen los desplazamientos para evitar la doble contabilización. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse para asignar consumos de sala o equipos. Todavía no se ha validado un umbral numérico, por lo que la exclusión debe documentarse y revisarse durante el modelado LCA formal.",
-          lcaCutoffSummary: "Cut-off provisional aplicado: la lógica multidisciplinaria EM04, la lógica de decisión clínica EM05 y otros bloques de reuniones, revisiones, cartas digitales o administración pura no aparecen en las filas de cálculo. Los desplazamientos de pacientes y cuidadores pertenecen exclusivamente a EM10.",
+          helpCutoffText: "Los puntos de decisión, la lógica de la consulta conjunta y la revisión MDT/MDO permanecen en el mapa clínico porque explican la secuencia y las bifurcaciones. No son módulos LCA y no crean building blocks ni filas de cálculo relacionadas con decisiones. Si una decisión causa una visita, análisis, prueba de imagen, tratamiento o procedimiento independiente, esa actividad física se modela en su módulo con consumo de recursos. Los desplazamientos de pacientes y cuidadores se calculan solo en EM10. El trabajo humano no se caracteriza como flujo ambiental, aunque el tiempo documentado puede utilizarse como clave de asignación de entradas físicas.",
+          lcaCutoffSummary: "La lógica de decisiones clínicas, consulta conjunta y MDT/MDO permanece visible en el mapa, pero no crea módulos LCA ni filas de cálculo relacionadas con decisiones. Los desplazamientos de pacientes y cuidadores pertenecen exclusivamente a EM10.",
           languageSelector: "Idioma",
           specialtySummary: "Especialidades",
           specialtyUrology: "Urología",
@@ -8045,6 +8120,9 @@
           allElements: "Todos los elementos",
           activitiesOption: "Actividades",
           decisionsOption: "Puntos de decisión",
+          decisionPoints: "Puntos de decisión",
+          hideDecisionPoints: "Ocultar puntos de decisión",
+          showDecisionPoints: "Mostrar puntos de decisión",
           search: "Buscar",
           searchPlaceholder: "actividad, módulo, oncología, imagen",
           oncologyLens: "Filtro de oncología",
@@ -8146,7 +8224,7 @@
           moduleOff: "Módulo desactivado",
           included: "Incluido",
           excluded: "Excluido",
-          methodLimitationsText: "Este informe es una demostración de cálculo LCA modular para el desarrollo metodológico de ECO-PATH y no es un informe LCA final conforme con ISO 14040 o ISO 14044. El prototipo aplica un cut-off cualitativo provisional a la lógica multidisciplinaria EM04, la lógica de decisión clínica EM05 y otras reuniones, cartas digitales y actividades administrativas sin un procedimiento independiente con consumo de recursos. El trabajo humano no se caracteriza como un flujo ambiental; el tiempo puede utilizarse como parámetro de asignación. Los desplazamientos de pacientes y cuidadores se asignan exclusivamente a EM10 y se excluyen de los coeficientes clínicos para evitar la doble contabilización. Estas reglas requieren documentación y revisión de sensibilidad en el modelado LCA formal.",
+          methodLimitationsText: "Este informe es una demostración de cálculo LCA modular para el desarrollo metodológico de ECO-PATH y no es un informe LCA final conforme con ISO 14040 o ISO 14044. La lógica de decisiones clínicas, consulta conjunta y MDT/MDO permanece en la topología de la vía, pero no se modela como módulo LCA ni como building block relacionado con decisiones. Cualquier actividad física separada se modela en el módulo correspondiente con consumo de recursos. El trabajo humano no se caracteriza como flujo ambiental y los desplazamientos de pacientes y cuidadores se asignan exclusivamente a EM10.",
           reportExported: "Informe exportado: {filename}"
         })
       };
@@ -10328,8 +10406,6 @@
         EM01: { name: "Eerste contact en intake", definition: "Eerste specialistische contact, intake en materiaalrelevante voorbereiding vóór diagnostiek of behandeling." },
         EM02: { name: "Pathologie", definition: "Pathologiebeoordeling, monstergerelateerde beoordeling, papieren beoordeling en diagnostische herbeoordeling." },
         EM03: { name: "Beeldvorming en endoscopie", definition: "Radiologie, CT-herbeoordeling, MRI, PET-CT, cystoscopie, colonoscopie of andere pathwayspecifieke diagnostiek." },
-        EM04: { name: "Multidisciplinaire zorglogica (cut-off)", definition: "Joint clinic, multidisciplinaire beoordeling en interdisciplinaire beslissingen blijven zichtbaar als zorgpadlogica, maar worden niet als zelfstandige impactdragende activiteiten berekend." },
-        EM05: { name: "Klinische beslislogica (cut-off)", definition: "Behandelintentie, geschiktheid, routekeuze en beoordelingsbesluiten blijven zichtbaar als zorgpadlogica, maar worden niet als zelfstandige impactdragende activiteiten berekend." },
         EM06: { name: "Systemische therapie en oncologie", definition: "Medisch-oncologische beoordeling, chemotherapie, immunotherapie of gerichte behandeling, apotheekbereiding, monitoring en respons- of progressiebeoordeling." },
         EM07: { name: "Chirurgie", definition: "Endoscopische of operatieve behandeling, waaronder TURBT, orgaanresectie, lymfeklierdissectie en urinedeviatie, plus anesthesie, perioperatieve zorg, opname en afval." },
         EM08: { name: "Radiotherapie", definition: "Radiotherapiebesluit, planning, uitwendige fracties, chemoradiatie, brachytherapie en immobilisatie. Bijbehorende patiëntenreizen vallen onder EM10." },
@@ -10341,8 +10417,6 @@
         EM01: { name: "首次接触与接收", definition: "首次专科接触、接收，以及诊断或治疗前具有实质资源消耗的准备活动。" },
         EM02: { name: "病理", definition: "病理复核、样本相关评估、纸面评估和诊断复评。" },
         EM03: { name: "影像和内镜", definition: "放射影像、CT 复评、MRI、PET-CT、膀胱镜、结肠镜或其他路径特异性诊断程序。" },
-        EM04: { name: "多学科照护逻辑（cut-off）", definition: "联合门诊、多学科复核和跨专科决策保留为路径逻辑，但不作为独立的环境影响活动计算。" },
-        EM05: { name: "临床决策逻辑（cut-off）", definition: "治疗意图、适应性、路径选择和复核决策保留为路径逻辑，但不作为独立的环境影响活动计算。" },
         EM06: { name: "系统治疗和肿瘤学", definition: "肿瘤内科复核、化疗、免疫或靶向治疗、药房配制、治疗监测以及疗效或进展评估。" },
         EM07: { name: "手术", definition: "内镜或外科治疗，包括 TURBT、器官切除、淋巴结清扫和尿流改道，以及麻醉、围手术期照护、住院和相关废弃物。" },
         EM08: { name: "放射治疗", definition: "放疗决策、计划、外照射分次、同步放化疗、近距离放疗和固定装置。相关患者出行归入 EM10。" },
@@ -10354,8 +10428,6 @@
         EM01: { name: "初回接触・受け入れ", definition: "初回専門医接触、受け入れ、診断または治療前の資源投入を伴う準備。" },
         EM02: { name: "病理", definition: "病理レビュー、検体関連評価、書類レビュー、診断再評価。" },
         EM03: { name: "画像診断と内視鏡", definition: "放射線画像、CT 再評価、MRI、PET-CT、膀胱鏡、大腸内視鏡、その他のパスウェイ特異的診断手順。" },
-        EM04: { name: "多職種ケアロジック（cut-off）", definition: "合同外来、多職種レビュー、診療科横断の意思決定はパスウェイロジックとして残しますが、独立した環境負荷活動としては計算しません。" },
-        EM05: { name: "臨床意思決定ロジック（cut-off）", definition: "治療意図、適格性、経路選択、レビュー判断はパスウェイロジックとして残しますが、独立した環境負荷活動としては計算しません。" },
         EM06: { name: "全身療法と腫瘍内科", definition: "腫瘍内科レビュー、化学療法、免疫療法または標的治療、薬剤調製、モニタリング、奏効・進行評価。" },
         EM07: { name: "手術", definition: "TURBT、臓器切除、リンパ節郭清、尿路変向を含む内視鏡・外科治療、および麻酔、周術期ケア、入院、関連廃棄物。" },
         EM08: { name: "放射線治療", definition: "放射線治療の意思決定、計画、外照射分割、化学放射線療法、小線源治療、固定具。関連する患者移動は EM10 に帰属します。" },
@@ -10367,8 +10439,6 @@
         EM01: { name: "Primer contacto y admisión", definition: "Primer contacto con el especialista, admisión y preparación con consumo material de recursos antes del diagnóstico o tratamiento." },
         EM02: { name: "Patologia", definition: "Revision patologica, evaluacion de muestras, revision documental y reevaluacion diagnostica." },
         EM03: { name: "Imagen y endoscopia", definition: "Radiologia, reevaluacion CT, MRI, PET-CT, cistoscopia, colonoscopia u otros procedimientos diagnosticos especificos de la via." },
-        EM04: { name: "Logica de atencion multidisciplinaria (cut-off)", definition: "La consulta conjunta, la revision multidisciplinaria y las decisiones entre especialidades se conservan como logica de la via, pero no se calculan como actividades independientes con impacto." },
-        EM05: { name: "Logica de decision clinica (cut-off)", definition: "La intencion terapeutica, la elegibilidad, la seleccion de la vía y las revisiones se conservan como logica de la vía, pero no se calculan como actividades independientes con impacto." },
         EM06: { name: "Terapia sistemica y oncologia", definition: "Revision de oncologia medica, quimioterapia, inmunoterapia o terapia dirigida, preparacion farmaceutica, monitorizacion y evaluacion de respuesta o progresion." },
         EM07: { name: "Cirugia", definition: "Tratamiento endoscopico u operatorio, incluidos TURBT, reseccion de organo, diseccion ganglionar y derivacion urinaria, mas anestesia, cuidados perioperatorios, ingreso y residuos." },
         EM08: { name: "Radioterapia", definition: "Decision, planificacion, fracciones de haz externo, quimiorradiacion, braquiterapia e inmovilizacion. Los desplazamientos asociados pertenecen a EM10." },
@@ -14559,6 +14629,7 @@
       assessmentMode: "complete",
       assessmentBoundaries: {},
       mapFullscreenOpen: false,
+      showDecisionPoints: true,
       activitiesCollapsed: false,
       workspaceStep: "pathway",
       impactCategory: "climate",
@@ -14756,12 +14827,16 @@
       return directLciInputs(flows).map(localizedResourceFlow).join("; ");
     }
 
-    function mappedLciInputsForNode(node) {
+    function mappedBuildingBlocksForNode(node) {
+      if (!node) return [];
       const mappedBlockNames = new Set(
         (activityBuildingBlockRegistry[node.id] || []).map((selection) => selection.name)
       );
-      const inputs = buildingBlockRegistry
-        .filter((item) => mappedBlockNames.has(item.name))
+      return buildingBlockRegistry.filter((item) => mappedBlockNames.has(item.name));
+    }
+
+    function mappedLciInputsForNode(node) {
+      const inputs = mappedBuildingBlocksForNode(node)
         .flatMap((item) => item.resourceFlows);
       return [...new Set(directLciInputs(inputs))];
     }
@@ -15112,8 +15187,16 @@
       return Object.keys(moduleRegistry);
     }
 
+    function lcaModuleIdsForNode(node) {
+      return [...new Set(mappedBuildingBlocksForNode(node).map((item) => item.module))];
+    }
+
+    function nodeActivatesLcaModule(node, moduleId) {
+      return lcaModuleIdsForNode(node).includes(moduleId);
+    }
+
     function pathwayModuleIds(pathway = currentPathway()) {
-      const present = new Set(pathway.nodes.map((node) => node.module));
+      const present = new Set(pathway.nodes.flatMap((node) => lcaModuleIdsForNode(node)));
       return moduleRegistryIds().filter((moduleId) => present.has(moduleId));
     }
 
@@ -15285,16 +15368,12 @@
     }
 
     function selectedScenarioModuleIds() {
-      const modules = new Set(
-        selectedScenarioNodes()
-          .filter((node) => !isLcaCutoffNode(node))
-          .map((node) => node.module)
-      );
       const automaticQuantities = automaticBuildingBlockQuantities();
+      const modules = new Set();
       lcaRows.forEach((row) => {
         if ((automaticQuantities.get(row.block) || 0) > 0) modules.add(row.module);
       });
-      return pathwayModuleIds().filter((moduleId) => modules.has(moduleId));
+      return lcaPathwayModuleIds().filter((moduleId) => modules.has(moduleId));
     }
 
     function automaticBuildingBlockQuantities() {
@@ -15413,18 +15492,23 @@
     }
 
     function lcaPathwayModuleIds() {
-      const eligibleModules = new Set(
-        currentPathway().nodes
-          .filter((node) => !isLcaCutoffNode(node))
-          .map((node) => node.module)
+      const mappedBlockNames = new Set(
+        currentPathway().nodes.flatMap((node) => (
+          (activityBuildingBlockRegistry[node.id] || []).map((selection) => selection.name)
+        ))
       );
-      return pathwayModuleIds()
+      const eligibleModules = new Set(
+        buildingBlockRegistry
+          .filter((item) => mappedBlockNames.has(item.name))
+          .map((item) => item.module)
+      );
+      return moduleRegistryIds()
         .filter((moduleId) => eligibleModules.has(moduleId))
         .filter((moduleId) => lcaRows.some((row) => row.module === moduleId && appliesToPathway(row)));
     }
 
     function isLcaCutoffNode(node) {
-      return Boolean(node && lcaCutoffNodeIds.has(node.id));
+      return Boolean(node && (!lcaModuleIdsForNode(node).length || lcaCutoffNodeIds.has(node.id)));
     }
 
     function lcaSupportModuleIds() {
@@ -15442,7 +15526,7 @@
     }
 
     function isOncologyModule(moduleId) {
-      return ["EM04", "EM06", "EM08"].includes(moduleId);
+      return ["EM06", "EM08"].includes(moduleId);
     }
 
     function isOncologyBuildingBlock(item) {
@@ -15473,6 +15557,7 @@
       const pathway = currentPathway();
       const query = state.query.trim().toLowerCase();
       return pathway.nodes.filter((node) => {
+        const lcaModuleIds = lcaModuleIdsForNode(node);
         const text = [
           node.id,
           node.label,
@@ -15480,8 +15565,8 @@
           node.domain,
           domainLabel(node.domain),
           node.type,
-          node.module,
-          moduleRegistry[node.module] ? moduleName(node.module) : "",
+          lcaModuleIds.join(" "),
+          lcaModuleIds.map((moduleId) => moduleName(moduleId)).join(" "),
           node.protocolStep,
           node.rationale,
           (node.resourceFlows || []).join(" "),
@@ -15490,7 +15575,7 @@
           node.oncology ? "oncology systemic therapy chemotherapy" : ""
         ].join(" ").toLowerCase();
         return (state.domain === "all" || node.domain === state.domain)
-          && (state.module === "all" || node.module === state.module)
+          && (state.module === "all" || lcaModuleIds.includes(state.module))
           && (state.type === "all" || node.type === state.type)
           && (!query || text.includes(query));
       });
@@ -15897,13 +15982,23 @@
     }
 
     function nodeHorizontalRadius(node) {
+      if (node.type === "hidden-decision") return 0;
       if (node.type === "parallel") return 10;
       return node.type === "decision" ? 38 : 24;
     }
 
     function nodeVerticalRadius(node) {
+      if (node.type === "hidden-decision") return 0;
       if (node.type === "parallel") return 10;
       return node.type === "decision" ? 30 : 24;
+    }
+
+    function isMapDecisionHidden(node) {
+      return Boolean(node?.type === "decision" && !state.showDecisionPoints);
+    }
+
+    function mapRenderNode(node) {
+      return isMapDecisionHidden(node) ? { ...node, type: "hidden-decision" } : node;
     }
 
     function parallelGatewayById(pathway, gatewayId) {
@@ -16502,11 +16597,58 @@
       scheduleDetailPanelSync();
     }
 
+    function renderDecisionPointToggles() {
+      [
+        ["toggleDecisionPoints", "decisionPointsToggleText"],
+        ["toggleDecisionPointsFullscreen", "fullscreenDecisionPointsToggleText"]
+      ].forEach(([buttonId, textId]) => {
+        const button = document.getElementById(buttonId);
+        const text = document.getElementById(textId);
+        if (!button || !text) return;
+        const action = state.showDecisionPoints ? t("hideDecisionPoints") : t("showDecisionPoints");
+        button.classList.toggle("active", state.showDecisionPoints);
+        button.setAttribute("aria-pressed", String(state.showDecisionPoints));
+        button.setAttribute("aria-label", action);
+        button.title = action;
+        text.textContent = t("decisionPoints");
+        const icon = button.querySelector("svg");
+        if (icon) {
+          icon.innerHTML = state.showDecisionPoints
+            ? '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle>'
+            : '<path d="M3 3l18 18"></path><path d="M10.6 6.2A11.7 11.7 0 0 1 12 6c6.5 0 10 6 10 6a17 17 0 0 1-3 3.7"></path><path d="M6.6 6.7C3.6 8.6 2 12 2 12s3.5 6 10 6a10.8 10.8 0 0 0 3.3-.5"></path>';
+        }
+      });
+    }
+
+    function toggleDecisionPointVisibility() {
+      state.showDecisionPoints = !state.showDecisionPoints;
+      if (!state.showDecisionPoints) {
+        const selected = nodeById(currentPathway(), state.selected);
+        if (selected?.type === "decision") {
+          const replacement = selectedScenarioNodes().find((node) => node.type !== "decision")
+            || currentPathway().nodes.find((node) => node.type !== "decision");
+          state.selected = replacement?.id || null;
+        }
+      }
+      renderDecisionPointToggles();
+      renderMap("pathwaySvg");
+      renderDetail();
+      updateActivityListSelection();
+      if (state.mapFullscreenOpen) {
+        renderMap("fullscreenPathwaySvg");
+        renderNodeDetail(selectedNodeForCurrentPathway(), "fullscreenActivityDetail");
+      }
+    }
+
     function renderMap(svgId = "pathwaySvg") {
       const svg = document.getElementById(svgId);
       if (!svg) return;
       const pathway = currentPathway();
       const visibleIds = new Set(filteredNodes().map((node) => node.id));
+      const displayedNodes = pathway.nodes.filter((node) => !isMapDecisionHidden(node));
+      const isFilterVisible = (node) => Boolean(
+        node && (isMapDecisionHidden(node) || visibleIds.has(node.id))
+      );
       const boundaryCorridor = state.assessmentMode === "complete"
         ? assessmentBoundaryCorridor(pathway)
         : new Set(pathway.nodes.map((node) => node.id));
@@ -16564,10 +16706,10 @@
         const scenarioEdge = gatewayEdges.some((edgeItem) => isScenarioEdgeActive(edgeItem));
         const insideBoundary = boundaryCorridor.has(from.id)
           && gatewayEdges.some((edgeItem) => boundaryCorridor.has(edgeItem.to));
-        const gatewayVisible = visibleIds.has(from.id)
-          || gatewayEdges.some((edgeItem) => visibleIds.has(edgeItem.to));
+        const gatewayVisible = isFilterVisible(from)
+          || gatewayEdges.some((edgeItem) => isFilterVisible(nodeById(pathway, edgeItem.to)));
         const path = createSvgElement("path", {
-          d: pathForEdge(from, gatewayNode),
+          d: pathForEdge(mapRenderNode(from), gatewayNode),
           class: `map-edge ${scenarioEdge ? "scenario-edge" : ""}`,
           stroke: routeColor(gateway.route),
           "stroke-width": scenarioEdge ? 9 : 6,
@@ -16584,17 +16726,19 @@
         const to = nodeById(pathway, edgeItem.to);
         if (!from || !to) return;
         const startNode = edgeStartNode(pathway, edgeItem, from);
+        const renderedStartNode = startNode.type === "parallel" ? startNode : mapRenderNode(startNode);
+        const renderedTo = mapRenderNode(to);
         const scenarioEdge = isScenarioEdgeActive(edgeItem);
         const insideBoundary = boundaryCorridor.has(edgeItem.from) && boundaryCorridor.has(edgeItem.to);
         const path = createSvgElement("path", {
-          d: pathForEdge(startNode, to),
+          d: pathForEdge(renderedStartNode, renderedTo),
           class: `map-edge ${edgeItem.route === "return" ? "return" : ""} ${scenarioEdge ? "scenario-edge" : ""}`,
           stroke: routeColor(edgeItem.route),
           "stroke-width": scenarioEdge ? 9 : edgeItem.route === "diagnostic" ? 7 : 6,
           "data-edge-from": edgeItem.from,
           "data-edge-to": edgeItem.to
         });
-        const edgeVisible = visibleIds.has(from.id) && visibleIds.has(to.id);
+        const edgeVisible = isFilterVisible(from) && isFilterVisible(to);
         if (!insideBoundary) {
           path.setAttribute("opacity", "0.1");
         } else if (!edgeVisible) {
@@ -16636,7 +16780,7 @@
 
       const placedLabels = [...laneLabelBoxes];
       const markerBoxes = [
-        ...pathway.nodes.map((node) => markerBounds(node)),
+        ...displayedNodes.map((node) => markerBounds(node)),
         ...(pathway.parallelGateways || []).map((gateway) => ({
           x: gateway.x - 10,
           y: gateway.y - 10,
@@ -16647,18 +16791,36 @@
       const edgeBoxes = [
         ...(pathway.parallelGateways || []).flatMap((gateway) => {
           const from = nodeById(pathway, gateway.from);
-          return from ? edgeSampleBoxes(from, { ...gateway, type: "parallel" }) : [];
+          return from ? edgeSampleBoxes(mapRenderNode(from), { ...gateway, type: "parallel" }) : [];
         }),
         ...pathway.edges.flatMap((edgeItem) => {
           const from = nodeById(pathway, edgeItem.from);
           const to = nodeById(pathway, edgeItem.to);
-          return from && to
-            ? edgeSampleBoxes(edgeStartNode(pathway, edgeItem, from), to)
-            : [];
+          if (!from || !to) return [];
+          const startNode = edgeStartNode(pathway, edgeItem, from);
+          return edgeSampleBoxes(
+            startNode.type === "parallel" ? startNode : mapRenderNode(startNode),
+            mapRenderNode(to)
+          );
         })
       ];
-      const scenarioSequence = scenarioSequenceMap(pathway);
-      pathway.nodes.forEach((node) => {
+      const rawScenarioSequence = scenarioSequenceMap(pathway);
+      const visibleSequenceValues = [...new Set(
+        displayedNodes
+          .filter((node) => isScenarioNodeSelected(node.id))
+          .map((node) => rawScenarioSequence.get(node.id))
+          .filter(Number.isFinite)
+      )].sort((a, b) => a - b);
+      const visibleSequenceRemap = new Map(
+        visibleSequenceValues.map((value, index) => [value, index + 1])
+      );
+      const scenarioSequence = new Map(
+        displayedNodes.map((node) => [
+          node.id,
+          visibleSequenceRemap.get(rawScenarioSequence.get(node.id))
+        ])
+      );
+      displayedNodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
         const insideBoundary = boundaryCorridor.has(node.id);
         const labelLines = splitLabel(shortStationLabel(node), 17);
@@ -16709,7 +16871,7 @@
         svg.appendChild(group);
       });
 
-      pathway.nodes.forEach((node) => {
+      displayedNodes.forEach((node) => {
         const visible = visibleIds.has(node.id);
         const insideBoundary = boundaryCorridor.has(node.id);
         const selected = state.selected === node.id;
@@ -17244,6 +17406,7 @@
         return;
       }
       const candidateInputs = mappedLciInputsForNode(node);
+      const lcaModuleIds = lcaModuleIdsForNode(node);
       detail.innerHTML = `
         <div class="detail-title">
           <div class="code-pill">${escapeHtml(displayCode(node))}</div>
@@ -17252,10 +17415,9 @@
             <div class="meta-row">
               <span class="tag">${escapeHtml(domainLabel(node.domain))}</span>
               <span class="tag">${escapeHtml(node.type === "decision" ? t("decisionPoint") : t("activity"))}</span>
-              <span class="tag module">${escapeHtml(node.module)}</span>
+              ${lcaModuleIds.map((moduleId) => `<span class="tag module">${escapeHtml(moduleId)}</span>`).join("")}
               ${isScenarioNodeSelected(node.id) ? `<span class="tag scenario">${escapeHtml(t("selectedPathway"))}</span>` : ""}
               ${node.oncology ? `<span class="tag oncology">${escapeHtml(t("oncologyRelevant"))}</span>` : ""}
-              ${isLcaCutoffNode(node) ? `<span class="tag">${escapeHtml(t("lcaCutoff"))}</span>` : ""}
             </div>
           </div>
         </div>
@@ -17264,16 +17426,18 @@
             <strong>${escapeHtml(t("protocolInterpretation"))}</strong>
             <p>${escapeHtml(localizedClinicalProtocol(node))}</p>
           </div>
-          <div class="detail-block">
-            <strong>${escapeHtml(t("ecopathModule"))}</strong>
-            <p><b>${escapeHtml(node.module)} ${escapeHtml(moduleName(node.module))}</b></p>
-          </div>
-          <div class="detail-block">
-            <strong>${escapeHtml(t("resourceFlows"))}</strong>
-            ${candidateInputs.length
-              ? `<ul class="resource-list">${candidateInputs.map((item) => `<li>${escapeHtml(localizedResourceFlow(item))}</li>`).join("")}</ul>`
-              : `<p>${escapeHtml(t("noDirectLciInputs"))}</p>`}
-          </div>
+          ${lcaModuleIds.length ? `
+            <div class="detail-block">
+              <strong>${escapeHtml(t("ecopathModule"))}</strong>
+              <p><b>${lcaModuleIds.map((moduleId) => `${escapeHtml(moduleId)} ${escapeHtml(moduleName(moduleId))}`).join("<br>")}</b></p>
+            </div>
+            <div class="detail-block">
+              <strong>${escapeHtml(t("resourceFlows"))}</strong>
+              ${candidateInputs.length
+                ? `<ul class="resource-list">${candidateInputs.map((item) => `<li>${escapeHtml(localizedResourceFlow(item))}</li>`).join("")}</ul>`
+                : `<p>${escapeHtml(t("noDirectLciInputs"))}</p>`}
+            </div>
+          ` : ""}
         </div>
       `;
     }
@@ -17347,6 +17511,7 @@
 
       nodes.forEach((node) => {
         const insideBoundary = boundaryCorridor.has(node.id);
+        const lcaModuleIds = lcaModuleIdsForNode(node);
         const button = document.createElement("button");
         button.type = "button";
         button.className = [
@@ -17370,7 +17535,7 @@
             <strong>${escapeHtml(localizedNodeLabel(node))}</strong>
             <span>${escapeHtml(domainLabel(node.domain))} · ${escapeHtml(node.type === "decision" ? t("decisionPoint") : t("activity"))}</span>
           </span>
-          <span class="tag module">${escapeHtml(node.module)} ${escapeHtml(moduleName(node.module))}</span>
+          ${lcaModuleIds.map((moduleId) => `<span class="tag module">${escapeHtml(moduleId)} ${escapeHtml(moduleName(moduleId))}</span>`).join("")}
         `;
         list.appendChild(button);
       });
@@ -17843,7 +18008,9 @@
             .filter((item) => item.row.module === moduleId && appliesToPathway(item.row));
           const included = isLcaModuleIncluded(moduleId);
           const activeRows = included ? moduleRows.filter(({ row }) => isLcaRowIncluded(row)).length : 0;
-          const selectedActivityCount = selectedScenarioNodes().filter((node) => node.module === moduleId).length;
+          const selectedActivityCount = selectedScenarioNodes()
+            .filter((node) => nodeActivatesLcaModule(node, moduleId))
+            .length;
           const moduleDisabledAttr = included ? "" : " disabled";
           const hasOncologyRows = moduleRows.some(({ row }) => isOncologyLcaRow(row));
           const section = document.createElement("details");
@@ -19465,15 +19632,22 @@
           quantity_basis: "Each building-block quantity is entered per declared functional unit. The runner does not infer or rescale clinical activity counts."
         },
         cohort_size: report.caseCount,
-        selected_activities: selectedScenarioNodes().map((node) => ({
-          id: node.id,
-          code: displayCode(node),
-          label: node.label,
-          module_id: node.module,
-          lca_cutoff: isLcaCutoffNode(node),
-          evidence_source: node.evidence?.source || "",
-          evidence_status: node.evidence?.status || ""
-        })),
+        selected_activities: selectedScenarioNodes().map((node) => {
+          const moduleIds = lcaModuleIdsForNode(node);
+          return {
+            id: node.id,
+            code: displayCode(node),
+            label: node.label,
+            module_id: moduleIds[0] || null,
+            module_ids: moduleIds,
+            pathway_logic_classification: moduleIds.length
+              ? null
+              : (node.pathwayLogicClassification || null),
+            lca_cutoff: isLcaCutoffNode(node),
+            evidence_source: node.evidence?.source || "",
+            evidence_status: node.evidence?.status || ""
+          };
+        }),
         modules: report.modules.map((module) => ({
           module_id: module.id,
           name: moduleRegistry[module.id]?.name || module.id,
@@ -19835,15 +20009,18 @@
           statement: functionalUnitText(functionalUnit)
         },
         brightwayResult: state.brightwayResult,
-        selectedActivities: selectedScenarioNodes().map((node) => ({
-          code: displayCode(node),
-          label: localizedNodeLabel(node),
-          module: node.module,
-          moduleName: moduleRegistry[node.module] ? moduleName(node.module) : "",
-          lcaCutoff: isLcaCutoffNode(node),
-          evidenceSource: localizedActivityEvidence(node).source,
-          evidenceStatus: localizedActivityEvidence(node).status
-        })),
+        selectedActivities: selectedScenarioNodes().map((node) => {
+          const moduleIds = lcaModuleIdsForNode(node);
+          return {
+            code: displayCode(node),
+            label: localizedNodeLabel(node),
+            module: moduleIds.join(", "),
+            moduleName: moduleIds.map((moduleId) => moduleName(moduleId)).join(", "),
+            lcaCutoff: isLcaCutoffNode(node),
+            evidenceSource: localizedActivityEvidence(node).source,
+            evidenceStatus: localizedActivityEvidence(node).status
+          };
+        }),
         generatedAt: reportGeneratedAt(),
         caseCount,
         moduleCount: moduleIds.length,
@@ -20519,6 +20696,8 @@
       document.getElementById("clearBrightwayResults").addEventListener("click", clearBrightwayResult);
       document.getElementById("openMapFullscreen").addEventListener("click", openMapFullscreen);
       document.getElementById("closeMapFullscreen").addEventListener("click", closeMapFullscreen);
+      document.getElementById("toggleDecisionPoints").addEventListener("click", toggleDecisionPointVisibility);
+      document.getElementById("toggleDecisionPointsFullscreen").addEventListener("click", toggleDecisionPointVisibility);
       document.getElementById("toggleActivities").addEventListener("click", () => {
         state.activitiesCollapsed = !state.activitiesCollapsed;
         renderActivityPanelState();
@@ -20544,6 +20723,7 @@
       renderProtocolComparison();
       renderPathwayReferences();
       renderPathwayScenarioControls();
+      renderDecisionPointToggles();
       renderMap();
       renderDetail();
       renderImpactCategoryControl();
